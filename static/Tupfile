@@ -1,0 +1,4 @@
+.gitignore
+
+: foreach *.scss |> pscss < %f > %o |> %B.css
+: foreach *.coffee |> coffee -c %f |> %B.js
