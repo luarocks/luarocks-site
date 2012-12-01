@@ -24,7 +24,9 @@ lapis.serve class extends lapis.Application
     -- json: out
 
   [rocks: "/rocks"]: =>
-    "all rocks go here"
+    @rocks = Rocks\select "order by name asc"
+    Users\include_in @rocks, "user_id"
+    render: true
 
   [upload_rockspec: "/upload"]: respond_to {
     GET: => render: true
