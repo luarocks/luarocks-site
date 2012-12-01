@@ -4,14 +4,27 @@ require "moon"
 
 class Rocks extends Widget
   content: =>
-    h2 "All Rocks"
+    h2 ->
+      text "All Rocks"
+      text " "
+      span class: "rock_count", "(#{#@rocks})"
+
     div class: "rock_list", ->
       for rock in *@rocks
         div class: "rock_row", ->
-          a href: @url_for("rock", user: rock.user.slug, rock: rock.name), rock.name
-          text " ("
-          a href: @url_for("user_rocks", user: rock.user.slug), rock.user.username
-          text ")"
+          div class: "main", ->
+            a {
+              class: "title",
+              href: @url_for("rock", user: rock.user.slug, rock: rock.name)
+            }, rock.name
+
+            span class: "author", ->
+              text " ("
+              a href: @url_for("user_rocks", user: rock.user.slug), rock.user.username
+              text ")"
+
+          div class: "summary", ->
+            text rock.summary
 
 
 

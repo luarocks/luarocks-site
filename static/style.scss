@@ -2,6 +2,7 @@
 $back_color: lighten(#F0E5C9, 10%);
 $header_color: #594433;
 $site_width: 800px;
+$link_color: #FF5C00;
 
 @mixin unselectable {
     -moz-user-select: none;
@@ -24,8 +25,16 @@ $site_width: 800px;
 
 body {
     color: #222;
+    font-size: 16px;
     font-family: sans-serif;
     margin: 0;
+}
+
+a {
+    color: $link_color;
+    &:hover {
+        color: lighten($link_color, 10%);
+    }
 }
 
 .header {
@@ -35,6 +44,7 @@ body {
 
     color: white;
     padding: 10px;
+    margin-bottom: 20px;
 
     .header_inner {
         width: $site_width;
@@ -43,7 +53,7 @@ body {
 
     h1 {
         letter-spacing: -1px;
-        text-shadow: -1px -1px 0 black;
+        text-shadow: -1px -1px 0 #222;
         margin: 0;
         font-size: 18px;
         font-weight: normal;
@@ -61,7 +71,7 @@ body {
     }
 
     a {
-        color: #DAF249;
+        color: lighten($link_color, 30%);
         text-decoration: none;
         &:hover {
             text-decoration: underline;
@@ -72,12 +82,18 @@ body {
 .content {
     background: $back_color;
     border-bottom: 1px solid darken($back_color, 10%);
+
+    h2, h3, h4 {
+        color: #796B5F;
+        text-shadow: 1px 1px 0 white;
+        font-weight: normal;
+    }
 }
 
 .main_column {
     width: $site_width;
     margin: 0 auto;
-    padding: 20px 0;
+    padding-bottom: 20px;
 }
 
 .footer {
@@ -88,4 +104,30 @@ body {
     font-size: 12px;
 }
 
+.rock_count {
+    color: #A59E8D;
+}
+
+.rock_list {
+    .rock_row {
+        margin: 10px 0;
+        background: white;
+        padding: 5px 10px;
+        border-radius: 2px;
+        border: 1px solid darken($back_color, 10%);
+
+        .author {
+            font-size: 13px;
+            color: gray;
+            a {
+            }
+        }
+
+        .summary {
+            color: gray;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+    }
+}
 
