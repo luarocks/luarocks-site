@@ -48,4 +48,35 @@ class Users extends Model
     @encrypted_password\sub 1, 29
 
 
-{ :Users }
+class Rocks extends Model
+  @timestamp: true
+
+  @create: (rockspec_text, user) =>
+    fn = loadstring rockspec_text, rock
+    return nil, "Failed to parse rockspec" unless fn
+    rock = {}
+    setfenv fn, rock
+    return nil, "Failed to eval rockspec" unless pcall(fn)
+    description = rock.description or {}
+
+    Model.create @, {
+      user_id: user.id
+      name: rock.package
+
+      current_version_id: -1
+
+      summary: description.summary
+      description: description.detailed
+      license: description.license
+      homepage: description.homepage
+    }
+
+    -- create the first version
+
+class Versions
+  @timestamp: true
+
+  @create: (rock, spec) ->
+
+
+{ :Users, :Rocks }

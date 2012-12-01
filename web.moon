@@ -6,7 +6,7 @@ lapis = require "lapis.init"
 bucket = require "secret.storage_bucket"
 
 import respond_to from require "lapis.application"
-import Users from require "models"
+import Users, Rocks from require "models"
 
 require "moon"
 
@@ -17,13 +17,37 @@ lapis.serve class extends lapis.Application
     @current_user = Users\read_session @
 
   "/db/make": =>
-    -- schema = require "schema"
-    -- schema.make_schema!
-    -- json: { status: "ok" }
-    out, err = db.query "select * from pg_tables where schemaname = ?", "public"
-    json: out
+    schema = require "schema"
+    schema.make_schema!
+    json: { status: "ok" }
+    -- out, err = db.query "select * from pg_tables where schemaname = ?", "public"
+    -- json: out
+
+  [rocks: "/rocks"]: =>
+    "all rocks go here"
+
+  [upload_rockspec: "/upload"]: respond_to {
+    GET: => render: true
+    POST: =>
+      file = assert @params.rockspec_file, "Missing rockspec"
+      if rock = Rocks\create file.content, @current_user
+        { redirect_to: @url_for "rock", user: @current_user.slug, rock: rock.name }
+      else
+        "<pre>" .. moon.dump rock or "FAILED"
+  }
 
   [index: "/"]: => render: true
+
+  [user_rocks: "/rocks/:user"]: =>
+    "profile of #{@params.user}"
+
+  [rock: "/rocks/:user/:rock"]: =>
+    @user = assert Users\find(slug: @params.user), "Invalid user"
+    @rock = assert Rocks\find(user_id: @user.id, name: @params.rock), "Invalid rock"
+    render: true
+
+  [rock_version: "/rocks/:user/:rock/*"]: =>
+    "look at specific version #{@params.user} #{@params.rock} #{@params.splat}"
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
@@ -37,7 +61,6 @@ lapis.serve class extends lapis.Application
 
       @html -> text err
   }
-
 
   [user_register: "/register"]: respond_to {
     GET: => render: true
@@ -64,7 +87,7 @@ lapis.serve class extends lapis.Application
             a href: bucket\file_url(thing.key), thing.key
             text " (#{thing.size}) #{thing.last_modified}"
 
-  [upload_file: "/upload"]: =>
+  [upload_file: "/upload/post"]: =>
     file = @params.some_file
     error "missing file" unless file
 

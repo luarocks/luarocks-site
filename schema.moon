@@ -57,7 +57,9 @@ destroy_table = (tname) ->
 make_schema = ->
   serial = "serial NOT NULL"
   varchar = "character varying(255) NOT NULL"
+  varchar_nullable = "character varying(255)"
   text = "text NOT NULL"
+  text_nullable = "text"
   time = "timestamp without time zone NOT NULL"
   integer = "integer NOT NULL DEFAULT 0"
   foreign_key = "integer NOT NULL"
@@ -103,10 +105,15 @@ make_schema = ->
     {"id", serial}
     {"user_id", foreign_key}
     {"name", varchar}
-    {"description", text}
-    {"license", varchar}
     {"downloads", integer}
     {"current_version_id", foreign_key}
+
+    {"summary", varchar_nullable}
+    {"description", text_nullable}
+
+    {"license", varchar_nullable}
+    {"homepage", varchar_nullable}
+
     {"created_at", time}
     {"updated_at", time}
 
@@ -114,7 +121,7 @@ make_schema = ->
   }
 
   create_index "rocks", "user_id"
-  create_index "rocks", "name", unique: true
+  create_index "rocks", "user_id", "name", unique: true
   create_index "rocks", "downloads"
 
   --
@@ -125,7 +132,7 @@ make_schema = ->
     {"rock_id", foreign_key}
     {"version_name", varchar}
     {"rockspec_url", varchar}
-    {"rock_url", varchar}
+    {"rock_url", varchar_nullable}
     {"downloads", integer}
 
     {"created_at", time}
