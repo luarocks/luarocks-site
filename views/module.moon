@@ -2,23 +2,23 @@ import Widget from require "lapis.html"
 
 require "moon"
 
-class Rock extends Widget
+class Module extends Widget
   content: =>
-    h2 @rock.name
+    h2 @module.name
     h3 class: "user", ->
       text @user.username
 
     div class: "description", ->
-      text @rock.description
+      text @module.description
 
     h3 "Versions"
     for v in *@versions
       div class: "version_row", ->
-        url = "/rocks/#{@user.slug}/#{@rock.name}/#{v.version_name}"
+        url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
         a href: url, v.version_name
 
 
     hr!
     pre moon.dump @user
-    pre moon.dump @rock
+    pre moon.dump @module
     pre moon.dump @current_version

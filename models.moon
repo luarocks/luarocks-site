@@ -5,7 +5,7 @@ bcrypt = require "bcrypt"
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"
 
-local Rocks, Versions, Users
+local Modules, Versions, Users
 
 class Users extends Model
   @timestamp: true
@@ -49,23 +49,23 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
-  all_rocks: =>
-    Rocks\select "where user_id = ?", @id
+  all_modules: =>
+    Modules\select "where user_id = ?", @id
 
 class Versions extends Model
   @timestamp: true
 
-  @create: (rock, spec, rockspec_url, rock_url, arch="rockspec") =>
-    if @check_unique_constraint rock_id: rock.id, version_name: spec.version
+  @create: (mod, spec, rockspec_url) =>
+    if @check_unique_constraint module_id: mod.id, version_name: spec.version
       return nil, "This version is already uploaded"
 
     Model.create @, {
-      rock_id: rock.id
+      module_id: mod.id
       version_name: spec.version
-      :arch, :rockspec_url, :rock_url
+      :rockspec_url
     }
 
-class Rocks extends Model
+class Modules extends Model
   @timestamp: true
 
   -- spec: parsed rockspec
@@ -73,7 +73,7 @@ class Rocks extends Model
     description = spec.description or {}
 
     if @check_unique_constraint user_id: user.id, name: spec.package
-      return nil, "Rock already exists"
+      return nil, "Module already exists"
 
     Model.create @, {
       user_id: user.id
@@ -87,4 +87,4 @@ class Rocks extends Model
       homepage: description.homepage
     }
 
-{ :Users, :Rocks, :Versions }
+{ :Users, :Modules, :Versions }

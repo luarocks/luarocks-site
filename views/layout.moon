@@ -32,6 +32,6 @@ class Layout extends Widget
             @content_for "inner"
 
         div class: "footer", ->
-          a href: @url_for"rocks", "Rocks"
+          a href: @url_for"modules", "Modules"
 
 

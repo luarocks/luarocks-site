@@ -2,29 +2,29 @@ import Widget from require "lapis.html"
 
 require "moon"
 
-class Rocks extends Widget
+class Modules extends Widget
   content: =>
     h2 ->
-      text "All Rocks"
+      text "All Modules"
       text " "
-      span class: "rock_count", "(#{#@rocks})"
+      span class: "rock_count", "(#{#@modules})"
 
     div class: "rock_list", ->
-      for rock in *@rocks
+      for mod in *@modules
         div class: "rock_row", ->
           div class: "main", ->
             a {
               class: "title",
-              href: @url_for("rock", user: rock.user.slug, rock: rock.name)
-            }, rock.name
+              href: @url_for("module", user: mod.user.slug, module: mod.name)
+            }, mod.name
 
             span class: "author", ->
               text " ("
-              a href: @url_for("user_rocks", user: rock.user.slug), rock.user.username
+              a href: @url_for("user_modules", user: mod.user.slug), mod.user.username
               text ")"
 
           div class: "summary", ->
-            text rock.summary
+            text mod.summary
 
 
 

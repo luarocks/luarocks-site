@@ -17,6 +17,11 @@ extract_options = (cols) ->
 
   cols, options
 
+entity_exists = (name) ->
+  name = db.escape_literal name
+  res = unpack db.select "COUNT(*) as c from pg_class where relname = #{name}"
+  res.c > 0
+
 create_table = (name, columns) ->
   buffer = {"CREATE TABLE IF NOT EXISTS #{db.escape_identifier name} ("}
   add = (...) -> append_all buffer, ...
@@ -36,8 +41,11 @@ create_table = (name, columns) ->
   add ");"
   db.query concat buffer
 
-
 create_index = (tname, ...) ->
+  parts = [p for p in *{tname, ...} when type(p) == "string"]
+  index_name = concat(parts, "_") .. "_idx"
+  return if entity_exists index_name
+
   columns, options = extract_options {...}
 
   buffer = {"CREATE"}
@@ -99,9 +107,9 @@ make_schema = ->
   -- }
 
   --
-  -- Rocks
+  -- Modules
   --
-  create_table "rocks", {
+  create_table "modules", {
     {"id", serial}
     {"user_id", foreign_key}
     {"name", varchar}
@@ -120,22 +128,19 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
-  create_index "rocks", "user_id"
-  create_index "rocks", "user_id", "name", unique: true
-  create_index "rocks", "downloads"
+  create_index "modules", "user_id"
+  create_index "modules", "user_id", "name", unique: true
+  create_index "modules", "downloads"
 
   --
   -- Versions
   --
   create_table "versions", {
     {"id", serial}
-    {"rock_id", foreign_key}
+    {"module_id", foreign_key}
 
     {"version_name", varchar}
-    {"arch", varchar}
-
     {"rockspec_url", varchar_nullable}
-    {"rock_url", varchar_nullable}
     {"downloads", integer}
 
     {"created_at", time}
@@ -144,18 +149,36 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
-  create_index "versions", "rock_id", "version_name", unique: true
+  create_index "versions", "module_id", "version_name", unique: true
   create_index "versions", "downloads"
+
+  --
+  -- Rocks
+  --
+  create_table "rocks", {
+    {"id", serial}
+    {"version_id", foreign_key}
+    {"rock_url", varchar_nullable}
+    {"arch", varchar}
+    {"downloads", integer}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (id)"
+  }
+
+  create_index "rocks", "version_id"
 
   --
   -- Depedencies
   --
   create_table "dependencies", {
-    {"rock_id", foreign_key}
+    {"module_id", foreign_key}
     {"dependency", varchar}
     {"full_dependency", varchar}
 
-    "PRIMARY KEY (rock_id, dependency)"
+    "PRIMARY KEY (module_id, dependency)"
   }
 
   --
@@ -169,23 +192,23 @@ make_schema = ->
   }
 
   --
-  -- ManifestRocks
+  -- ManifestModules
   --
-  create_table "manifest_rocks", {
+  create_table "manifest_modules", {
     {"manifest_id", foreign_key}
-    {"rock_id", foreign_key}
-    {"rock_name", varchar}
+    {"module_id", foreign_key}
+    {"module_name", varchar}
 
-    "PRIMARY KEY (manifest_id, rock_id)"
+    "PRIMARY KEY (manifest_id, module_id)"
   }
 
-  create_index "manifest_rocks", "manifest_id", "rock_name", unique: true
+  create_index "manifest_modules", "manifest_id", "module_name", unique: true
 
 
 destroy_schema = ->
   tbls = {
-    "users", "rocks", "versions", "dependencies",
-    "manifests", "manifest_rocks"
+    "users", "modules", "versions", "rocks", "dependencies", "manifests",
+    "manifest_modules"
   }
 
   for t in *tbls

@@ -8,7 +8,7 @@ bucket = require "secret.storage_bucket"
 persist = require "luarocks.persist"
 
 import respond_to from require "lapis.application"
-import Users, Rocks, Versions from require "models"
+import Users, Modules, Versions from require "models"
 
 import concat, insert from table
 
@@ -33,24 +33,25 @@ filename_for_rockspec = (spec) ->
   "#{spec.package}-#{spec.version}.rockspec"
 
 
-render_manifest = (rocks) =>
-  rock_ids = [rock.id for rock in *rocks]
-  repository = {}
-  if next rock_ids
-    rock_ids = concat rock_ids, ", "
-    versions = Versions\select "where rock_id in (#{rock_ids})"
+render_manifest = (modules) =>
+  mod_ids = [mod.id for mod in *modules]
 
-    rock_to_versions = setmetatable {}, __index: (key) =>
+  repository = {}
+  if next mod_ids
+    mod_ids = concat mod_ids, ", "
+    versions = Versions\select "where module_id in (#{mod_ids})"
+
+    module_to_versions = setmetatable {}, __index: (key) =>
       with t = {} do @[key] = t
 
     for v in *versions
-      insert rock_to_versions[v.rock_id], v
+      insert module_to_versions[v.module_id], v
 
-    for rock in *rocks
+    for mod in *modules
       vtbl = {}
-      for v in *rock_to_versions[rock.id]
-        vtbl[v.version_name] = arch: v.arch
-      repository[rock.name] = vtbl
+      for v in *module_to_versions[mod.id]
+        vtbl[v.version_name] = arch: "rockspec"
+      repository[mod.name] = vtbl
 
   commands = {}
   modules = {}
@@ -68,14 +69,13 @@ lapis.serve class extends lapis.Application
 
   "/db/make": =>
     schema = require "schema"
-    schema.make_schema!
-    json: { status: "ok" }
+    json: { status: schema.make_schema! }
     -- out, err = db.query "select * from pg_tables where schemaname = ?", "public"
     -- json: out
 
-  [rocks: "/rocks"]: =>
-    @rocks = Rocks\select "order by name asc"
-    Users\include_in @rocks, "user_id"
+  [modules: "/modules"]: =>
+    @modules = Modules\select "order by name asc"
+    Users\include_in @modules, "user_id"
     render: true
 
   [upload_rockspec: "/upload"]: respond_to {
@@ -85,7 +85,7 @@ lapis.serve class extends lapis.Application
 
       file = assert @params.rockspec_file or false, "Missing rockspec"
       spec = assert parse_rockspec file.content
-      rock = assert Rocks\create spec, @current_user
+      mod = assert Modules\create spec, @current_user
 
       key = "#{ @current_user.id}/#{filename_for_rockspec spec}"
       out = bucket\put_file_string file.content, {
@@ -93,44 +93,42 @@ lapis.serve class extends lapis.Application
       }
 
       unless out == 200
-        rock\delete!
+        mod\delete!
         error "Failed to upload file"
 
-      version = assert Versions\create rock, spec, bucket\file_url key
+      version = assert Versions\create mod, spec, bucket\file_url key
 
-      rock.current_version_id = version.id
-      rock\update "current_version_id"
+      mod.current_version_id = version.id
+      mod\update "current_version_id"
 
-      { redirect_to: @url_for "rock", user: @current_user.slug, rock: rock.name }
+      { redirect_to: @url_for "module", user: @current_user.slug, module: mod.name }
   }
 
   [index: "/"]: => render: true
 
   [root_manifest: "/manifest"]: =>
-    render_manifest @, {} -- Rocks\select!
+    render_manifest @, {}
 
   [user_manifest: "/manifests/:user"]: =>
     user = assert Users\find(slug: @params.user), "Invalid user"
-    rocks = user\all_rocks!
+    render_manifest @, user\all_modules!
 
-    render_manifest @, rocks
-
-  [user_rocks: "/rocks/:user"]: =>
+  [user_modules: "/modules/:user"]: =>
     "profile of #{@params.user}"
 
-  [rock: "/rocks/:user/:rock"]: =>
+  [module: "/modules/:user/:module"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
-    @rock = assert Rocks\find(user_id: @user.id, name: @params.rock), "Invalid rock"
-    @versions = Versions\select "where rock_id = ? order by created_at desc", @rock.id
+    @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+    @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
 
     for v in *@versions
-      if v.id == @rock.current_version_id
+      if v.id == @module.current_version_id
         @current_version = v
 
     render: true
 
-  [rock_version: "/rocks/:user/:rock/*"]: =>
-    "look at specific version #{@params.user} #{@params.rock} #{@params.splat}"
+  [module_version: "/modules/:user/:module/*"]: =>
+    "look at specific version #{@params.user} #{@params.module} #{@params.splat}"
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
