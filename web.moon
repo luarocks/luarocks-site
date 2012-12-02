@@ -119,8 +119,13 @@ lapis.serve class extends lapis.Application
     user = assert Users\find(slug: @params.user), "Invalid user"
     render_manifest @, user\all_modules!
 
-  [user_modules: "/modules/:user"]: =>
-    "profile of #{@params.user}"
+  [user_profile: "/modules/:user"]: =>
+    @user = assert Users\find(slug: @params.user), "Invalid user"
+    @modules = Modules\select "where user_id = ? order by name asc", @user.id
+    for mod in *@modules
+      mod.user = @user
+
+    render: true
 
   [module: "/modules/:user/:module"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
@@ -133,8 +138,14 @@ lapis.serve class extends lapis.Application
 
     render: true
 
-  [module_version: "/modules/:user/:module/*"]: =>
-    "look at specific version #{@params.user} #{@params.module} #{@params.splat}"
+  [module_version: "/modules/:user/:module/:version"]: =>
+    @user = assert Users\find(slug: @params.user), "Invalid user"
+    @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+    @version = Versions\find(module_id: @module.id, version_name: @params.version), "Invalid version"
+    render: true
+
+  [upload_rock: "/modules/:user/:module/:version/upload"]: =>
+    "upload something!"
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {

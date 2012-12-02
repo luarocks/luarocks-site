@@ -45,6 +45,7 @@ a {
     color: white;
     padding: 10px;
     margin-bottom: 20px;
+    line-height: 21px;
 
     .header_inner {
         width: $site_width;
@@ -68,6 +69,7 @@ a {
 
     .user_panel {
         float: right;
+        font-size: 12px;
     }
 
     a {
@@ -108,12 +110,12 @@ a {
     }
 }
 
-.rock_count {
+.header_count {
     color: #A59E8D;
 }
 
-.rock_list {
-    .rock_row {
+.module_list {
+    .module_row {
         margin: 10px 0;
         background: white;
         padding: 5px 10px;
@@ -124,6 +126,10 @@ a {
             font-size: 13px;
             color: gray;
             a {
+                color: #444;
+                &:hover {
+                    color: #666;
+                }
             }
         }
 
@@ -131,6 +137,15 @@ a {
             color: gray;
             font-size: 13px;
             margin-top: 5px;
+        }
+
+        .downloads {
+            font-size: 13px;
+            color: gray;
+
+            .value {
+                color: #444;
+            }
         }
     }
 }
