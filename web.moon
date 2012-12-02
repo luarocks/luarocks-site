@@ -127,9 +127,17 @@ lapis.serve class extends lapis.Application
 
     render: true
 
-  [module: "/modules/:user/:module"]: =>
+  load_module = =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
     @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+    if @params.version
+      @version = assert Versions\find({
+        module_id: @module.id
+        version_name: @params.version
+      }), "Invalid version"
+
+  [module: "/modules/:user/:module"]: =>
+    load_module @
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
 
     for v in *@versions
@@ -139,12 +147,11 @@ lapis.serve class extends lapis.Application
     render: true
 
   [module_version: "/modules/:user/:module/:version"]: =>
-    @user = assert Users\find(slug: @params.user), "Invalid user"
-    @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
-    @version = Versions\find(module_id: @module.id, version_name: @params.version), "Invalid version"
+    load_module @
     render: true
 
   [upload_rock: "/modules/:user/:module/:version/upload"]: =>
+    load_module @
     "upload something!"
 
   -- need a way to combine the routes from other applications?
