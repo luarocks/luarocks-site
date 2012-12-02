@@ -32,6 +32,6 @@ class Layout extends Widget
             @content_for "inner"
 
         div class: "footer", ->
-          text "Hello!"
+          a href: @url_for"rocks", "Rocks"
 
 

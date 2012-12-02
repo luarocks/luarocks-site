@@ -47,21 +47,32 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
+class Versions extends Model
+  @timestamp: true
+
+  @create: (rock, spec, rockspec_url, rock_url, arch="source") =>
+    if @check_unique_constraint rock_id: rock.id, version_name: spec.version
+      return nil, "This version is already uploaded"
+
+    Model.create @, {
+      rock_id: rock.id
+      version_name: spec.version
+      :arch, :rockspec_url, :rock_url
+    }
 
 class Rocks extends Model
   @timestamp: true
 
-  @create: (rockspec_text, user) =>
-    fn = loadstring rockspec_text, rock
-    return nil, "Failed to parse rockspec" unless fn
-    rock = {}
-    setfenv fn, rock
-    return nil, "Failed to eval rockspec" unless pcall(fn)
-    description = rock.description or {}
+  -- spec: parsed rockspec
+  @create: (spec, user) =>
+    description = spec.description or {}
+
+    if @check_unique_constraint user_id: user.id, name: spec.package
+      return nil, "Rock already exists"
 
     Model.create @, {
       user_id: user.id
-      name: rock.package
+      name: spec.package
 
       current_version_id: -1
 
@@ -71,12 +82,4 @@ class Rocks extends Model
       homepage: description.homepage
     }
 
-    -- create the first version
-
-class Versions
-  @timestamp: true
-
-  @create: (rock, spec) ->
-
-
-{ :Users, :Rocks }
+{ :Users, :Rocks, :Versions }

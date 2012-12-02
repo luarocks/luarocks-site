@@ -6,9 +6,27 @@ lapis = require "lapis.init"
 bucket = require "secret.storage_bucket"
 
 import respond_to from require "lapis.application"
-import Users, Rocks from require "models"
+import Users, Rocks, Versions from require "models"
 
 require "moon"
+
+parse_rockspec = (text) ->
+  fn = loadstring text, rock
+  return nil, "Failed to parse rockspec" unless fn
+  spec = {}
+  setfenv fn, spec
+  return nil, "Failed to eval rockspec" unless pcall(fn)
+
+  unless spec.package
+    return nil, "Invalid rockspec (missing package)"
+
+  unless spec.version
+    return nil, "Invalid rockspec (missing version)"
+
+  spec
+
+filename_for_rockspec = (spec) ->
+  "#{spec.package}-#{spec.version}.rockspec"
 
 lapis.serve class extends lapis.Application
   layout: require "views.layout"
@@ -31,11 +49,27 @@ lapis.serve class extends lapis.Application
   [upload_rockspec: "/upload"]: respond_to {
     GET: => render: true
     POST: =>
-      file = assert @params.rockspec_file, "Missing rockspec"
-      if rock = Rocks\create file.content, @current_user
-        { redirect_to: @url_for "rock", user: @current_user.slug, rock: rock.name }
-      else
-        "<pre>" .. moon.dump rock or "FAILED"
+      assert @current_user, "Must be logged in"
+
+      file = assert @params.rockspec_file or false, "Missing rockspec"
+      spec = assert parse_rockspec file.content
+      rock = assert Rocks\create spec, @current_user
+
+      key = "#{ @current_user.id}/#{filename_for_rockspec spec}"
+      out = bucket\put_file_string file.content, {
+        :key, mimetype: "text/x-rockspec"
+      }
+
+      unless out == 200
+        rock\delete!
+        error "Failed to upload file"
+
+      version = assert Versions\create rock, spec, bucket\file_url key
+
+      rock.current_version_id = version.id
+      rock\update "current_version_id"
+
+      { redirect_to: @url_for "rock", user: @current_user.slug, rock: rock.name }
   }
 
   [index: "/"]: => render: true

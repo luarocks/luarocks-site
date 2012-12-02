@@ -130,8 +130,11 @@ make_schema = ->
   create_table "versions", {
     {"id", serial}
     {"rock_id", foreign_key}
+
     {"version_name", varchar}
-    {"rockspec_url", varchar}
+    {"arch", varchar}
+
+    {"rockspec_url", varchar_nullable}
     {"rock_url", varchar_nullable}
     {"downloads", integer}
 
