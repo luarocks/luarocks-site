@@ -80,6 +80,12 @@ lapis.serve class extends lapis.Application
   [rock: "/rocks/:user/:rock"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
     @rock = assert Rocks\find(user_id: @user.id, name: @params.rock), "Invalid rock"
+    @versions = Versions\select "where rock_id = ? order by created_at desc", @rock.id
+
+    for v in *@versions
+      if v.id == @rock.current_version_id
+        @current_version = v
+
     render: true
 
   [rock_version: "/rocks/:user/:rock/*"]: =>
