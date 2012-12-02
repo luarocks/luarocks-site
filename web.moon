@@ -33,7 +33,28 @@ filename_for_rockspec = (spec) ->
   "#{spec.package}-#{spec.version}.rockspec"
 
 
-render_manifest = (repository, commands={}, modules={}) =>
+render_manifest = (rocks) =>
+  rock_ids = [rock.id for rock in *rocks]
+  repository = {}
+  if next rock_ids
+    rock_ids = concat rock_ids, ", "
+    versions = Versions\select "where rock_id in (#{rock_ids})"
+
+    rock_to_versions = setmetatable {}, __index: (key) =>
+      with t = {} do @[key] = t
+
+    for v in *versions
+      insert rock_to_versions[v.rock_id], v
+
+    for rock in *rocks
+      vtbl = {}
+      for v in *rock_to_versions[rock.id]
+        vtbl[v.version_name] = arch: v.arch
+      repository[rock.name] = vtbl
+
+  commands = {}
+  modules = {}
+
   @res.headers["Content-type"] = "text/x-lua"
   layout: false, persist.save_from_table_to_string {
     :repository, :commands, :modules
@@ -86,23 +107,13 @@ lapis.serve class extends lapis.Application
   [index: "/"]: => render: true
 
   [root_manifest: "/manifest"]: =>
-    render_manifest @, {}
+    render_manifest @, {} -- Rocks\select!
 
   [user_manifest: "/manifests/:user"]: =>
-    @user = assert Users\find(slug: @params.user), "Invalid user"
-    @rocks = @user\all_rocks!
-    rock_ids = concat [rock.id for rock in *@rocks], ", "
-    @versions = Versions\select "where rock_id in (#{rock_ids})"
+    user = assert Users\find(slug: @params.user), "Invalid user"
+    rocks = user\all_rocks!
 
-    rock_to_versions = setmetatable {}, __index: (key) => with t = {} do @[key] = t
-    for v in *@versions
-      insert rock_to_versions[v.rock_id], v
-
-    repository = {}
-    for rock in *@rocks
-      repository[rock.name] = { v.version_name, arch: v.arch for v in *rock_to_versions[rock.id] }
-
-    render_manifest @, repository
+    render_manifest @, rocks
 
   [user_rocks: "/rocks/:user"]: =>
     "profile of #{@params.user}"
