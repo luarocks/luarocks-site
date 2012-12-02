@@ -6,7 +6,7 @@ class Layout extends Widget
       if @current_user
         span class: "login", @current_user.username
         raw " &middot; "
-        a href: @url_for"upload_rockspec", "Upload Rock"
+        a href: @url_for"upload_rockspec", "Upload Rockspec"
         raw " &middot; "
         a href: @url_for"user_logout", "Log Out"
       else
