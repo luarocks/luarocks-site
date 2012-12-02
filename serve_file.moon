@@ -9,7 +9,7 @@ import Users, Modules, Versions from require "models"
 user = Users\find(:slug)
 
 should_increment = ->
-  if agent = ngx.header.user_agent
+  if agent = ngx.var.http_user_agent
     agent = agent\lower!
     if agent\match"luasocket" or agent\match"wget"
       true

@@ -82,6 +82,7 @@ class Versions extends Model
 
   increment_download: =>
     increment_counter @, {"downloads", "rockspec_downloads"}
+    increment_counter Modules\load(id: @module_id), {"downloads"}
 
 class Modules extends Model
   @timestamp: true
