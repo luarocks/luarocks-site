@@ -2,10 +2,22 @@
 db = require "lapis.db"
 bcrypt = require "bcrypt"
 
+bucket = require "secret.storage_bucket"
+
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"
 
 local Modules, Versions, Users
+
+increment_counter = (keys, amount=1) =>
+  amount = tonumber amount
+  keys = {keys} unless type(keys) == "table"
+
+  update = {}
+  for key in *keys
+    update[key] = db.raw"#{db.escape_identifier key} + #{amount}"
+
+  db.update @@table_name!, update, @_primary_cond!
 
 class Users extends Model
   @timestamp: true
@@ -55,15 +67,21 @@ class Users extends Model
 class Versions extends Model
   @timestamp: true
 
-  @create: (mod, spec, rockspec_url) =>
+  @create: (mod, spec, rockspec_key) =>
     if @check_unique_constraint module_id: mod.id, version_name: spec.version
       return nil, "This version is already uploaded"
 
     Model.create @, {
       module_id: mod.id
       version_name: spec.version
-      :rockspec_url
+      :rockspec_key
     }
+
+  rockspec_url: =>
+    bucket\file_url @rockspec_key
+
+  increment_download: =>
+    increment_counter @, {"downloads", "rockspec_downloads"}
 
 class Modules extends Model
   @timestamp: true

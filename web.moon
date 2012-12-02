@@ -49,8 +49,12 @@ render_manifest = (modules) =>
 
     for mod in *modules
       vtbl = {}
+
       for v in *module_to_versions[mod.id]
-        vtbl[v.version_name] = arch: "rockspec"
+        rtbl = {}
+        insert rtbl, arch: "rockspec"
+        vtbl[v.version_name] = rtbl
+
       repository[mod.name] = vtbl
 
   commands = {}
@@ -87,7 +91,7 @@ lapis.serve class extends lapis.Application
       spec = assert parse_rockspec file.content
       mod = assert Modules\create spec, @current_user
 
-      key = "#{ @current_user.id}/#{filename_for_rockspec spec}"
+      key = "#{@current_user.id}/#{filename_for_rockspec spec}"
       out = bucket\put_file_string file.content, {
         :key, mimetype: "text/x-rockspec"
       }
@@ -96,7 +100,7 @@ lapis.serve class extends lapis.Application
         mod\delete!
         error "Failed to upload file"
 
-      version = assert Versions\create mod, spec, bucket\file_url key
+      version = assert Versions\create mod, spec, key
 
       mod.current_version_id = version.id
       mod\update "current_version_id"
@@ -109,7 +113,9 @@ lapis.serve class extends lapis.Application
   [root_manifest: "/manifest"]: =>
     render_manifest @, {}
 
-  [user_manifest: "/manifests/:user"]: =>
+  "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
+
+  [user_manifest: "/manifests/:user/manifest"]: =>
     user = assert Users\find(slug: @params.user), "Invalid user"
     render_manifest @, user\all_modules!
 

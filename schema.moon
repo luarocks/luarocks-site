@@ -140,8 +140,9 @@ make_schema = ->
     {"module_id", foreign_key}
 
     {"version_name", varchar}
-    {"rockspec_url", varchar_nullable}
+    {"rockspec_key", varchar}
     {"downloads", integer}
+    {"rockspec_downloads", integer}
 
     {"created_at", time}
     {"updated_at", time}
@@ -151,6 +152,7 @@ make_schema = ->
 
   create_index "versions", "module_id", "version_name", unique: true
   create_index "versions", "downloads"
+  create_index "versions", "rockspec_key", unique: true
 
   --
   -- Rocks
@@ -158,7 +160,7 @@ make_schema = ->
   create_table "rocks", {
     {"id", serial}
     {"version_id", foreign_key}
-    {"rock_url", varchar_nullable}
+    {"rock_key", varchar}
     {"arch", varchar}
     {"downloads", integer}
 
@@ -169,6 +171,7 @@ make_schema = ->
   }
 
   create_index "rocks", "version_id"
+  create_index "rocks", "rock_key", unique: true
 
   --
   -- Depedencies
