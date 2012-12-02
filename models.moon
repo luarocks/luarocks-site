@@ -5,6 +5,8 @@ bcrypt = require "bcrypt"
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"
 
+local Rocks, Versions, Users
+
 class Users extends Model
   @timestamp: true
 
@@ -47,10 +49,13 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
+  all_rocks: =>
+    Rocks\select "where user_id = ?", @id
+
 class Versions extends Model
   @timestamp: true
 
-  @create: (rock, spec, rockspec_url, rock_url, arch="source") =>
+  @create: (rock, spec, rockspec_url, rock_url, arch="rockspec") =>
     if @check_unique_constraint rock_id: rock.id, version_name: spec.version
       return nil, "This version is already uploaded"
 

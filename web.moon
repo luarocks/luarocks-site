@@ -5,8 +5,12 @@ db = require "lapis.nginx.postgres"
 lapis = require "lapis.init"
 bucket = require "secret.storage_bucket"
 
+persist = require "luarocks.persist"
+
 import respond_to from require "lapis.application"
 import Users, Rocks, Versions from require "models"
+
+import concat, insert from table
 
 require "moon"
 
@@ -27,6 +31,13 @@ parse_rockspec = (text) ->
 
 filename_for_rockspec = (spec) ->
   "#{spec.package}-#{spec.version}.rockspec"
+
+
+render_manifest = (repository, commands={}, modules={}) =>
+  @res.headers["Content-type"] = "text/x-lua"
+  layout: false, persist.save_from_table_to_string {
+    :repository, :commands, :modules
+  }
 
 lapis.serve class extends lapis.Application
   layout: require "views.layout"
@@ -73,6 +84,25 @@ lapis.serve class extends lapis.Application
   }
 
   [index: "/"]: => render: true
+
+  [root_manifest: "/manifest"]: =>
+    render_manifest @, {}
+
+  [user_manifest: "/manifests/:user"]: =>
+    @user = assert Users\find(slug: @params.user), "Invalid user"
+    @rocks = @user\all_rocks!
+    rock_ids = concat [rock.id for rock in *@rocks], ", "
+    @versions = Versions\select "where rock_id in (#{rock_ids})"
+
+    rock_to_versions = setmetatable {}, __index: (key) => with t = {} do @[key] = t
+    for v in *@versions
+      insert rock_to_versions[v.rock_id], v
+
+    repository = {}
+    for rock in *@rocks
+      repository[rock.name] = { v.version_name, arch: v.arch for v in *rock_to_versions[rock.id] }
+
+    render_manifest @, repository
 
   [user_rocks: "/rocks/:user"]: =>
     "profile of #{@params.user}"
@@ -128,22 +158,6 @@ lapis.serve class extends lapis.Application
           li ->
             a href: bucket\file_url(thing.key), thing.key
             text " (#{thing.size}) #{thing.last_modified}"
-
-  [upload_file: "/upload/post"]: =>
-    file = @params.some_file
-    error "missing file" unless file
-
-    out = bucket\put_file_string file.content, {
-      key: file.filename
-      mimetype: file["content-type"]
-    }
-
-    if out == 200
-      redirect_to: @url_for"files"
-    else
-      @html ->
-        h2 "Upload Failed"
-        pre out
 
   [dump: "/dump"]: =>
     require "moon"
