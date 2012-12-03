@@ -214,4 +214,27 @@ a {
     }
 }
 
+.form {
+    .row {
+        margin: 5px 0;
+
+        label {
+            display: inline-block;
+            margin-right: 10px;
+            width: 150px;
+            font-size: 14px;
+            text-align: right;
+            color: #857261;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"] {
+            border: 1px solid #BBB3A6;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
+            border-radius: 2px;
+            padding: 4px;
+        }
+    }
+
+}
+
 

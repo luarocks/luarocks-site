@@ -3,7 +3,7 @@ import Widget from require "lapis.html"
 class extends Widget
   content: =>
     h2 "Login"
-    form action: @url_for"user_login", method: "POST", ->
+    form action: @url_for"user_login", method: "POST", class: "form", ->
 
       div class: "row", ->
         label for: "username_field", "Username"

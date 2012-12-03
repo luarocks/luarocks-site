@@ -8,12 +8,11 @@ bucket = require "secret.storage_bucket"
 persist = require "luarocks.persist"
 
 import respond_to from require "lapis.application"
+import validate from require "lapis.validate"
 import escape_pattern from require "lapis.util"
 import Users, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
 
 import concat, insert from table
-
-require "moon"
 
 parse_rockspec = (text) ->
   fn = loadstring text, rock
@@ -299,10 +298,22 @@ lapis.serve class extends lapis.Application
   [user_register: "/register"]: respond_to {
     GET: => render: true
     POST: =>
-      require "moon"
-      @html ->
-        text "dump:"
-        pre moon.dump @params
+      @errors = validate @params, {
+        { "username", exists: true, min_length: 2, max_length: 25 }
+        { "password", exists: true, min_length: 2 }
+        { "password_repeat", equals: @params.password }
+        { "email", exists: true, min_length: 3 }
+      }
+
+      unless @errors
+        {:username, :password, :email } = @params
+        user, err = Users\create username, password, email
+        @errors = { err } unless user
+
+      if @errors
+        { render: "user_register" }
+      else
+        { redirect_to: @url_for"index" }
   }
 
   -- TODO: make this post
