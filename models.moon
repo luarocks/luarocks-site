@@ -84,6 +84,9 @@ class Versions extends Model
   rockspec_url: =>
     bucket\file_url @rockspec_key
 
+  filename: =>
+    @rockspec_key\match "/([^/]*)$"
+
   increment_download: =>
     increment_counter @, {"downloads", "rockspec_downloads"}
     increment_counter Modules\load(id: @module_id), {"downloads"}
@@ -100,6 +103,12 @@ class Rocks extends Model
       version_id: version.id
       :arch, :rock_key
     }
+
+  filename: =>
+    @rock_key\match "/([^/]*)$"
+
+  rock_url: =>
+    bucket\file_url @rock_key
 
 class Modules extends Model
   @timestamp: true
