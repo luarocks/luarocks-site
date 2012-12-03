@@ -131,7 +131,7 @@ class Modules extends Model
   url_key: (name) => @name
 
   allowed_to_edit: (user) =>
-    user and user.id == @user_id or user\is_admin!
+    user and (user.id == @user_id or user\is_admin!)
 
   all_manifests: =>
     assocs = ManifestModules\select "where module_id = ?", @id
