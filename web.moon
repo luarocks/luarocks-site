@@ -164,7 +164,7 @@ lapis.serve class extends lapis.Application
   load_manifest = (key="id") =>
     @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
 
-  assert_editable = (thing) ->
+  assert_editable = (thing) =>
     unless thing\allowed_to_edit @current_user
       error "Don't have permission to edit"
 
@@ -188,12 +188,12 @@ lapis.serve class extends lapis.Application
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
     GET: =>
       load_module @
-      assert_editable @module
+      assert_editable @, @module
       render: true
 
     POST: =>
       load_module @
-      assert_editable @module
+      assert_editable @, @module
 
       file = assert @params.rock_file or false, "Missing rock"
       rock_info = assert parse_rock_fname @module.name, file.filename
@@ -216,7 +216,7 @@ lapis.serve class extends lapis.Application
   [add_to_manifest: "/add_to_manifest/:user/:module"]: respond_to {
     GET: =>
       load_module @
-      assert_editable @module
+      assert_editable @, @module
 
       already_in = { m.id, true for m in *@module\all_manifests! }
       @manifests = for m in *Manifests\select!
@@ -227,7 +227,7 @@ lapis.serve class extends lapis.Application
 
     POST: =>
       load_module @
-      assert_editable @module
+      assert_editable @, @module
 
       manifest_id = assert @params.manifest_id, "Missing manifest_id"
       manifest = assert Manifests\find(id: manifest_id), "Invalid manifest id"
@@ -244,7 +244,7 @@ lapis.serve class extends lapis.Application
     GET: =>
       load_module @
       load_manifest @
-      assert_editable @module
+      assert_editable @, @module
 
       assert ManifestModules\find({
         manifest_id: @manifest.id
@@ -256,7 +256,7 @@ lapis.serve class extends lapis.Application
     POST: =>
       load_module @
       load_manifest @
-      assert_editable @module
+      assert_editable @, @module
 
       ManifestModules\remove @manifest, @module
       redirect_to: @url_for("module", @)
