@@ -35,6 +35,8 @@ class Layout extends Widget
           div class: "right", ->
             text "by "
             a href: "http://twitter.com/moonscript", "@moonscript"
+            raw " &middot; "
+            a href: "http://github.com/leafo/moonrocks-site", "Source"
 
           a href: @url_for("index"), "Home"
           raw " &middot; "
@@ -42,6 +44,6 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for"modules", "Modules"
           raw " &middot; "
-          a href: "", "About"
+          a href: @url_for"about", "About"
 
 

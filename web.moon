@@ -296,6 +296,8 @@ lapis.serve class extends lapis.Application
     @session.user = false
     redirect_to: "/"
 
+  [about: "/about"]: => render: true
+
   --
 
   [files: "/files"]: =>
