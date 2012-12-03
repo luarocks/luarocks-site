@@ -1,10 +1,14 @@
 
-import Widget from require "lapis.html"
-class extends Widget
+class UserLogin extends require "widgets.base"
   content: =>
     h2 "Login"
-    form action: @url_for"user_login", method: "POST", class: "form", ->
+    if @errors
+      div "Errors:"
+      ul ->
+        for e in *@errors
+          li e
 
+    form action: @url_for"user_login", method: "POST", class: "form", ->
       div class: "row", ->
         label for: "username_field", "Username"
         input type: "text", name: "username", id: "username_field"

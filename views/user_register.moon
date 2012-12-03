@@ -1,7 +1,5 @@
 
-import Widget from require "lapis.html"
-
-class extends Widget
+class UserRegister extends require "widgets.base"
   content: =>
     h2 "Register"
     if @errors

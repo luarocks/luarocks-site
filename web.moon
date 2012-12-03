@@ -286,13 +286,22 @@ lapis.serve class extends lapis.Application
   [user_login: "/login"]: respond_to {
     GET: => render: true
     POST: =>
-      user, err = Users\login @params.username, @params.password
+      @errors = validate @params, {
+        { "username", exists: true }
+        { "password", exists: true }
+      }
 
-      if user
-        user\write_session @
-        return redirect_to: "/"
+      local user
+      unless @errors
+        user, err = Users\login @params.username, @params.password
+        @errors = { err } unless user
 
-      @html -> text err
+      if @errors
+        return { render: "user_login" }
+
+      user\write_session @
+      redirect_to: @url_for"index"
+
   }
 
   [user_register: "/register"]: respond_to {
@@ -311,9 +320,9 @@ lapis.serve class extends lapis.Application
         @errors = { err } unless user
 
       if @errors
-        { render: "user_register" }
-      else
-        { redirect_to: @url_for"index" }
+        return { render: "user_register" }
+
+      redirect_to: @url_for"index"
   }
 
   -- TODO: make this post
