@@ -333,19 +333,18 @@ lapis.serve class extends lapis.Application
   [about: "/about"]: => render: true
 
   --
+  -- [files: "/files"]: =>
+  --   @html ->
+  --     h2 "Files"
+  --     ol ->
+  --       for thing in *bucket\list!
+  --         li ->
+  --           a href: bucket\file_url(thing.key), thing.key
+  --           text " (#{thing.size}) #{thing.last_modified}"
 
-  [files: "/files"]: =>
-    @html ->
-      h2 "Files"
-      ol ->
-        for thing in *bucket\list!
-          li ->
-            a href: bucket\file_url(thing.key), thing.key
-            text " (#{thing.size}) #{thing.last_modified}"
-
-  [dump: "/dump"]: =>
-    require "moon"
-    @html ->
-      text "#{@req.cmd_mth}:"
-      pre moon.dump @params
+  -- [dump: "/dump"]: =>
+  --   require "moon"
+  --   @html ->
+  --     text "#{@req.cmd_mth}:"
+  --     pre moon.dump @params
 
