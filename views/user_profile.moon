@@ -8,7 +8,7 @@ class extends require "widgets.base"
 
 
     pre class: "manifest_source", ->
-      text "luarocks install --source=#{@user\source_url @} <name>"
+      text "luarocks install --server=#{@user\source_url @} <name>"
     
     @render_modules @modules
 

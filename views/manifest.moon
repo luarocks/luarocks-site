@@ -7,7 +7,7 @@ class Manifest extends require "widgets.base"
       span class: "header_count", "(#{#@modules})"
 
     pre class: "manifest_source", ->
-      text "luarocks install --source=#{@manifest\source_url @} <name>"
+      text "luarocks install --server=#{@manifest\source_url @} <name>"
 
     @render_modules @modules
 

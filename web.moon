@@ -141,7 +141,7 @@ lapis.serve class extends lapis.Application
   }
 
   [index: "/"]: =>
-    @recent_modules = Modules\select "order by created_at limit 5"
+    @recent_modules = Modules\select "order by created_at desc limit 5"
     Users\include_in @recent_modules, "user_id"
     @popular_modules = Modules\select "order by downloads desc limit 5"
     Users\include_in @popular_modules, "user_id"
