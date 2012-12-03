@@ -9,7 +9,7 @@ persist = require "luarocks.persist"
 
 import respond_to from require "lapis.application"
 import escape_pattern from require "lapis.util"
-import Users, Modules, Versions, Rocks from require "models"
+import Users, Modules, Versions, Rocks, Manifests from require "models"
 
 import concat, insert from table
 
@@ -95,9 +95,9 @@ lapis.serve class extends lapis.Application
 
   "/db/make": =>
     schema = require "schema"
-    json: { status: schema.make_schema! }
-    -- out, err = db.query "select * from pg_tables where schemaname = ?", "public"
-    -- json: out
+    schema.make_schema!
+    Manifests\create "root", true
+    json: { status: "ok" }
 
   [modules: "/modules"]: =>
     @modules = Modules\select "order by name asc"
@@ -133,7 +133,8 @@ lapis.serve class extends lapis.Application
   [index: "/"]: => render: true
 
   [root_manifest: "/manifest"]: =>
-    render_manifest @, {}
+    all_modules = Modules\select!
+    render_manifest @, all_modules
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 

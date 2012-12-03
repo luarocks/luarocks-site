@@ -71,6 +71,7 @@ make_schema = ->
   time = "timestamp without time zone NOT NULL"
   integer = "integer NOT NULL DEFAULT 0"
   foreign_key = "integer NOT NULL"
+  boolean = "boolean NOT NULL"
 
   --
   -- Users
@@ -190,8 +191,22 @@ make_schema = ->
   create_table "manifests", {
     {"id", serial}
     {"name", varchar}
+    {"is_open", boolean} -- anyone can put a rock in it
 
     "PRIMARY KEY (id)"
+  }
+
+  create_index "manifests", "name", unique: true
+
+  --
+  -- ManifestAdmins
+  --
+  create_table "manifest_admins", {
+    {"user_id", foreign_key}
+    {"manifest_id", foreign_key}
+    {"is_owner", boolean}
+
+    "PRIMARY KEY (user_id, manifest_id)"
   }
 
   --

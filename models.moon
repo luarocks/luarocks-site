@@ -66,6 +66,8 @@ class Users extends Model
   all_modules: =>
     Modules\select "where user_id = ?", @id
 
+  is_admin: => @flags == 1
+
 class Versions extends Model
   @timestamp: true
 
@@ -135,6 +137,43 @@ class Modules extends Model
   url_key: (name) => @name
 
   user_can_edit: (user) =>
-    user and user.id == @user_id or user.flags == 1
+    user and user.id == @user_id or user\is_admin!
 
-{ :Users, :Modules, :Versions, :Rocks }
+class ManifestAdmins extends Model
+  @create: (manifest, user, is_owner=false) =>
+    Model.create @ {
+      manifest_id: manifest.id
+      user_id: user.id
+      :is_owner
+    }
+
+  @remove: (manifest, user) =>
+    assert user.id and manifest.id, "Missing user/manifest"
+    db.delete @@table_name!, {
+      manifest_id: manifest.id
+      user_id: user.id
+    }
+
+class ManifestModules extends Model
+  @create: (manifest, mod) ->
+    if @check_unique_constraint manifest_id: manifest.id, module_name: mod.name
+      return nil, "Manifest already has a module named `#{mod.name}`"
+
+  @remove: (manifest, mod) ->
+    assert mod.id and manifest.id, "Missing module/manifest"
+    db.delete @@table_name!, {
+      manifest_id: manifest.id
+      module_id: mod.id
+    }
+
+class Manifests extends Model
+  @create: (name, is_open=false) =>
+    if @check_unique_constraint "name", name
+      return nil, "Manifest name already taken"
+
+    Model.create @, { :name, :is_open }
+
+{
+  :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins
+  :ManifestModules
+}
