@@ -87,9 +87,9 @@ class Versions extends Model
 
   url: => bucket\file_url @rockspec_key
 
-  increment_download: =>
-    increment_counter @, {"downloads", "rockspec_downloads"}
-    increment_counter Modules\load(id: @module_id), {"downloads"}
+  increment_download: (counters={"downloads", "rockspec_downloads"}) =>
+    increment_counter @, counters
+    increment_counter Modules\load(id: @module_id), "downloads"
 
 class Rocks extends Model
   @timestamp: true
@@ -105,6 +105,11 @@ class Rocks extends Model
     }
 
   url: => bucket\file_url @rock_key
+
+  increment_download: =>
+    increment_counter @, "downloads"
+    version = @version or Versions\find id: @version_id
+    version\increment_download {"downloads"}
 
 class Modules extends Model
   @timestamp: true

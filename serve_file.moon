@@ -51,6 +51,9 @@ else
     ]], manifest.id, file
 
 assert object
-object\increment_download! if object.increment_download
+
+if object.increment_download and should_increment!
+  object\increment_download!
+
 ngx.var._url = object\url!
 
