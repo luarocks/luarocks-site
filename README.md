@@ -59,7 +59,10 @@ Now just run
 
     ./start-server.sh
 
-And check your browser at `http://localhost:8080`.
+
+To build the initial database, go to `http://localhost:8080/db/make`.
+
+Now `http://localhost:8080` should load.
 
 ### Why Tup?
 
