@@ -9,7 +9,7 @@ persist = require "luarocks.persist"
 
 import respond_to from require "lapis.application"
 import escape_pattern from require "lapis.util"
-import Users, Modules, Versions, Rocks, Manifests from require "models"
+import Users, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
 
 import concat, insert from table
 
@@ -153,6 +153,8 @@ lapis.serve class extends lapis.Application
   load_module = =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
     @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+    @module.user = @user
+
     if @params.version
       @version = assert Versions\find({
         module_id: @module.id
@@ -178,13 +180,13 @@ lapis.serve class extends lapis.Application
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
     GET: =>
       load_module @
-      unless @module\user_can_edit @current_user
+      unless @module\allowed_to_edit @current_user
         error "Don't have permission to edit module"
       render: true
 
     POST: =>
       load_module @
-      unless @module\user_can_edit @current_user
+      unless @module\allowed_to_edit @current_user
         error "Don't have permission to edit module"
 
       file = assert @params.rock_file or false, "Missing rock"
@@ -203,6 +205,29 @@ lapis.serve class extends lapis.Application
 
       Rocks\create @version, rock_info.arch, key
       redirect_to: @url_for "module_version", @
+  }
+
+  [add_to_manifest: "/add_to_manifest/:user/:module"]: respond_to {
+    GET: =>
+      load_module @
+
+      already_in = { m.id, true for m in *@module\all_manifests! }
+      @manifests = for m in *Manifests\select!
+        continue if already_in[m.id]
+        m
+
+      render: true
+
+    POST: =>
+      load_module @
+      manifest_id = assert @params.manifest_id, "Missing manifest_id"
+      manifest = assert Manifests\find(id: manifest_id), "Invalid manifest id"
+
+      unless manifest\allowed_to_add @current_user
+        error "Don't have permission to add to manifest"
+
+      assert ManifestModules\create manifest, @module
+      redirect_to: @url_for("module", @)
   }
 
   -- need a way to combine the routes from other applications?

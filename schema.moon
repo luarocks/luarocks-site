@@ -221,7 +221,7 @@ make_schema = ->
   }
 
   create_index "manifest_modules", "manifest_id", "module_name", unique: true
-
+  create_index "manifest_modules", "module_id"
 
 destroy_schema = ->
   tbls = {

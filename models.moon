@@ -6,8 +6,9 @@ bucket = require "secret.storage_bucket"
 
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"
+import concat from table
 
-local Modules, Versions, Users, Rocks
+local Modules, Versions, Users, Rocks, Manifests, ManifestModules, ManifestAdmins
 
 increment_counter = (keys, amount=1) =>
   amount = tonumber amount
@@ -136,10 +137,21 @@ class Modules extends Model
 
   url_key: (name) => @name
 
-  user_can_edit: (user) =>
+  allowed_to_edit: (user) =>
     user and user.id == @user_id or user\is_admin!
 
+  all_manifests: =>
+    assocs = ManifestModules\select "where module_id = ?", @id
+    manifest_ids = [db.escape_literal(a.manifest_id) for a in *assocs]
+
+    if next manifest_ids
+      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name"
+    else
+      {}
+
 class ManifestAdmins extends Model
+  @primary_key: {"user_id", "manifest_id"}
+
   @create: (manifest, user, is_owner=false) =>
     Model.create @ {
       manifest_id: manifest.id
@@ -155,11 +167,19 @@ class ManifestAdmins extends Model
     }
 
 class ManifestModules extends Model
-  @create: (manifest, mod) ->
+  @primary_key: {"manifest_id", "module_id"}
+
+  @create: (manifest, mod) =>
     if @check_unique_constraint manifest_id: manifest.id, module_name: mod.name
       return nil, "Manifest already has a module named `#{mod.name}`"
 
-  @remove: (manifest, mod) ->
+    Model.create @, {
+      manifest_id: manifest.id
+      module_id: mod.id
+      module_name: mod.name
+    }
+
+  @remove: (manifest, mod) =>
     assert mod.id and manifest.id, "Missing module/manifest"
     db.delete @@table_name!, {
       manifest_id: manifest.id
@@ -172,6 +192,11 @@ class Manifests extends Model
       return nil, "Manifest name already taken"
 
     Model.create @, { :name, :is_open }
+
+  allowed_to_add: (user) =>
+    return false unless user
+    return true if @is_open or user\is_admin!
+    ManifestAdmins\find user_id: user.id, manifest_id: @id
 
 {
   :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins

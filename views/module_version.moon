@@ -24,7 +24,7 @@ class ModuleVersion extends require "widgets.base"
     a href: @url_for("module", user: @user.slug, module: @module.name), "Back To Module"
 
   admin_panel: =>
-    return unless @module\user_can_edit @current_user
+    return unless @module\allowed_to_edit @current_user
 
     div class: "admin_tools", ->
       span class: "label", "Admin: "
