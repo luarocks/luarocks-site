@@ -7,7 +7,7 @@ bucket = require "secret.storage_bucket"
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"
 
-local Modules, Versions, Users
+local Modules, Versions, Users, Rocks
 
 increment_counter = (keys, amount=1) =>
   amount = tonumber amount
@@ -52,6 +52,8 @@ class Users extends Model
       if user\salt! == user_session.key
         user
 
+  url_key: (name) => @slug
+
   write_session: (r) =>
     r.session.user = {
       id: @id
@@ -77,12 +79,27 @@ class Versions extends Model
       :rockspec_key
     }
 
+  url_key: (name) => @version_name
+
   rockspec_url: =>
     bucket\file_url @rockspec_key
 
   increment_download: =>
     increment_counter @, {"downloads", "rockspec_downloads"}
     increment_counter Modules\load(id: @module_id), {"downloads"}
+
+
+class Rocks extends Model
+  @timestamp: true
+
+  @create: (version, arch, rock_key) =>
+    if @check_unique_constraint { version_id: version.id, :arch }
+      return nil, "Rock already exists"
+
+    Model.create @, {
+      version_id: version.id
+      :arch, :rock_key
+    }
 
 class Modules extends Model
   @timestamp: true
@@ -106,4 +123,9 @@ class Modules extends Model
       homepage: description.homepage
     }
 
-{ :Users, :Modules, :Versions }
+  url_key: (name) => @name
+
+  user_can_edit: (user) =>
+    user and user.id == @user_id or user.flags == 1
+
+{ :Users, :Modules, :Versions, :Rocks }

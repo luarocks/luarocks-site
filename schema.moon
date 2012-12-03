@@ -170,7 +170,7 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
-  create_index "rocks", "version_id"
+  create_index "rocks", "version_id", "arch", unique: true
   create_index "rocks", "rock_key", unique: true
 
   --

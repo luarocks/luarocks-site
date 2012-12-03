@@ -8,7 +8,8 @@ bucket = require "secret.storage_bucket"
 persist = require "luarocks.persist"
 
 import respond_to from require "lapis.application"
-import Users, Modules, Versions from require "models"
+import escape_pattern from require "lapis.util"
+import Users, Modules, Versions, Rocks from require "models"
 
 import concat, insert from table
 
@@ -32,6 +33,12 @@ parse_rockspec = (text) ->
 filename_for_rockspec = (spec) ->
   "#{spec.package}-#{spec.version}.rockspec"
 
+parse_rock_fname = (module_name, fname) ->
+  version, arch = fname\match "^#{escape_pattern(module_name)}%-(.-)%.([^.]+)%.rock$"
+  unless version
+    nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
+
+  { :version, :arch }
 
 render_manifest = (modules) =>
   mod_ids = [mod.id for mod in *modules]
@@ -98,7 +105,7 @@ lapis.serve class extends lapis.Application
 
       unless out == 200
         mod\delete!
-        error "Failed to upload file"
+        error "Failed to upload rockspec"
 
       version = assert Versions\create mod, spec, key
 
@@ -148,11 +155,39 @@ lapis.serve class extends lapis.Application
 
   [module_version: "/modules/:user/:module/:version"]: =>
     load_module @
+    @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
+
     render: true
 
-  [upload_rock: "/modules/:user/:module/:version/upload"]: =>
-    load_module @
-    "upload something!"
+  [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
+    GET: =>
+      load_module @
+      unless @module\user_can_edit @current_user
+        error "Don't have permission to edit module"
+      render: true
+
+    POST: =>
+      load_module @
+      unless @module\user_can_edit @current_user
+        error "Don't have permission to edit module"
+
+      file = assert @params.rock_file or false, "Missing rock"
+      rock_info = assert parse_rock_fname @module.name, file.filename
+
+      if rock_info.version != @version.version_name
+        error "Rock doesn't match version #{@version.version_name}"
+
+      key = "#{@current_user.id}/#{file.filename}"
+      out = bucket\put_file_string file.content, {
+        :key, mimetype: "application/x-rock"
+      }
+
+      unless out == 200
+        error "Failed to upload rock"
+
+      Rocks\create @version, rock_info.arch, key
+      redirect_to: @url_for "module_version", @
+  }
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
