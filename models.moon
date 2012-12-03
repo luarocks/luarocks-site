@@ -69,6 +69,8 @@ class Users extends Model
 
   is_admin: => @flags == 1
 
+  source_url: (r) => r\build_url "/manifests/#{@slug}"
+
 class Versions extends Model
   @timestamp: true
 
