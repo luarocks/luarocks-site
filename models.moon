@@ -145,7 +145,7 @@ class Modules extends Model
     manifest_ids = [db.escape_literal(a.manifest_id) for a in *assocs]
 
     if next manifest_ids
-      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name"
+      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name asc"
     else
       {}
 

@@ -164,6 +164,7 @@ lapis.serve class extends lapis.Application
   [module: "/modules/:user/:module"]: =>
     load_module @
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
+    @manifests = @module\all_manifests!
 
     for v in *@versions
       if v.id == @module.current_version_id
