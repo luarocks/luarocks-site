@@ -15,5 +15,8 @@ tar -c $(find secret/* | grep -v "Tup\|moon$") | tar -C "$BUILD_DIR" -x
 # copy assets
 tar -c $(find static/* | grep -v "Tup\|coffee$\|scss$") | tar -C "$BUILD_DIR" -x
 
+# strip lua_code_cache
+cat nginx.conf | grep -v "lua_code_cache" > "$BUILD_DIR/nginx.conf"
+
 [ -d tmp_git ] && mv tmp_git "$BUILD_DIR/.git"
 
