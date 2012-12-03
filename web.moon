@@ -40,6 +40,11 @@ parse_rock_fname = (module_name, fname) ->
 
   { :version, :arch }
 
+
+default_table = ->
+  setmetatable {}, __index: (key) =>
+    with t = {} do @[key] = t
+
 render_manifest = (modules) =>
   mod_ids = [mod.id for mod in *modules]
 
@@ -48,8 +53,15 @@ render_manifest = (modules) =>
     mod_ids = concat mod_ids, ", "
     versions = Versions\select "where module_id in (#{mod_ids})"
 
-    module_to_versions = setmetatable {}, __index: (key) =>
-      with t = {} do @[key] = t
+    module_to_versions = default_table!
+    version_to_rocks = default_table!
+
+    version_ids = [v.id for v in *versions]
+    if next version_ids
+      version_ids = concat version_ids, ", "
+      rocks = Rocks\select "where version_id in (#{version_ids})"
+      for rock in *rocks
+        insert version_to_rocks[rock.version_id], rock
 
     for v in *versions
       insert module_to_versions[v.module_id], v
@@ -60,6 +72,9 @@ render_manifest = (modules) =>
       for v in *module_to_versions[mod.id]
         rtbl = {}
         insert rtbl, arch: "rockspec"
+        for rock in *version_to_rocks[v.id]
+          insert rtbl, arch: rock.arch
+
         vtbl[v.version_name] = rtbl
 
       repository[mod.name] = vtbl
