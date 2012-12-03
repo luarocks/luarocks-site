@@ -138,7 +138,13 @@ lapis.serve class extends lapis.Application
       { redirect_to: @url_for "module", user: @current_user.slug, module: mod.name }
   }
 
-  [index: "/"]: => render: true
+  [index: "/"]: =>
+    @recent_modules = Modules\select "order by created_at limit 5"
+    Users\include_in @recent_modules, "user_id"
+    @popular_modules = Modules\select "order by downloads desc limit 5"
+    Users\include_in @popular_modules, "user_id"
+
+    render: true
 
   [root_manifest: "/manifest"]: =>
     modules = Manifests\root!\all_modules!

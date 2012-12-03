@@ -3,6 +3,7 @@ $back_color: lighten(#F0E5C9, 10%);
 $header_color: #594433;
 $site_width: 800px;
 $link_color: #FF5C00;
+$base_font_size: 16px;
 
 @mixin unselectable {
     -moz-user-select: none;
@@ -21,6 +22,23 @@ $link_color: #FF5C00;
 
 @mixin autograd($color, $amount: 10%) {
 	@include grad($color, darken($color, $amount));
+}
+
+@mixin grid_width($size, $divisions: 8, $gutter: 10px) {
+    width: #{floor($size * (($site_width - (($divisions - 1) * $gutter)) / $divisions) + ($size - 1) * $gutter)};
+}
+
+@mixin grid_cell($size, $divisions: 8, $gutter: 10px) {
+    display: inline-block;
+    vertical-align: top;
+    font-size: $base_font_size;
+
+    @include grid_width($size, $divisions, $gutter);
+    margin-right: $gutter;
+
+    &:last-child, &.last {
+        margin-right: 0;
+    }
 }
 
 body {
@@ -182,4 +200,18 @@ a {
     color: white;
     border-radius: 2px;
 }
+
+
+.home_columns {
+    font-size: 0;
+
+    .column {
+        @include grid_cell(4);
+
+        h2 {
+            margin-top: 0;
+        }
+    }
+}
+
 

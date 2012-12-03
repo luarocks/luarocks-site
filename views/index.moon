@@ -1,13 +1,14 @@
 
-import Widget from require "lapis.html"
+class Index extends require "widgets.base"
+  -- @recent_modules, @popular_modules
 
-require "moon"
-
-class Index extends Widget
   content: =>
-    text "session:"
-    pre -> text moon.dump getmetatable(@session).__index
+    div class: "home_columns", ->
+      div class: "column", ->
+        h2 "Recent Modules"
+        @render_modules @recent_modules
 
-    if @current_user
-      text "current_user:"
-      pre -> text moon.dump @current_user
+      div class: "column last", ->
+        h2 "Popular Rocks"
+        @render_modules @popular_modules
+
