@@ -79,6 +79,7 @@ class Versions extends Model
     Model.create @, {
       module_id: mod.id
       version_name: spec.version
+      rockspec_fname: rockspec_key\match "/([^/]*)$"
       :rockspec_key
     }
 
@@ -86,9 +87,6 @@ class Versions extends Model
 
   rockspec_url: =>
     bucket\file_url @rockspec_key
-
-  filename: =>
-    @rockspec_key\match "/([^/]*)$"
 
   increment_download: =>
     increment_counter @, {"downloads", "rockspec_downloads"}
@@ -104,11 +102,9 @@ class Rocks extends Model
 
     Model.create @, {
       version_id: version.id
+      rock_fname: rock_key\match "/([^/]*)$"
       :arch, :rock_key
     }
-
-  filename: =>
-    @rock_key\match "/([^/]*)$"
 
   rock_url: =>
     bucket\file_url @rock_key

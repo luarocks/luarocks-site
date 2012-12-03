@@ -1,7 +1,7 @@
 
 class ModuleVersion extends require "widgets.base"
   rock_url: (item) =>
-    "/manifests/#{@user\url_key!}/#{item\filename!}"
+    "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
   content: =>
     h2 "#{@module.name} #{@version.version_name}"
@@ -12,7 +12,7 @@ class ModuleVersion extends require "widgets.base"
       span class: "value", @format_number @version.downloads
 
 
-    h2 "Available Downloads"
+    h3 "Available Downloads"
     ul class: "rock_list", ->
       li class: "arch", ->
         a href: @rock_url(@version), "rockspec"
