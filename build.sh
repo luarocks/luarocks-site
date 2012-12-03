@@ -2,15 +2,18 @@
 
 BUILD_DIR="build"
 
-[ -d "$BUILD_DIR" ] && rm -r "$BUILD_DIR"
+[ -d "$BUILD_DIR/.git" ] && mv "$BUILD_DIR/.git" tmp_git
+[ -d "$BUILD_DIR" ] && rm -rf "$BUILD_DIR"
 mkdir "$BUILD_DIR"
 
-files=$(for file in $(git ls-files); do
-	file=$(echo $file | sed -e 's/\.moon$/.lua/')
-	if [ -z $(echo "$file" | grep "sh$") ]; then
-		echo $file
-	fi
-done)
-
+files=$(git ls-files | grep -v "sh$\|Tup\|gitignore\|coffee$\|scss$" | sed -e 's/\.moon$/.lua/')
 tar -c $files | tar -C "$BUILD_DIR" -x
+
+# copy secret
+tar -c $(find secret/* | grep -v "Tup\|moon$") | tar -C "$BUILD_DIR" -x
+
+# copy assets
+tar -c $(find static/* | grep -v "Tup\|coffee$\|scss$") | tar -C "$BUILD_DIR" -x
+
+[ -d tmp_git ] && mv tmp_git "$BUILD_DIR/.git"
 
