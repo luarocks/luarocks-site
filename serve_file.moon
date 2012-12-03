@@ -1,12 +1,14 @@
 
-slug = ngx.var[1]
-file = ngx.var[2]
+uri = ngx.var.request_uri
 
--- send request to app
-return ngx.exec "/" if file == "manifest"
+-- manifests are served by the app
+return ngx.exec "/" if uri\match "manifest/?$"
 
-import Users, Modules, Versions, Rocks from require "models"
-user = Users\find(:slug)
+import Users, Modules, Versions, Rocks, Manifests from require "models"
+
+assert = (thing) ->
+  ngx.exit 404 unless thing
+  thing
 
 should_increment = ->
   if agent = ngx.var.http_user_agent
@@ -14,17 +16,41 @@ should_increment = ->
     if agent\match"luasocket" or agent\match"wget"
       true
 
-key = "#{user.id}/#{file}"
+is_rockspec = ->
+  (uri\match "%.rockspec$")
 
-if file\match "%.rockspec$"
-  version = Versions\find rockspec_key: key
-  ngx.exit 404 unless version
+object = if uri\match "^/manifests"
+  slug = ngx.var[1]
+  file = ngx.var[2]
+  user = assert Users\find(:slug)
 
-  version\increment_download! if should_increment!
-  ngx.var._url = version\rockspec_url!
+  key = "#{user.id}/#{file}"
+
+  if is_rockspec!
+    Versions\find rockspec_key: key
+  else
+    Rocks\find rock_key: key
 else
-  rock = Rocks\find rock_key: key
-  ngx.exit 404 unless rock
+  file = ngx.var[1]
+  manifest = Manifests\root!
 
-  ngx.var._url = rock\rock_url!
+  -- TODO: do this with less complex query
+  if is_rockspec!
+    unpack Versions\select [[
+      INNER JOIN manifest_modules
+        ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
+      WHERE rockspec_fname = ?
+    ]], manifest.id, file
+  else
+    unpack Rocks\select [[
+      INNER JOIN versions
+        ON (versions.id = rocks.version_id)
+      INNER JOIN manifest_modules
+        ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
+      WHERE rock_fname = ?
+    ]], manifest.id, file
+
+assert object
+object\increment_download! if object.increment_download
+ngx.var._url = object\url!
 

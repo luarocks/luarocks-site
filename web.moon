@@ -133,8 +133,8 @@ lapis.serve class extends lapis.Application
   [index: "/"]: => render: true
 
   [root_manifest: "/manifest"]: =>
-    all_modules = Modules\select!
-    render_manifest @, all_modules
+    modules = Manifests\root!\all_modules!
+    render_manifest @, modules
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 

@@ -85,13 +85,11 @@ class Versions extends Model
 
   url_key: (name) => @version_name
 
-  rockspec_url: =>
-    bucket\file_url @rockspec_key
+  url: => bucket\file_url @rockspec_key
 
   increment_download: =>
     increment_counter @, {"downloads", "rockspec_downloads"}
     increment_counter Modules\load(id: @module_id), {"downloads"}
-
 
 class Rocks extends Model
   @timestamp: true
@@ -106,8 +104,7 @@ class Rocks extends Model
       :arch, :rock_key
     }
 
-  rock_url: =>
-    bucket\file_url @rock_key
+  url: => bucket\file_url @rock_key
 
 class Modules extends Model
   @timestamp: true
@@ -189,10 +186,22 @@ class Manifests extends Model
 
     Model.create @, { :name, :is_open }
 
+  @root: =>
+    assert Manifests\find(id: 1), "Missing root manifest"
+
   allowed_to_add: (user) =>
     return false unless user
     return true if @is_open or user\is_admin!
     ManifestAdmins\find user_id: user.id, manifest_id: @id
+
+  all_modules: =>
+    assocs = ManifestModules\select "where manifest_id = ?", @id
+    module_ids = [db.escape_literal(a.module_id) for a in *assocs]
+
+    if next module_ids
+      Modules\select "where id in (#{concat module_ids, ", "}) order by name asc"
+    else
+      {}
 
 {
   :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins

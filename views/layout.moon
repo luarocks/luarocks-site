@@ -4,7 +4,7 @@ class Layout extends Widget
   user_panel: =>
     div class: "user_panel", ->
       if @current_user
-        span class: "login", @current_user.username
+        a href: @url_for("user_profile", user: @current_user), class: "login", @current_user.username
         raw " &middot; "
         a href: @url_for"upload_rockspec", "Upload Rockspec"
         raw " &middot; "
