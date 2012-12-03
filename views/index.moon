@@ -9,6 +9,6 @@ class Index extends require "widgets.base"
         @render_modules @recent_modules
 
       div class: "column last", ->
-        h2 "Popular Rocks"
+        h2 "Popular Modules"
         @render_modules @popular_modules
 
