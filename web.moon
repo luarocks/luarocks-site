@@ -111,7 +111,13 @@ lapis.serve class extends lapis.Application
 
       file = assert @params.rockspec_file or false, "Missing rockspec"
       spec = assert parse_rockspec file.content
-      mod = assert Modules\create spec, @current_user
+
+      new_module = false
+      mod = Modules\find user_id: @current_user.id, name: spec.package
+
+      unless mod
+        new_module = true
+        mod = assert Modules\create spec, @current_user
 
       key = "#{@current_user.id}/#{filename_for_rockspec spec}"
       out = bucket\put_file_string file.content, {
@@ -119,13 +125,15 @@ lapis.serve class extends lapis.Application
       }
 
       unless out == 200
-        mod\delete!
+        mod\delete! if new_module
         error "Failed to upload rockspec"
 
-      version = assert Versions\create mod, spec, key
+      version = Versions\find module_id: mod.id, version_name: spec.version
 
-      mod.current_version_id = version.id
-      mod\update "current_version_id"
+      unless version
+        version = assert Versions\create mod, spec, key
+        mod.current_version_id = version.id
+        mod\update "current_version_id"
 
       { redirect_to: @url_for "module", user: @current_user.slug, module: mod.name }
   }
