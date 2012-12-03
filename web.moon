@@ -1,5 +1,8 @@
 
 http = require "lapis.nginx.http"
+with require "cloud_storage.http"
+  .set http
+
 db = require "lapis.nginx.postgres"
 
 lapis = require "lapis.init"
@@ -331,20 +334,4 @@ lapis.serve class extends lapis.Application
     redirect_to: "/"
 
   [about: "/about"]: => render: true
-
-  --
-  -- [files: "/files"]: =>
-  --   @html ->
-  --     h2 "Files"
-  --     ol ->
-  --       for thing in *bucket\list!
-  --         li ->
-  --           a href: bucket\file_url(thing.key), thing.key
-  --           text " (#{thing.size}) #{thing.last_modified}"
-
-  -- [dump: "/dump"]: =>
-  --   require "moon"
-  --   @html ->
-  --     text "#{@req.cmd_mth}:"
-  --     pre moon.dump @params
 
