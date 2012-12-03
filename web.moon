@@ -161,6 +161,13 @@ lapis.serve class extends lapis.Application
         version_name: @params.version
       }), "Invalid version"
 
+  load_manifest = =>
+    @manifest = assert Manifests\find(id: @params.manifest), "Invalid manifest id"
+
+  assert_editable = (thing) ->
+    unless thing\allowed_to_edit @current_user
+      error "Don't have permission to edit"
+
   [module: "/modules/:user/:module"]: =>
     load_module @
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
@@ -181,14 +188,12 @@ lapis.serve class extends lapis.Application
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
     GET: =>
       load_module @
-      unless @module\allowed_to_edit @current_user
-        error "Don't have permission to edit module"
+      assert_editable @module
       render: true
 
     POST: =>
       load_module @
-      unless @module\allowed_to_edit @current_user
-        error "Don't have permission to edit module"
+      assert_editable @module
 
       file = assert @params.rock_file or false, "Missing rock"
       rock_info = assert parse_rock_fname @module.name, file.filename
@@ -211,6 +216,7 @@ lapis.serve class extends lapis.Application
   [add_to_manifest: "/add_to_manifest/:user/:module"]: respond_to {
     GET: =>
       load_module @
+      assert_editable @module
 
       already_in = { m.id, true for m in *@module\all_manifests! }
       @manifests = for m in *Manifests\select!
@@ -221,6 +227,8 @@ lapis.serve class extends lapis.Application
 
     POST: =>
       load_module @
+      assert_editable @module
+
       manifest_id = assert @params.manifest_id, "Missing manifest_id"
       manifest = assert Manifests\find(id: manifest_id), "Invalid manifest id"
 
@@ -228,6 +236,29 @@ lapis.serve class extends lapis.Application
         error "Don't have permission to add to manifest"
 
       assert ManifestModules\create manifest, @module
+      redirect_to: @url_for("module", @)
+  }
+
+
+  [remove_from_manifest: "/remove_from_manifest/:user/:module/:manifest"]: respond_to {
+    GET: =>
+      load_module @
+      load_manifest @
+      assert_editable @module
+
+      assert ManifestModules\find({
+        manifest_id: @manifest.id
+        module_id: @module.id
+      }), "Module is not in manifest"
+
+      render: true
+
+    POST: =>
+      load_module @
+      load_manifest @
+      assert_editable @module
+
+      ManifestModules\remove @manifest, @module
       redirect_to: @url_for("module", @)
   }
 

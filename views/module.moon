@@ -18,6 +18,7 @@ class Module extends Widget
         url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
         a href: url, v.version_name
 
+    can_edit = @module\allowed_to_edit @current_user
     if next @manifests
       h3 "Manifests"
       for m in *@manifests
@@ -25,6 +26,11 @@ class Module extends Widget
           a href: "TODO", ->
             code m.name
 
+          if can_edit
+            text " ("
+            @manifest = m
+            a href: @url_for("remove_from_manifest", @), "remove"
+            text ")"
 
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user
