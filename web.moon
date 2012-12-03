@@ -161,8 +161,8 @@ lapis.serve class extends lapis.Application
         version_name: @params.version
       }), "Invalid version"
 
-  load_manifest = =>
-    @manifest = assert Manifests\find(id: @params.manifest), "Invalid manifest id"
+  load_manifest = (key="id") =>
+    @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
 
   assert_editable = (thing) ->
     unless thing\allowed_to_edit @current_user
@@ -261,6 +261,13 @@ lapis.serve class extends lapis.Application
       ManifestModules\remove @manifest, @module
       redirect_to: @url_for("module", @)
   }
+
+  [manifest: "/m/:manifest"]: =>
+    load_manifest @, "name"
+    @modules = @manifest\all_modules!
+    Users\include_in @modules, "user_id"
+
+    render: true
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {

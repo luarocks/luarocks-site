@@ -22,15 +22,17 @@ class Module extends Widget
     if next @manifests
       h3 "Manifests"
       for m in *@manifests
+        @manifest = m
         div class: "manifest_row", ->
-          a href: "TODO", ->
+          a href: @url_for("manifest", @), ->
             code m.name
 
           if can_edit
             text " ("
-            @manifest = m
             a href: @url_for("remove_from_manifest", @), "remove"
             text ")"
+
+        @manifest = nil
 
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user

@@ -108,6 +108,10 @@ a {
     a {
         color: silver;
     }
+
+    .right {
+        float: right;
+    }
 }
 
 .header_count {
@@ -169,5 +173,13 @@ a {
     a {
         color: #D1496F;
     }
+}
+
+.manifest_source {
+    background: #444;
+    padding: 8px;
+    font-size: 12px;
+    color: white;
+    border-radius: 2px;
 }
 

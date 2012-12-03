@@ -203,6 +203,14 @@ class Manifests extends Model
     else
       {}
 
+  source_url: (r) => r\build_url!
+
+  url_key: (name) =>
+    if name == "manifest"
+      @name
+    else
+      @id
+
 {
   :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins
   :ManifestModules

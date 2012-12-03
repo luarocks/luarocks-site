@@ -32,6 +32,16 @@ class Layout extends Widget
             @content_for "inner"
 
         div class: "footer", ->
+          div class: "right", ->
+            text "by "
+            a href: "http://twitter.com/moonscript", "@moonscript"
+
+          a href: @url_for("index"), "Home"
+          raw " &middot; "
+          a href: @url_for("manifest", manifest: "root"), "Root Manifest"
+          raw " &middot; "
           a href: @url_for"modules", "Modules"
+          raw " &middot; "
+          a href: "", "About"
 
 
