@@ -3,3 +3,4 @@
 logs/
 lapis
 nginx.conf.compiled
+build/
