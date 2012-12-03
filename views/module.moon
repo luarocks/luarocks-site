@@ -3,6 +3,7 @@ import Widget from require "lapis.html"
 class Module extends Widget
   content: =>
     h2 @module.name
+    @admin_panel!
 
     h3 "Author"
     a href: @url_for("user_profile", user: @user.slug), @user.username
@@ -24,4 +25,10 @@ class Module extends Widget
           a href: "TODO", ->
             code m.name
 
+
+  admin_panel: =>
+    return unless @module\allowed_to_edit @current_user
+    div class: "admin_tools", ->
+      span class: "label", "Admin: "
+      a href: @url_for("add_to_manifest", @), "Add To Manifest"
 

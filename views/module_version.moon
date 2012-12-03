@@ -28,13 +28,6 @@ class ModuleVersion extends require "widgets.base"
 
     div class: "admin_tools", ->
       span class: "label", "Admin: "
-
-      url = @url_for "upload_rock", {
-        user: @user.slug,
-        module: @module.name
-        version: @version.version_name
-      }
-
-      a href: url, "Upload Rock"
+      a href: @url_for("upload_rock", @), "Upload Rock"
 
 
