@@ -317,6 +317,7 @@ lapis.serve class extends lapis.Application
         { "email", exists: true, min_length: 3 }
       }
 
+      local user
       unless @errors
         {:username, :password, :email } = @params
         user, err = Users\create username, password, email
@@ -325,6 +326,7 @@ lapis.serve class extends lapis.Application
       if @errors
         return { render: "user_register" }
 
+      user\write_session @
       redirect_to: @url_for"index"
   }
 
