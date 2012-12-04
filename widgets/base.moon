@@ -38,6 +38,12 @@ class Base extends Widget
     error "Failed to include SSI `#{fname}`" unless res.status == 200
     raw res.body
 
+  term_snippet: (cmd) =>
+    pre class: "highlight lang_bash term_snippet", ->
+      code ->
+        span class: "nv", "$ "
+        text cmd
+
 if ... == "test"
   print Base\format_number 1
   print Base\format_number 12

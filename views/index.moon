@@ -12,3 +12,5 @@ class Index extends require "widgets.base"
         h2 "Popular Modules"
         @render_modules @popular_modules
 
+    @raw_ssi "home.html"
+
