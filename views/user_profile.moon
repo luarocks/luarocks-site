@@ -6,9 +6,7 @@ class extends require "widgets.base"
       text " "
       span class: "header_count", "(#{#@modules})"
 
-
-    pre class: "manifest_source", ->
-      text "luarocks install --server=#{@user\source_url @} <name>"
+    @term_snippet "luarocks install --server=#{@user\source_url @} <name>"
     
     @render_modules @modules
 
