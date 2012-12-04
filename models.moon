@@ -2,7 +2,7 @@
 db = require "lapis.db"
 bcrypt = require "bcrypt"
 
-bucket = require "secret.storage_bucket"
+bucket = require "storage_bucket"
 
 import Model from require "lapis.db.model"
 import slugify, underscore from require "lapis.util"

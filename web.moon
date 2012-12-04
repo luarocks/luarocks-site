@@ -6,7 +6,7 @@ with require "cloud_storage.http"
 db = require "lapis.nginx.postgres"
 
 lapis = require "lapis.init"
-bucket = require "secret.storage_bucket"
+bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
 
