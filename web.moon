@@ -102,12 +102,15 @@ lapis.serve class extends lapis.Application
     json: { status: "ok" }
 
   [modules: "/modules"]: =>
+    @title = "All Modules"
     @modules = Modules\select "order by name asc"
     Users\include_in @modules, "user_id"
     render: true
 
   [upload_rockspec: "/upload"]: respond_to {
-    GET: => render: true
+    GET: =>
+      @title = "Upload Rockspec"
+      render: true
     POST: =>
       assert @current_user, "Must be logged in"
 
@@ -160,6 +163,7 @@ lapis.serve class extends lapis.Application
 
   [user_profile: "/modules/:user"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
+    @title = "#{@user.username}'s Modules"
     @modules = Modules\select "where user_id = ? order by name asc", @user.id
     for mod in *@modules
       mod.user = @user
@@ -186,6 +190,7 @@ lapis.serve class extends lapis.Application
 
   [module: "/modules/:user/:module"]: =>
     load_module @
+    @title = "#{@module.name}"
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
     @manifests = @module\all_manifests!
 
@@ -197,6 +202,7 @@ lapis.serve class extends lapis.Application
 
   [module_version: "/modules/:user/:module/:version"]: =>
     load_module @
+    @title = "#{@module.name} #{@version.version_name}"
     @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
 
     render: true
@@ -205,6 +211,7 @@ lapis.serve class extends lapis.Application
     GET: =>
       load_module @
       assert_editable @, @module
+      @title = "Upload Rock"
       render: true
 
     POST: =>
@@ -233,6 +240,7 @@ lapis.serve class extends lapis.Application
     GET: =>
       load_module @
       assert_editable @, @module
+      @title = "Add Module To Manifest"
 
       already_in = { m.id, true for m in *@module\all_manifests! }
       @manifests = for m in *Manifests\select!
@@ -261,6 +269,7 @@ lapis.serve class extends lapis.Application
       load_module @
       load_manifest @
       assert_editable @, @module
+      @title = "Remove Module From Manifest"
 
       assert ManifestModules\find({
         manifest_id: @manifest.id
@@ -280,6 +289,7 @@ lapis.serve class extends lapis.Application
 
   [manifest: "/m/:manifest"]: =>
     load_manifest @, "name"
+    @title = "#{@manifest.name} Manifest"
     @modules = @manifest\all_modules!
     Users\include_in @modules, "user_id"
 
@@ -287,7 +297,9 @@ lapis.serve class extends lapis.Application
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
-    GET: => render: true
+    GET: =>
+      @title = "Login"
+      render: true
     POST: =>
       @errors = validate @params, {
         { "username", exists: true }
@@ -308,7 +320,9 @@ lapis.serve class extends lapis.Application
   }
 
   [user_register: "/register"]: respond_to {
-    GET: => render: true
+    GET: =>
+      @title = "Register Account"
+      render: true
     POST: =>
       @errors = validate @params, {
         { "username", exists: true, min_length: 2, max_length: 25 }
@@ -335,5 +349,7 @@ lapis.serve class extends lapis.Application
     @session.user = false
     redirect_to: "/"
 
-  [about: "/about"]: => render: true
+  [about: "/about"]: =>
+    @title = "About"
+    render: true
 

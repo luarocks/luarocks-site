@@ -17,7 +17,11 @@ class Layout extends Widget
   content: =>
     html_5 ->
       head ->
-        title "MoonRocks"
+        title ->
+          if @title
+            text "#{@title} - MoonRocks"
+          else
+            text "MoonRocks"
         link rel: "stylesheet", href: "/static/style.css"
         script type: "text/javascript", src: "/static/main.js"
         raw [[
