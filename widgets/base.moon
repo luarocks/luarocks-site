@@ -33,6 +33,11 @@ class Base extends Widget
   format_number: (num) =>
     tostring(num)\reverse!\gsub("(...)", "%1,")\match("^(.-),?$")\reverse!
 
+  raw_ssi: (fname) =>
+    res = ngx.location.capture "/static/site/www/#{fname}"
+    error "Failed to include SSI `#{fname}`" unless res.status == 200
+    raw res.body
+
 if ... == "test"
   print Base\format_number 1
   print Base\format_number 12
