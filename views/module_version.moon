@@ -27,7 +27,7 @@ class ModuleVersion extends require "widgets.base"
     return unless @module\allowed_to_edit @current_user
 
     div class: "admin_tools", ->
-      span class: "label", "Admin: "
+      span class: "label", "Owner Tools: "
       a href: @url_for("upload_rock", @), "Upload Rock"
 
 
