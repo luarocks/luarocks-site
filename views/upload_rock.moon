@@ -2,6 +2,7 @@
 class UploadRockspec extends require "widgets.base"
   content: =>
     h2 "Upload Rock"
+    @render_errors!
 
     form {
       action: @url_for("upload_rock", @)

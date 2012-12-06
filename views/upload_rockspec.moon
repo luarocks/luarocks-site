@@ -2,12 +2,7 @@ import Widget from require "lapis.html"
 class UploadRockspec extends Widget
   content: =>
     h2 "Upload Rockspec"
-
-    if @errors
-      div "Errors:"
-      ul ->
-        for e in *@errors
-          li e
+    @render_errors!
 
     p "Upload a rockspec to create a new module. If the module already exists, then the rockspec will be added to the list of available versions. If the version already exists then only the rockspec file will be overwritten."
 

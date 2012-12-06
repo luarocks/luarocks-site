@@ -10,7 +10,7 @@ bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
 
-import respond_to, capture_errors, assert_error from require "lapis.application"
+import respond_to, capture_errors, assert_error, yield_error from require "lapis.application"
 import validate, assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
 import Users, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
@@ -37,8 +37,9 @@ filename_for_rockspec = (spec) ->
 
 parse_rock_fname = (module_name, fname) ->
   version, arch = fname\match "^#{escape_pattern(module_name)}%-(.-)%.([^.]+)%.rock$"
+
   unless version
-    nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
+    return nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
 
   { :version, :arch }
 
@@ -222,21 +223,27 @@ lapis.serve class extends lapis.Application
     render: true
 
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
-    GET: =>
+    before: =>
       load_module @
-      assert_editable @, @module
       @title = "Upload Rock"
+
+    GET: require_login =>
+      assert_editable @, @module
       render: true
 
-    POST: =>
-      load_module @
+    POST: capture_errors =>
       assert_editable @, @module
 
-      file = assert @params.rock_file or false, "Missing rock"
-      rock_info = assert parse_rock_fname @module.name, file.filename
+      assert_valid @params, {
+        { "rock_file", file_exists: true }
+      }
+
+      file = @params.rock_file
+
+      rock_info = assert_error parse_rock_fname @module.name, file.filename
 
       if rock_info.version != @version.version_name
-        error "Rock doesn't match version #{@version.version_name}"
+        yield_error "Rock doesn't match version #{@version.version_name}"
 
       key = "#{@current_user.id}/#{file.filename}"
       out = bucket\put_file_string file.content, {
@@ -251,10 +258,12 @@ lapis.serve class extends lapis.Application
   }
 
   [add_to_manifest: "/add_to_manifest/:user/:module"]: respond_to {
-    GET: =>
+    before: =>
       load_module @
-      assert_editable @, @module
       @title = "Add Module To Manifest"
+
+    GET: require_login =>
+      assert_editable @, @module
 
       already_in = { m.id, true for m in *@module\all_manifests! }
       @manifests = for m in *Manifests\select!
@@ -263,15 +272,14 @@ lapis.serve class extends lapis.Application
 
       render: true
 
-    POST: =>
-      load_module @
+    POST: capture_errors =>
       assert_editable @, @module
 
-      manifest_id = assert @params.manifest_id, "Missing manifest_id"
-      manifest = assert Manifests\find(id: manifest_id), "Invalid manifest id"
+      manifest_id = assert_error @params.manifest_id, "Missing manifest_id"
+      manifest = assert_error Manifests\find(id: manifest_id), "Invalid manifest id"
 
       unless manifest\allowed_to_add @current_user
-        error "Don't have permission to add to manifest"
+        yield_error "Don't have permission to add to manifest"
 
       assert ManifestModules\create manifest, @module
       redirect_to: @url_for("module", @)
@@ -279,9 +287,11 @@ lapis.serve class extends lapis.Application
 
 
   [remove_from_manifest: "/remove_from_manifest/:user/:module/:manifest"]: respond_to {
-    GET: =>
+    before: =>
       load_module @
       load_manifest @
+
+    GET: require_login =>
       assert_editable @, @module
       @title = "Remove Module From Manifest"
 
@@ -293,8 +303,6 @@ lapis.serve class extends lapis.Application
       render: true
 
     POST: =>
-      load_module @
-      load_manifest @
       assert_editable @, @module
 
       ManifestModules\remove @manifest, @module
@@ -311,48 +319,40 @@ lapis.serve class extends lapis.Application
 
   -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
-    GET: =>
+    before: =>
       @title = "Login"
+
+    GET: =>
       render: true
-    POST: =>
-      @errors = validate @params, {
+
+    POST: capture_errors =>
+      assert_valid @params, {
         { "username", exists: true }
         { "password", exists: true }
       }
 
-      local user
-      unless @errors
-        user, err = Users\login @params.username, @params.password
-        @errors = { err } unless user
-
-      if @errors
-        return { render: "user_login" }
-
+      user = assert_error Users\login @params.username, @params.password
       user\write_session @
       redirect_to: @url_for"index"
-
   }
 
   [user_register: "/register"]: respond_to {
-    GET: =>
+    before: =>
       @title = "Register Account"
+
+    GET: =>
       render: true
-    POST: =>
-      @errors = validate @params, {
+
+    POST: capture_errors =>
+      assert_valid @params, {
         { "username", exists: true, min_length: 2, max_length: 25 }
         { "password", exists: true, min_length: 2 }
         { "password_repeat", equals: @params.password }
         { "email", exists: true, min_length: 3 }
       }
 
-      local user
-      unless @errors
-        {:username, :password, :email } = @params
-        user, err = Users\create username, password, email
-        @errors = { err } unless user
-
-      if @errors
-        return { render: "user_register" }
+      {:username, :password, :email } = @params
+      user = assert_error Users\create username, password, email
 
       user\write_session @
       redirect_to: @url_for"index"

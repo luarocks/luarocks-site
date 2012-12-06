@@ -2,11 +2,7 @@
 class UserRegister extends require "widgets.base"
   content: =>
     h2 "Register"
-    if @errors
-      div "Errors:"
-      ul ->
-        for e in *@errors
-          li e
+    @render_errors!
 
     form action: @url_for"user_register", method: "POST", class: "form", ->
       div class: "row", ->

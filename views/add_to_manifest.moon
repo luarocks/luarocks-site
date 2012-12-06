@@ -14,6 +14,7 @@ class AddToManifest extends require "widgets.base"
       text "There are no manifests this module can be added to at this time."
 
   add_form: =>
+    @render_errors!
     form action: @req.cmd_url, method: "POST", ->
       div class: "input_row", ->
         label "Manifests"

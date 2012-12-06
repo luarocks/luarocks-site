@@ -44,6 +44,13 @@ class Base extends Widget
         span class: "nv", "$ "
         text cmd
 
+  render_errors: =>
+    if @errors
+      div "Errors:"
+      ul ->
+        for e in *@errors
+          li e
+
 if ... == "test"
   print Base\format_number 1
   print Base\format_number 12
