@@ -10,8 +10,8 @@ bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
 
-import respond_to from require "lapis.application"
-import validate from require "lapis.validate"
+import respond_to, capture_errors, assert_error from require "lapis.application"
+import validate, assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
 import Users, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
 
@@ -89,6 +89,13 @@ render_manifest = (modules) =>
     :repository, :commands, :modules
   }
 
+require_login = (fn) ->
+  =>
+    if @current_user
+      fn @
+    else
+      redirect_to: @url_for"user_login"
+
 lapis.serve class extends lapis.Application
   layout: require "views.layout"
 
@@ -108,14 +115,21 @@ lapis.serve class extends lapis.Application
     render: true
 
   [upload_rockspec: "/upload"]: respond_to {
-    GET: =>
+    before: =>
       @title = "Upload Rockspec"
+
+    GET: require_login =>
       render: true
-    POST: =>
+
+    POST: capture_errors =>
       assert @current_user, "Must be logged in"
 
-      file = assert @params.rockspec_file or false, "Missing rockspec"
-      spec = assert parse_rockspec file.content
+      assert_valid @params, {
+        { "rockspec_file", file_exists: true }
+      }
+
+      file = @params.rockspec_file
+      spec = assert_error parse_rockspec file.content
 
       new_module = false
       mod = Modules\find user_id: @current_user.id, name: spec.package
@@ -140,7 +154,7 @@ lapis.serve class extends lapis.Application
         mod.current_version_id = version.id
         mod\update "current_version_id"
 
-      { redirect_to: @url_for "module", user: @current_user.slug, module: mod.name }
+      redirect_to: @url_for "module", user: @current_user, module: mod
   }
 
   [index: "/"]: =>
