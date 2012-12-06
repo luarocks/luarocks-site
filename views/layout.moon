@@ -57,6 +57,8 @@ class Layout extends Widget
             a href: "http://twitter.com/moonscript", "@moonscript"
             raw " &middot; "
             a href: "http://github.com/leafo/moonrocks-site", "Source"
+            raw " &middot; "
+            a href: "https://github.com/leafo/moonrocks-site/issues", "Issues"
 
           a href: @url_for("index"), "Home"
           raw " &middot; "
