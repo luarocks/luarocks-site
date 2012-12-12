@@ -1,5 +1,4 @@
-import Widget from require "lapis.html"
-class UploadRockspec extends Widget
+class UploadRockspec extends require "widgets.base"
   content: =>
     h2 "Upload Rockspec"
     @render_errors!
