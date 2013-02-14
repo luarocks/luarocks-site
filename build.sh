@@ -15,8 +15,8 @@ tar -c $static_files | tar -C "$BUILD_DIR" -x
 # # copy secret
 # tar -c $(find secret/* | grep -v "Tup\|moon$") | tar -C "$BUILD_DIR" -x
 
-# # strip lua_code_cache
-# cat nginx.conf | grep -v "lua_code_cache" > "$BUILD_DIR/nginx.conf"
+# strip lua_code_cache
+cat nginx.conf | grep -v "lua_code_cache" > "$BUILD_DIR/nginx.conf"
 
 if [ -d tmp_git ]; then
 	mv tmp_git "$BUILD_DIR/.git"
