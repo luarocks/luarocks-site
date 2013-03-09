@@ -1,1 +1,1 @@
-web: start_nginx.sh
+web: lapis server heroku
