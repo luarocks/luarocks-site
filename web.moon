@@ -15,7 +15,8 @@ persist = require "luarocks.persist"
 
 import respond_to, capture_errors, assert_error, yield_error from require "lapis.application"
 import validate, assert_valid from require "lapis.validate"
-import escape_pattern from require "lapis.util"
+import escape_pattern, trim_filter from require "lapis.util"
+
 import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
 
 import concat, insert from table
@@ -104,6 +105,10 @@ generate_csrf = =>
 
 assert_csrf = =>
   csrf.assert_token @, @current_user and @current_user.id
+
+assert_table = (val) ->
+  assert_error type(val) == "table", "malformed input, expecting table"
+  val
 
 lapis.serve class extends lapis.Application
   layout: require "views.layout"
@@ -424,6 +429,34 @@ lapis.serve class extends lapis.Application
             a href: reset_url, reset_url
 
         redirect_to: @url_for"user_forgot_password" .. "?sent=true"
+  }
+
+  [user_settings: "/settings"]: require_login respond_to {
+    before: =>
+      @user = @current_user
+      @user\get_data!
+
+    GET: =>
+      render: true
+
+    POST: capture_errors =>
+      assert_csrf @
+
+      if passwords = @params.password
+        assert_table passwords
+        trim_filter passwords
+
+        assert_valid passwords, {
+          { "new_password", exists: true, min_length: 2 }
+          { "new_password_repeat", equals: passwords.new_password }
+        }
+
+        assert_error @user\check_password(passwords.current_password),
+          "invalid old password"
+
+        @user\update_password passwords.new_password, @
+
+      redirect_to: @url_for"user_settings" .. "?password_reset=true"
   }
 
   [about: "/about"]: =>

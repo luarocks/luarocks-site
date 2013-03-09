@@ -8,6 +8,8 @@ class Layout extends Widget
         raw " &middot; "
         a href: @url_for"upload_rockspec", "Upload Rockspec"
         raw " &middot; "
+        a href: @url_for"user_settings", "Settings"
+        raw " &middot; "
         a href: @url_for"user_logout", "Log Out"
       else
         a href: @url_for"user_login", "Log In"
