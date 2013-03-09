@@ -66,6 +66,8 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for"modules", "Modules"
           raw " &middot; "
+          a href: @url_for"changes", "Changes"
+          raw " &middot; "
           a href: @url_for"about", "About"
 
 

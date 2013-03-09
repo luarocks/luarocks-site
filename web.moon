@@ -426,8 +426,11 @@ lapis.serve class extends lapis.Application
         redirect_to: @url_for"user_forgot_password" .. "?sent=true"
   }
 
-
   [about: "/about"]: =>
     @title = "About"
+    render: true
+
+  [changes: "/changes"]: =>
+    @title = "Changes"
     render: true
 
