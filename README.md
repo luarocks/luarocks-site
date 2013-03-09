@@ -33,9 +33,30 @@ Install the dependencies listed in
 <https://github.com/leafo/moonrocks-site/blob/master/package.rockspec>.
 (`luarocks install <dependency-url>` but I recommend `--local`)
 
-Configure `cloud_storage` to talk to a bucket. Make a file
+Run these commands to build.
+
+    tup init
+    tup upd
+
+Now just run
+
+```bash
+lapis server
+```
+
+To build the initial database, go to `http://localhost:8080/db/make`.
+
+Now `http://localhost:8080` should load.
+
+### Setting up Google Cloud Storage
+
+In production all files are stored on Google Cloud Storage. With no
+configuration (default), files are stored on the file system using the storage
+bucket mock provided by the `cloud_storage` rock.
+
+To configure `cloud_storage` to talk to a live bucket make a file
 `secret/storage_bucket.moon`, it must return a bucket instance. It might look
-something like: (I'll add mock bucket soon)
+something like:
 
 ```moonscript
 -- secret/storage_bucket.moon
@@ -46,23 +67,19 @@ o = OAuth "NUMBER@developer.gserviceaccount.com", "PRIVATEKEY.pem"
 CloudStorage(o, "PROJECT_ID")\bucket "BUCKET_NAME"
 ```
 
-Run these commands to build.
+### Setting up email
 
-    tup init
-    tup upd
+If you want to test sending emails you'll have to provide [Mailgun][5]
+credentials. A test a account is free. Create a file `secret/email.moon` and
+make it look something like this: (it must return a table of options)
 
-Now we are ready to run the server. Look at `start-server.sh`. It might need to
-be modified if your OpenResty path is different or your postgres server
-configured differently.
-
-Now just run
-
-    ./start-server.sh
-
-
-To build the initial database, go to `http://localhost:8080/db/make`.
-
-Now `http://localhost:8080` should load.
+```moonscript
+{ -- secret/email.moon
+  key: "api:key-MY_KEY"
+  domain: "mydomain.mailgun.org"
+  sender: "MoonRocks <postmaster@mydomain.mailgun.org>"
+}
+```
 
 ### Why Tup?
 
@@ -79,7 +96,6 @@ To use it run:
   [2]: http://moonscript.org/
   [3]: https://github.com/leafo/lapis
   [4]: http://gittup.org/tup/
-
-
+  [5]: http://www.mailgun.com/
 
 

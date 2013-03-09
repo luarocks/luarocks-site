@@ -39,6 +39,14 @@ make_schema = ->
   create_index "users", "slug", unique: true
   create_index "users", "flags"
 
+  create_table "user_data", {
+    {"user_id", foreign_key}
+    {"email_verified", boolean}
+    {"password_reset_token", varchar_nullable}
+    {"data", text}
+    "PRIMARY KEY (user_id)"
+  }
+
   -- --
   -- -- UserSessions
   -- --

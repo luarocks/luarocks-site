@@ -235,6 +235,15 @@ a {
         }
     }
 
+    .button_row {
+        margin-top: 10px;
+        a {
+            color: #666;
+            &:hover {
+                color: #777;
+            }
+        }
+    }
 }
 
 pre.highlight {

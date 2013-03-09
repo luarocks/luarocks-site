@@ -12,7 +12,7 @@ import concat from table
 -- need to migrate all slugs
 slugify = (str) -> (str\gsub("%s+", "-")\gsub("[^%w%-_]+", ""))
 
-local Modules, Versions, Users, Rocks, Manifests, ManifestModules, ManifestAdmins
+local *
 
 increment_counter = (keys, amount=1) =>
   amount = tonumber amount
@@ -23,6 +23,21 @@ increment_counter = (keys, amount=1) =>
     update[key] = db.raw"#{db.escape_identifier key} + #{amount}"
 
   db.update @@table_name!, update, @_primary_cond!
+
+generate_key = do
+  math.randomseed os.time!
+  import random from math
+  random_char = ->
+    switch random 1,3
+      when 1
+        random 65, 90
+      when 2
+        random 97, 122
+      when 3
+        random 48, 57
+
+  (length) ->
+    string.char unpack [ random_char! for i=1,length ]
 
 class Users extends Model
   @timestamp: true
@@ -46,7 +61,7 @@ class Users extends Model
 
   @login: (username, password) =>
     user = Users\find { :username }
-    if user and bcrypt.verify password, user.encrypted_password
+    if user and user\check_password password
       user
     else
       nil, "Incorrect username or password"
@@ -56,6 +71,18 @@ class Users extends Model
       user = @find user_session.id
       if user\salt! == user_session.key
         user
+
+  update_password: (pass, r) =>
+    @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
+    @write_session r if r
+
+  check_password: (pass) =>
+    bcrypt.verify pass, @encrypted_password
+
+  generate_password_reset: =>
+    @get_data!
+    with token = generate_key 30
+      @data\update { password_reset_token: token }
 
   url_key: (name) => @slug
 
@@ -74,6 +101,32 @@ class Users extends Model
   is_admin: => @flags == 1
 
   source_url: (r) => r\build_url "/manifests/#{@slug}"
+
+  get_data: =>
+    return if @data
+    @data = UserData\find(@id) or UserData\create(@id)
+    @data
+
+  send_email: (subject, body) =>
+    import render_html from require "lapis.html"
+    import send_email from require "email"
+
+    body_html = render_html ->
+      div body
+      hr!
+      h4 ->
+        a href: "http://rocks.moonscript.org", "MoonRocks"
+
+    send_email @email, subject, body_html, html: true
+
+class UserData extends Model
+  @primary_key: "user_id"
+
+  @create: (user_id) =>
+    Model.create @, {
+      :user_id
+      data: "{}"
+    }
 
 class Versions extends Model
   @timestamp: true
@@ -223,6 +276,6 @@ class Manifests extends Model
       @id
 
 {
-  :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins
+  :Users, :UserData, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins,
   :ManifestModules
 }

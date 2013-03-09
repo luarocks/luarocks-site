@@ -13,6 +13,8 @@ class UserLogin extends require "widgets.base"
         label for: "password_field", "Password"
         input type: "password", name: "password", id: "password_field"
 
-      div ->
+      div class: "button_row", ->
         input type: "submit"
+        raw " &middot; "
+        a href: @url_for"user_forgot_password", "Forgot Password"
 

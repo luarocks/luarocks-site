@@ -13,7 +13,7 @@ persist = require "luarocks.persist"
 import respond_to, capture_errors, assert_error, yield_error from require "lapis.application"
 import validate, assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
-import Users, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
+import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
 
 import concat, insert from table
 
@@ -362,6 +362,55 @@ lapis.serve class extends lapis.Application
   [user_logout: "/logout"]: =>
     @session.user = false
     redirect_to: "/"
+
+  validate_reset_token = =>
+    if @params.token
+      assert_valid @params, {
+        { "id", is_integer: true }
+      }
+
+      @user = assert_error Users\find(@params.id), "invalid token"
+      @user\get_data!
+      assert_error @user.data.password_reset_token == @params.token, "invalid token"
+      @token = @params.token
+      true
+
+  [user_forgot_password: "/user/forgot_password"]: respond_to {
+    GET: capture_errors =>
+      validate_reset_token @
+      render: true
+
+    POST: capture_errors =>
+      if validate_reset_token @
+        assert_valid @params, {
+          { "password", exists: true, min_length: 2 }
+          { "password_repeat", equals: @params.password }
+        }
+        @user\update_password @params.password, @
+        @user.data\update { password_reset_token: db.NULL }
+        redirect_to: @url_for"index"
+      else
+        assert_valid @params, {
+          { "email", exists: true, min_length: 3 }
+        }
+
+        user = assert_error Users\find(email: @params.email),
+          "don't know anyone with that email"
+
+        token = user\generate_password_reset!
+
+        reset_url = @build_url @url_for"user_forgot_password",
+          query: "token=#{token}&id=#{user.id}"
+
+        user\send_email "Reset your password", ->
+          h2 "Reset Your Password"
+          p "Someone attempted to reset your password. If that person was you, click the link below to update your password. If it wasn't you then you don't have to do anything."
+          p ->
+            a href: reset_url, reset_url
+
+        redirect_to: @url_for"user_forgot_password" .. "?sent=true"
+  }
+
 
   [about: "/about"]: =>
     @title = "About"
