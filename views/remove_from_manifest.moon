@@ -1,9 +1,11 @@
 class RemoveFromManifest extends require "widgets.base"
   content: =>
-    h2 "Add Module To Manifest"
+    h2 "Remove From Manifest"
     @render_modules { @module }
+    @render_errors!
 
     form action: @req.cmd_url, method: "POST", ->
+      input type: "hidden", name: "csrf_token", value: @csrf_token
       div ->
         text "Are you sure you want to remove this module from "
         a href: "", -> code @manifest.name

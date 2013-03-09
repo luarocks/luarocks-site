@@ -12,7 +12,7 @@ class UserForgotPassword extends require "widgets.base"
     @render_errors!
     p "Enter a new password below to reset your password."
     form class: "form", action: @url_for"user_forgot_password", method: "post", ->
-      -- input type: "hidden", name: "csrf_token", value: @csrf_token
+      input type: "hidden", name: "csrf_token", value: @csrf_token
       input type: "hidden", name: "token", value: @params.token
       input type: "hidden", name: "id", value: @user.id
 
@@ -41,7 +41,7 @@ class UserForgotPassword extends require "widgets.base"
     p "Enter the email address you registered with to be mailed a link to reset your password."
 
     form action: @url_for"user_forgot_password", method: "POST", class: "form", ->
-      -- input type: "hidden", name: "csrf_token", value: @csrf_token
+      input type: "hidden", name: "csrf_token", value: @csrf_token
 
       div class: "row", ->
         label ->

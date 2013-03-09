@@ -3,9 +3,12 @@ http = require "lapis.nginx.http"
 with require "cloud_storage.http"
   .set http
 
-db = require "lapis.nginx.postgres"
+pcall -> require "secret.init"
 
+db = require "lapis.nginx.postgres"
 lapis = require "lapis.init"
+csrf = require "lapis.csrf"
+
 bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
@@ -42,7 +45,6 @@ parse_rock_fname = (module_name, fname) ->
     return nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
 
   { :version, :arch }
-
 
 default_table = ->
   setmetatable {}, __index: (key) =>
@@ -97,11 +99,18 @@ require_login = (fn) ->
     else
       redirect_to: @url_for"user_login"
 
+generate_csrf = =>
+  csrf.generate_token @, @current_user and @current_user.id
+
+assert_csrf = =>
+  csrf.assert_token @, @current_user and @current_user.id
+
 lapis.serve class extends lapis.Application
   layout: require "views.layout"
 
   @before_filter =>
     @current_user = Users\read_session @
+    @csrf_token = generate_csrf @
 
   "/db/make": =>
     schema = require "schema"
@@ -123,6 +132,7 @@ lapis.serve class extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
       assert @current_user, "Must be logged in"
 
       assert_valid @params, {
@@ -232,6 +242,7 @@ lapis.serve class extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
       assert_editable @, @module
 
       assert_valid @params, {
@@ -262,17 +273,17 @@ lapis.serve class extends lapis.Application
       load_module @
       @title = "Add Module To Manifest"
 
-    GET: require_login =>
-      assert_editable @, @module
-
       already_in = { m.id, true for m in *@module\all_manifests! }
       @manifests = for m in *Manifests\select!
         continue if already_in[m.id]
         m
 
+    GET: require_login =>
+      assert_editable @, @module
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
       assert_editable @, @module
 
       manifest_id = assert_error @params.manifest_id, "Missing manifest_id"
@@ -302,7 +313,8 @@ lapis.serve class extends lapis.Application
 
       render: true
 
-    POST: =>
+    POST: capture_errors =>
+      assert_csrf @
       assert_editable @, @module
 
       ManifestModules\remove @manifest, @module
@@ -344,6 +356,7 @@ lapis.serve class extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
       assert_valid @params, {
         { "username", exists: true, min_length: 2, max_length: 25 }
         { "password", exists: true, min_length: 2 }
@@ -381,6 +394,8 @@ lapis.serve class extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
+
       if validate_reset_token @
         assert_valid @params, {
           { "password", exists: true, min_length: 2 }

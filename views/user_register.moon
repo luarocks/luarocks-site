@@ -5,6 +5,7 @@ class UserRegister extends require "widgets.base"
     @render_errors!
 
     form action: @url_for"user_register", method: "POST", class: "form", ->
+      input type: "hidden", name: "csrf_token", value: @csrf_token
       div class: "row", ->
         label for: "username_field", "Username"
         input type: "text", name: "username", id: "username_field"

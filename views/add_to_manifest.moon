@@ -15,11 +15,13 @@ class AddToManifest extends require "widgets.base"
 
   add_form: =>
     @render_errors!
-    form action: @req.cmd_url, method: "POST", ->
-      div class: "input_row", ->
+    form action: @req.cmd_url, method: "POST", class: "form", ->
+      input type: "hidden", name: "csrf_token", value: @csrf_token
+      div class: "row", ->
         label "Manifests"
         element "select", name: "manifest_id", ->
           for m in *@manifests
             option value: m.id, m.name
 
-      input type: "submit", value: "Add Module"
+      div class: "button_row", ->
+        input type: "submit", value: "Add Module"
