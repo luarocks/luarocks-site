@@ -19,11 +19,16 @@ class Layout extends Widget
   content: =>
     html_5 ->
       head ->
+        meta charset: "utf-8"
         title ->
           if @title
             text "#{@title} - MoonRocks"
           else
             text "MoonRocks"
+
+        if @page_description
+          meta name: "description", content: @page_description
+
         link rel: "stylesheet", href: "/static/style.css"
         script type: "text/javascript", src: "/static/main.js"
         raw [[

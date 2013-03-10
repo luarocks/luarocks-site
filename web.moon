@@ -174,6 +174,8 @@ lapis.serve class extends lapis.Application
   }
 
   [index: "/"]: =>
+    @page_description = "A website for submitting and distributing Lua rocks"
+
     @recent_modules = Modules\select "order by created_at desc limit 5"
     Users\include_in @recent_modules, "user_id"
     @popular_modules = Modules\select "order by downloads desc limit 5"
@@ -221,6 +223,8 @@ lapis.serve class extends lapis.Application
   [module: "/modules/:user/:module"]: =>
     load_module @
     @title = "#{@module.name}"
+    @page_description = @module.summary if @module.summary
+
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
     @manifests = @module\all_manifests!
 
