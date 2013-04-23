@@ -16,3 +16,7 @@ class Info extends require "widgets.base"
           td class: "mem", @format_bytes math.floor(worker.mem * 1000)
           td class: "time_ago", time_ago_in_words worker.time
 
+    h2 "Build"
+    pre ->
+      text require "revision"
+
