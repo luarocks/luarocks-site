@@ -294,6 +294,38 @@ p {
 }
 
 
+.table {
+    background: white;
+    border: 1px solid darken($back_color, 30%);
+    box-shadow: 1px 1px 0 darken($back_color, 40%), 0 0 10px rgba(0,0,0, 0.2);
+    font-size: 18px;
+
+    td {
+        padding: 4px 8px;
+    }
+
+    thead {
+        background: darken($back_color, 10%);
+        font-weight: bold;
+        color: #6B675C;
+    }
+
+    .pid {
+        text-align: right;
+    }
+
+    .mem {
+        font-family: monospace;
+        text-align: right;
+    }
+
+    .time_ago {
+        font-style: italic;
+        color: #999;
+    }
+}
+
+
 // syntax:
 
 /* builtins */

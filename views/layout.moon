@@ -30,7 +30,7 @@ class Layout extends Widget
           meta name: "description", content: @page_description
 
         link rel: "stylesheet", href: "/static/style.css"
-        script type: "text/javascript", src: "/static/main.js"
+        -- script type: "text/javascript", src: "/static/main.js"
         raw [[
           <script type="text/javascript">
             if (window.location.hostname != "localhost") {

@@ -110,12 +110,36 @@ assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
 
+set_memory_usage = ->
+  posix = require "posix"
+  json = require "cjson"
+
+  pid = posix.getpid "pid"
+  mem = collectgarbage "count"
+  time = os.time!
+
+  ngx.shared.memory_usage\set tostring(pid), json.encode { :mem, :time }
+
 class extends lapis.Application
   layout: require "views.layout"
 
   @before_filter =>
     @current_user = Users\read_session @
     @csrf_token = generate_csrf @
+    set_memory_usage!
+
+  [info: "/info"]: =>
+    json = require "cjson"
+    dict = ngx.shared.memory_usage
+
+    @workers = for pid in *dict\get_keys!
+      with w = json.decode dict\get pid
+        w.pid = pid
+
+    table.sort @workers, (a,b) ->
+      b.time < a.time
+
+    render: true
 
   "/db/make": =>
     schema = require "schema"
