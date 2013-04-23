@@ -8,9 +8,7 @@ make_schema = ->
   {
     :serial
     :varchar
-    :varchar_nullable
     :text
-    :text_nullable
     :time
     :integer
     :foreign_key
@@ -42,7 +40,7 @@ make_schema = ->
   create_table "user_data", {
     {"user_id", foreign_key}
     {"email_verified", boolean}
-    {"password_reset_token", varchar_nullable}
+    {"password_reset_token", varchar null: true}
     {"data", text}
     "PRIMARY KEY (user_id)"
   }
@@ -69,11 +67,11 @@ make_schema = ->
     {"downloads", integer}
     {"current_version_id", foreign_key}
 
-    {"summary", varchar_nullable}
-    {"description", text_nullable}
+    {"summary", varchar null: true}
+    {"description", text null: true}
 
-    {"license", varchar_nullable}
-    {"homepage", varchar_nullable}
+    {"license", varchar null: true}
+    {"homepage", varchar null: true}
 
     {"created_at", time}
     {"updated_at", time}
