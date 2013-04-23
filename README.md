@@ -4,11 +4,11 @@
 
 A webpage for hosting and serving Lua modules.
 
-The entire site runs on [OpenResty][1], an nginx based platform with Lua
+The entire site runs on [OpenResty][1], an Nginx based platform with Lua
 support. The site itself is coded in [MoonScript][2] and uses [Lapis][3] as a
 web framework.
 
-Files are stored on Google Cloud Storage. Postgresql is used as a database.
+Files are stored on Google Cloud Storage. PostgreSQL is used as a database.
 
 [Tup][4] is the build system.
 
@@ -22,12 +22,12 @@ to modify a Tupfile)
 
 Install [coffeescript](http://coffeescript.org/#installation).
 
-Install postgresql. Create a database for the project. (moonrocks)
+Install PostgreSQL. Create a database for the project. (moonrocks)
 
 Install the latest version of [OpenResty][1]. Configure with the
 `--with-http_postgres_module` and optionally `--with-luajit`.
 
-Check out repository.
+Check out this repository.
 
 Install the dependencies listed in
 <https://github.com/leafo/moonrocks-site/blob/master/package.rockspec>.
@@ -58,6 +58,7 @@ To configure `cloud_storage` to talk to a live bucket make a file
 `secret/storage_bucket.moon`, it must return a bucket instance. It might look
 something like:
 
+
 ```moonscript
 -- secret/storage_bucket.moon
 import OAuth from require "cloud_storage.oauth"
@@ -70,7 +71,7 @@ CloudStorage(o, "PROJECT_ID")\bucket "BUCKET_NAME"
 ### Setting up email
 
 If you want to test sending emails you'll have to provide [Mailgun][5]
-credentials. A test a account is free. Create a file `secret/email.moon` and
+credentials. A test account is free. Create a file `secret/email.moon` and
 make it look something like this: (it must return a table of options)
 
 ```moonscript
@@ -80,6 +81,7 @@ make it look something like this: (it must return a table of options)
   sender: "MoonRocks <postmaster@mydomain.mailgun.org>"
 }
 ```
+
 
 ### Why Tup?
 
