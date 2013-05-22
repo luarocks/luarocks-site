@@ -69,7 +69,7 @@ class Users extends Model
   @read_session: (r) =>
     if user_session = r.session.user
       user = @find user_session.id
-      if user\salt! == user_session.key
+      if user and user\salt! == user_session.key
         user
 
   update_password: (pass, r) =>
