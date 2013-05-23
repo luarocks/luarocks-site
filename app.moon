@@ -141,7 +141,7 @@ class extends lapis.Application
 
     render: true
 
-  "/db/make": =>
+  "/admin/db/make": =>
     schema = require "schema"
     schema.make_schema!
     Manifests\create "root", true
