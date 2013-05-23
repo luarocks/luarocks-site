@@ -6,7 +6,14 @@ config "development", ->
   code_cache "off"
 
   postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
-  bucket_name "moonrocks_test"
+  bucket_name "moonrocks_dev"
+
+config "production", ->
+  num_workers 2
+  code_cache "on"
+
+  postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
+  bucket_name "moonrocks"
 
 config "heroku", ->
   num_workers 4
@@ -14,5 +21,5 @@ config "heroku", ->
   port os.getenv "PORT"
 
   postgresql_url os.getenv "HEROKU_POSTGRESQL_ROSE_URL"
-  bucket_name "world_class_dad"
+  bucket_name "moonrocks"
 
