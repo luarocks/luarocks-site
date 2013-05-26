@@ -3,8 +3,6 @@ http = require "lapis.nginx.http"
 with require "cloud_storage.http"
   .set http
 
-pcall -> require "secret.init"
-
 db = require "lapis.nginx.postgres"
 lapis = require "lapis.init"
 csrf = require "lapis.csrf"
@@ -126,7 +124,7 @@ class extends lapis.Application
   @before_filter =>
     @current_user = Users\read_session @
     @csrf_token = generate_csrf @
-    set_memory_usage!
+    pcall -> set_memory_usage!
 
   [info: "/info"]: =>
     json = require "cjson"
