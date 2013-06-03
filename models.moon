@@ -221,6 +221,10 @@ class Modules extends Model
     else
       {}
 
+  count_versions: =>
+    res = db.query "select count(*) as c from versions where module_id = ?", @id
+    res[1].c
+
   delete: =>
     super!
     -- Remove module from manifests

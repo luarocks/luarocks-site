@@ -29,5 +29,7 @@ class ModuleVersion extends require "widgets.base"
     div class: "admin_tools", ->
       span class: "label", "Owner Tools: "
       a href: @url_for("upload_rock", @), "Upload Rock"
+      raw " &middot; "
+      a href: @url_for("delete_module_version", @), "Delete This Version"
 
 

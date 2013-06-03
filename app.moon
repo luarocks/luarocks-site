@@ -98,6 +98,24 @@ require_login = (fn) ->
     else
       redirect_to: @url_for"user_login"
 
+load_module = =>
+  @user = assert Users\find(slug: @params.user), "Invalid user"
+  @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+  @module.user = @user
+
+  if @params.version
+    @version = assert Versions\find({
+      module_id: @module.id
+      version_name: @params.version
+    }), "Invalid version"
+
+load_manifest = (key="id") =>
+  @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
+
+assert_editable = (thing) =>
+  unless thing\allowed_to_edit @current_user
+    error "Don't have permission to edit"
+
 generate_csrf = =>
   csrf.generate_token @, @current_user and @current_user.id
 
@@ -107,6 +125,38 @@ assert_csrf = =>
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
+
+delete_module = respond_to {
+  before: =>
+    load_module @
+    @title = "Delete #{@module.name}?"
+
+  GET: require_login =>
+    assert_editable @, @module
+
+    if @version and @module\count_versions! == 1
+      return redirect_to: @url_for "delete_module", @params
+
+    render: true
+
+  POST: require_login capture_errors =>
+    assert_csrf @
+    assert_editable @, @module
+
+    assert_valid @params, {
+      { "module_name", equals: @module.name }
+    }
+
+    if @version
+      if @module\count_versions! == 1
+        error "can not delete only version"
+
+      @version\delete!
+      redirect_to: @url_for "module", @params
+    else
+      @module\delete!
+      redirect_to: @url_for "index"
+}
 
 set_memory_usage = ->
   posix = require "posix"
@@ -224,24 +274,6 @@ class extends lapis.Application
 
     render: true
 
-  load_module = =>
-    @user = assert Users\find(slug: @params.user), "Invalid user"
-    @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
-    @module.user = @user
-
-    if @params.version
-      @version = assert Versions\find({
-        module_id: @module.id
-        version_name: @params.version
-      }), "Invalid version"
-
-  load_manifest = (key="id") =>
-    @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
-
-  assert_editable = (thing) =>
-    unless thing\allowed_to_edit @current_user
-      error "Don't have permission to edit"
-
   [module: "/modules/:user/:module"]: =>
     load_module @
     @title = "#{@module.name}"
@@ -263,26 +295,8 @@ class extends lapis.Application
 
     render: true
 
-  [delete_module: "/delete/:user/:module"]: respond_to {
-    before: =>
-      load_module @
-      @title = "Delete #{@module.name}?"
-
-    GET: require_login =>
-      assert_editable @, @module
-      render: true
-
-    POST: require_login capture_errors =>
-      assert_csrf @
-      assert_editable @, @module
-
-      assert_valid @params, {
-        { "module_name", equals: @module.name }
-      }
-
-      @module\delete!
-      redirect_to: @url_for "index"
-  }
+  [delete_module: "/delete/:user/:module"]: delete_module
+  [delete_module_version: "/delete/:user/:module/:version"]: delete_module
 
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
     before: =>

@@ -1,10 +1,10 @@
-class DeleteModule extends require "widgets.base"
+class DeleteModuleVersion extends require "widgets.base"
   content: =>
-    h2 "Are you sure you want to delete this module?"
+    h2 "Delete Module Version"
+    h3 "#{@module.name} #{@version.version_name}"
 
-    @render_modules { @module }
+    p "All of the rocks that have been uploaded for this version will also be deleted. This action is irreversible."
 
-    p "All of the rockspecs and rocks that have been uploaded will also be deleted. This action is irreversible."
     p ->
       text "Type the name of the module, "
       strong @module.name
@@ -17,9 +17,9 @@ class DeleteModule extends require "widgets.base"
         div class: "row", ->
           input type: "text", name: "module_name", id: "module_name"
 
-        input type: "submit", value: "Delete Module"
+        input type: "submit", value: "Delete #{@version.version_name}"
 
     div ->
-      a href: @url_for("module", @), ->
+      a href: @url_for("module_version", @), ->
         raw "&laquo; No, Return to module"
 
