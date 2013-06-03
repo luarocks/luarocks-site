@@ -39,4 +39,6 @@ class Module extends Widget
     div class: "admin_tools", ->
       span class: "label", "Owner Tools: "
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
+      raw " &middot; "
+      a href: @url_for("delete_module", @), "Delete"
 

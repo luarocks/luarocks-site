@@ -263,6 +263,27 @@ class extends lapis.Application
 
     render: true
 
+  [delete_module: "/delete/:user/:module"]: respond_to {
+    before: =>
+      load_module @
+      @title = "Delete #{@module.name}?"
+
+    GET: require_login =>
+      assert_editable @, @module
+      render: true
+
+    POST: require_login capture_errors =>
+      assert_csrf @
+      assert_editable @, @module
+
+      assert_valid @params, {
+        { "module_name", equals: @module.name }
+      }
+
+      @module\delete!
+      redirect_to: @url_for "index"
+  }
+
   [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
     before: =>
       load_module @

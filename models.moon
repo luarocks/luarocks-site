@@ -128,6 +128,7 @@ class UserData extends Model
       data: "{}"
     }
 
+-- a rockspec
 class Versions extends Model
   @timestamp: true
 
@@ -150,6 +151,16 @@ class Versions extends Model
     increment_counter @, counters
     increment_counter Modules\load(id: @module_id), "downloads"
 
+  delete: =>
+    super!
+    -- delete rockspec
+    bucket\delete_file @rockspec_key
+
+    -- remove rocks
+    rocks = Rocks\select "where version_id = ?", @id
+    for r in *rocks
+      r\delete!
+
 class Rocks extends Model
   @timestamp: true
 
@@ -169,6 +180,10 @@ class Rocks extends Model
     increment_counter @, "downloads"
     version = @version or Versions\find id: @version_id
     version\increment_download {"downloads"}
+
+  delete: =>
+    super!
+    bucket\delete_file @rock_key
 
 class Modules extends Model
   @timestamp: true
@@ -205,6 +220,16 @@ class Modules extends Model
       Manifests\select "where id in (#{concat manifest_ids, ","}) order by name asc"
     else
       {}
+
+  delete: =>
+    super!
+    -- Remove module from manifests
+    db.delete ManifestModules\table_name!, module_id: @id
+
+    -- Remove versions
+    versions = Versions\select "where module_id = ? ", @id
+    for v in *versions
+      v\delete!
 
 class ManifestAdmins extends Model
   @primary_key: {"user_id", "manifest_id"}
