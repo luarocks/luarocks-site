@@ -1,6 +1,7 @@
 
 db = require "lapis.nginx.postgres"
 schema = require "lapis.db.schema"
+migrations = require "lapis.db.migrations"
 
 import create_table, create_index, drop_table from schema
 
@@ -179,6 +180,8 @@ make_schema = ->
 
   create_index "manifest_modules", "manifest_id", "module_name", unique: true
   create_index "manifest_modules", "module_id"
+
+  migrations.create_migrations_table!
 
 destroy_schema = ->
   tbls = {

@@ -5,12 +5,8 @@ bcrypt = require "bcrypt"
 bucket = require "storage_bucket"
 
 import Model from require "lapis.db.model"
-import underscore from require "lapis.util"
+import underscore, slugify from require "lapis.util"
 import concat from table
-
--- this is legacy slugify that doesn't lowercase
--- need to migrate all slugs
-slugify = (str) -> (str\gsub("%s+", "-")\gsub("[^%w%-_]+", ""))
 
 local *
 
