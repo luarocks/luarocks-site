@@ -14,7 +14,7 @@ class Base extends Widget
             a {
               class: "title",
               href: @url_for("module", user: mod.user.slug, module: mod.name)
-            }, mod.name
+            }, mod\name_for_display!
 
             span class: "author", ->
               text " by "

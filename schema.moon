@@ -64,7 +64,10 @@ make_schema = ->
   create_table "modules", {
     {"id", serial}
     {"user_id", foreign_key}
+
     {"name", varchar}
+    {"display_name", varchar null: true}
+
     {"downloads", integer}
     {"current_version_id", foreign_key}
 
@@ -92,6 +95,7 @@ make_schema = ->
     {"module_id", foreign_key}
 
     {"version_name", varchar}
+    {"display_version_name", varchar null: true}
 
     {"rockspec_key", varchar}
     {"rockspec_fname", varchar}
@@ -107,7 +111,7 @@ make_schema = ->
 
   create_index "versions", "module_id", "version_name", unique: true
   create_index "versions", "downloads"
-  create_index "versions", "rockspec_key", unique: true
+  create_index "versions", "rockspec_key", unique: true -- TODO: delete index
   create_index "versions", "rockspec_fname"
 
   --
@@ -129,7 +133,7 @@ make_schema = ->
   }
 
   create_index "rocks", "version_id", "arch", unique: true
-  create_index "rocks", "rock_key", unique: true
+  create_index "rocks", "rock_key", unique: true -- TODO: delete this index
   create_index "rocks", "rock_fname"
 
   --

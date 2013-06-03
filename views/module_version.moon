@@ -4,7 +4,7 @@ class ModuleVersion extends require "widgets.base"
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
   content: =>
-    h2 "#{@module.name} #{@version.version_name}"
+    h2 "#{@module\name_for_display!} #{@version\name_for_display!}"
     @admin_panel!
 
     div ->

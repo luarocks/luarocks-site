@@ -2,7 +2,7 @@ import Widget from require "lapis.html"
 
 class Module extends Widget
   content: =>
-    h2 @module.name
+    h2 @module\name_for_display!
     @admin_panel!
 
     h3 "Author"
@@ -16,7 +16,7 @@ class Module extends Widget
     for v in *@versions
       div class: "version_row", ->
         url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
-        a href: url, v.version_name
+        a href: url, v\name_for_display!
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests

@@ -1,7 +1,7 @@
 class DeleteModuleVersion extends require "widgets.base"
   content: =>
     h2 "Delete Module Version"
-    h3 "#{@module.name} #{@version.version_name}"
+    h3 "#{@module\name_for_display!} #{@version\name_for_display!}"
 
     p "All of the rocks that have been uploaded for this version will also be deleted. This action is irreversible."
 

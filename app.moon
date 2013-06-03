@@ -35,7 +35,7 @@ parse_rockspec = (text) ->
   spec
 
 filename_for_rockspec = (spec) ->
-  "#{spec.package}-#{spec.version}.rockspec"
+  "#{spec.package\lower!}-#{spec.version\lower!}.rockspec"
 
 parse_rock_fname = (module_name, fname) ->
   version, arch = fname\match "^#{escape_pattern(module_name)}%-(.-)%.([^.]+)%.rock$"
@@ -225,7 +225,7 @@ class extends lapis.Application
       spec = assert_error parse_rockspec file.content
 
       new_module = false
-      mod = Modules\find user_id: @current_user.id, name: spec.package
+      mod = Modules\find user_id: @current_user.id, name: spec.package\lower!
 
       unless mod
         new_module = true
@@ -240,12 +240,15 @@ class extends lapis.Application
         mod\delete! if new_module
         error "Failed to upload rockspec"
 
-      version = Versions\find module_id: mod.id, version_name: spec.version
+      version = Versions\find module_id: mod.id, version_name: spec.version\lower!
 
-      unless version
+      if version
+        -- make sure file pointer is correct
+        unless version.rockspec_key == key
+          version\update rockspec_key: key
+      else
         version = assert Versions\create mod, spec, key
-        mod.current_version_id = version.id
-        mod\update "current_version_id"
+        mod\update current_version_id: version.id
 
       redirect_to: @url_for "module", user: @current_user, module: mod
   }

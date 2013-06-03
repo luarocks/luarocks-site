@@ -129,19 +129,25 @@ class Versions extends Model
   @timestamp: true
 
   @create: (mod, spec, rockspec_key) =>
-    if @check_unique_constraint module_id: mod.id, version_name: spec.version
+    version_name = spec.version\lower!
+
+    if @check_unique_constraint module_id: mod.id, version_name: version_name
       return nil, "This version is already uploaded"
 
     Model.create @, {
       module_id: mod.id
-      version_name: spec.version
+      display_version_name: if version_name != spec.version then spec.version
       rockspec_fname: rockspec_key\match "/([^/]*)$"
-      :rockspec_key
+
+      :rockspec_key, :version_name
     }
 
   url_key: (name) => @version_name
 
   url: => bucket\file_url @rockspec_key
+
+  name_for_display: =>
+    @display_version_name or @version_name
 
   increment_download: (counters={"downloads", "rockspec_downloads"}) =>
     increment_counter @, counters
@@ -187,13 +193,15 @@ class Modules extends Model
   -- spec: parsed rockspec
   @create: (spec, user) =>
     description = spec.description or {}
+    name = spec.package\lower!
 
-    if @check_unique_constraint user_id: user.id, name: spec.package
+    if @check_unique_constraint user_id: user.id, :name
       return nil, "Module already exists"
 
     Model.create @, {
+      :name
       user_id: user.id
-      name: spec.package
+      display_name: if name != spec.package then spec.package
 
       current_version_id: -1
 
@@ -204,6 +212,9 @@ class Modules extends Model
     }
 
   url_key: (name) => @name
+
+  name_for_display: =>
+    @display_name or @name
 
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)

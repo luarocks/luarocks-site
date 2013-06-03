@@ -24,12 +24,20 @@ object = if uri\match "^/manifests"
   file = ngx.var[2]
   user = assert Users\find(:slug)
 
-  key = "#{user.id}/#{file}"
-
   if is_rockspec!
-    Versions\find rockspec_key: key
+    unpack Versions\select [[
+      INNER JOIN modules
+        ON (modules.id = module_id and modules.user_id = ?)
+      WHERE rockspec_fname = ?
+    ]], user.id, file
   else
-    Rocks\find rock_key: key
+    unpack Rocks\select [[
+      INNER JOIN versions
+        ON (versions.id = version_id)
+      INNER JOIN modules
+        ON (modules.id = versions.module_id and modules.user_id = ?)
+      WHERE rock_fname = ?
+    ]], user.id, file
 else
   file = ngx.var[1]
   manifest = Manifests\root!
