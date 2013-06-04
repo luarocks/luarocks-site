@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2013/6/3**
+
+ * Added the ability to delete versions and modules
+ * Fixed issues with modules that have uppercase letters in their names
+
 **2013/3/9**
 
  * Added password reset to login page
