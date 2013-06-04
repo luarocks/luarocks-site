@@ -63,5 +63,7 @@ assert object
 if object.increment_download and should_increment!
   object\increment_download!
 
-ngx.var._url = object\url!
+url = object\url!
+ngx.header["x-object_url"] = url
+ngx.var._url = url
 
