@@ -60,5 +60,7 @@ class Module extends require "widgets.base"
       span class: "label", "Owner Tools: "
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
       raw " &middot; "
+      a href: @url_for("edit_module", @), "Edit"
+      raw " &middot; "
       a href: @url_for("delete_module", @), "Delete"
 

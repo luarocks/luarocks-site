@@ -264,12 +264,36 @@ p {
             color: #857261;
         }
 
-        input[type="text"], input[type="password"], input[type="email"] {
-            border: 1px solid #BBB3A6;
-            box-shadow: 0 0 4px rgba(0,0,0,0.2);
-            border-radius: 2px;
-            padding: 4px;
+    }
+
+    .wide_row {
+        margin: 10px 0;
+
+        .label {
+            font-size: 14px;
+            color: #857261;
+            margin-bottom: 4px;
+
+            .sub {
+                color: lighten(#857261, 10%);
+            }
         }
+
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 300px;
+        }
+
+        textarea {
+            width: 600px;
+            height: 200px;
+        }
+    }
+
+    input[type="text"], input[type="password"], input[type="email"], textarea {
+        border: 1px solid #BBB3A6;
+        box-shadow: 0 0 4px rgba(0,0,0,0.2);
+        border-radius: 2px;
+        padding: 4px;
     }
 
     .button_row {

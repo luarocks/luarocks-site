@@ -3,7 +3,7 @@ http = require "lapis.nginx.http"
 with require "cloud_storage.http"
   .set http
 
-db = require "lapis.nginx.postgres"
+db = require "lapis.db"
 lapis = require "lapis.init"
 csrf = require "lapis.csrf"
 
@@ -295,6 +295,25 @@ class extends lapis.Application
         @current_version = v
 
     render: true
+
+  [edit_module: "/edit/modules/:user/:module"]: respond_to {
+    before: =>
+      load_module @
+      assert_editable @, @module
+
+    GET: =>
+      render: true
+
+    POST: =>
+      changes = @params.m
+
+      trim_filter changes, {
+        "license", "description", "display_name", "homepage"
+      }, db.NULL
+
+      @module\update changes
+      redirect_to: @url_for("module", @)
+  }
 
   [module_version: "/modules/:user/:module/:version"]: =>
     load_module @
