@@ -29,8 +29,9 @@ class Layout extends Widget
         if @page_description
           meta name: "description", content: @page_description
 
-        link rel: "stylesheet", href: "/static/style.css"
+        link rel: "stylesheet", href: "/static/style.css?#{require "cache_buster"}"
         -- script type: "text/javascript", src: "/static/main.js"
+
         raw [[
           <script type="text/javascript">
             if (window.location.hostname != "localhost") {
