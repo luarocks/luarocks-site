@@ -55,6 +55,31 @@ a {
     }
 }
 
+h1, h2, h3 {
+    margin: 20px 0;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+
+p {
+    line-height: 20px;
+    margin: 10px 0;
+
+    > code {
+        background: darken($back_color, 10%);
+        padding: 2px 4px;
+        border-radius: 6px;
+    }
+}
+
+
 .header {
     @include autograd($header_color);
     border-top: 2px solid lighten($header_color, 30%);
@@ -102,6 +127,7 @@ a {
 .content {
     background: $back_color;
     border-bottom: 1px solid darken($back_color, 10%);
+
 
     h2, h3, h4 {
         color: #796B5F;
@@ -169,6 +195,13 @@ a {
                 color: #444;
             }
         }
+    }
+}
+
+.version_row {
+    .date {
+        margin-left: 10px;
+        color: #999;
     }
 }
 
@@ -261,28 +294,6 @@ pre.highlight {
     }
 }
 
-h2 { 
-    font-size: 24px;
-}
-
-h3 { 
-    font-size: 18px;
-}
-
-
-p {
-    > code {
-        background: darken($back_color, 10%);
-        padding: 2px 4px;
-        border-radius: 6px;
-    }
-}
-
-p {
-    line-height: 20px;
-}
-
-
 .about_page {
     p {
         line-height: 24px;
@@ -322,6 +333,30 @@ p {
     .time_ago {
         font-style: italic;
         color: #999;
+    }
+}
+
+img.avatar {
+    display: inline-block;
+    margin-right: 4px;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    background: rgba(0,0,0, 0.15);
+}
+
+.external_url {
+    word-wrap: break-word;
+}
+
+.module_page {
+    .module_header {
+        border-bottom: 1px solid #EBDECD;
+        padding-bottom: 10px;
+        margin: 20px 0 10px 0;
+        h2, p {
+            margin: 0;
+        }
     }
 }
 

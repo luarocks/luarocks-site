@@ -1,22 +1,38 @@
-import Widget from require "lapis.html"
+import time_ago_in_words from require "lapis.util"
 
-class Module extends Widget
-  content: =>
-    h2 @module\name_for_display!
+class Module extends require "widgets.base"
+  inner_content: =>
+    div class: "module_header", ->
+      h2 @module\name_for_display!
+      if summary = @module.summary
+        p summary
+
     @admin_panel!
 
     h3 "Author"
+    img class: "avatar", src: "http://www.gravatar.com/avatar/#{ngx.md5 @user.email}?s=20"
     a href: @url_for("user_profile", user: @user.slug), @user.username
 
-    h3 "About"
-    div class: "description", ->
-      text @module.description or @module.summary
+    if license = @module.license
+      h3 "License"
+      text license
+
+    if url = @module\format_homepage_url!
+      h3 "Homepage"
+      a class: "external_url", href: url, url
+
+    if description = @module.description
+      h3 "About"
+      div class: "description", ->
+        p description
 
     h3 "Versions"
     for v in *@versions
       div class: "version_row", ->
         url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
         a href: url, v\name_for_display!
+
+        span class: "date", time_ago_in_words(v.created_at)
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests

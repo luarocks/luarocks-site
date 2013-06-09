@@ -1,7 +1,14 @@
 
 import Widget from require "lapis.html"
+import underscore from require "lapis.util"
 
 class Base extends Widget
+  @widget_name: => underscore @__name or "some_widget"
+
+  content: =>
+    div class: "#{@@widget_name!}_page", ->
+      @inner_content!
+
   render_modules: (modules, opts={}) =>
     unless next modules
       div class: "empty_message", "No Modules"

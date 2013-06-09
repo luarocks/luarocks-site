@@ -216,6 +216,13 @@ class Modules extends Model
   name_for_display: =>
     @display_name or @name
 
+  format_homepage_url: =>
+    return if not @homepage or @homepage == ""
+    unless @homepage\match "%w+://"
+      return "http://" .. homepage
+
+    @homepage
+
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
