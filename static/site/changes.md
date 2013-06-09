@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2013/6/9**
+
+  * Added ability to edit modules
+  * Updated module page, now shows license and homepage
+
 **2013/6/3**
 
  * Added the ability to delete versions and modules
