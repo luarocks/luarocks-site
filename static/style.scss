@@ -134,6 +134,10 @@ p {
         text-shadow: 1px 1px 0 white;
         font-weight: normal;
     }
+
+    h2 {
+        color: darken(#796B5F, 10%);
+    }
 }
 
 .main_column {
@@ -351,11 +355,38 @@ img.avatar {
 
 .module_page {
     .module_header {
-        border-bottom: 1px solid #EBDECD;
-        padding-bottom: 10px;
-        margin: 20px 0 10px 0;
+        margin: 20px 0;
         h2, p {
             margin: 0;
+        }
+    }
+
+    .metadata_columns {
+        font-size: 0;
+        padding: 10px 0;
+        border-bottom: 1px solid #EBDECD;
+        border-top: 1px solid #EBDECD;
+        white-space: nowrap;
+
+        .column {
+            white-space: normal;
+
+            h3 {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+
+            &:first-child {
+                border-left: 0;
+                padding-left: 0px;
+            }
+
+            margin-right: 40px;
+            padding-left: 20px;
+            border-left: 1px solid #EBDECD;
+            display: inline-block;
+            vertical-align: top;
+            font-size: $base_font_size;
         }
     }
 }

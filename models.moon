@@ -115,6 +115,11 @@ class Users extends Model
 
     send_email @email, subject, body_html, html: true
 
+  gravatar: (size) =>
+    url = "http://www.gravatar.com/avatar/#{ngx.md5 @email}"
+    url = url .. "?s=#{size}" if size
+    url
+
 class UserData extends Model
   @primary_key: "user_id"
 

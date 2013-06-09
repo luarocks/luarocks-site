@@ -2,24 +2,28 @@ import time_ago_in_words from require "lapis.util"
 
 class Module extends require "widgets.base"
   inner_content: =>
+    @admin_panel!
+
     div class: "module_header", ->
       h2 @module\name_for_display!
       if summary = @module.summary
         p summary
 
-    @admin_panel!
+    div class: "metadata_columns", ->
+      div class: "column", ->
+        h3 "Author"
+        img class: "avatar", src: @user\gravatar(20)
+        a href: @url_for("user_profile", user: @user.slug), @user.username
 
-    h3 "Author"
-    img class: "avatar", src: "http://www.gravatar.com/avatar/#{ngx.md5 @user.email}?s=20"
-    a href: @url_for("user_profile", user: @user.slug), @user.username
+      div class: "column", ->
+        if license = @module.license
+          h3 "License"
+          text license
 
-    if license = @module.license
-      h3 "License"
-      text license
-
-    if url = @module\format_homepage_url!
-      h3 "Homepage"
-      a class: "external_url", href: url, url
+      div class: "column", ->
+        if url = @module\format_homepage_url!
+          h3 "Homepage"
+          a class: "external_url", href: url, @truncate url, 60
 
     if description = @module.description
       h3 "About"

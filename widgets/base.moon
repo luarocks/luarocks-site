@@ -40,6 +40,10 @@ class Base extends Widget
   format_number: (num) =>
     tostring(num)\reverse!\gsub("(...)", "%1,")\match("^(.-),?$")\reverse!
 
+  truncate: (str, length) =>
+    return str if #str <= length
+    str\sub(1, length) .. "..."
+
   format_bytes: do
     limits = {
       {"gb", 1024^3}
