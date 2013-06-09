@@ -12,8 +12,9 @@ class Module extends require "widgets.base"
     div class: "metadata_columns", ->
       div class: "column", ->
         h3 "Author"
-        img class: "avatar", src: @user\gravatar(20)
-        a href: @url_for("user_profile", user: @user.slug), @user.username
+        user_url = @url_for "user_profile", user: @user.slug
+        a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
+        a href: user_url, @user.username
 
       div class: "column", ->
         if license = @module.license
