@@ -117,7 +117,7 @@ class Users extends Model
 
   gravatar: (size) =>
     url = "http://www.gravatar.com/avatar/#{ngx.md5 @email}?d=identicon"
-    url = url .. "?s=#{size}" if size
+    url = url .. "&s=#{size}" if size
     url
 
 class UserData extends Model
