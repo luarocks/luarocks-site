@@ -202,12 +202,6 @@ p {
     }
 }
 
-.version_row {
-    .date {
-        margin-left: 10px;
-        color: #999;
-    }
-}
 
 .admin_tools {
     $admin_color: #FFCAD9;
@@ -411,6 +405,22 @@ img.avatar {
             display: inline-block;
             vertical-align: top;
             font-size: $base_font_size;
+        }
+    }
+
+    .version_row, .manifest_row {
+        margin-bottom: 4px;
+
+        .sub {
+            margin-left: 10px;
+            color: #999;
+
+            a {
+                color: #888;
+                &:hover {
+                    color: darken(#888, 10%);
+                }
+            }
         }
     }
 }

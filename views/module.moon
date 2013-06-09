@@ -36,7 +36,7 @@ class Module extends require "widgets.base"
         url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
         a href: url, v\name_for_display!
 
-        span class: "date", time_ago_in_words(v.created_at)
+        span class: "sub", time_ago_in_words(v.created_at)
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests
@@ -48,9 +48,10 @@ class Module extends require "widgets.base"
             code m.name
 
           if can_edit
-            text " ("
-            a href: @url_for("remove_from_manifest", @), "remove"
-            text ")"
+            span class: "sub", ->
+              text " ("
+              a href: @url_for("remove_from_manifest", @), "remove"
+              text ")"
 
         @manifest = nil
 
