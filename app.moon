@@ -129,7 +129,7 @@ assert_table = (val) ->
 delete_module = respond_to {
   before: =>
     load_module @
-    @title = "Delete #{@module.name}?"
+    @title = "Delete #{@module\name_for_display!}?"
 
   GET: require_login =>
     assert_editable @, @module
@@ -284,7 +284,7 @@ class extends lapis.Application
 
   [module: "/modules/:user/:module"]: =>
     load_module @
-    @title = "#{@module.name}"
+    @title = "#{@module\name_for_display!}"
     @page_description = @module.summary if @module.summary
 
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
@@ -300,6 +300,8 @@ class extends lapis.Application
     before: =>
       load_module @
       assert_editable @, @module
+
+      @title = "Edit '#{@module\name_for_display!}'"
 
     GET: =>
       render: true
@@ -317,7 +319,7 @@ class extends lapis.Application
 
   [module_version: "/modules/:user/:module/:version"]: =>
     load_module @
-    @title = "#{@module.name} #{@version.version_name}"
+    @title = "#{@module\name_for_display!} #{@version.version_name}"
     @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
 
     render: true
