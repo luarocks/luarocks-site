@@ -79,6 +79,13 @@ p {
     }
 }
 
+hr {
+    height: 1px;
+    background: #ebdecd;
+    border: 0;
+    margin: 20px 0;
+}
+
 
 .header {
     @include autograd($header_color);
@@ -331,7 +338,7 @@ pre.highlight {
     background: white;
     border: 1px solid darken($back_color, 30%);
     box-shadow: 1px 1px 0 darken($back_color, 40%), 0 0 10px rgba(0,0,0, 0.2);
-    font-size: 18px;
+    font-size: 14px;
 
     td {
         padding: 4px 8px;

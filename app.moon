@@ -15,7 +15,7 @@ import respond_to, capture_errors, assert_error, yield_error from require "lapis
 import validate, assert_valid from require "lapis.validate"
 import escape_pattern, trim_filter from require "lapis.util"
 
-import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules from require "models"
+import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules, ApiKeys from require "models"
 
 import concat, insert from table
 
@@ -525,6 +525,7 @@ class extends lapis.Application
     before: =>
       @user = @current_user
       @user\get_data!
+      @api_keys = ApiKeys\select "where user_id = ?", @user.id
 
     GET: =>
       render: true
@@ -548,6 +549,35 @@ class extends lapis.Application
 
       redirect_to: @url_for"user_settings" .. "?password_reset=true"
   }
+
+  [new_api_key: "/api_keys/new"]: require_login respond_to {
+    POST: capture_errors {
+      on_error: => redirect_to: @url_for "user_settings"
+
+      =>
+        assert_csrf @
+        ApiKeys\generate @current_user.id
+        redirect_to: @url_for "user_settings"
+    }
+  }
+
+  [delete_api_key: "/api_key/:key/delete"]: require_login capture_errors {
+    on_error: => redirect_to: @url_for "user_settings"
+
+    respond_to {
+      before: =>
+        @key = ApiKeys\find user_id: @current_user.id, key: @params.key
+        assert_error @key, "invalid key"
+
+      GET: => render: true
+
+      POST: =>
+        assert_csrf @
+        @key\delete!
+        redirect_to: @url_for "user_settings"
+    }
+  }
+
 
   [about: "/about"]: =>
     @title = "About"

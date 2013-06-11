@@ -187,15 +187,31 @@ make_schema = ->
 
   migrations.create_migrations_table!
 
+
+  --
+  -- ApiKeys
+  --
+  create_table "api_keys", {
+    {"user_id", foreign_key}
+    {"key", varchar}
+
+    {"source", varchar null: true}
+    {"actions", integer}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (user_id, key)"
+  }
+
 destroy_schema = ->
   tbls = {
     "users", "modules", "versions", "rocks", "dependencies", "manifests",
-    "manifest_modules"
+    "manifest_modules", "api_keys"
   }
 
   for t in *tbls
     drop_table t
-
 
 if ... == "test"
   db.query = print

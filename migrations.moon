@@ -50,5 +50,4 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
         arch: r.arch\lower!
       }
 
-
 }

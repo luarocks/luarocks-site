@@ -323,7 +323,17 @@ class Manifests extends Model
     else
       @id
 
+class ApiKeys extends Model
+  @primary_key: {"user_id", "key"}
+  @timestamp: true
+
+  @generate: (user_id, source) =>
+    key = generate_key 30
+    @create { :user_id, :key, :source }
+
+  url_key: => @key
+
 {
   :Users, :UserData, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins,
-  :ManifestModules
+  :ManifestModules, :ApiKeys
 }
