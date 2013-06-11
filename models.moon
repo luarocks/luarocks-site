@@ -8,6 +8,8 @@ import Model from require "lapis.db.model"
 import underscore, slugify from require "lapis.util"
 import concat from table
 
+math.randomseed os.time!
+
 local *
 
 increment_counter = (keys, amount=1) =>
@@ -21,7 +23,6 @@ increment_counter = (keys, amount=1) =>
   db.update @@table_name!, update, @_primary_cond!
 
 generate_key = do
-  math.randomseed os.time!
   import random from math
   random_char = ->
     switch random 1,3
@@ -328,7 +329,7 @@ class ApiKeys extends Model
   @timestamp: true
 
   @generate: (user_id, source) =>
-    key = generate_key 30
+    key = generate_key 40
     @create { :user_id, :key, :source }
 
   url_key: => @key

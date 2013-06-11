@@ -11,7 +11,7 @@ bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
 
-import respond_to, capture_errors, assert_error, yield_error from require "lapis.application"
+import respond_to, capture_errors, capture_errors_json, assert_error, yield_error from require "lapis.application"
 import validate, assert_valid from require "lapis.validate"
 import escape_pattern, trim_filter from require "lapis.util"
 
@@ -125,6 +125,12 @@ assert_csrf = =>
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
+
+api_request = (fn) ->
+  capture_errors_json =>
+    @key = assert_error ApiKeys\find(key: @params.key), "Invalid key"
+    @current_user = Users\find id: @key.user_id
+    fn @
 
 delete_module = respond_to {
   before: =>
@@ -525,9 +531,10 @@ class extends lapis.Application
     before: =>
       @user = @current_user
       @user\get_data!
-      @api_keys = ApiKeys\select "where user_id = ?", @user.id
+      @title = "User Settings"
 
     GET: =>
+      @api_keys = ApiKeys\select "where user_id = ?", @user.id
       render: true
 
     POST: capture_errors =>
@@ -543,7 +550,7 @@ class extends lapis.Application
         }
 
         assert_error @user\check_password(passwords.current_password),
-          "invalid old password"
+          "Invalid old password"
 
         @user\update_password passwords.new_password, @
 
@@ -567,7 +574,7 @@ class extends lapis.Application
     respond_to {
       before: =>
         @key = ApiKeys\find user_id: @current_user.id, key: @params.key
-        assert_error @key, "invalid key"
+        assert_error @key, "Invalid key"
 
       GET: => render: true
 
@@ -578,6 +585,9 @@ class extends lapis.Application
     }
   }
 
+  -- Get status of key
+  "/api/1/:key/status": api_request =>
+    json: { user_id: @current_user.id, created_at: @key.created_at }
 
   [about: "/about"]: =>
     @title = "About"

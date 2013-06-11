@@ -201,8 +201,10 @@ make_schema = ->
     {"created_at", time}
     {"updated_at", time}
 
-    "PRIMARY KEY (user_id, key)"
+    "PRIMARY KEY (key)"
   }
+
+  create_index "api_keys", "user_id"
 
 destroy_schema = ->
   tbls = {
