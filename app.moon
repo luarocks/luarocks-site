@@ -20,7 +20,7 @@ import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules, Ap
 import concat, insert from table
 
 parse_rockspec = (text) ->
-  fn = loadstring text, rock
+  fn = loadstring text
   return nil, "Failed to parse rockspec" unless fn
   spec = {}
   setfenv fn, spec
@@ -596,9 +596,23 @@ class extends lapis.Application
   "/api/1/:key/modules": api_request =>
     json: { modules: @current_user\all_modules! }
 
+  "/api/1/:key/check_rockspec": api_request =>
+    assert_valid @params, {
+      { "package", exists: true }
+      { "version", exists: true }
+    }
+
+    module = Modules\find user_id: @current_user.id, name: @params.package\lower!
+    version = if module
+      Versions\find module_id: module.id, version_name: @params.version\lower!
+
+    json: { :module, :version }
+
   "/api/1/:key/upload": api_request =>
     module, version = handle_rockspec_upload @
-    json: { :module, :version }
+
+    module_url = @build_url @url_for "module", user: @current_user, :module
+    json: { :module, :version, :module_url }
 
   [about: "/about"]: =>
     @title = "About"
