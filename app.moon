@@ -164,6 +164,44 @@ delete_module = respond_to {
       redirect_to: @url_for "index"
 }
 
+handle_rockspec_upload = =>
+  assert_error @current_user, "Must be logged in"
+
+  assert_valid @params, {
+    { "rockspec_file", file_exists: true }
+  }
+
+  file = @params.rockspec_file
+  spec = assert_error parse_rockspec file.content
+
+  new_module = false
+  mod = Modules\find user_id: @current_user.id, name: spec.package\lower!
+
+  unless mod
+    new_module = true
+    mod = assert Modules\create spec, @current_user
+
+  key = "#{@current_user.id}/#{filename_for_rockspec spec}"
+  out = bucket\put_file_string file.content, {
+    :key, mimetype: "text/x-rockspec"
+  }
+
+  unless out == 200
+    mod\delete! if new_module
+    error "Failed to upload rockspec"
+
+  version = Versions\find module_id: mod.id, version_name: spec.version\lower!
+
+  if version
+    -- make sure file pointer is correct
+    unless version.rockspec_key == key
+      version\update rockspec_key: key
+  else
+    version = assert Versions\create mod, spec, key
+    mod\update current_version_id: version.id
+
+  mod, version
+
 set_memory_usage = ->
   posix = require "posix"
   json = require "cjson"
@@ -221,41 +259,7 @@ class extends lapis.Application
 
     POST: capture_errors =>
       assert_csrf @
-      assert @current_user, "Must be logged in"
-
-      assert_valid @params, {
-        { "rockspec_file", file_exists: true }
-      }
-
-      file = @params.rockspec_file
-      spec = assert_error parse_rockspec file.content
-
-      new_module = false
-      mod = Modules\find user_id: @current_user.id, name: spec.package\lower!
-
-      unless mod
-        new_module = true
-        mod = assert Modules\create spec, @current_user
-
-      key = "#{@current_user.id}/#{filename_for_rockspec spec}"
-      out = bucket\put_file_string file.content, {
-        :key, mimetype: "text/x-rockspec"
-      }
-
-      unless out == 200
-        mod\delete! if new_module
-        error "Failed to upload rockspec"
-
-      version = Versions\find module_id: mod.id, version_name: spec.version\lower!
-
-      if version
-        -- make sure file pointer is correct
-        unless version.rockspec_key == key
-          version\update rockspec_key: key
-      else
-        version = assert Versions\create mod, spec, key
-        mod\update current_version_id: version.id
-
+      mod, version = handle_rockspec_upload @
       redirect_to: @url_for "module", user: @current_user, module: mod
   }
 
@@ -588,6 +592,13 @@ class extends lapis.Application
   -- Get status of key
   "/api/1/:key/status": api_request =>
     json: { user_id: @current_user.id, created_at: @key.created_at }
+
+  "/api/1/:key/modules": api_request =>
+    json: { modules: @current_user\all_modules! }
+
+  "/api/1/:key/upload": api_request =>
+    module, version = handle_rockspec_upload @
+    json: { :module, :version }
 
   [about: "/about"]: =>
     @title = "About"
