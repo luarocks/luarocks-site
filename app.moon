@@ -210,6 +210,31 @@ handle_rockspec_upload = =>
   mod, version, new_module
 
 
+handle_rock_upload = =>
+  assert_editable @, @module
+
+  assert_valid @params, {
+    { "rock_file", file_exists: true }
+  }
+
+  file = @params.rock_file
+
+  rock_info = assert_error parse_rock_fname @module.name, file.filename
+
+  if rock_info.version != @version.version_name
+    yield_error "Rock doesn't match version #{@version.version_name}"
+
+  key = "#{@current_user.id}/#{file.filename}"
+  out = bucket\put_file_string file.content, {
+    :key, mimetype: "application/x-rock"
+  }
+
+  unless out == 200
+    error "Failed to upload rock"
+
+  Rocks\create @version, rock_info.arch, key
+
+
 set_memory_usage = ->
   posix = require "posix"
   json = require "cjson"
@@ -356,28 +381,7 @@ class extends lapis.Application
 
     POST: capture_errors =>
       assert_csrf @
-      assert_editable @, @module
-
-      assert_valid @params, {
-        { "rock_file", file_exists: true }
-      }
-
-      file = @params.rock_file
-
-      rock_info = assert_error parse_rock_fname @module.name, file.filename
-
-      if rock_info.version != @version.version_name
-        yield_error "Rock doesn't match version #{@version.version_name}"
-
-      key = "#{@current_user.id}/#{file.filename}"
-      out = bucket\put_file_string file.content, {
-        :key, mimetype: "application/x-rock"
-      }
-
-      unless out == 200
-        error "Failed to upload rock"
-
-      Rocks\create @version, rock_info.arch, key
+      handle_rock_upload @
       redirect_to: @url_for "module_version", @
   }
 
@@ -626,6 +630,11 @@ class extends lapis.Application
     module_url = @build_url @url_for "module", user: @current_user, :module
     json: { :module, :version, :module_url, :manifests, :is_new }
 
+  "/api/1/:key/upload_rock/:version_id": api_request =>
+    @version = assert_error Versions\find(id: @params.version_id), "invalid version"
+    @module = Modules\find id: @version.module_id
+    rock = handle_rock_upload @
+    json: { :rock }
 
   [about: "/about"]: =>
     @title = "About"
