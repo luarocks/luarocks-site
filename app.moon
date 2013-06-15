@@ -207,7 +207,8 @@ handle_rockspec_upload = =>
     unless ManifestModules\find manifest_id: root_manifest.id, module_id: mod.id
       ManifestModules\create root_manifest, mod
 
-  mod, version
+  mod, version, new_module
+
 
 set_memory_usage = ->
   posix = require "posix"
@@ -616,10 +617,15 @@ class extends lapis.Application
     json: { :module, :version }
 
   "/api/1/:key/upload": api_request =>
-    module, version = handle_rockspec_upload @
+    module, version, is_new = handle_rockspec_upload @
 
+    manifest_modules = ManifestModules\select "where module_id = ?", module.id
+    Manifests\include_in manifest_modules, "manifest_id"
+
+    manifests = [m.manifest for m in *manifest_modules]
     module_url = @build_url @url_for "module", user: @current_user, :module
-    json: { :module, :version, :module_url }
+    json: { :module, :version, :module_url, :manifests, :is_new }
+
 
   [about: "/about"]: =>
     @title = "About"
