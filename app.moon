@@ -181,6 +181,7 @@ handle_rockspec_upload = =>
     new_module = true
     mod = assert Modules\create spec, @current_user
 
+
   key = "#{@current_user.id}/#{filename_for_rockspec spec}"
   out = bucket\put_file_string file.content, {
     :key, mimetype: "text/x-rockspec"
@@ -199,6 +200,12 @@ handle_rockspec_upload = =>
   else
     version = assert Versions\create mod, spec, key
     mod\update current_version_id: version.id
+
+  -- try to insert into root
+  if new_module
+    root_manifest = Manifests\root!
+    unless ManifestModules\find manifest_id: root_manifest.id, module_id: mod.id
+      ManifestModules\create root_manifest, mod
 
   mod, version
 
