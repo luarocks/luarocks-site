@@ -181,7 +181,6 @@ handle_rockspec_upload = =>
     new_module = true
     mod = assert Modules\create spec, @current_user
 
-
   key = "#{@current_user.id}/#{filename_for_rockspec spec}"
   out = bucket\put_file_string file.content, {
     :key, mimetype: "text/x-rockspec"

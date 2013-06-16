@@ -13,6 +13,10 @@ manifest located at the URL of this site. Users can elect their modules into
 the root manifest so others can install their module when using the root
 manifest URL.
 
+This website is supplemented by a command line tool called `moonrocks` which
+lets you upload modules quickly and easily. Read more:
+<http://github.com/leafo/moonrocks>
+
 ### More About Rockspecs & Rocks
 
 Throughout the lifetime of a module, there will probably be multiple versions
@@ -58,11 +62,36 @@ After downloading the right file, LuaRocks will then perform the installation
 and the module is ready for use.
 
 
+### Using MoonRocks Manifest Without `moonrocks` Tool
+
+If you want to always install from MoonRocks you can add the manifest url to
+your LuaRocks `config.lua`:
+
+```lua
+rocks_servers = {
+  "http://rocks.moonscript.org/"
+}
+```
+
+And install like so:
+
+```bash
+$ luarocks install some_package
+```
+
+Alternatively you can specify the MoonRocks server as a command line flag:
+
+
+```bash
+$ luarocks install some_package --server=http://rocks.moonscript.org
+```
+
 ### How This Site Is Built
 
-Coming Soon! View the source on [GitHub][2] in the meantime.
-
+This site is written in [MoonScript][3] using the [Lapis framework][4]. You can find the source on [GitHub][2].
 
   [1]: http://luarocks.org/
   [2]: http://github.com/leafo/moonrocks-site
+  [3]: http://moonscript.org
+  [4]: http://leafo.net/lapis/
 
