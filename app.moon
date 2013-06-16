@@ -600,6 +600,10 @@ class extends lapis.Application
     }
   }
 
+  "/api/tool_version": =>
+    config = require"lapis.config".get!
+    json: { version: config.tool_version }
+
   -- Get status of key
   "/api/1/:key/status": api_request =>
     json: { user_id: @current_user.id, created_at: @key.created_at }

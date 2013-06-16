@@ -2,6 +2,7 @@
 import config from require "lapis.config"
 
 config {"development", "production", "heroku"}, ->
+  tool_version "0.0.1"
   pcall -> include require "secret.init"
 
 config "development", ->
