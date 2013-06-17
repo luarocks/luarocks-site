@@ -1,6 +1,12 @@
 
 ## Changes
 
+**2013/6/16**
+
+  * New modules will go into root manifest by default (unless name is taken)
+  * Added API
+  * Create `moonrocks` tool: <https://github.com/leafo/moonrocks>
+
 **2013/6/9**
 
   * Added ability to edit modules
