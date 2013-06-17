@@ -100,14 +100,21 @@ require_login = (fn) ->
 
 load_module = =>
   @user = assert Users\find(slug: @params.user), "Invalid user"
-  @module = assert Modules\find(user_id: @user.id, name: @params.module), "Invalid module"
+  @module = assert Modules\find(user_id: @user.id, name: @params.module\lower!), "Invalid module"
   @module.user = @user
 
   if @params.version
     @version = assert Versions\find({
       module_id: @module.id
-      version_name: @params.version
+      version_name: @params.version\lower!
     }), "Invalid version"
+
+  if @route_name and (@module.name != @params.module or @version and @version.version_name != @params.version)
+    url = @url_for @route_name, user: @user, module: @module, version: @version
+    @write status: 301, redirect_to: url
+    return false
+
+  true
 
 load_manifest = (key="id") =>
   @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
@@ -325,7 +332,8 @@ class extends lapis.Application
     render: true
 
   [module: "/modules/:user/:module"]: =>
-    load_module @
+    return unless load_module @
+
     @title = "#{@module\name_for_display!}"
     @page_description = @module.summary if @module.summary
 
@@ -360,7 +368,8 @@ class extends lapis.Application
   }
 
   [module_version: "/modules/:user/:module/:version"]: =>
-    load_module @
+    return unless load_module @
+
     @title = "#{@module\name_for_display!} #{@version.version_name}"
     @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
 
