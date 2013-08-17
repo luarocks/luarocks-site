@@ -454,7 +454,6 @@ class extends lapis.Application
 
     render: true
 
-  -- need a way to combine the routes from other applications?
   [user_login: "/login"]: respond_to {
     before: =>
       @title = "Login"
