@@ -61,7 +61,6 @@ class Layout extends Widget
 
         div class: "footer", ->
           div class: "right", ->
-            text "by "
             a href: "http://twitter.com/moonscript", "@moonscript"
             raw " &middot; "
             a href: "http://github.com/leafo/moonrocks-site", "Source"
