@@ -1,11 +1,11 @@
 
 import config from require "lapis.config"
 
-config {"development", "production", "heroku"}, ->
+config {"development", "test", "production", "heroku"}, ->
   tool_version "0.0.1"
   pcall -> include require "secret.init"
 
-config "development", ->
+config {"development", "test"}, ->
   num_workers 1
   code_cache "off"
 
