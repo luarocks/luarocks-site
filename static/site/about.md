@@ -83,7 +83,7 @@ Alternatively you can specify the MoonRocks server as a command line flag:
 
 
 ```bash
-$ luarocks install some_package --server=http://rocks.moonscript.org
+$ luarocks install --server=http://rocks.moonscript.org some_package
 ```
 
 ### How This Site Is Built

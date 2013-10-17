@@ -1,7 +1,7 @@
 ### Get Started
 
 ```bash
-$ luarocks install moonrocks --server=http://rocks.moonscript.org
+$ luarocks install --server=http://rocks.moonscript.org moonrocks
 ```
 
 Upload a module:
