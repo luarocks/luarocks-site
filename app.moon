@@ -282,6 +282,9 @@ class extends lapis.Application
     @csrf_token = generate_csrf @
     pcall -> set_memory_usage!
 
+  handle_404: =>
+    "Not found", status: 404
+
   [info: "/info"]: =>
     json = require "cjson"
     dict = ngx.shared.memory_usage
