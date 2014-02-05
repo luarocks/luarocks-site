@@ -193,7 +193,6 @@ make_schema = ->
 
   migrations.create_migrations_table!
 
-
   --
   -- ApiKeys
   --
@@ -211,15 +210,6 @@ make_schema = ->
   }
 
   create_index "api_keys", "user_id"
-
-destroy_schema = ->
-  tbls = {
-    "users", "modules", "versions", "rocks", "dependencies", "manifests",
-    "manifest_modules", "api_keys"
-  }
-
-  for t in *tbls
-    drop_table t
 
 if ... == "test"
   db.query = print

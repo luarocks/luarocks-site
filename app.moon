@@ -295,17 +295,6 @@ class extends lapis.Application
 
     render: true
 
-  "/admin/db/make": =>
-    schema = require "schema"
-    schema.make_schema!
-    Manifests\create "root", true
-    json: { status: "ok" }
-
-  "/admin/db/migrate": =>
-    import run_migrations from require "lapis.db.migrations"
-    run_migrations require "migrations"
-    json: { status: "ok" }
-
   [modules: "/modules"]: =>
     @title = "All Modules"
     @modules = Modules\select "order by name asc"
