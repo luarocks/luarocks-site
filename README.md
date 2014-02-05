@@ -16,15 +16,14 @@ Files are stored on Google Cloud Storage. PostgreSQL is used as a database.
 
 This is a bit complicated, tell me if you are doing this and I'll assist you.
 
-Install [scssphp](https://github.com/leafo/scssphp), make sure `pscss` is in
-path. (Optionally you can install [SASS](http://sass-lang.com/) but you'll need
-to modify a Tupfile)
+Install [sassc](https://github.com/hcatlin/sassc). (Optionally you can install
+[SASS](http://sass-lang.com/) but you'll need to modify a Tupfile)
 
 Install [coffeescript](http://coffeescript.org/#installation).
 
 Install PostgreSQL. Create a database for the project. (moonrocks)
 
-Install the latest version of [OpenResty][1]. Configure with the
+Install [OpenResty][1]. Configure with the
 `--with-http_postgres_module` and optionally `--with-luajit`.
 
 Check out this repository.
