@@ -3,18 +3,21 @@ db = require "lapis.nginx.postgres"
 schema = require "lapis.db.schema"
 migrations = require "lapis.db.migrations"
 
-import create_table, create_index, drop_table from schema
+import
+  create_table
+  create_index
+  drop_table from schema
 
 make_schema = ->
-  {
-    :serial
-    :varchar
-    :text
-    :time
-    :integer
-    :foreign_key
-    :boolean
-  } = schema.types
+  import
+    serial
+    varchar
+    text
+    time
+    integer
+    foreign_key
+    boolean
+    from schema.types
 
   --
   -- Users
@@ -38,6 +41,9 @@ make_schema = ->
   create_index "users", "slug", unique: true
   create_index "users", "flags"
 
+  --
+  -- UserData
+  --
   create_table "user_data", {
     {"user_id", foreign_key}
     {"email_verified", boolean}

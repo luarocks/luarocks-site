@@ -11,11 +11,34 @@ bucket = require "storage_bucket"
 
 persist = require "luarocks.persist"
 
-import respond_to, capture_errors, capture_errors_json, assert_error, yield_error from require "lapis.application"
-import validate, assert_valid from require "lapis.validate"
-import escape_pattern, trim_filter from require "lapis.util"
+import
+  respond_to
+  capture_errors
+  capture_errors_json
+  assert_error
+  yield_error
+  from require "lapis.application"
 
-import Users, UserData, Modules, Versions, Rocks, Manifests, ManifestModules, ApiKeys from require "models"
+import
+  validate
+  assert_valid
+  from require "lapis.validate"
+
+import
+  escape_pattern
+  trim_filter
+  from require "lapis.util"
+
+import
+  Users
+  UserData
+  Modules
+  Versions
+  Rocks
+  Manifests
+  ManifestModules
+  ApiKeys
+  from require "models"
 
 import concat, insert from table
 
