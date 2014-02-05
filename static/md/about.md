@@ -42,9 +42,7 @@ MoonRocks is a website for hosting all of these kinds of files.
 When you tell LuaRocks to install a package you typically do something like
 this:
 
-    ```bash
     $ luarocks install enet
-    ```
 
 LuaRocks will download a manifest from each of the manifest servers it has been
 configured to look at. A manifest is a list of modules that a server has
@@ -67,24 +65,18 @@ and the module is ready for use.
 If you want to always install from MoonRocks you can add the manifest url to
 your LuaRocks `config.lua`:
 
-```lua
-rocks_servers = {
-  "http://rocks.moonscript.org/"
-}
-```
+    rocks_servers = {
+      "http://rocks.moonscript.org/"
+    }
 
 And install like so:
 
-```bash
-$ luarocks install some_package
-```
+    $ luarocks install some_package
 
 Alternatively you can specify the MoonRocks server as a command line flag:
 
 
-```bash
-$ luarocks install --server=http://rocks.moonscript.org some_package
-```
+    $ luarocks install --server=http://rocks.moonscript.org some_package
 
 ### How This Site Is Built
 

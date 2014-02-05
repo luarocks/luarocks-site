@@ -1,20 +1,14 @@
 ### Get Started
 
-```bash
-$ luarocks install --server=http://rocks.moonscript.org moonrocks
-```
+    $ luarocks install --server=http://rocks.moonscript.org moonrocks
 
 Upload a module:
 
-```bash
-$ moonrocks upload my_thing-1.0-1.rockspec
-```
+    $ moonrocks upload my_thing-1.0-1.rockspec
 
 Install a module:
 
-```bash
-$ moonrocks install my_thing
-```
+    $ moonrocks install my_thing
 
 Read more on the [About Page][1].
 
