@@ -34,18 +34,32 @@ Install the dependencies listed in
 
 Run these commands to build.
 
-    tup init
-    tup upd
+```bash
+tup init
+tup upd
+```
 
-Now just run
+Create the schema:
+
+```bash
+make schema
+```
+
+Start the server:
 
 ```bash
 lapis server
 ```
 
-To build the initial database, go to `http://localhost:8080/db/make`.
-
 Now `http://localhost:8080` should load.
+
+### Running tests
+
+MoonRocks uses [Busted](http://olivinelabs.com/busted/) for its tests:
+
+```bash
+busted
+```
 
 ### Setting up Google Cloud Storage
 
