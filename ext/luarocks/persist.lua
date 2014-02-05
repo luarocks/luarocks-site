@@ -4,9 +4,9 @@
 -- saving tables into files.
 -- Implemented separately to avoid interdependencies,
 -- as it is used in the bootstrapping stage of the cfg module.
-module("luarocks.persist", package.seeall)
+module("ext.luarocks.persist", package.seeall)
 
-local util = require("luarocks.util")
+local util = require("ext.luarocks.util")
 
 --- Load a Lua file containing assignments, storing them in a table.
 -- The global environment is not propagated to the loaded file.

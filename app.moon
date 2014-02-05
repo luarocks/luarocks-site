@@ -9,7 +9,7 @@ csrf = require "lapis.csrf"
 
 bucket = require "storage_bucket"
 
-persist = require "luarocks.persist"
+persist = require "ext.luarocks.persist"
 
 import
   respond_to

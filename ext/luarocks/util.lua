@@ -1,4 +1,4 @@
-module("luarocks.util", package.seeall)
+module("ext.luarocks.util", package.seeall)
 
 --- Return an array of keys of a table.
 -- @param tbl table: The input table.
