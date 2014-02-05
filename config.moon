@@ -8,6 +8,8 @@ config {"development", "test", "production", "heroku"}, ->
 config {"development", "test"}, ->
   num_workers 1
   code_cache "off"
+  daemon "off"
+  notice_log "stderr"
 
   postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
   bucket_name "moonrocks_dev"
@@ -15,6 +17,9 @@ config {"development", "test"}, ->
 config "production", ->
   num_workers 2
   code_cache "on"
+
+  daemon "on"
+  notice_log "logs/notice.log"
 
   postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
   bucket_name "moonrocks"
