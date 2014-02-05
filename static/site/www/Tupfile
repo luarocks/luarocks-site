@@ -1,3 +1,0 @@
-.gitignore
-
-: foreach ../*.md |> ( cd .. && sitegen build %B.md ) |> %B.html

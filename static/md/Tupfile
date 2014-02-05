@@ -1,0 +1,2 @@
+.gitignore
+: foreach *.md |> markdown < %f > %o |> %B.html

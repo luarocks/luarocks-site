@@ -63,7 +63,7 @@ class Base extends Widget
       @format_number(bytes) .. suffix
 
   raw_ssi: (fname) =>
-    res = ngx.location.capture "/static/site/www/#{fname}"
+    res = ngx.location.capture "/static/md/#{fname}"
     error "Failed to include SSI `#{fname}`" unless res.status == 200
     raw res.body
 
