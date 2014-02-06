@@ -21,7 +21,9 @@ Install [sassc](https://github.com/hcatlin/sassc). (Optionally you can install
 
 Install [coffeescript](http://coffeescript.org/#installation).
 
-Install PostgreSQL. Create a database for the project. (moonrocks)
+Install [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` binary).
+
+Install PostgreSQL. Create a database called `moonrocks`.
 
 Install [OpenResty][1]. Configure with the
 `--with-http_postgres_module` and optionally `--with-luajit`.
@@ -58,8 +60,11 @@ Now `http://localhost:8080` should load.
 MoonRocks uses [Busted](http://olivinelabs.com/busted/) for its tests:
 
 ```bash
+make test_db
 busted
 ```
+
+You only need to run `make test_db` if the schema of the database has changed.
 
 ### Setting up Google Cloud Storage
 
