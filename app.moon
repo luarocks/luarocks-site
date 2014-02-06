@@ -263,16 +263,19 @@ handle_rock_upload = =>
 
   Rocks\create @version, rock_info.arch, key
 
-
 set_memory_usage = ->
-  posix = require "posix"
-  json = require "cjson"
+  success = pcall ->
+    posix = require "posix"
+    json = require "cjson"
 
-  pid = posix.getpid "pid"
-  mem = collectgarbage "count"
-  time = os.time!
+    pid = posix.getpid "pid"
+    mem = collectgarbage "count"
+    time = os.time!
 
-  ngx.shared.memory_usage\set tostring(pid), json.encode { :mem, :time }
+    ngx.shared.memory_usage\set tostring(pid), json.encode { :mem, :time }
+
+  unless success
+    set_memory_usage = ->
 
 class extends lapis.Application
   layout: require "views.layout"
@@ -280,7 +283,7 @@ class extends lapis.Application
   @before_filter =>
     @current_user = Users\read_session @
     @csrf_token = generate_csrf @
-    pcall -> set_memory_usage!
+    set_memory_usage!
 
   handle_404: =>
     "Not found", status: 404
