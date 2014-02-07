@@ -6,7 +6,7 @@ bucket = require "storage_bucket"
 
 import Model from require "lapis.db.model"
 import underscore, slugify from require "lapis.util"
-import concat from table
+import concat, insert from table
 
 math.randomseed os.time!
 
@@ -35,6 +35,19 @@ generate_key = do
 
   (length) ->
     string.char unpack [ random_char! for i=1,length ]
+
+get_all_pages = (pager) ->
+  i = 1
+  accum = {}
+  while true
+    items = pager\get_page i
+    break unless next items
+    for item in *items
+      insert accum, item
+    i += 1
+
+  accum
+
 
 class Users extends Model
   @timestamp: true
@@ -308,13 +321,18 @@ class Manifests extends Model
     ManifestAdmins\find user_id: user.id, manifest_id: @id
 
   all_modules: =>
-    assocs = ManifestModules\select "where manifest_id = ?", @id
-    module_ids = [db.escape_literal(a.module_id) for a in *assocs]
+    pager = ManifestModules\paginated "where manifest_id = ?", @id, {
+      per_page: 20
+      prepare_results: (manifest_modules) ->
+        Modules\include_in manifest_modules, "module_id"
+        [mm.module for mm in *manifest_modules]
+    }
 
-    if next module_ids
-      Modules\select "where id in (#{concat module_ids, ", "}) order by name asc"
-    else
-      {}
+    modules = get_all_pages pager
+    table.sort modules, (a,b) ->
+      a.name < b.name
+
+    modules
 
   source_url: (r) => r\build_url!
 
