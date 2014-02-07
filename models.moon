@@ -322,7 +322,7 @@ class Manifests extends Model
 
   all_modules: =>
     pager = ManifestModules\paginated "where manifest_id = ?", @id, {
-      per_page: 20
+      per_page: 50
       prepare_results: (manifest_modules) ->
         Modules\include_in manifest_modules, "module_id"
         [mm.module for mm in *manifest_modules]
