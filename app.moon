@@ -38,6 +38,7 @@ import
   Manifests
   ManifestModules
   ApiKeys
+  get_all_pages
   from require "models"
 
 import concat, insert from table
@@ -78,7 +79,7 @@ render_manifest = (modules) =>
   repository = {}
   if next mod_ids
     mod_ids = concat mod_ids, ", "
-    versions = Versions\select "where module_id in (#{mod_ids})"
+    versions = get_all_pages Versions\paginated "where module_id in (#{mod_ids}) order by id"
 
     module_to_versions = default_table!
     version_to_rocks = default_table!
@@ -86,7 +87,7 @@ render_manifest = (modules) =>
     version_ids = [v.id for v in *versions]
     if next version_ids
       version_ids = concat version_ids, ", "
-      rocks = Rocks\select "where version_id in (#{version_ids})"
+      rocks = get_all_pages Rocks\paginated "where version_id in (#{version_ids}) order by id"
       for rock in *rocks
         insert version_to_rocks[rock.version_id], rock
 

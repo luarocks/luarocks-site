@@ -354,5 +354,5 @@ class ApiKeys extends Model
 
 {
   :Users, :UserData, :Modules, :Versions, :Rocks, :Manifests, :ManifestAdmins,
-  :ManifestModules, :ApiKeys
+  :ManifestModules, :ApiKeys, :get_all_pages
 }
