@@ -75,18 +75,6 @@ class Users extends Model
     @data = UserData\find(@id) or UserData\create(@id)
     @data
 
-  send_email: (subject, body) =>
-    import render_html from require "lapis.html"
-    import send_email from require "helpers.email"
-
-    body_html = render_html ->
-      div body
-      hr!
-      h4 ->
-        a href: "http://rocks.moonscript.org", "MoonRocks"
-
-    send_email @email, subject, body_html, html: true
-
   gravatar: (size) =>
     url = "http://www.gravatar.com/avatar/#{ngx.md5 @email}?d=identicon"
     url = url .. "&s=#{size}" if size

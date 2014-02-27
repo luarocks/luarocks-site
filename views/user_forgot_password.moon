@@ -33,7 +33,7 @@ class UserForgotPassword extends require "widgets.base"
 
   request_reset_form: =>
     if @params.sent
-      p -> b "A password reset link has been sent to you email address."
+      p -> b "A password reset link has been sent to your email address."
 
     h2 "Reset Password"
     @render_errors!

@@ -114,11 +114,8 @@ class MoonRocksUser extends lapis.Application
         reset_url = @build_url @url_for"user_forgot_password",
           query: "token=#{token}&id=#{user.id}"
 
-        user\send_email "Reset your password", ->
-          h2 "Reset Your Password"
-          p "Someone attempted to reset your password. If that person was you, click the link below to update your password. If it wasn't you then you don't have to do anything."
-          p ->
-            a href: reset_url, reset_url
+        UserPasswordResetEmail = require "emails.user_password_reset"
+        UserPasswordResetEmail\send @, user.email, { :user, :reset_url }
 
         redirect_to: @url_for"user_forgot_password" .. "?sent=true"
   }

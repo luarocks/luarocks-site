@@ -148,6 +148,7 @@ html_builer = {
 
     ["views/"]: html_builer
     ["widgets/"]: html_builer
+    ["emails/"]: html_builer
   }
 }
 
