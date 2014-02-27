@@ -10,7 +10,7 @@ class Manifests extends Model
     Model.create @, { :name, :is_open }
 
   @root: =>
-    assert Manifests\find(id: 1), "Missing root manifest"
+    assert Manifests\find(name: "root"), "Missing root manifest"
 
   allowed_to_add: (user) =>
     return false unless user
