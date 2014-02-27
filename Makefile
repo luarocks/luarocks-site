@@ -18,3 +18,7 @@ schema:
 	lapis exec 'require "cmd.schema"'
 
 
+routes:
+	lapis exec 'require "cmd.routes"'
+
+
