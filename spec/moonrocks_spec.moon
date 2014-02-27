@@ -6,9 +6,18 @@ should_load = (url, expected_status=200) ->
   it "should load #{url} with #{expected_status}", ->
     assert.same expected_status, (request url)
 
+import truncate_tables from require "lapis.spec.db"
+
+import
+  Manifests
+  from require "models"
+
 describe "moonrocks", ->
   setup ->
     load_test_server!
+
+    truncate_tables Manifests
+    Manifests\create "root", true
 
   teardown ->
     close_test_server!
@@ -27,4 +36,5 @@ describe "moonrocks", ->
   should_load "/upload", 302
   should_load "/settings", 302
   should_load "/api_keys/new", 302
+
 

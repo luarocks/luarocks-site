@@ -24,3 +24,6 @@ config "production", ->
   postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
   bucket_name "moonrocks"
 
+config "test", ->
+  postgresql_url "postgres://postgres:@127.0.0.1/moonrocks_test"
+
