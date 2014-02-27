@@ -113,20 +113,6 @@ delete_module = respond_to {
       redirect_to: @url_for "index"
 }
 
-set_memory_usage = ->
-  success = pcall ->
-    posix = require "posix"
-    json = require "cjson"
-
-    pid = posix.getpid "pid"
-    mem = collectgarbage "count"
-    time = os.time!
-
-    ngx.shared.memory_usage\set tostring(pid), json.encode { :mem, :time }
-
-  unless success
-    set_memory_usage = ->
-
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
 
@@ -135,23 +121,9 @@ class MoonRocks extends lapis.Application
   @before_filter =>
     @current_user = Users\read_session @
     @csrf_token = generate_csrf @
-    set_memory_usage!
 
   handle_404: =>
     "Not found", status: 404
-
-  [info: "/info"]: =>
-    json = require "cjson"
-    dict = ngx.shared.memory_usage
-
-    @workers = for pid in *dict\get_keys!
-      with w = json.decode dict\get pid
-        w.pid = pid
-
-    table.sort @workers, (a,b) ->
-      b.time < a.time
-
-    render: true
 
   [modules: "/modules"]: =>
     @title = "All Modules"
