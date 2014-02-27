@@ -77,7 +77,7 @@ class Users extends Model
 
   send_email: (subject, body) =>
     import render_html from require "lapis.html"
-    import send_email from require "email"
+    import send_email from require "helpers.email"
 
     body_html = render_html ->
       div body
