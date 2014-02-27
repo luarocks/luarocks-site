@@ -11,6 +11,8 @@ bucket = require "storage_bucket"
 
 persist = require "ext.luarocks.persist"
 
+math.randomseed os.time!
+
 import
   respond_to
   capture_errors
@@ -38,8 +40,9 @@ import
   Manifests
   ManifestModules
   ApiKeys
-  get_all_pages
   from require "models"
+
+import get_all_pages from require "helpers.models"
 
 import concat, insert from table
 
