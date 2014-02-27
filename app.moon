@@ -42,40 +42,19 @@ import
 
 import render_manifest from require "helpers.manifests"
 
+import
+  handle_rock_upload
+  handle_rockspec_upload
+  from require "helpers.uploaders"
+
+import
+  generate_csrf
+  assert_csrf
+  assert_editable
+  require_login
+  from require "helpers.apps"
+
 import concat, insert from table
-
-parse_rockspec = (text) ->
-  fn = loadstring text
-  return nil, "Failed to parse rockspec" unless fn
-  spec = {}
-  setfenv fn, spec
-  return nil, "Failed to eval rockspec" unless pcall(fn)
-
-  unless spec.package
-    return nil, "Invalid rockspec (missing package)"
-
-  unless spec.version
-    return nil, "Invalid rockspec (missing version)"
-
-  spec
-
-filename_for_rockspec = (spec) ->
-  "#{spec.package\lower!}-#{spec.version\lower!}.rockspec"
-
-parse_rock_fname = (module_name, fname) ->
-  version, arch = fname\match "^#{escape_pattern(module_name)}%-(.-)%.([^.]+)%.rock$"
-
-  unless version
-    return nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
-
-  { :version, :arch }
-
-require_login = (fn) ->
-  =>
-    if @current_user
-      fn @
-    else
-      redirect_to: @url_for"user_login"
 
 load_module = =>
   @user = assert Users\find(slug: @params.user), "Invalid user"
@@ -98,25 +77,9 @@ load_module = =>
 load_manifest = (key="id") =>
   @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
 
-assert_editable = (thing) =>
-  unless thing\allowed_to_edit @current_user
-    error "Don't have permission to edit"
-
-generate_csrf = =>
-  csrf.generate_token @, @current_user and @current_user.id
-
-assert_csrf = =>
-  csrf.assert_token @, @current_user and @current_user.id
-
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
-
-api_request = (fn) ->
-  capture_errors_json =>
-    @key = assert_error ApiKeys\find(key: @params.key), "Invalid key"
-    @current_user = Users\find id: @key.user_id
-    fn @
 
 delete_module = respond_to {
   before: =>
@@ -150,75 +113,6 @@ delete_module = respond_to {
       redirect_to: @url_for "index"
 }
 
-handle_rockspec_upload = =>
-  assert_error @current_user, "Must be logged in"
-
-  assert_valid @params, {
-    { "rockspec_file", file_exists: true }
-  }
-
-  file = @params.rockspec_file
-  spec = assert_error parse_rockspec file.content
-
-  new_module = false
-  mod = Modules\find user_id: @current_user.id, name: spec.package\lower!
-
-  unless mod
-    new_module = true
-    mod = assert Modules\create spec, @current_user
-
-  key = "#{@current_user.id}/#{filename_for_rockspec spec}"
-  out = bucket\put_file_string file.content, {
-    :key, mimetype: "text/x-rockspec"
-  }
-
-  unless out == 200
-    mod\delete! if new_module
-    error "Failed to upload rockspec"
-
-  version = Versions\find module_id: mod.id, version_name: spec.version\lower!
-
-  if version
-    -- make sure file pointer is correct
-    unless version.rockspec_key == key
-      version\update rockspec_key: key
-  else
-    version = assert Versions\create mod, spec, key
-    mod\update current_version_id: version.id
-
-  -- try to insert into root
-  if new_module
-    root_manifest = Manifests\root!
-    unless ManifestModules\find manifest_id: root_manifest.id, module_id: mod.id
-      ManifestModules\create root_manifest, mod
-
-  mod, version, new_module
-
-
-handle_rock_upload = =>
-  assert_editable @, @module
-
-  assert_valid @params, {
-    { "rock_file", file_exists: true }
-  }
-
-  file = @params.rock_file
-
-  rock_info = assert_error parse_rock_fname @module.name, file.filename
-
-  if rock_info.version != @version.version_name
-    yield_error "Rock doesn't match version #{@version.version_name}"
-
-  key = "#{@current_user.id}/#{file.filename}"
-  out = bucket\put_file_string file.content, {
-    :key, mimetype: "application/x-rock"
-  }
-
-  unless out == 200
-    error "Failed to upload rock"
-
-  Rocks\create @version, rock_info.arch, key
-
 set_memory_usage = ->
   success = pcall ->
     posix = require "posix"
@@ -233,8 +127,10 @@ set_memory_usage = ->
   unless success
     set_memory_usage = ->
 
-class extends lapis.Application
+class MoonRocks extends lapis.Application
   layout: require "views.layout"
+
+  @include "applications.api"
 
   @before_filter =>
     @current_user = Users\read_session @
@@ -553,73 +449,6 @@ class extends lapis.Application
 
       redirect_to: @url_for"user_settings" .. "?password_reset=true"
   }
-
-  [new_api_key: "/api_keys/new"]: require_login respond_to {
-    POST: capture_errors {
-      on_error: => redirect_to: @url_for "user_settings"
-
-      =>
-        assert_csrf @
-        ApiKeys\generate @current_user.id
-        redirect_to: @url_for "user_settings"
-    }
-  }
-
-  [delete_api_key: "/api_key/:key/delete"]: require_login capture_errors {
-    on_error: => redirect_to: @url_for "user_settings"
-
-    respond_to {
-      before: =>
-        @key = ApiKeys\find user_id: @current_user.id, key: @params.key
-        assert_error @key, "Invalid key"
-
-      GET: => render: true
-
-      POST: =>
-        assert_csrf @
-        @key\delete!
-        redirect_to: @url_for "user_settings"
-    }
-  }
-
-  "/api/tool_version": =>
-    config = require"lapis.config".get!
-    json: { version: config.tool_version }
-
-  -- Get status of key
-  "/api/1/:key/status": api_request =>
-    json: { user_id: @current_user.id, created_at: @key.created_at }
-
-  "/api/1/:key/modules": api_request =>
-    json: { modules: @current_user\all_modules! }
-
-  "/api/1/:key/check_rockspec": api_request =>
-    assert_valid @params, {
-      { "package", exists: true }
-      { "version", exists: true }
-    }
-
-    module = Modules\find user_id: @current_user.id, name: @params.package\lower!
-    version = if module
-      Versions\find module_id: module.id, version_name: @params.version\lower!
-
-    json: { :module, :version }
-
-  "/api/1/:key/upload": api_request =>
-    module, version, is_new = handle_rockspec_upload @
-
-    manifest_modules = ManifestModules\select "where module_id = ?", module.id
-    Manifests\include_in manifest_modules, "manifest_id"
-
-    manifests = [m.manifest for m in *manifest_modules]
-    module_url = @build_url @url_for "module", user: @current_user, :module
-    json: { :module, :version, :module_url, :manifests, :is_new }
-
-  "/api/1/:key/upload_rock/:version_id": api_request =>
-    @version = assert_error Versions\find(id: @params.version_id), "invalid version"
-    @module = Modules\find id: @version.module_id
-    rock = handle_rock_upload @
-    json: { :rock }
 
   [about: "/about"]: =>
     @title = "About"
