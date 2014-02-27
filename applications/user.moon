@@ -22,7 +22,6 @@ import
   require_login
   from require "helpers.apps"
 
-
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
