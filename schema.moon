@@ -211,6 +211,10 @@ make_schema = ->
 
   create_index "api_keys", "user_id"
 
+  import Manifests from require "models"
+  unless Manifests\find name: "root"
+    Manifests\create "root", true
+
 if ... == "test"
   db.query = print
   db.select = -> { { c: 0 } }

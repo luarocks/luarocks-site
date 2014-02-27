@@ -1,5 +1,5 @@
 
-.PHONY: test test_db schema
+.PHONY: test test_db lint schema routes
 
 test:
 	busted
@@ -15,8 +15,7 @@ lint:
 
 
 schema:
-	lapis exec 'require "cmd.schema"'
-
+	lapis exec 'require"schema".make_schema()'
 
 routes:
 	lapis exec 'require "cmd.routes"'
