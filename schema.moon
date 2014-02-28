@@ -109,6 +109,8 @@ make_schema = ->
     {"downloads", integer}
     {"rockspec_downloads", integer}
 
+    {"lua_version", varchar null: true}
+
     {"created_at", time}
     {"updated_at", time}
 
