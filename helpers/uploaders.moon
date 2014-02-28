@@ -111,4 +111,4 @@ handle_rock_upload = =>
   Rocks\create @version, rock_info.arch, key
 
 
-{ :handle_rock_upload, :handle_rockspec_upload }
+{ :handle_rock_upload, :handle_rockspec_upload, :parse_rockspec }
