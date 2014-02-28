@@ -4,6 +4,14 @@ bucket = require "storage_bucket"
 import Model from require "lapis.db.model"
 import increment_counter from require "helpers.models"
 
+get_lua_version = (spec) ->
+  return unless spec.dependencies
+  for dep in *spec.dependencies
+    if dep\match "^lua%s"
+      return dep
+
+  nil
+
 -- a rockspec
 class Versions extends Model
   @timestamp: true
@@ -18,9 +26,15 @@ class Versions extends Model
       module_id: mod.id
       display_version_name: if version_name != spec.version then spec.version
       rockspec_fname: rockspec_key\match "/([^/]*)$"
+      lua_version: get_lua_version spec
 
       :rockspec_key, :version_name
     }
+
+  update_from_spec: (spec) =>
+    lua_version = get_lua_version spec
+    if lua_version != @lua_version
+      @update lua_version: lua_version or db.NULL
 
   url_key: (name) => @version_name
 

@@ -72,6 +72,7 @@ handle_rockspec_upload = =>
     -- make sure file pointer is correct
     unless version.rockspec_key == key
       version\update rockspec_key: key
+    version\update_from_spec spec
   else
     version = assert Versions\create mod, spec, key
     mod\update current_version_id: version.id
