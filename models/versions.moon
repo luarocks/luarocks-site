@@ -1,5 +1,6 @@
 
 bucket = require "storage_bucket"
+db = require "lapis.db"
 
 import Model from require "lapis.db.model"
 import increment_counter from require "helpers.models"
