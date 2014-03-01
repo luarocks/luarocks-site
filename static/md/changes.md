@@ -1,6 +1,12 @@
 
 ## Changes
 
+**2014/3/1**
+
+  * Add support for filtered manifests: `manifest-5.1`, `manifest-5.2`
+  * Import luarocks modules
+  * Add specs
+
 **2013/6/16**
 
   * New modules will go into root manifest by default (unless name is taken)
