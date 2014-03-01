@@ -224,6 +224,8 @@ make_schema = ->
     "PRIMARY KEY (version_id, date)"
   }
 
+  require("lapis.exceptions.models").make_schema!
+
   import Manifests from require "models"
   unless Manifests\find name: "root"
     Manifests\create "root", true

@@ -2,6 +2,9 @@
 import config from require "lapis.config"
 
 config {"development", "test", "production"}, ->
+  app_name "MoonRocks"
+  track_exceptions true
+
   tool_version "0.0.1"
   pcall -> include require "secret.init"
 
@@ -17,6 +20,8 @@ config {"development", "test"}, ->
 config "production", ->
   num_workers 2
   code_cache "on"
+
+  admin_email "leafot@gmail.com"
 
   daemon "on"
   notice_log "logs/notice.log"

@@ -102,6 +102,8 @@ delete_module = respond_to {
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
 
+  @enable "exception_tracking"
+
   @include "applications.api"
   @include "applications.user"
 
@@ -144,7 +146,6 @@ class MoonRocks extends lapis.Application
   [root_manifest: "/manifest"]: =>
     modules = Manifests\root!\all_modules!
     render_manifest @, modules
-
 
   "/manifest-:version": capture_errors {
     on_error: =>
