@@ -11,6 +11,7 @@ math.randomseed os.time!
 import
   assert_error
   capture_errors
+  capture_errors_json
   respond_to
   yield_error
   from require "lapis.application"
@@ -142,6 +143,15 @@ class MoonRocks extends lapis.Application
   [root_manifest: "/manifest"]: =>
     modules = Manifests\root!\all_modules!
     render_manifest @, modules
+
+
+  "/manifest-:version": capture_errors_json =>
+    assert_valid @params, {
+      { "version", one_of: {"5.1", "5.2"} }
+    }
+
+    modules = Manifests\root!\all_modules!
+    render_manifest @, modules, @params.version
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 

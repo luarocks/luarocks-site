@@ -9,17 +9,32 @@ import
   Rocks
   from require "models"
 
+import
+  parse_version
+  parse_dep
+  match_constraints
+  from require "ext.luarocks.deps"
+
+
 default_table = ->
   setmetatable {}, __index: (key) =>
     with t = {} do @[key] = t
 
-render_manifest = (modules) =>
+render_manifest = (modules, filter_version=nil) =>
   mod_ids = [mod.id for mod in *modules]
 
   repository = {}
   if next mod_ids
     mod_ids = concat mod_ids, ", "
     versions = get_all_pages Versions\paginated "where module_id in (#{mod_ids}) order by id", per_page: 50
+
+    if filter_version
+      filter_version = parse_version filter_version
+      versions = for v in *versions
+        continue unless v.lua_version
+        dep = parse_dep v.lua_version
+        continue unless match_constraints filter_version, dep.constraints
+        v
 
     module_to_versions = default_table!
     version_to_rocks = default_table!
