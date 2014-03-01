@@ -45,10 +45,11 @@ class Versions extends Model
     @display_version_name or @version_name
 
   increment_download: (counters={"downloads", "rockspec_downloads"}) =>
-    import Modules from require "models"
+    import Modules, DownloadsDaily from require "models"
 
     increment_counter @, counters
     increment_counter Modules\load(id: @module_id), "downloads"
+    DownloadsDaily\increment @id
 
   delete: =>
     super!

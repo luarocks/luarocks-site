@@ -213,6 +213,17 @@ make_schema = ->
 
   create_index "api_keys", "user_id"
 
+  --
+  -- DownloadsDaily
+  --
+  create_table "downloads_daily", {
+    {"version_id", foreign_key}
+    {"date", "date NOT NULL"}
+    {"count", integer}
+
+    "PRIMARY KEY (version_id, date)"
+  }
+
   import Manifests from require "models"
   unless Manifests\find name: "root"
     Manifests\create "root", true
