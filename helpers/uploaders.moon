@@ -95,7 +95,28 @@ handle_rockspec_upload = =>
   assert_error mod, version_or_err
   mod, version_or_err, new_module
 
+
+do_rock_upload = (user, mod, version, filename, rock_content) ->
+  rock_info, err = parse_rock_fname mod.name, filename
+  return nil, err unless rock_info
+
+  if rock_info.version != version.version_name
+    yield_error "Rock doesn't match version #{version.version_name}"
+
+  key = "#{user.id}/#{filename}"
+  out = bucket\put_file_string rock_content, {
+    :key, mimetype: "application/x-rock"
+  }
+
+  unless out == 200
+    return nil, "Failed to upload rock"
+
+  Rocks\create version, rock_info.arch, key
+
 handle_rock_upload = =>
+  assert @module, "need module"
+  assert @version, "need version"
+
   assert_editable @, @module
 
   assert_valid @params, {
@@ -103,21 +124,7 @@ handle_rock_upload = =>
   }
 
   file = @params.rock_file
-
-  rock_info = assert_error parse_rock_fname @module.name, file.filename
-
-  if rock_info.version != @version.version_name
-    yield_error "Rock doesn't match version #{@version.version_name}"
-
-  key = "#{@current_user.id}/#{file.filename}"
-  out = bucket\put_file_string file.content, {
-    :key, mimetype: "application/x-rock"
-  }
-
-  unless out == 200
-    error "Failed to upload rock"
-
-  Rocks\create @version, rock_info.arch, key
-
+  assert_error do_rock_upload @current_user, @module,
+    @version, file.filename, file.content
 
 { :handle_rock_upload, :handle_rockspec_upload, :do_rockspec_upload, :parse_rockspec }
