@@ -40,31 +40,26 @@ parse_rockspec = (text) ->
 
   spec
 
-handle_rockspec_upload = =>
-  assert_error @current_user, "Must be logged in"
-
-  assert_valid @params, {
-    { "rockspec_file", file_exists: true }
-  }
-
-  file = @params.rockspec_file
-  spec = assert_error parse_rockspec file.content
+do_rockspec_upload = (user, rockspec_text) ->
+  spec, err = parse_rockspec rockspec_text
+  return nil, err unless spec
 
   new_module = false
-  mod = Modules\find user_id: @current_user.id, name: spec.package\lower!
+  mod = Modules\find user_id: user.id, name: spec.package\lower!
 
   unless mod
     new_module = true
-    mod = assert Modules\create spec, @current_user
+    mod, err = Modules\create spec, user
+    return nil, err unless mod
 
-  key = "#{@current_user.id}/#{filename_for_rockspec spec}"
-  out = bucket\put_file_string file.content, {
+  key = "#{user.id}/#{filename_for_rockspec spec}"
+  out = bucket\put_file_string rockspec_text, {
     :key, mimetype: "text/x-rockspec"
   }
 
   unless out == 200
     mod\delete! if new_module
-    error "Failed to upload rockspec"
+    return nil, "Failed to upload rockspec"
 
   version = Versions\find module_id: mod.id, version_name: spec.version\lower!
 
@@ -74,7 +69,8 @@ handle_rockspec_upload = =>
       version\update rockspec_key: key
     version\update_from_spec spec
   else
-    version = assert Versions\create mod, spec, key
+    version, err = Versions\create mod, spec, key
+    return nil, err unless version
     mod\update current_version_id: version.id
 
   -- try to insert into root
@@ -85,6 +81,19 @@ handle_rockspec_upload = =>
 
   mod, version, new_module
 
+
+handle_rockspec_upload = =>
+  assert_error @current_user, "Must be logged in"
+
+  assert_valid @params, {
+    { "rockspec_file", file_exists: true }
+  }
+
+  file = @params.rockspec_file
+
+  mod, version_or_err, new_module = do_rockspec_upload @current_user, file.content
+  assert_error mod, version_or_err
+  mod, version_or_err, new_module
 
 handle_rock_upload = =>
   assert_editable @, @module
@@ -111,4 +120,4 @@ handle_rock_upload = =>
   Rocks\create @version, rock_info.arch, key
 
 
-{ :handle_rock_upload, :handle_rockspec_upload, :parse_rockspec }
+{ :handle_rock_upload, :handle_rockspec_upload, :do_rockspec_upload, :parse_rockspec }
