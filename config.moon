@@ -30,7 +30,7 @@ config { "production", "staging" }, ->
   bucket_name "moonrocks"
 
 config "staging", ->
-  port 8080
+  port 8081
   num_workers 1
   daemon "off"
   notice_log "stderr"
