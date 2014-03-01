@@ -127,4 +127,5 @@ handle_rock_upload = =>
   assert_error do_rock_upload @current_user, @module,
     @version, file.filename, file.content
 
-{ :handle_rock_upload, :handle_rockspec_upload, :do_rockspec_upload, :parse_rockspec }
+{ :handle_rock_upload, :handle_rockspec_upload, :do_rockspec_upload,
+  :do_rock_upload, :parse_rockspec }

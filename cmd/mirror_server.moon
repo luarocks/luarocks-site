@@ -1,7 +1,7 @@
 
 SERVER, USER = ...
 
-SERVER or= "http://luarocks.org/repositories/rocks/"
+SERVER or= "http://luarocks.org/repositories/rocks"
 USER or= "luarocks"
 
 print "Mirroring #{SERVER} to #{USER}"
@@ -26,7 +26,7 @@ parse_manifest = (text) ->
 
   unless manif.repository
     return nil, "Invalid manifest (missing repository)"
-  
+
   manif
 
 local user
@@ -35,7 +35,7 @@ run_with_server ->
   import Users from require "models"
   user = Users\find slug: USER
 
-  import do_rockspec_upload from require "helpers.uploaders"
+  import do_rockspec_upload, do_rock_upload from require "helpers.uploaders"
 
   unless user
     import generate_key from require "helpers.models"
@@ -49,10 +49,16 @@ run_with_server ->
   for module_name, versions in pairs manifest.repository
     print "Processing #{module_name}"
     for version_name, rocks in pairs versions
+      print " * #{version_name} rockspec"
+      rockspec = assert_request "#{SERVER}/#{module_name}-#{version_name}.rockspec"
+      mod, version = assert do_rockspec_upload user, rockspec
+
       for {:arch} in *rocks
-        if arch == "rockspec"
-          rockspec = assert_request "#{SERVER}/#{module_name}-#{version_name}.rockspec"
-          assert do_rockspec_upload user, rockspec
-          return
+        continue if arch == "rockspec"
+
+        print " * #{version_name} #{arch}"
+        fname = "#{module_name}-#{version_name}.#{arch}.rock"
+        rock = assert_request "#{SERVER}/#{fname}"
+        do_rock_upload user, mod, version, fname, rock
 
 
