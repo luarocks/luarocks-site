@@ -8,6 +8,8 @@ lapis = require "lapis.init"
 
 math.randomseed os.time!
 
+MANIFEST_LUA_VERSIONS = { "5.1", "5.2" }
+
 import
   assert_error
   capture_errors
@@ -147,7 +149,7 @@ class MoonRocks extends lapis.Application
 
   "/manifest-:version": capture_errors_json =>
     assert_valid @params, {
-      { "version", one_of: {"5.1", "5.2"} }
+      { "version", one_of: MANIFEST_LUA_VERSIONS }
     }
 
     modules = Manifests\root!\all_modules!
@@ -158,6 +160,14 @@ class MoonRocks extends lapis.Application
   [user_manifest: "/manifests/:user/manifest"]: =>
     user = assert Users\find(slug: @params.user), "Invalid user"
     render_manifest @, user\all_modules!
+
+  "/manifests/:user/manifest-:version": capture_errors_json =>
+    assert_valid @params, {
+      { "version", one_of: MANIFEST_LUA_VERSIONS }
+    }
+
+    user = assert_error Users\find(slug: @params.user), "Invalid user"
+    render_manifest @, user\all_modules!, @params.version
 
   [user_profile: "/modules/:user"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"

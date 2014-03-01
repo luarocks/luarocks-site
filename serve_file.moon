@@ -2,7 +2,7 @@
 uri = ngx.var.request_uri
 
 -- manifests are served by the app
-return ngx.exec "/" if uri\match "manifest/?$"
+return ngx.exec "/" if uri\match "/manifest[^/]*/?$"
 
 import Users, Modules, Versions, Rocks, Manifests from require "models"
 
