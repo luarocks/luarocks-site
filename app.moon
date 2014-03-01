@@ -13,7 +13,6 @@ MANIFEST_LUA_VERSIONS = { "5.1", "5.2" }
 import
   assert_error
   capture_errors
-  capture_errors_json
   respond_to
   yield_error
   from require "lapis.application"
@@ -147,13 +146,18 @@ class MoonRocks extends lapis.Application
     render_manifest @, modules
 
 
-  "/manifest-:version": capture_errors_json =>
-    assert_valid @params, {
-      { "version", one_of: MANIFEST_LUA_VERSIONS }
-    }
+  "/manifest-:version": capture_errors {
+    on_error: =>
+      "Not found", status: 404
 
-    modules = Manifests\root!\all_modules!
-    render_manifest @, modules, @params.version
+    =>
+      assert_valid @params, {
+        { "version", one_of: MANIFEST_LUA_VERSIONS }
+      }
+
+      modules = Manifests\root!\all_modules!
+      render_manifest @, modules, @params.version
+  }
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 
@@ -161,13 +165,18 @@ class MoonRocks extends lapis.Application
     user = assert Users\find(slug: @params.user), "Invalid user"
     render_manifest @, user\all_modules!
 
-  "/manifests/:user/manifest-:version": capture_errors_json =>
-    assert_valid @params, {
-      { "version", one_of: MANIFEST_LUA_VERSIONS }
-    }
+  "/manifests/:user/manifest-:version": capture_errors {
+    on_error: =>
+      "Not found", status: 404
 
-    user = assert_error Users\find(slug: @params.user), "Invalid user"
-    render_manifest @, user\all_modules!, @params.version
+    =>
+      assert_valid @params, {
+        { "version", one_of: MANIFEST_LUA_VERSIONS }
+      }
+
+      user = assert_error Users\find(slug: @params.user), "Invalid user"
+      render_manifest @, user\all_modules!, @params.version
+  }
 
   [user_profile: "/modules/:user"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
