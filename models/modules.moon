@@ -55,6 +55,13 @@ class Modules extends Model
     else
       {}
 
+  get_verions: =>
+    unless @_versions
+      import Versions from require "models"
+      @_versions = Versions\select "where module_id = ?", @id
+
+    @_versions
+
   count_versions: =>
     res = db.query "select count(*) as c from versions where module_id = ?", @id
     res[1].c

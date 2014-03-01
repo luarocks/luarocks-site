@@ -51,6 +51,13 @@ class Versions extends Model
     increment_counter Modules\load(id: @module_id), "downloads"
     DownloadsDaily\increment @id
 
+  get_rocks: =>
+    unless @_rocks
+      import Rocks from require "models"
+      @_rocks = Rocks\select "where version_id = ?", @id
+
+    @_rocks
+
   delete: =>
     super!
     -- delete rockspec
