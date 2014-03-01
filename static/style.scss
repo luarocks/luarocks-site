@@ -1,6 +1,6 @@
 
 $back_color: lighten(#F0E5C9, 10%);
-$header_color: #594433;
+$header_color: #483729;
 $site_width: 800px;
 $link_color: #FF5C00;
 $base_font_size: 14px;
@@ -88,9 +88,7 @@ hr {
 
 
 .header {
-    @include autograd($header_color);
-    border-top: 2px solid lighten($header_color, 30%);
-    box-shadow: inset 0 -1px 0 rgba(255,255,255, 0.4), 0 1px 0 darken($header_color, 10%);
+    background: $header_color;
 
     color: white;
     padding: 10px;
@@ -103,8 +101,7 @@ hr {
     }
 
     h1 {
-        letter-spacing: -1px;
-        text-shadow: -1px -1px 0 #222;
+        letter-spacing: 0.025em;
         margin: 0;
         font-size: 18px;
         font-weight: normal;
@@ -138,12 +135,7 @@ hr {
 
     h2, h3, h4 {
         color: #796B5F;
-        text-shadow: 1px 1px 0 white;
         font-weight: normal;
-    }
-
-    h2 {
-        color: darken(#796B5F, 10%);
     }
 }
 

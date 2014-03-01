@@ -1,5 +1,3 @@
-<div>$index</div>
-
 ## About
 
 MoonRocks aims to be a community rock hosting service for Lua by providing an
