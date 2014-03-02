@@ -1,5 +1,5 @@
 
-SERVER, USER = ...
+filter, SERVER, USER = ...
 
 SERVER or= "http://luarocks.org/repositories/rocks"
 USER or= "luarocks"
@@ -73,6 +73,9 @@ run_with_server ->
   manifest = assert parse_manifest manifest
 
   for module_name, versions in pairs manifest.repository
+    if filter and not module_name\match filter
+      continue
+
     print "Processing #{module_name}"
     existing_mod = modules_by_name[module_name]
     existing_versions = if existing_mod
