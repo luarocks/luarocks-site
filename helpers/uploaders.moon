@@ -26,6 +26,9 @@ parse_rock_fname = (module_name, fname) ->
   { :version, :arch }
 
 parse_rockspec = (text) ->
+  -- remove #! if it's there
+  text = text\gsub "^%#[^\n]*", ""
+
   fn = loadstring text
   return nil, "Failed to parse rockspec" unless fn
   spec = {}
