@@ -29,6 +29,29 @@ parse_manifest = (text) ->
 
   manif
 
+-- attempt to convert latin-1 chars to utf8
+fix_encoding = (str) ->
+  import insert from table
+  buffer = {}
+  changed = false
+
+  bytes = [string.byte c for c in str\gmatch "."]
+  for i, b in ipairs bytes
+    prev = bytes[i - 1]
+    after = bytes[i + 1]
+
+    if b > 126 and (not prev or prev < 126) and (not after or after < 126)
+      changed = true
+      insert buffer, 194 -- insert latin1 leading byte
+
+    insert buffer, b
+
+  if changed
+    table.concat([string.char(b) for b in *buffer]), true
+  else
+    str, false
+
+
 local user
 
 run_with_server ->
@@ -72,6 +95,7 @@ run_with_server ->
           print "  Skipping due to missing rockspec"
           continue
 
+        rockspec, changed_enc = fix_encoding rockspec
         mod, version = assert do_rockspec_upload user, rockspec
 
       existing_rocks = if existing_ver
