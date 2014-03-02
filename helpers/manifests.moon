@@ -26,7 +26,8 @@ render_manifest = (modules, filter_version=nil) =>
   repository = {}
   if next mod_ids
     mod_ids = concat mod_ids, ", "
-    versions = get_all_pages Versions\paginated "where module_id in (#{mod_ids}) order by id", per_page: 50, fields: "id, module_id, version_name, lua_version"
+    -- versions = get_all_pages Versions\paginated "where module_id in (#{mod_ids}) order by id", per_page: 50, fields: "id, module_id, version_name, lua_version"
+    versions = get_all_pages Versions\paginated "order by id desc", per_page: 50, fields: "id, module_id, version_name, lua_version"
 
     if filter_version
       filter_version = parse_version filter_version
@@ -42,7 +43,8 @@ render_manifest = (modules, filter_version=nil) =>
     version_ids = [v.id for v in *versions]
     if next version_ids
       version_ids = concat version_ids, ", "
-      rocks = get_all_pages Rocks\paginated "where version_id in (#{version_ids}) order by id", per_page: 50, fields: "id, version_id, arch"
+      -- rocks = get_all_pages Rocks\paginated "where version_id in (#{version_ids}) order by id", per_page: 50, fields: "id, version_id, arch"
+      rocks = get_all_pages Rocks\paginated "order by id desc", per_page: 50, fields: "id, version_id, arch"
       for rock in *rocks
         insert version_to_rocks[rock.version_id], rock
 
