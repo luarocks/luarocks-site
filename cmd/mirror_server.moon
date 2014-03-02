@@ -4,7 +4,6 @@ filter, SERVER, USER = ...
 SERVER or= "http://luarocks.org/repositories/rocks"
 USER or= "luarocks"
 
-print "Mirroring #{SERVER} to #{USER}"
 
 http = require "socket.http"
 
@@ -51,8 +50,21 @@ fix_encoding = (str) ->
   else
     str, false
 
+log = do
+  file = nil
+  (str, skip_newline=false) ->
+    unless file
+      file = io.open("mirror.log", "w")
+
+    unless skip_newline
+      str = str .. "\n"
+
+    file\write str
+    io.stdout\write str
 
 local user
+
+log "Mirroring #{SERVER} to user: #{USER}"
 
 run_with_server ->
   import Users from require "models"
@@ -64,7 +76,7 @@ run_with_server ->
     import generate_key from require "helpers.models"
     password = generate_key 30
     assert Users\create USER, password, "leafot+luarocks@gmail.com"
-    print "Created #{USER} with password #{password}"
+    log "Created #{USER} with password #{password}"
 
   user_modules = user\all_modules!
   modules_by_name = {mod.name, mod for mod in *user_modules}
@@ -76,7 +88,7 @@ run_with_server ->
     if filter and not module_name\match filter
       continue
 
-    print "Processing #{module_name}"
+    log "Processing #{module_name}"
     existing_mod = modules_by_name[module_name]
     existing_versions = if existing_mod
       {v.version_name, v for v in *existing_mod\get_verions!}
@@ -86,19 +98,20 @@ run_with_server ->
     for version_name, rocks in pairs versions
       existing_ver = existing_versions[version_name]
 
-      io.stdout\write " * #{version_name} rockspec"
+      log " * #{version_name} rockspec", true
       mod, version = if existing_ver
-        print " - skipped"
+        log " - skipped"
         existing_mod, existing_ver
       else
-        print " - uploading"
+        log " - uploading"
         rockspec, status = http.request "#{SERVER}/#{module_name}-#{version_name}.rockspec"
 
         if status != 200
-          print "  Skipping due to missing rockspec"
+          log "   Skipping due to missing rockspec"
           continue
 
         rockspec, changed_enc = fix_encoding rockspec
+        log "   Altered rockspec encoding" if changed_enc
         mod, version = assert do_rockspec_upload user, rockspec
 
       existing_rocks = if existing_ver
@@ -108,11 +121,11 @@ run_with_server ->
 
       for {:arch} in *rocks
         continue if arch == "rockspec"
-        io.stdout\write " * #{version_name} #{arch}"
+        log " * #{version_name} #{arch}", true
         if existing_rocks[arch]
-          print " - skipped"
+          log " - skipped"
         else
-          print " - uploading"
+          log " - uploading"
           fname = "#{module_name}-#{version_name}.#{arch}.rock"
           rock = assert_request "#{SERVER}/#{fname}"
           do_rock_upload user, mod, version, fname, rock
