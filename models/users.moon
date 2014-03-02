@@ -61,9 +61,9 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
-  all_modules: =>
+  all_modules: (...) =>
     import Modules from require "models"
-    Modules\select "where user_id = ?", @id
+    Modules\select "where user_id = ?", @id, ...
 
   is_admin: => @flags == 1
 

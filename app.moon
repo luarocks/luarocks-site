@@ -144,7 +144,7 @@ class MoonRocks extends lapis.Application
     render: true
 
   [root_manifest: "/manifest"]: =>
-    modules = Manifests\root!\all_modules!
+    modules = Manifests\root!\all_modules fields: "id, name"
     render_manifest @, modules
 
   "/manifest-:version": capture_errors {
@@ -156,7 +156,7 @@ class MoonRocks extends lapis.Application
         { "version", one_of: MANIFEST_LUA_VERSIONS }
       }
 
-      modules = Manifests\root!\all_modules!
+      modules = Manifests\root!\all_modules fields: "id, name"
       render_manifest @, modules, @params.version
   }
 
@@ -164,7 +164,7 @@ class MoonRocks extends lapis.Application
 
   [user_manifest: "/manifests/:user/manifest"]: =>
     user = assert Users\find(slug: @params.user), "Invalid user"
-    render_manifest @, user\all_modules!
+    render_manifest @, user\all_modules fields: "id, name"
 
   "/manifests/:user/manifest-:version": capture_errors {
     on_error: =>
@@ -176,7 +176,7 @@ class MoonRocks extends lapis.Application
       }
 
       user = assert_error Users\find(slug: @params.user), "Invalid user"
-      render_manifest @, user\all_modules!, @params.version
+      render_manifest @, user\all_modules(fields: "id, name"), @params.version
   }
 
   [user_profile: "/modules/:user"]: =>

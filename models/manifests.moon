@@ -19,13 +19,14 @@ class Manifests extends Model
     import ManifestAdmins from require "models"
     ManifestAdmins\find user_id: user.id, manifest_id: @id
 
-  all_modules: =>
+  all_modules: (...) =>
     import ManifestModules, Modules from require "models"
+    args = {...}
 
     pager = ManifestModules\paginated "where manifest_id = ?", @id, {
       per_page: 50
       prepare_results: (manifest_modules) ->
-        Modules\include_in manifest_modules, "module_id"
+        Modules\include_in manifest_modules, "module_id", unpack args
         [mm.module for mm in *manifest_modules]
     }
 
