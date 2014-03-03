@@ -51,3 +51,10 @@ class Manifests extends Model
       @name
     else
       @id
+
+  -- purge any caches for this manifest
+  -- only the root manifest is cached right now
+  purge: =>
+    if @name == "root"
+      if ngx and ngx.shared
+        ngx.shared.manifest_cache\set "/manifest", nil

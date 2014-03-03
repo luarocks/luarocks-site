@@ -22,6 +22,8 @@ import
 import render_manifest, preload_modules from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
 
+import cached from require "lapis.cache"
+
 capture_errors_404 = (fn) ->
   capture_errors {
     on_error: => "Not found", status: 404
@@ -45,10 +47,12 @@ assert_filter = =>
 
   @params.version
 
-
 class MoonRocksApi extends lapis.Application
-  [root_manifest: "/manifest"]: =>
-    handle_render @, Manifests\root!
+  [root_manifest: "/manifest"]: cached {
+    dict: "manifest_cache"
+    cache_key: (path) -> path
+    => handle_render @, Manifests\root!
+  }
 
   "/manifest-:version": capture_errors_404 =>
     filter_version = assert_filter @
