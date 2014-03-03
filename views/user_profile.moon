@@ -4,9 +4,11 @@ class extends require "widgets.base"
     h2 ->
       text "#{@user.username}'s Modules"
       text " "
-      span class: "header_count", "(#{#@modules})"
+      span class: "header_count", "(#{@pager\total_items!})"
 
     @term_snippet "luarocks install --server=#{@user\source_url @} <name>"
     
+    @render_pager @pager
     @render_modules @modules
+    @render_pager @pager
 

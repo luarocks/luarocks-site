@@ -95,7 +95,6 @@ delete_module = respond_to {
       redirect_to: @url_for "index"
 }
 
-
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
 
@@ -145,9 +144,20 @@ class MoonRocks extends lapis.Application
   [user_profile: "/modules/:user"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
     @title = "#{@user.username}'s Modules"
-    @modules = Modules\select "where user_id = ? order by name asc", @user.id
-    for mod in *@modules
-      mod.user = @user
+
+    @page = tonumber(@params.page) or 1
+    @pager = @user\find_modules {
+      per_page: 50
+      prepare_results: (mods) ->
+        for mod in *mods
+          mod.user = @user
+        mods
+    }
+
+    @modules = @pager\get_page @page
+
+    if @page > 1 and not next @modules
+      return redirect_to: @url_for "user_profile", user: @params.user
 
     render: true
 
