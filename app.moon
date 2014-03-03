@@ -15,6 +15,8 @@ import
   yield_error
   from require "lapis.application"
 
+import assert_valid from require "lapis.validate"
+
 import trim_filter from require "lapis.util"
 
 import
