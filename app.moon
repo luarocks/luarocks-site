@@ -108,6 +108,7 @@ paginated_modules = (object_or_pager, prepare_results) =>
   else
     object_or_pager\find_modules {
       per_page: 50
+      fields: "id, name, display_name, user_id, downloads, summary"
       :prepare_results
     }
 
@@ -148,7 +149,10 @@ class MoonRocks extends lapis.Application
 
   [modules: "/modules"]: =>
     @title = "All Modules"
-    paginated_modules @, Modules\paginated "order by name asc", per_page: 50
+    paginated_modules @, Modules\paginated "order by name asc", {
+      per_page: 50
+      fields: "id, name, display_name, user_id, downloads, summary"
+    }
     render: true
 
   [upload_rockspec: "/upload"]: respond_to {
