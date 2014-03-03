@@ -15,7 +15,6 @@ import
   match_constraints
   from require "ext.luarocks.deps"
 
-
 default_table = ->
   setmetatable {}, __index: (key) =>
     with t = {} do @[key] = t

@@ -8,8 +8,6 @@ lapis = require "lapis.init"
 
 math.randomseed os.time!
 
-MANIFEST_LUA_VERSIONS = { "5.1", "5.2" }
-
 import
   assert_error
   capture_errors
@@ -17,7 +15,6 @@ import
   yield_error
   from require "lapis.application"
 
-import assert_valid from require "lapis.validate"
 import trim_filter from require "lapis.util"
 
 import
@@ -28,8 +25,6 @@ import
   Users
   Versions
   from require "models"
-
-import render_manifest from require "helpers.manifests"
 
 import
   handle_rock_upload
@@ -106,6 +101,7 @@ class MoonRocks extends lapis.Application
 
   @include "applications.api"
   @include "applications.user"
+  @include "applications.manifest"
 
   @before_filter =>
     @current_user = Users\read_session @
@@ -113,6 +109,17 @@ class MoonRocks extends lapis.Application
 
   handle_404: =>
     "Not found", status: 404
+
+  [index: "/"]: =>
+    @page_description = "A website for submitting and distributing Lua rocks"
+
+    @recent_modules = Modules\select "order by created_at desc limit 5"
+    Users\include_in @recent_modules, "user_id"
+    @popular_modules = Modules\select "order by downloads desc limit 5"
+    Users\include_in @popular_modules, "user_id"
+
+    render: true
+
 
   [modules: "/modules"]: =>
     @title = "All Modules"
@@ -131,52 +138,6 @@ class MoonRocks extends lapis.Application
       assert_csrf @
       mod, version = handle_rockspec_upload @
       redirect_to: @url_for "module", user: @current_user, module: mod
-  }
-
-  [index: "/"]: =>
-    @page_description = "A website for submitting and distributing Lua rocks"
-
-    @recent_modules = Modules\select "order by created_at desc limit 5"
-    Users\include_in @recent_modules, "user_id"
-    @popular_modules = Modules\select "order by downloads desc limit 5"
-    Users\include_in @popular_modules, "user_id"
-
-    render: true
-
-  [root_manifest: "/manifest"]: =>
-    modules = Manifests\root!\all_modules fields: "id, name"
-    render_manifest @, modules
-
-  "/manifest-:version": capture_errors {
-    on_error: =>
-      "Not found", status: 404
-
-    =>
-      assert_valid @params, {
-        { "version", one_of: MANIFEST_LUA_VERSIONS }
-      }
-
-      modules = Manifests\root!\all_modules fields: "id, name"
-      render_manifest @, modules, @params.version
-  }
-
-  "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
-
-  [user_manifest: "/manifests/:user/manifest"]: =>
-    user = assert Users\find(slug: @params.user), "Invalid user"
-    render_manifest @, user\all_modules fields: "id, name"
-
-  "/manifests/:user/manifest-:version": capture_errors {
-    on_error: =>
-      "Not found", status: 404
-
-    =>
-      assert_valid @params, {
-        { "version", one_of: MANIFEST_LUA_VERSIONS }
-      }
-
-      user = assert_error Users\find(slug: @params.user), "Invalid user"
-      render_manifest @, user\all_modules(fields: "id, name"), @params.version
   }
 
   [user_profile: "/modules/:user"]: =>
@@ -310,7 +271,6 @@ class MoonRocks extends lapis.Application
     Users\include_in @modules, "user_id"
 
     render: true
-
 
   [about: "/about"]: =>
     @title = "About"
