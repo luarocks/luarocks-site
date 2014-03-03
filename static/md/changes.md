@@ -1,22 +1,27 @@
 
 ## Changes
 
+**2014/3/3**
+
+ * Add pagination to module pages
+ * Rewrite queries for fetching module pages
+
 **2014/3/1**
 
-  * Add support for filtered manifests: `manifest-5.1`, `manifest-5.2`
-  * Import luarocks modules
-  * Add specs
+ * Add support for filtered manifests: `manifest-5.1`, `manifest-5.2`
+ * Import luarocks modules
+ * Add specs
 
 **2013/6/16**
 
-  * New modules will go into root manifest by default (unless name is taken)
-  * Added API
-  * Create `moonrocks` tool: <https://github.com/leafo/moonrocks>
+ * New modules will go into root manifest by default (unless name is taken)
+ * Added API
+ * Create `moonrocks` tool: <https://github.com/leafo/moonrocks>
 
 **2013/6/9**
 
-  * Added ability to edit modules
-  * Updated module page, now shows license and homepage
+ * Added ability to edit modules
+ * Updated module page, now shows license and homepage
 
 **2013/6/3**
 
