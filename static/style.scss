@@ -4,6 +4,7 @@ $header_color: #483729;
 $site_width: 800px;
 $link_color: #FF5C00;
 $base_font_size: 14px;
+$body_color: #5C5647;
 
 @mixin unselectable {
     -moz-user-select: none;
@@ -42,7 +43,7 @@ $base_font_size: 14px;
 }
 
 body {
-    color: #5C5647;
+    color: $body_color;
     font-size: $base_font_size;
     font-family: sans-serif;
     margin: 0;
@@ -476,5 +477,35 @@ img.avatar {
     color: #9495ff;
 }
 
+
+.pager {
+    height: 30px;
+    line-height: 30px;
+    margin: 20px 0;
+
+    a {
+        line-height: 30px;
+        height: 30px;
+        display: inline-block;
+        padding: 0 8px;
+        margin-right: 5px;
+
+        background-color: lighten(desaturate($link_color, 10%), 10%);
+        color: white;
+        text-decoration: none;
+
+        &:hover {
+            background-color: lighten(desaturate($link_color, 10%), 15%);
+        }
+
+        &:active {
+            background-color: lighten(desaturate($link_color, 10%), 8%);
+        }
+    }
+
+    .pager_label {
+        color: lighten($body_color, 10%);
+    }
+}
 
 

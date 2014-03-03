@@ -80,6 +80,22 @@ class Base extends Widget
         for e in *@errors
           li e
 
+  render_pager: (pager, current_page=@page) =>
+    num_pages = pager\num_pages!
+    return if num_pages == 1
+
+    page_url = (p) ->
+      p == 1 and @req.parsed_url.path or "?page=#{p}"
+
+    div class: "pager", ->
+      if current_page > 1
+        a href: page_url(current_page - 1), class: "prev_page", "Prev"
+
+      if current_page < num_pages
+        a href: page_url(current_page + 1), class: "next_page", "Next"
+
+      span class: "pager_label", "Page #{current_page} of #{num_pages}"
+
 if ... == "test"
   print Base\format_number 1
   print Base\format_number 12
