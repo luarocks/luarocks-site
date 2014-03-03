@@ -61,9 +61,9 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
-  all_modules: (...) =>
-    import Modules from require "models"
-    Modules\select "where user_id = ?", @id, ...
+  all_modules:  =>
+    import get_all_pages from require "helpers.models"
+    get_all_pages @find_modules per_page: 50
 
   find_modules: (...) =>
     import Modules from require "models"

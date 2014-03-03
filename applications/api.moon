@@ -72,6 +72,7 @@ class MoonRocksApi extends lapis.Application
   "/api/1/:key/status": api_request =>
     json: { user_id: @current_user.id, created_at: @key.created_at }
 
+  -- NOT USED
   "/api/1/:key/modules": api_request =>
     json: { modules: @current_user\all_modules! }
 
