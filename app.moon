@@ -95,6 +95,30 @@ delete_module = respond_to {
       redirect_to: @url_for "index"
 }
 
+paginated_modules = (object_or_pager, prepare_results) =>
+  prepare_results or= (mods) ->
+    Users\include_in mods, "user_id", fields: "id, slug, username"
+    mods
+
+  @page = tonumber(@params.page) or 1
+
+  @pager = if object_or_pager.get_page
+    object_or_pager.prepare_results = prepare_results
+    object_or_pager
+  else
+    object_or_pager\find_modules {
+      per_page: 50
+      :prepare_results
+    }
+
+  @modules = @pager\get_page @page
+
+  if @page > 1 and not next @modules
+    return redirect_to: @req.parsed_url.path
+
+  if @page > 1 and @title
+    @title ..= " - Page #{@page}"
+
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
 
@@ -124,8 +148,7 @@ class MoonRocks extends lapis.Application
 
   [modules: "/modules"]: =>
     @title = "All Modules"
-    @modules = Modules\select "order by name asc"
-    Users\include_in @modules, "user_id"
+    paginated_modules @, Modules\paginated "order by name asc", per_page: 50
     render: true
 
   [upload_rockspec: "/upload"]: respond_to {
@@ -144,20 +167,10 @@ class MoonRocks extends lapis.Application
   [user_profile: "/modules/:user"]: =>
     @user = assert Users\find(slug: @params.user), "Invalid user"
     @title = "#{@user.username}'s Modules"
-
-    @page = tonumber(@params.page) or 1
-    @pager = @user\find_modules {
-      per_page: 50
-      prepare_results: (mods) ->
-        for mod in *mods
-          mod.user = @user
-        mods
-    }
-
-    @modules = @pager\get_page @page
-
-    if @page > 1 and not next @modules
-      return redirect_to: @url_for "user_profile", user: @params.user
+    paginated_modules @, @user, (mods) ->
+      for mod in *mods
+        mod.user = @user
+      mods
 
     render: true
 
@@ -278,25 +291,8 @@ class MoonRocks extends lapis.Application
 
   [manifest: "/m/:manifest"]: =>
     load_manifest @, "name"
-
-    @page = tonumber(@params.page) or 1
-    @pager = @manifest\find_modules {
-      per_page: 50
-      prepare_results: (mods) ->
-        Users\include_in mods, "user_id"
-        mods
-    }
-
-    @modules = @pager\get_page @page
-
-    if @page > 1 and not next @modules
-      return redirect_to: @url_for "manifest", manifest: @params.manifest
-
     @title = "#{@manifest.name} Manifest"
-
-    if @page > 1
-      @title ..= " - Page #{@page}"
-
+    paginated_modules @, @manifest
     render: true
 
   [about: "/about"]: =>

@@ -3,8 +3,10 @@ class Modules extends require "widgets.base"
     h2 ->
       text "All Modules"
       text " "
-      span class: "header_count", "(#{#@modules})"
+      span class: "header_count", "(#{@pager\total_items!})"
 
+    @render_pager @pager
     @render_modules @modules
+    @render_pager @pager
 
 
