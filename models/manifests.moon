@@ -55,6 +55,8 @@ class Manifests extends Model
   -- purge any caches for this manifest
   -- only the root manifest is cached right now
   purge: =>
-    if @name == "root"
-      if ngx and ngx.shared
-        ngx.shared.manifest_cache\set "/manifest", nil
+    return unless ngx and ngx.shared
+    return unless @name == "root"
+
+    for path in *{"/manifest", "/manifest-5.1", "/manifest-5.2"}
+      ngx.shared.manifest_cache\set path, nil

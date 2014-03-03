@@ -5,6 +5,7 @@
 
  * Add pagination to module pages
  * Rewrite queries for fetching module pages
+ * Cache root manifest
 
 **2014/3/1**
 

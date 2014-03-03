@@ -47,14 +47,20 @@ assert_filter = =>
 
   @params.version
 
-class MoonRocksApi extends lapis.Application
-  [root_manifest: "/manifest"]: cached {
+
+cached_manifest = (fn) ->
+  cached {
     dict: "manifest_cache"
     cache_key: (path) -> path
-    => handle_render @, Manifests\root!
+    fn
   }
 
-  "/manifest-:version": capture_errors_404 =>
+
+class MoonRocksApi extends lapis.Application
+  [root_manifest: "/manifest"]: cached_manifest =>
+    handle_render @, Manifests\root!
+
+  "/manifest-:version": capture_errors_404 cached_manifest =>
     filter_version = assert_filter @
     handle_render @, Manifests\root!, filter_version
 
