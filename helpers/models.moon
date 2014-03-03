@@ -38,5 +38,29 @@ get_all_pages = (pager) ->
 
   accum
 
+-- does a find all, splitting into many queries with at most batch_size ids per query
+-- find_all_in_batches MyModel, {1,2,3,4,5}, batch_size: 2, fields: "hello, world"
+find_all_in_batches = (model_cls, ids, ...) ->
+  batch_size = 50
 
-{ :increment_counter, :generate_key, :get_all_pages }
+  if type(...) == "table"
+    batch_size = (...).batch_size or batch_size
+
+  total_ids = #ids
+
+  return model_cls\find_all ids, ...  if total_ids < batch_size
+
+  accum = nil
+  for i=1, math.ceil #ids/batch_size
+    page_ids = [ids[k] for k=(i - 1)*batch_size + 1, math.min total_ids, i*batch_size]
+
+    res = model_cls\find_all page_ids, ...
+    if accum
+      for item in *res
+        insert accum, item
+    else
+      accum = res
+
+  accum
+
+{ :increment_counter, :generate_key, :get_all_pages, :find_all_in_batches }
