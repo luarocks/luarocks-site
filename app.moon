@@ -268,9 +268,24 @@ class MoonRocks extends lapis.Application
 
   [manifest: "/m/:manifest"]: =>
     load_manifest @, "name"
+
+    @page = tonumber(@params.page) or 1
+    @pager = @manifest\find_modules {
+      per_page: 50
+      prepare_results: (mods) ->
+        Users\include_in mods, "user_id"
+        mods
+    }
+
+    @modules = @pager\get_page @page
+
+    if @page > 1 and not next @modules
+      return redirect_to: @url_for "manifest", manifest: @params.manifest
+
     @title = "#{@manifest.name} Manifest"
-    @modules = @manifest\all_modules!
-    Users\include_in @modules, "user_id"
+
+    if @page > 1
+      @title ..= " - Page #{@page}"
 
     render: true
 
