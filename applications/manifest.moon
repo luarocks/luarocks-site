@@ -15,46 +15,53 @@ import
   Manifests
   Modules
   Users
+  Versions
+  Rocks
   from require "models"
 
-import render_manifest from require "helpers.manifests"
+import render_manifest, preload_modules from require "helpers.manifests"
+import get_all_pages from require "helpers.models"
+
+capture_errors_404 = (fn) ->
+  capture_errors {
+    on_error: => "Not found", status: 404
+    fn
+  }
+
+handle_render = (obj, filter_version) =>
+  pager = obj\find_modules {
+    fields: "id, name"
+    per_page: 50
+    prepare_results: preload_modules
+  }
+
+  modules = get_all_pages pager
+  render_manifest @, modules, filter_version
+
+assert_filter = =>
+  assert_valid @params, {
+    { "version", one_of: MANIFEST_LUA_VERSIONS }
+  }
+
+  @params.version
+
 
 class MoonRocksApi extends lapis.Application
   [root_manifest: "/manifest"]: =>
-    modules = Manifests\root!\all_modules fields: "id, name"
-    render_manifest @, modules
+    handle_render @, Manifests\root!
 
-  "/manifest-:version": capture_errors {
-    on_error: =>
-      "Not found", status: 404
-
-    =>
-      assert_valid @params, {
-        { "version", one_of: MANIFEST_LUA_VERSIONS }
-      }
-
-      modules = Manifests\root!\all_modules fields: "id, name"
-      render_manifest @, modules, @params.version
-  }
-
-  "/manifests/:user/manifest-:version": capture_errors {
-    on_error: =>
-      "Not found", status: 404
-
-    =>
-      assert_valid @params, {
-        { "version", one_of: MANIFEST_LUA_VERSIONS }
-      }
-
-      user = assert_error Users\find(slug: @params.user), "Invalid user"
-      render_manifest @, user\all_modules(fields: "id, name"), @params.version
-  }
-
+  "/manifest-:version": capture_errors_404 =>
+    filter_version = assert_filter @
+    handle_render @, Manifests\root!, filter_version
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 
-  [user_manifest: "/manifests/:user/manifest"]: =>
-    user = assert Users\find(slug: @params.user), "Invalid user"
-    render_manifest @, user\all_modules fields: "id, name"
+  [user_manifest: "/manifests/:user/manifest"]: capture_errors_404 =>
+    user = assert_error Users\find(slug: @params.user), "Invalid user"
+    handle_render @, user
 
+  "/manifests/:user/manifest-:version": capture_errors_404 =>
+    user = assert_error Users\find(slug: @params.user), "Invalid user"
+    filter_version = assert_filter @
+    handle_render @, user, filter_version
 

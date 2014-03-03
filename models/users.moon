@@ -65,6 +65,10 @@ class Users extends Model
     import Modules from require "models"
     Modules\select "where user_id = ?", @id, ...
 
+  find_modules: (...) =>
+    import Modules from require "models"
+    Modules\paginated "where user_id = ?", @id, ...
+
   is_admin: => @flags == 1
 
   source_url: (r) => r\build_url "/manifests/#{@slug}"

@@ -1,6 +1,6 @@
 
-import insert, concat from table
-import get_all_pages from require "helpers.models"
+import insert from table
+import find_all_in_batches from require "helpers.models"
 
 persist = require "ext.luarocks.persist"
 
@@ -15,61 +15,75 @@ import
   match_constraints
   from require "ext.luarocks.deps"
 
-default_table = ->
-  setmetatable {}, __index: (key) =>
-    with t = {} do @[key] = t
+-- fills modules with versions and rocks
+preload_modules = (mods) ->
+  mod_ids = [mod.id for mod in *mods]
+  versions = find_all_in_batches Versions, mod_ids, {
+    key: "module_id"
+    fields: "id, module_id, version_name, lua_version"
+  }
 
+  version_ids = [v.id for v in *versions]
+  if next version_ids
+    rocks = find_all_in_batches Rocks, version_ids, {
+      key: "version_id"
+      fields: "version_id, arch"
+    }
+
+    versions_by_id = {v.id, v for v in *versions}
+    for rock in *rocks
+      v = versions_by_id[rock.version_id]
+      if v.rocks
+        insert v.rocks, rock
+      else
+        v.rocks = { rock }
+
+  mods_by_id = {mod.id, mod for mod in *mods}
+  for v in *versions
+    m = mods_by_id[v.module_id]
+    if m.versions
+      insert m.versions, v
+    else
+      m.versions = { v }
+
+  mods
+
+-- render the manifest with no queries
 render_manifest = (modules, filter_version=nil) =>
-  mod_ids = [mod.id for mod in *modules]
+  @res.headers["Content-type"] = "text/x-lua"
 
   repository = {}
-  if next mod_ids
-    mod_ids = concat mod_ids, ", "
-    -- versions = get_all_pages Versions\paginated "where module_id in (#{mod_ids}) order by id", per_page: 50, fields: "id, module_id, version_name, lua_version"
-    versions = get_all_pages Versions\paginated "order by id desc", per_page: 50, fields: "id, module_id, version_name, lua_version"
 
-    if filter_version
-      filter_version = parse_version filter_version
-      versions = for v in *versions
-        continue unless v.lua_version
-        dep = parse_dep v.lua_version
+  if filter_version
+    filter_version = parse_version filter_version
+
+  for mod in *modules
+    mod_tbl = {}
+
+    continue unless mod.versions
+    for version in *mod.versions
+      if filter_version
+        continue unless version.lua_version
+        dep = parse_dep version.lua_version
         continue unless match_constraints filter_version, dep.constraints
-        v
 
-    module_to_versions = default_table!
-    version_to_rocks = default_table!
+      arches = { {arch: "rockspec"} }
+      mod_tbl[version.version_name] = arches
 
-    version_ids = [v.id for v in *versions]
-    if next version_ids
-      version_ids = concat version_ids, ", "
-      -- rocks = get_all_pages Rocks\paginated "where version_id in (#{version_ids}) order by id", per_page: 50, fields: "id, version_id, arch"
-      rocks = get_all_pages Rocks\paginated "order by id desc", per_page: 50, fields: "id, version_id, arch"
-      for rock in *rocks
-        insert version_to_rocks[rock.version_id], rock
+      continue unless version.rocks
+      for {:arch} in *version.rocks
+        insert arches, {:arch}
 
-    for v in *versions
-      insert module_to_versions[v.module_id], v
+    if next mod_tbl
+      repository[mod.name] = mod_tbl
 
-    for mod in *modules
-      vtbl = {}
 
-      for v in *module_to_versions[mod.id]
-        rtbl = {}
-        insert rtbl, arch: "rockspec"
-        for rock in *version_to_rocks[v.id]
-          insert rtbl, arch: rock.arch
-
-        vtbl[v.version_name] = rtbl
-
-      repository[mod.name] = vtbl
-
-  commands = {}
-  modules = {}
-
-  @res.headers["Content-type"] = "text/x-lua"
   layout: false, persist.save_from_table_to_string {
-    :repository, :commands, :modules
+    :repository
+
+    commands: {}
+    modules: {}
   }
 
 
-{ :render_manifest }
+{ :preload_modules, :render_manifest }

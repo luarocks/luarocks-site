@@ -10,7 +10,7 @@ class Manifests extends Model
     Model.create @, { :name, :is_open }
 
   @root: =>
-    assert Manifests\find(name: "root"), "Missing root manifest"
+    (assert Manifests\find(name: "root"), "Missing root manifest")
 
   allowed_to_add: (user) =>
     return false unless user
@@ -35,6 +35,32 @@ class Manifests extends Model
       a.name < b.name
 
     modules
+
+  find_modules: (...) =>
+    import ManifestModules, Modules from require "models"
+    prepare_results, per_page = nil
+
+    args = {...}
+    if type(...) == "table"
+      opts = ...
+
+      if opts.prepare_results
+        prepare_results = opts.prepare_results
+        opts.prepare_results = nil
+
+      if opts.per_page
+        per_page = opts.per_page
+        opts.per_page = nil
+
+    ManifestModules\paginated "where manifest_id = ?", @id, {
+      :per_page
+      prepare_results: (manifest_modules) ->
+        Modules\include_in manifest_modules, "module_id", unpack args
+        modules = [mm.module for mm in *manifest_modules]
+        modules = prepare_results modules if prepare_results
+        modules
+    }
+
 
   source_url: (r) => r\build_url!
 
