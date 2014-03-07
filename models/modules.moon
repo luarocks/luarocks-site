@@ -55,7 +55,7 @@ class Modules extends Model
     else
       {}
 
-  get_verions: =>
+  get_versions: =>
     unless @_versions
       import Versions from require "models"
       @_versions = Versions\select "where module_id = ?", @id

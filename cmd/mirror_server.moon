@@ -91,7 +91,7 @@ run_with_server ->
     log "Processing #{module_name}"
     existing_mod = modules_by_name[module_name]
     existing_versions = if existing_mod
-      {v.version_name, v for v in *existing_mod\get_verions!}
+      {v.version_name, v for v in *existing_mod\get_versions!}
     else
       {}
 
