@@ -1,7 +1,6 @@
 
-http = require "lapis.nginx.http"
 with require "cloud_storage.http"
-  .set http
+  .set require "lapis.nginx.http"
 
 db = require "lapis.db"
 lapis = require "lapis.init"
