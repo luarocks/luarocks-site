@@ -99,6 +99,12 @@ handle_rockspec_upload = =>
 
   mod, version_or_err, new_module, new_version = do_rockspec_upload @current_user, file.content
   assert_error mod, version_or_err
+
+  if new_module or new_version
+    root = Manifests\root!
+    if root\has_module mod
+      root\purge!
+
   mod, version_or_err, new_module, new_version
 
 

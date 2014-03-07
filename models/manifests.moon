@@ -60,3 +60,8 @@ class Manifests extends Model
 
     for path in *{"/manifest", "/manifest-5.1", "/manifest-5.2"}
       ngx.shared.manifest_cache\set path, nil
+
+  has_module: (mod) =>
+    import ManifestModules from require "models"
+    ManifestModules\find manifest_id: @id, module_id: mod.id
+
