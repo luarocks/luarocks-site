@@ -64,6 +64,8 @@ do_rockspec_upload = (user, rockspec_text) ->
     mod\delete! if new_module
     return nil, "Failed to upload rockspec"
 
+  new_version = false
+
   version = Versions\find module_id: mod.id, version_name: spec.version\lower!
 
   if version
@@ -74,6 +76,7 @@ do_rockspec_upload = (user, rockspec_text) ->
   else
     version, err = Versions\create mod, spec, key
     return nil, err unless version
+    new_version = true
     mod\update current_version_id: version.id
 
   -- try to insert into root
@@ -82,7 +85,7 @@ do_rockspec_upload = (user, rockspec_text) ->
     unless ManifestModules\find manifest_id: root_manifest.id, module_id: mod.id
       ManifestModules\create root_manifest, mod
 
-  mod, version, new_module
+  mod, version, new_module, new_version
 
 
 handle_rockspec_upload = =>
@@ -94,9 +97,9 @@ handle_rockspec_upload = =>
 
   file = @params.rockspec_file
 
-  mod, version_or_err, new_module = do_rockspec_upload @current_user, file.content
+  mod, version_or_err, new_module, new_version = do_rockspec_upload @current_user, file.content
   assert_error mod, version_or_err
-  mod, version_or_err, new_module
+  mod, version_or_err, new_module, new_version
 
 
 do_rock_upload = (user, mod, version, filename, rock_content) ->
