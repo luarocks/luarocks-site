@@ -8,8 +8,11 @@ should_load = (url, expected_status=200) ->
 
 import truncate_tables from require "lapis.spec.db"
 
+import log_in_user from require "spec.helpers"
+
 import
   Manifests
+  Users
   from require "models"
 
 describe "moonrocks", ->
@@ -37,4 +40,19 @@ describe "moonrocks", ->
   should_load "/settings", 302
   should_load "/api_keys/new", 302
 
+
+  describe "with user", ->
+    local user
+
+    request_logged_in = (url, opts={}) ->
+      opts.headers = log_in_user(user)
+      request url, opts
+
+    before_each ->
+      truncate_tables Users
+      user = Users\create "leafo", "leafo", "leafo@example.com"
+
+    it "should load upload page", ->
+      status, body = request_logged_in "/upload"
+      assert.same 200, status
 
