@@ -4,29 +4,12 @@ filter, SERVER, USER = ...
 SERVER or= "http://luarocks.org/repositories/rocks"
 USER or= "luarocks"
 
-
 http = require "socket.http"
-
-assert_request = (...) ->
-  body, status, headers = http.request ...
-  assert status == 200, "Failed to request #{...}, got #{status}"
-  body, status, headers
 
 import run_with_server from require "lapis.cmd.nginx"
 import parse_rockspec from require "helpers.uploaders"
 
-parse_manifest = (text) ->
-  fn = loadstring text
-  return nil, "Failed to parse manifest" unless fn
-
-  manif = {}
-  setfenv fn, manif
-  return nil, "Failed to eval manifest" unless pcall(fn)
-
-  unless manif.repository
-    return nil, "Invalid manifest (missing repository)"
-
-  manif
+import parse_manifest, assert_request from require "cmd.helpers"
 
 -- attempt to convert latin-1 chars to utf8
 fix_encoding = (str) ->
