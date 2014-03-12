@@ -13,7 +13,10 @@ os.execute "mkdir -p '#{DEST}'"
 import parse_manifest, assert_request from require "cmd.helpers"
 
 seen_files = {}
--- existing_files = os.execute "find '#{DEST}' -type f | grep '^manifest|'"
+existing_files = do
+  f = io.popen "ls '#{DEST}' | grep '\\.rock$\\|\\.rockspec$'", "r"
+  with { fname, true for fname in f\read("*a")\gmatch "[^\n]+" }
+    f\close!
 
 download_manifest = (name) ->
   print "Processing #{name}"
@@ -34,6 +37,7 @@ download_manifest = (name) ->
 
         -- skip if already processed
         continue if seen_files[fname]
+        existing_files[fname] = nil
         seen_files[fname] = true
 
         url = "#{SERVER}/#{fname}"
@@ -61,4 +65,8 @@ download_manifest = (name) ->
 
 for m in *{ "manifest", "manifest-5.1", "manifest-5.2"}
   download_manifest m
+
+for fname in pairs existing_files
+  print "Removing #{fname}"
+  os.execute "rm '#{DEST}/#{fname}'"
 
