@@ -58,7 +58,7 @@ run_with_server ->
   unless user
     import generate_key from require "helpers.models"
     password = generate_key 30
-    user = assert Users\create USER, password, "leafot+luarocks@gmail.com"
+    user = assert Users\create USER, password, "leafot+#{USER}@gmail.com"
     log "Created #{USER} with password #{password}"
 
   user_modules = user\all_modules!

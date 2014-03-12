@@ -12,6 +12,6 @@ function _annotate() {
 (
   cd "$root"
   _annotate moon "cmd/mirror_server.moon" . "$server" "luarocks"
-  _annotate moon "cmd/mirror_server.moon" . "$server_csm" "luarocks-scm"
+  _annotate moon "cmd/mirror_server.moon" . "$server_scm" "luarocks-scm"
 )
 
