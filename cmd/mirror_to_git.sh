@@ -13,7 +13,6 @@ function _annotate() {
   $@
 }
 
-rm -rf "$path"
 mkdir -p "$path"
 
 (
