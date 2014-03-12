@@ -20,7 +20,7 @@ download_manifest = (name) ->
   manifest_text = assert_request "#{SERVER}/#{name}"
   manifest = assert parse_manifest manifest_text
 
-  with io.open "#{DEST}/name", "w"
+  with io.open "#{DEST}/#{name}", "w"
     \write manifest_text
     \close!
 
@@ -46,14 +46,17 @@ download_manifest = (name) ->
 
         io.stdout\write "Downloading #{fname}..."
 
+        tmp_fname = "#{fname}.tmp"
+
         http.request {
           :url
-          sink: ltn12.sink.file io.open fname, "w"
+          sink: ltn12.sink.file io.open tmp_fname, "w"
           headers: {
             "user-agent": "moonrocks_backup"
           }
         }
 
+        os.execute "mv '#{tmp_fname}' #{fname}"
         print "done"
 
 for m in *{ "manifest", "manifest-5.1", "manifest-5.2"}
