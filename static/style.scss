@@ -508,4 +508,25 @@ img.avatar {
     }
 }
 
+.upload_rockspec_page {
+    .file_uploader {
+        background: white;
+        border: 1px solid #f0e5c9;
+        border-radius: 2px;
+        display: inline-block;
+        padding: 10px;
+
+        margin-right: 10px;
+
+        strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+    }
+
+    .form_buttons {
+        margin-top: 20px;
+    }
+}
+
 
