@@ -15,6 +15,7 @@ import generate_token from require "lapis.csrf"
 import
   Manifests
   Users
+  Modules
   from require "models"
 
 rockspec = [==[
@@ -60,7 +61,11 @@ describe "moonrocks", ->
   teardown ->
     close_test_server!
 
+  before_each ->
+    truncate_tables Users, Modules
+
   should_load "/"
+
   should_load "/about"
   should_load "/m/root"
   should_load "/modules"
@@ -87,7 +92,6 @@ describe "moonrocks", ->
       request url, opts
 
     before_each ->
-      truncate_tables Users
       user = Users\create "leafo", "leafo", "leafo@example.com"
 
     it "should load upload page", ->
