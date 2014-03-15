@@ -10,10 +10,45 @@ import truncate_tables from require "lapis.spec.db"
 
 import log_in_user from require "spec.helpers"
 
+import generate_token from require "lapis.csrf"
+
 import
   Manifests
   Users
   from require "models"
+
+rockspec = [==[
+-- etlua-dev-1.rockspec
+package = "etlua"
+version = "dev-1"
+
+source = {
+  url = "git://github.com/leafo/etlua.git"
+}
+
+description = {
+  summary = "Embedded templates for Lua",
+  detailed = [[
+    Allows you to render ERB style templates but with Lua. Supports <% %>, <%=
+    %> and <%- %> tags (with optional newline slurping) for embedding code.
+  ]],
+  homepage = "https://github.com/leafo/etlua",
+  maintainer = "Leaf Corcoran <leafot@gmail.com>",
+  license = "MIT"
+}
+
+dependencies = {
+  "lua >= 5.1",
+}
+
+build = {
+  type = "builtin",
+  modules = {
+    ["etlua"] = "etlua.lua",
+  },
+}
+
+]==]
 
 describe "moonrocks", ->
   setup ->
@@ -45,7 +80,10 @@ describe "moonrocks", ->
     local user
 
     request_logged_in = (url, opts={}) ->
-      opts.headers = log_in_user(user)
+      opts.headers or= {}
+      for k,v in pairs log_in_user(user)
+        opts.headers[k] = v
+
       request url, opts
 
     before_each ->
@@ -55,4 +93,30 @@ describe "moonrocks", ->
     it "should load upload page", ->
       status, body = request_logged_in "/upload"
       assert.same 200, status
+
+    it "should upload rockspec #doit", ->
+      unless pcall -> require "moonrocks.multipart"
+        return pending "Need moonrocks to run upload spec"
+
+      import File, encode from require "moonrocks.multipart"
+
+      f = with File "etlua-dev-1.rockspec", "application/octet-stream"
+        .content = -> rockspec
+
+      data, boundary = encode {
+        csrf_token: generate_token nil, user.id
+        rockspec_file: f
+      }
+
+      status, body, headers = request_logged_in "/upload", {
+        method: "POST"
+        headers: {
+          "Content-type": "multipart/form-data; boundary=#{boundary}"
+        }
+
+        :data
+      }
+
+      assert.same 302, status
+      assert.truthy headers.location\match "/modules/"
 
