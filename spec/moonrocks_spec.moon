@@ -16,6 +16,8 @@ import
   Manifests
   Users
   Modules
+  Versions
+  Rocks
   from require "models"
 
 rockspec = [==[
@@ -62,7 +64,7 @@ describe "moonrocks", ->
     close_test_server!
 
   before_each ->
-    truncate_tables Users, Modules
+    truncate_tables Users, Modules, Versions, Rocks
 
   should_load "/"
 
@@ -122,8 +124,17 @@ describe "moonrocks", ->
         :data
       }
 
-    it "should upload rockspec #doit", ->
+    it "should upload rockspec", ->
       status, body, headers = do_upload "etlua-dev-1.rockspec", rockspec
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
+
+      assert.same 1, #Versions\select!
+
+
+    it "should not upload invalid rockspec", ->
+      status = do_upload "etlua-dev-1.rockspec", "hello world"
+      assert.same 200, status
+      assert.same 0, #Versions\select!
+
 
