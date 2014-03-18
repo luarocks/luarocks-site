@@ -98,21 +98,22 @@ describe "moonrocks", ->
       status, body = request_logged_in "/upload"
       assert.same 200, status
 
-    it "should upload rockspec #doit", ->
+    do_upload = (filename, file_content) ->
       unless pcall -> require "moonrocks.multipart"
-        return pending "Need moonrocks to run upload spec"
+        pending "Need moonrocks to run upload spec"
+        return false
 
       import File, encode from require "moonrocks.multipart"
 
-      f = with File "etlua-dev-1.rockspec", "application/octet-stream"
-        .content = -> rockspec
+      f = with File filename, "application/octet-stream"
+        .content = -> file_content
 
       data, boundary = encode {
         csrf_token: generate_token nil, user.id
         rockspec_file: f
       }
 
-      status, body, headers = request_logged_in "/upload", {
+      request_logged_in "/upload", {
         method: "POST"
         headers: {
           "Content-type": "multipart/form-data; boundary=#{boundary}"
@@ -121,6 +122,8 @@ describe "moonrocks", ->
         :data
       }
 
+    it "should upload rockspec #doit", ->
+      status, body, headers = do_upload "etlua-dev-1.rockspec", rockspec
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
 
