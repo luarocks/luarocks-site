@@ -96,6 +96,10 @@ describe "moonrocks", ->
     before_each ->
       user = Users\create "leafo", "leafo", "leafo@example.com"
 
+    it "should load settings page", ->
+      status, body = request_logged_in "/settings"
+      assert.same 200, status
+
     it "should load upload page", ->
       status, body = request_logged_in "/upload"
       assert.same 200, status
