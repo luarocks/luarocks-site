@@ -10,7 +10,7 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 function _annotate() {
   echo "$(tput setaf 4)>>$(tput sgr0) $@"
-  $@
+  eval $@
 }
 
 mkdir -p "$path"
@@ -35,9 +35,6 @@ mkdir -p "$path"
   cd "$path"
   git diff-index --quiet HEAD
   _annotate git add -A .
-
-  echo "$(tput setaf 4)>>$(tput sgr0) git commit -m 'updated backup'"
-  git commit -m 'updated backup'
-
+  _annotate git commit -m 'updated backup'
   _annotate git push origin master
 )

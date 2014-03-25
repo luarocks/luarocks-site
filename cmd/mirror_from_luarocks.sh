@@ -6,7 +6,7 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 function _annotate() {
   echo "$(tput setaf 4)>>$(tput sgr0) $@"
-  $@
+  eval $@
 }
 
 (
