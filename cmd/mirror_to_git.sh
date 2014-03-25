@@ -35,6 +35,6 @@ mkdir -p "$path"
   cd "$path"
   git diff-index --quiet HEAD
   _annotate git add -A .
-  _annotate git commit -m 'updated backup'
+  _annotate "git commit -m 'updated backup'"
   _annotate git push origin master
 )
