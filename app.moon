@@ -37,17 +37,18 @@ import
   assert_editable
   generate_csrf
   require_login
+  capture_errors_404
   from require "helpers.apps"
 
 import concat, insert from table
 
 load_module = =>
-  @user = assert Users\find(slug: @params.user), "Invalid user"
-  @module = assert Modules\find(user_id: @user.id, name: @params.module\lower!), "Invalid module"
+  @user = assert_error Users\find(slug: @params.user), "Invalid user"
+  @module = assert_error Modules\find(user_id: @user.id, name: @params.module\lower!), "Invalid module"
   @module.user = @user
 
   if @params.version
-    @version = assert Versions\find({
+    @version = assert_error Versions\find({
       module_id: @module.id
       version_name: @params.version\lower!
     }), "Invalid version"
@@ -60,7 +61,7 @@ load_module = =>
   true
 
 load_manifest = (key="id") =>
-  @manifest = assert Manifests\find([key]: @params.manifest), "Invalid manifest id"
+  @manifest = assert_error Manifests\find([key]: @params.manifest), "Invalid manifest id"
 
 delete_module = respond_to {
   before: =>
@@ -167,8 +168,9 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for "module", user: @current_user, module: mod
   }
 
-  [user_profile: "/modules/:user"]: =>
-    @user = assert Users\find(slug: @params.user), "Invalid user"
+  [user_profile: "/modules/:user"]: capture_errors_404 =>
+    @user = assert_error Users\find(slug: @params.user), "invalid user"
+
     @title = "#{@user.username}'s Modules"
     paginated_modules @, @user, (mods) ->
       for mod in *mods
@@ -177,7 +179,7 @@ class MoonRocks extends lapis.Application
 
     render: true
 
-  [module: "/modules/:user/:module"]: =>
+  [module: "/modules/:user/:module"]: capture_errors_404 =>
     return unless load_module @
 
     @title = "#{@module\name_for_display!}"
@@ -268,7 +270,7 @@ class MoonRocks extends lapis.Application
   }
 
 
-  [remove_from_manifest: "/remove_from_manifest/:user/:module/:manifest"]: respond_to {
+  [remove_from_manifest: "/remove_from_manifest/:user/:module/:manifest"]: capture_errors_404 respond_to {
     before: =>
       load_module @
       load_manifest @
@@ -277,7 +279,7 @@ class MoonRocks extends lapis.Application
       assert_editable @, @module
       @title = "Remove Module From Manifest"
 
-      assert ManifestModules\find({
+      assert_error ManifestModules\find({
         manifest_id: @manifest.id
         module_id: @module.id
       }), "Module is not in manifest"
@@ -292,7 +294,7 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for("module", @)
   }
 
-  [manifest: "/m/:manifest"]: =>
+  [manifest: "/m/:manifest"]: capture_errors_404 =>
     load_manifest @, "name"
     @title = "#{@manifest.name} Manifest"
     paginated_modules @, @manifest

@@ -21,14 +21,9 @@ import
 
 import render_manifest, preload_modules from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
+import capture_errors_404 from require "helpers.apps"
 
 import cached from require "lapis.cache"
-
-capture_errors_404 = (fn) ->
-  capture_errors {
-    on_error: => "Not found", status: 404
-    fn
-  }
 
 handle_render = (obj, filter_version) =>
   pager = obj\find_modules {
