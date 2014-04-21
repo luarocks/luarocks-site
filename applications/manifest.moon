@@ -56,7 +56,7 @@ cached_manifest = (fn) ->
   }
 
 
-class MoonRocksApi extends lapis.Application
+class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest =>
     handle_render @, Manifests\root!
 
