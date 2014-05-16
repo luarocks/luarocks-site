@@ -8,13 +8,19 @@ config { "development", "test", "production", "staging" }, ->
   tool_version "0.0.1"
   pcall -> include require "secret.init"
 
+  postgres {
+    backend: "pgmoon"
+    user: "postgres"
+    database: "moonrocks"
+  }
+
+
 config { "development", "test" }, ->
   num_workers 1
   code_cache "off"
   daemon "off"
   notice_log "stderr"
 
-  postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
   bucket_name "moonrocks_dev"
 
 config { "production", "staging" }, ->
@@ -26,7 +32,6 @@ config { "production", "staging" }, ->
   daemon "on"
   notice_log "logs/notice.log"
 
-  postgresql_url "postgres://postgres:@127.0.0.1/moonrocks"
   bucket_name "moonrocks"
 
 config "staging", ->
@@ -36,5 +41,7 @@ config "staging", ->
   notice_log "stderr"
 
 config "test", ->
-  postgresql_url "postgres://postgres:@127.0.0.1/moonrocks_test"
+  postgres {
+    database: "moonrocks_test"
+  }
 
