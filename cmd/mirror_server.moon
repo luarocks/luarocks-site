@@ -9,7 +9,11 @@ http = require "socket.http"
 import run_with_server from require "lapis.cmd.nginx"
 import parse_rockspec from require "helpers.uploaders"
 
-import parse_manifest, assert_request from require "cmd.helpers"
+import
+  parse_manifest
+  assert_request
+  connect_postgres
+  from require "cmd.helpers"
 
 -- attempt to convert latin-1 chars to utf8
 fix_encoding = (str) ->
@@ -47,9 +51,9 @@ log = do
 
 local user
 
-log "Mirroring #{SERVER} to user: #{USER}"
-
-run_with_server ->
+mirror = ->
+  connect_postgres!
+  log "Mirroring #{SERVER} to user: #{USER}"
   import Users from require "models"
   user = Users\find slug: USER
 
@@ -114,3 +118,4 @@ run_with_server ->
           do_rock_upload user, mod, version, fname, rock
 
 
+mirror!
