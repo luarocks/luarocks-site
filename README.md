@@ -25,8 +25,7 @@ Install [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or somet
 
 Install PostgreSQL. Create a database called `moonrocks`.
 
-Install [OpenResty][1]. Configure with the
-`--with-http_postgres_module` and optionally `--with-luajit`.
+Install [OpenResty][1].
 
 Check out this repository.
 
@@ -64,7 +63,8 @@ make test_db
 busted
 ```
 
-You only need to run `make test_db` if the schema of the database has changed.
+You only need to run `make test_db` if the schema of the database has changed
+(or has just been created).
 
 ### Setting up Google Cloud Storage
 
