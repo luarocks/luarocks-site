@@ -1,10 +1,14 @@
 
-$back_color: lighten(#F0E5C9, 10%);
-$header_color: #483729;
+$lua_blue: #00257A; // color of lua logo
+$back_color: lighten($lua_blue, 72%);
+$header_color: lighten(desaturate($lua_blue, 60%), 5%);
 $site_width: 800px;
-$link_color: #FF5C00;
+$link_color: #008FEE;
 $base_font_size: 14px;
-$body_color: #5C5647;
+$body_color: #47555C;
+$border_color: #C1CCE4;
+$line_height: 24px;
+$sub_color: mix($body_color, gray, 20%);
 
 @mixin unselectable {
     -moz-user-select: none;
@@ -42,6 +46,12 @@ $body_color: #5C5647;
     }
 }
 
+@mixin single_line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 body {
     color: $body_color;
     font-size: $base_font_size;
@@ -71,7 +81,7 @@ h3 {
 
 p {
     line-height: 20px;
-    margin: 10px 0;
+    margin: 10px 0 20px 0;
 
     > code {
         background: darken($back_color, 10%);
@@ -82,7 +92,7 @@ p {
 
 hr {
     height: 1px;
-    background: #ebdecd;
+    background: $border_color;
     border: 0;
     margin: 20px 0;
 }
@@ -104,11 +114,11 @@ hr {
     h1 {
         letter-spacing: 0.025em;
         margin: 0;
-        font-size: 18px;
+        font-size: 22px;
         font-weight: normal;
 
         a {
-            color: scale_color($header_color, $lightness: 90%);
+            color: desaturate(lighten($header_color, 70%), 50%);
             &:hover {
                 text-decoration: none;
             }
@@ -135,7 +145,6 @@ hr {
 
 
     h2, h3, h4 {
-        color: #796B5F;
         font-weight: normal;
     }
 }
@@ -163,7 +172,7 @@ hr {
 }
 
 .header_count {
-    color: #A59E8D;
+    color: $sub_color;
 }
 
 .module_list {
@@ -172,10 +181,14 @@ hr {
         background: white;
         padding: 5px 10px;
         border-radius: 2px;
-        border: 1px solid darken($back_color, 10%);
+        border: 1px solid $border_color;
+        line-height: 1.5;
+
+        .title {
+            font-size: 16px;
+        }
 
         .author {
-            font-size: 13px;
             color: gray;
             a {
                 color: #444;
@@ -185,14 +198,16 @@ hr {
             }
         }
 
+        .main, .summary {
+            @include single_line;
+        }
+
         .summary {
             color: gray;
-            font-size: 13px;
             margin-top: 5px;
         }
 
         .downloads {
-            font-size: 13px;
             color: gray;
 
             .value {
@@ -206,10 +221,10 @@ hr {
 .admin_tools {
     $admin_color: #FFCAD9;
     background: $admin_color;
-    border: 1px solid darken($admin_color, 10%);
-    box-shadow: inset 0 0 0 1px lighten($admin_color, 5%);
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px $border_color;
     border-radius: 2px;
-    padding: 5px 8px;
+    padding: 10px 15px;
     margin: 10px 0;
     font-size: 14px;
 
@@ -255,7 +270,7 @@ hr {
             width: 150px;
             font-size: 14px;
             text-align: right;
-            color: #857261;
+            color: $sub_color;
         }
 
     }
@@ -269,7 +284,7 @@ hr {
             margin-bottom: 4px;
 
             .sub {
-                color: lighten(#857261, 10%);
+                color: $sub_color;
             }
         }
 
@@ -284,10 +299,15 @@ hr {
     }
 
     input[type="text"], input[type="password"], input[type="email"], textarea {
-        border: 1px solid #BBB3A6;
+        border: 1px solid darken($border_color, 5%);
         box-shadow: 0 0 4px rgba(0,0,0,0.2);
         border-radius: 2px;
         padding: 4px;
+
+        &:focus {
+            border-color: darken($border_color, 15%);
+            outline: none;
+        }
     }
 
     .button_row {
@@ -302,13 +322,12 @@ hr {
 }
 
 pre {
-	background: #333;
+	background: #323744;
 	color: white;
 	font-size: 16px;
 
 	padding: 16px 24px;
 
-	text-shadow: 0px -1px 0px #111;
     border-radius: 2px;
 
     &.term_snippet {
@@ -329,18 +348,18 @@ pre {
 
 .table {
     background: white;
-    border: 1px solid darken($back_color, 30%);
-    box-shadow: 1px 1px 0 darken($back_color, 40%), 0 0 10px rgba(0,0,0, 0.2);
+    border: 1px solid desaturate(darken($back_color, 30%), 50%);
+    box-shadow: 1px 1px 0 desaturate(darken($back_color, 40%), 50%);
     font-size: 14px;
 
     td {
-        padding: 4px 8px;
+        padding: 6px 8px;
     }
 
     thead {
         background: darken($back_color, 10%);
         font-weight: bold;
-        color: #6B675C;
+        color: desaturate(darken($back_color, 60%), 70%);
     }
 
     .pid {
@@ -374,16 +393,21 @@ img.avatar {
 .module_page {
     .module_header {
         margin: 20px 0;
+
         h2, p {
             margin: 0;
+        }
+
+        h2 {
+            margin-bottom: 5px;
         }
     }
 
     .metadata_columns {
         font-size: 0;
         padding: 10px 0;
-        border-bottom: 1px solid #EBDECD;
-        border-top: 1px solid #EBDECD;
+        border-bottom: 1px solid $border_color;
+        border-top: 1px solid $border_color;
         white-space: nowrap;
 
         .column {
@@ -401,7 +425,7 @@ img.avatar {
 
             margin-right: 40px;
             padding-left: 20px;
-            border-left: 1px solid #EBDECD;
+            border-left: 1px solid $border_color;
             display: inline-block;
             vertical-align: top;
             font-size: $base_font_size;
@@ -511,7 +535,7 @@ img.avatar {
 .upload_rockspec_page {
     .file_uploader {
         background: white;
-        border: 1px solid #f0e5c9;
+        border: 1px solid $border_color;
         border-radius: 2px;
         display: inline-block;
         padding: 10px;
