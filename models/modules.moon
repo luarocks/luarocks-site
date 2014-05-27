@@ -124,7 +124,7 @@ class Modules extends Model
           mimetype: "text/x-rockspec"
         }
 
-        Model.create Versions, params
+        new_version = Model.create Versions, params
 
       rocks = version\get_rocks!
       for rock in *rocks
@@ -144,5 +144,7 @@ class Modules extends Model
             mimetype: "application/x-rock"
           }
 
-          Model.create Rocks, params
+          new_rock = Model.create Rocks, params
+
+    new_module
 
