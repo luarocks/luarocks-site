@@ -77,3 +77,72 @@ class Modules extends Model
     versions = Versions\select "where module_id = ? ", @id
     for v in *versions
       v\delete!
+
+  -- copies module/versions/rocks to user
+  copy_to_user: (user) =>
+    return if user.id == @user_id
+
+    bucket = require "storage_bucket"
+    import Versions, Rocks from require "models"
+
+    module_keys = {
+      "name", "display_name", "downloads", "summary", "description", "license",
+      "homepage"
+    }
+
+    version_keys = {
+      "version_name", "display_version_name", "rockspec_fname", "downloads",
+      "rockspec_downloads", "lua_version"
+    }
+
+    rock_keys = {
+      "arch", "downloads", "rock_fname"
+    }
+
+    new_module = Modules\find user_id: user.id, name: @name
+    unless new_module
+      params = { k, @[k] for k in *module_keys }
+      params.user_id = user.id
+      params.current_version_id = -1
+      new_module = Model.create Modules, params
+
+    versions = @get_versions!
+    for version in *versions
+      new_version = Versions\find {
+        module_id: new_module.id
+        version_name: version.version_name
+      }
+
+      unless new_version
+        params = { k, version[k] for k in *version_keys }
+        params.module_id = new_module.id
+        params.rockspec_key = "#{user.id}/#{version.rockspec_fname}"
+
+        rockspec_text = bucket\get_file version.rockspec_key
+        bucket\put_file_string rockspec_text, {
+          key: params.rockspec_key
+          mimetype: "text/x-rockspec"
+        }
+
+        Model.create Versions, params
+
+      rocks = version\get_rocks!
+      for rock in *rocks
+        new_rock = Rocks\find {
+          version_id: new_version.id
+          arch: rock.arch
+        }
+
+        unless new_rock
+          params = { k, rock[k] for k in *rock_keys }
+          params.version_id = new_version.id
+          params.rock_key = "#{user.id}/#{rock.rock_fname}"
+
+          rock_bin = bucket\get_file rock.rock_key
+          bucket\put_file_string rock_bin, {
+            key: params.rock_key
+            mimetype: "application/x-rock"
+          }
+
+          Model.create Rocks, params
+

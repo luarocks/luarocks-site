@@ -31,6 +31,6 @@ connect_postgres = ->
 
   db.set_backend "raw", (q, ...) ->
     logger.query  q
-    pgmoon\query q, ...
+    assert pgmoon\query q, ...
 
 { :assert_request, :parse_manifest, :connect_postgres }

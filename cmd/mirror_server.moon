@@ -6,7 +6,6 @@ USER or= "luarocks"
 
 http = require "socket.http"
 
-import run_with_server from require "lapis.cmd.nginx"
 import parse_rockspec from require "helpers.uploaders"
 
 import
