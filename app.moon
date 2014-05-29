@@ -190,6 +190,8 @@ class MoonRocks extends lapis.Application
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
     @manifests = @module\all_manifests!
 
+    Versions\sort_versions @versions
+
     for v in *@versions
       if v.id == @module.current_version_id
         @current_version = v

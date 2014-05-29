@@ -17,6 +17,17 @@ get_lua_version = (spec) ->
 class Versions extends Model
   @timestamp: true
 
+  @sort_versions: (versions) =>
+    import parse_version from require "ext.luarocks.deps"
+
+    for v in *versions
+      v._parsed_version_name = parse_version v.version_name
+
+    table.sort versions, (a, b) ->
+      a._parsed_version_name > b._parsed_version_name
+
+    versions
+
   @version_name_is_development: do
     patterns = {
       "^scm%-"
