@@ -35,7 +35,10 @@ class Manifests extends Model
         per_page = opts.per_page
         opts.per_page = nil
 
-    ManifestModules\paginated "where manifest_id = ?", @id, {
+    ManifestModules\paginated [[
+      where manifest_id = ?
+      order by module_name asc
+    ]], @id, {
       :per_page
       prepare_results: (manifest_modules) ->
         Modules\include_in manifest_modules, "module_id", unpack args
