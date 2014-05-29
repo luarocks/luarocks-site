@@ -62,8 +62,7 @@ render_manifest = (modules, filter_version=nil) =>
 
     continue unless mod.versions
     for version in *mod.versions
-      if filter_version
-        continue unless version.lua_version
+      if filter_version and version.lua_version
         dep = parse_dep version.lua_version
         continue unless match_constraints filter_version, dep.constraints
 
