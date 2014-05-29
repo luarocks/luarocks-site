@@ -60,6 +60,11 @@ describe "moonrocks", ->
   should_load_manifest "/dev/manifest-5.1", is_empty_manifest
   should_load_manifest "/dev/manifest-5.2", is_empty_manifest
 
+
+  has_module = (manifest, mod) ->
+    assert manifest.repository[mod.name],
+      "manifest should have module"
+
   describe "with a module", ->
     local mod
 
@@ -68,10 +73,6 @@ describe "moonrocks", ->
       ManifestModules\create root, mod
 
     should_load_manifest "/manifest", is_empty_manifest
-
-    has_module = (manifest, mod) ->
-      assert manifest.repository[mod.name],
-        "manifest should have module"
 
     describe "with regular version", ->
       local version
@@ -175,4 +176,39 @@ describe "moonrocks", ->
             ["git-1"]: { { arch: "rockspec" } }
           }
         }, m.repository
+
+
+  describe "user manifest", ->
+    local user
+
+    before_each ->
+      user = factory.Users username: "tester"
+
+    should_load_manifest "/manifests/tester/manifest", is_empty_manifest
+    should_load_manifest "/manifests/tester/manifest-5.1", is_empty_manifest
+    should_load_manifest "/manifests/tester/manifest-5.2", is_empty_manifest
+
+    describe "with regular version", ->
+      local mod, version
+
+      before_each ->
+        mod = factory.Modules user_id: user.id
+        version = factory.Versions module_id: mod.id
+
+
+      should_load_manifest "/manifests/tester/manifest", (m) -> has_module m, mod
+      should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
+      should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
+
+    -- development versions show up by default in user manifest at the moment
+    describe "with development version", ->
+      local mod, version
+
+      before_each ->
+        mod = factory.Modules user_id: user.id
+        version = factory.Versions module_id: mod.id, development: true
+
+      should_load_manifest "/manifests/tester/manifest", (m) -> has_module m, mod
+      should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
+      should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
 
