@@ -120,6 +120,8 @@ paginated_modules = (object_or_pager, prepare_results) =>
   if @page > 1 and @title
     @title ..= " - Page #{@page}"
 
+  @modules
+
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
 
@@ -306,5 +308,21 @@ class MoonRocks extends lapis.Application
 
   [changes: "/changes"]: =>
     @title = "Changes"
+    render: true
+
+
+  [search: "/search"]: =>
+    @title = "search"
+
+    trim_filter @params
+    if @params.q
+      query = @params.q\lower!\gsub("%%", "") .. "%"
+
+      pager = Modules\paginated [[
+        where name like ?
+      ]], query
+
+      @results = paginated_modules @, pager
+
     render: true
 

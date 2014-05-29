@@ -71,6 +71,8 @@ class Layout extends Widget
 
           a href: @url_for("index"), "Home"
           raw " &middot; "
+          a href: @url_for"search", "Search"
+          raw " &middot; "
           a href: @url_for("manifest", manifest: "root"), "Root Manifest"
           raw " &middot; "
           a href: @url_for"modules", "Modules"
@@ -78,5 +80,6 @@ class Layout extends Widget
           a href: @url_for"changes", "Changes"
           raw " &middot; "
           a href: @url_for"about", "About"
+
 
 

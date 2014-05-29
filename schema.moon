@@ -92,6 +92,7 @@ make_schema = ->
   create_index "modules", "user_id"
   create_index "modules", "user_id", "name", unique: true
   create_index "modules", "downloads"
+  create_index "modules", "name"
 
   --
   -- Versions

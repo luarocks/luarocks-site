@@ -9,9 +9,9 @@ class Base extends Widget
     div class: "#{@@widget_name!}_page", ->
       @inner_content!
 
-  render_modules: (modules, opts={}) =>
+  render_modules: (modules) =>
     unless next modules
-      div class: "empty_message", "No Modules"
+      div class: "empty_message", "No modules"
       return
 
     div class: "module_list", ->

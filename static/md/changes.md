@@ -1,6 +1,10 @@
 
 ## Changes
 
+**2014/5/28**
+
+ * Add [search page](/search)
+
 **2014/3/3**
 
  * Add pagination to module pages
