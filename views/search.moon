@@ -10,7 +10,7 @@ class UserRegister extends require "widgets.base"
     form action: "", method: "get", class: "form", ->
       div class: "row", ->
         label for: "search_input", "Module name"
-        input type: "text", name: "q", id: "search_input", value: @params.q
+        input type: "text", name: "q", id: "search_input", value: @params.q, autofocus: "autofocus"
 
       div ->
         input type: "submit", value: "Search"
