@@ -53,10 +53,9 @@ cached_manifest = (fn) ->
     fn
   }
 
-
 render_root_manifest = =>
   filter_version = if @params.version then assert_filter @
-  handle_render @, Manifests\root!, filter_version, @development
+  handle_render @, Manifests\root!, filter_version, @development or false
 
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest =>
