@@ -82,6 +82,10 @@ describe "moonrocks", ->
   should_load "/settings", 302
   should_load "/api_keys/new", 302
 
+  it "should detect development version name", ->
+    assert.truthy Versions\version_name_is_development "scm-1"
+    assert.truthy Versions\version_name_is_development "cvs-2"
+    assert.falsy Versions\version_name_is_development "0.2-1"
 
   describe "with user", ->
     local user

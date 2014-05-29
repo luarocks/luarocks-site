@@ -17,6 +17,19 @@ get_lua_version = (spec) ->
 class Versions extends Model
   @timestamp: true
 
+  @version_name_is_development: do
+    patterns = {
+      "^scm%-"
+      "^cvs%-"
+      "^git%-"
+    }
+
+    (version_name) =>
+      version_name = version_name\lower!
+      for p in *patterns
+        return true if version_name\match p
+      false
+
   @create: (mod, spec, rockspec_key) =>
     version_name = spec.version\lower!
 
@@ -28,6 +41,7 @@ class Versions extends Model
       display_version_name: if version_name != spec.version then spec.version
       rockspec_fname: rockspec_key\match "/([^/]*)$"
       lua_version: get_lua_version spec
+      development: @version_name_is_development version_name
 
       :rockspec_key, :version_name
     }
