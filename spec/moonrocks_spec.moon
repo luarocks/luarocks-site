@@ -20,6 +20,8 @@ import
   Rocks
   from require "models"
 
+factory = require "spec.factory"
+
 rockspec = [==[
 -- etlua-dev-1.rockspec
 package = "etlua"
@@ -98,7 +100,7 @@ describe "moonrocks", ->
       request url, opts
 
     before_each ->
-      user = Users\create "leafo", "leafo", "leafo@example.com"
+      user = factory.Users!
 
     it "should load settings page", ->
       status, body = request_logged_in "/settings"
