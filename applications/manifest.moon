@@ -27,7 +27,7 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
-handle_render = (obj, filter_version) =>
+handle_render = (obj, ...) =>
   pager = obj\find_modules {
     fields: "id, name"
     per_page: 50
@@ -35,7 +35,7 @@ handle_render = (obj, filter_version) =>
   }
 
   modules = get_all_pages pager
-  render_manifest @, modules, filter_version
+  render_manifest @, modules, ...
 
 assert_filter = =>
   assert_valid @params, {
@@ -43,7 +43,6 @@ assert_filter = =>
   }
 
   @params.version
-
 
 cached_manifest = (fn) ->
   cached {
@@ -55,13 +54,26 @@ cached_manifest = (fn) ->
   }
 
 
+render_root_manifest = =>
+  filter_version = if @params.version then assert_filter @
+  handle_render @, Manifests\root!, filter_version, @development
+
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest =>
-    handle_render @, Manifests\root!
+    render_root_manifest @
+
+  [root_manifest_dev: "/dev/manifest"]: cached_manifest =>
+    @development = true
+    render_root_manifest @
 
   "/manifest-:version": capture_errors_404 cached_manifest =>
-    filter_version = assert_filter @
-    handle_render @, Manifests\root!, filter_version
+    render_root_manifest @
+
+  "/dev/manifest-:version": capture_errors_404 cached_manifest =>
+    @development = true
+    render_root_manifest @
+
+  "/dev": => redirect_to: @url_for "root_manifest_dev"
 
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 
@@ -73,4 +85,7 @@ class MoonRocksManifest extends lapis.Application
     user = assert_error Users\find(slug: @params.user), "Invalid user"
     filter_version = assert_filter @
     handle_render @, user, filter_version
+
+
+
 

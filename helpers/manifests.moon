@@ -49,7 +49,7 @@ preload_modules = (mods) ->
   mods
 
 -- render the manifest with no queries
-render_manifest = (modules, filter_version=nil, development=false) =>
+render_manifest = (modules, filter_version=nil, development=nil) =>
   @res.headers["Content-type"] = "text/x-lua"
 
   repository = {}
@@ -62,7 +62,8 @@ render_manifest = (modules, filter_version=nil, development=false) =>
 
     continue unless mod.versions
     for version in *mod.versions
-      continue if version.development != development
+      if development != nil
+        continue if version.development != development
 
       if filter_version and version.lua_version
         dep = parse_dep version.lua_version
