@@ -25,6 +25,8 @@ import capture_errors_404 from require "helpers.apps"
 
 import cached from require "lapis.cache"
 
+config = require("lapis.config").get!
+
 handle_render = (obj, filter_version) =>
   pager = obj\find_modules {
     fields: "id, name"
@@ -47,6 +49,8 @@ cached_manifest = (fn) ->
   cached {
     dict: "manifest_cache"
     cache_key: (path) -> path
+    exptime: 60 * 10
+    when: -> config._name == "production"
     fn
   }
 
