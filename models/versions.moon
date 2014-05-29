@@ -32,7 +32,9 @@ class Versions extends Model
     patterns = {
       "^scm%-"
       "^cvs%-"
+      "^svn%-"
       "^git%-"
+      "^dev%-"
     }
 
     (version_name) =>
