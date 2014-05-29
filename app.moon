@@ -140,9 +140,16 @@ class MoonRocks extends lapis.Application
 
   [index: "/"]: =>
     @page_description = "A website for submitting and distributing Lua rocks"
+    root = Manifests\root!
 
-    @recent_modules = Modules\select "order by created_at desc limit 5"
+    @recent_modules = Modules\select [[
+      inner join manifest_modules on manifest_modules.module_id = modules.id
+      order by modules.created_at desc limit 5
+    ]], fields: "modules.*"
+
     Users\include_in @recent_modules, "user_id"
+
+
     @popular_modules = Modules\select "order by downloads desc limit 5"
     Users\include_in @popular_modules, "user_id"
 
