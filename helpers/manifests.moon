@@ -20,7 +20,7 @@ preload_modules = (mods) ->
   mod_ids = [mod.id for mod in *mods]
   versions = find_all_in_batches Versions, mod_ids, {
     key: "module_id"
-    fields: "id, module_id, version_name, lua_version"
+    fields: "id, module_id, version_name, lua_version, development"
   }
 
   version_ids = [v.id for v in *versions]
@@ -49,7 +49,7 @@ preload_modules = (mods) ->
   mods
 
 -- render the manifest with no queries
-render_manifest = (modules, filter_version=nil) =>
+render_manifest = (modules, filter_version=nil, development=false) =>
   @res.headers["Content-type"] = "text/x-lua"
 
   repository = {}
@@ -62,6 +62,8 @@ render_manifest = (modules, filter_version=nil) =>
 
     continue unless mod.versions
     for version in *mod.versions
+      continue if version.development != development
+
       if filter_version and version.lua_version
         dep = parse_dep version.lua_version
         continue unless match_constraints filter_version, dep.constraints
