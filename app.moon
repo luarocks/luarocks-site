@@ -226,6 +226,26 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for("module", @)
   }
 
+  [edit_module_version: "/edit/modules/:user/:module/:version"]: respond_to {
+    before: =>
+      return unless load_module @
+      assert_editable @, @module
+
+    GET: =>
+      render: true
+
+    POST: capture_errors =>
+      development = if @params.v
+        assert_valid @params, {
+          {"v", type: "table"}
+        }
+        @params.v.development
+
+      @version\update development: not not development
+      redirect_to: @url_for("module_version", @)
+
+  }
+
   [module_version: "/modules/:user/:module/:version"]: =>
     return unless load_module @
 
