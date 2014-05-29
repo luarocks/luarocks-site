@@ -83,3 +83,20 @@ class Versions extends Model
     rocks = Rocks\select "where version_id = ?", @id
     for r in *rocks
       r\delete!
+
+
+  get_spec: =>
+    http = if ngx
+      require "lapis.nginx.http"
+    else
+      require "socket.http"
+
+    url = @url!
+    body, status = http.request url
+
+    if status != 200
+      return nil, "failed to download rockspec, status: #{status}"
+
+    import parse_rockspec from require "helpers.uploaders"
+    parse_rockspec body
+
