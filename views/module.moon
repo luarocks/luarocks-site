@@ -37,6 +37,9 @@ class Module extends require "widgets.base"
         url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
         a href: url, v\name_for_display!
 
+        if v.development
+          span class: "development_flag", "dev"
+
         span class: "sub", time_ago_in_words(v.created_at)
 
     can_edit = @module\allowed_to_edit @current_user
