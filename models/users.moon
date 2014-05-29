@@ -67,7 +67,10 @@ class Users extends Model
 
   find_modules: (...) =>
     import Modules from require "models"
-    Modules\paginated "where user_id = ?", @id, ...
+    Modules\paginated [[
+      where user_id = ?
+      order by name asc
+    ]], @id, ...
 
   is_admin: => @flags == 1
 
