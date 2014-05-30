@@ -1,8 +1,10 @@
 
-filter, SERVER, USER = ...
+filter, SERVER, development = ...
 
 SERVER or= "http://luarocks.org/repositories/rocks"
-USER or= "luarocks"
+USER = "luarocks"
+
+development = not not development
 
 http = require "socket.http"
 
@@ -52,7 +54,7 @@ local user
 
 mirror = ->
   connect_postgres!
-  log "Mirroring #{SERVER} to user: #{USER}"
+  log "Mirroring #{SERVER} to user: #{USER}, (dev: #{development})"
   import Users from require "models"
   user = Users\find slug: USER
 
@@ -99,6 +101,7 @@ mirror = ->
         rockspec, changed_enc = fix_encoding rockspec
         log "   Altered rockspec encoding" if changed_enc
         mod, version = assert do_rockspec_upload user, rockspec
+        version\update(:development)
 
       existing_rocks = if existing_ver
         {rock.arch, rock for rock in *existing_ver\get_rocks!}
