@@ -1,4 +1,4 @@
-class UserRegister extends require "widgets.base"
+class Search extends require "widgets.base"
   inner_content: =>
     h2 "Search"
     @render_search_form!

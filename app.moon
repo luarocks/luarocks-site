@@ -130,6 +130,7 @@ class MoonRocks extends lapis.Application
   @include "applications.api"
   @include "applications.user"
   @include "applications.manifest"
+  @include "applications.github"
 
   @before_filter =>
     @current_user = Users\read_session @

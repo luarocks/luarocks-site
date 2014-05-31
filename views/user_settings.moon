@@ -7,6 +7,8 @@ class UserSettings extends require "widgets.base"
     @edit_keys!
     hr!
     @reset_password!
+    hr!
+    @github_link!
 
   edit_keys: =>
     h3 id: "api_keys", "API Keys"
@@ -76,4 +78,24 @@ class UserSettings extends require "widgets.base"
       div class: "button_row", ->
         button class: "button", "Submit"
 
+
+  github_link: =>
+    client_id = "cd3ed1705aa7655fe6a7"
+    import encode_query_string from require "lapis.util"
+
+    h3 "Link GitHub account"
+
+    params = encode_query_string {
+      :client_id
+      state: @csrf_token
+    }
+
+    p ->
+      text "Link a GitHub account to automatically transfer ownership of
+      modules from the "
+      a href: @url_for("user_profile", user: "luarocks"), "luarocks"
+      text " account to your own."
+
+    p ->
+      a href: "https://github.com/login/oauth/authorize?" .. params, "Link a new account"
 
