@@ -87,7 +87,7 @@ class Users extends Model
     url = url .. "&s=#{size}" if size
     url
 
-  fetch_github_accounts: =>
+  find_github_accounts: =>
     import GithubAccounts from require "models"
     GithubAccounts\select "where user_id = ? order by updated_at desc", @id
 

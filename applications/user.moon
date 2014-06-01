@@ -128,7 +128,7 @@ class MoonRocksUser extends lapis.Application
       @user\get_data!
       @title = "User Settings"
 
-      @github_accounts = @user\fetch_github_accounts!
+      @github_accounts = @user\find_github_accounts!
       @api_keys = ApiKeys\select "where user_id = ?", @user.id
 
     GET: =>
