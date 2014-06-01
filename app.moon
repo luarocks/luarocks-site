@@ -346,7 +346,7 @@ class MoonRocks extends lapis.Application
 
     trim_filter @params
     if @params.q
-      query = @params.q\lower!\gsub("%%", "") .. "%"
+      query = "%" .. @params.q\lower!\gsub("%%", "") .. "%"
 
       pager = Modules\paginated [[
         where name like ?
