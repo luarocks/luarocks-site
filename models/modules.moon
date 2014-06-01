@@ -67,7 +67,7 @@ class Modules extends Model
     res[1].c
 
   delete: =>
-    import Versions, ManifestModules from require "models"
+    import Versions, ManifestModules, LinkedModules from require "models"
 
     super!
     -- Remove module from manifests
@@ -77,6 +77,10 @@ class Modules extends Model
     versions = Versions\select "where module_id = ? ", @id
     for v in *versions
       v\delete!
+
+    -- remove the link
+    for link in *LinkedModules\select "module_id = ?", @id
+      link\delete!
 
   -- copies module/versions/rocks to user
   copy_to_user: (user) =>
