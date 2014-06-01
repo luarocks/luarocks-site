@@ -8,9 +8,12 @@ import
 
 import
   capture_errors
+  capture_errors_json
   assert_error
+  respond_to
   from require "lapis.application"
 
+import assert_valid from require "lapis.validate"
 
 import GithubAccounts from require "models"
 
@@ -34,10 +37,36 @@ class MoonrocksGithub extends lapis.Application
         access_token: access.access_token
       }
 
-      if gh = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
-        gh\update data
+      if account = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
+        account\update data
       else
         GithubAccounts\create data
+
+      redirect_to: @url_for "user_settings"
+  }
+
+
+  [github_remove: "/github/remove/:github_user_id"]: require_login capture_errors_json respond_to {
+    before: =>
+      assert_valid @params, {
+        {"github_user_id", is_integer: true}
+      }
+
+      @account = GithubAccounts\find {
+        user_id: @current_user.id
+        github_user_id: @params.github_user_id
+      }
+
+      assert_error @account, "invalid account"
+
+    GET: =>
+      render: true
+
+    POST: =>
+      @account\delete!
+
+      github = require "helpers.github"
+      github\delete_access_token @account.access_token
 
       redirect_to: @url_for "user_settings"
   }

@@ -84,7 +84,7 @@ class UserSettings extends require "widgets.base"
   github_link: =>
     github = require "helpers.github"
 
-    h3 "Link GitHub account"
+    h3 "Link GitHub Account"
 
     p ->
       text "Link a GitHub account to automatically transfer ownership of
@@ -106,7 +106,7 @@ class UserSettings extends require "widgets.base"
             text " "
             span class: "sub", ->
               text "("
-              a href: "", "Remove"
+              a href: @url_for("github_remove", account), "Remove"
               text ")"
 
 

@@ -40,24 +40,36 @@ class GitHub
 
     out
 
+  delete_access_token: (access_token) =>
+    @_api_request "DELETE", "/applications/#{@client_id}/tokens/#{access_token}", {}, true
+
   -- for requests to api prefix
-  _api_request: (url, params={}) =>
-    params = encode_query_string params
+  _api_request: (method="GET", url, params={}, auth=false) =>
+    if next params
+      params = encode_query_string params
+      url = "#{url}?#{params}"
+
+    auth = if auth
+      ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+
     req = {
-      url: "#{@api_prefix}#{url}?#{params}"
+      :method
+      url: "#{@api_prefix}#{url}"
       headers: {
         "User-agent": "rocks.moonscript.org"
+        "Authorization": auth and "Basic #{auth}" or nil
       }
     }
 
     res, status = http.simple req
+
     if status != 200
       return nil, "unexpected status from github #{status} - #{res}"
 
     cjson.decode res
 
   user: (access_token) =>
-    @_api_request "/user", { :access_token }
+    @_api_request "GET", "/user", { :access_token }
 
 config = require("lapis.config").get!
 GitHub config.github_client_id, config.github_client_secret
