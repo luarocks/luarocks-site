@@ -4,7 +4,7 @@ schema = require "lapis.db.schema"
 
 import add_column, create_index, drop_index, add_index, drop_column from schema
 
-{ :varchar, :boolean } = schema.types
+{ :varchar, :boolean, :text } = schema.types
 
 {
   -- migrate user slugs
@@ -56,4 +56,6 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
   [1401338238]: =>
     add_column "versions", "development", boolean
 
+  [1401600469]: =>
+    add_column "versions", "source_url", text null: true
 }

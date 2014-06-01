@@ -52,18 +52,6 @@ make_schema = ->
     "PRIMARY KEY (user_id)"
   }
 
-  -- --
-  -- -- UserSessions
-  -- --
-  -- create_table "user_sessions", {
-  --   {"user_id", foreign_key}
-  --   {"session_key", varchar}
-  --   {"ip_address", varchar}
-  --   {"created_at", time}
-
-  --   "PRIMARY KEY (user_id, session_key)"
-  -- }
-
   --
   -- Modules
   --
@@ -111,6 +99,9 @@ make_schema = ->
     {"rockspec_downloads", integer}
 
     {"lua_version", varchar null: true}
+
+    {"development", boolean}
+    {"source_url", text null: true}
 
     {"created_at", time}
     {"updated_at", time}

@@ -55,6 +55,7 @@ class Versions extends Model
       rockspec_fname: rockspec_key\match "/([^/]*)$"
       lua_version: get_lua_version spec
       development: @version_name_is_development version_name
+      source_url: spec.source and spec.source.url
 
       :rockspec_key, :version_name
     }
