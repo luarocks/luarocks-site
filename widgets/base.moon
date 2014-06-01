@@ -75,10 +75,11 @@ class Base extends Widget
 
   render_errors: =>
     if @errors
-      div "Errors:"
-      ul ->
-        for e in *@errors
-          li e
+      div class: "errors", ->
+        p "Errors:"
+        ul ->
+          for e in *@errors
+            li e
 
   render_pager: (pager, current_page=@page) =>
     num_pages = pager\num_pages!

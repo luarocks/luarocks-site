@@ -9,24 +9,12 @@ $body_color: #47555C;
 $border_color: #C1CCE4;
 $line_height: 24px;
 $sub_color: mix($body_color, gray, 20%);
+$error_color: mix($back_color, red, 30%);
 
 @mixin unselectable {
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-}
-
-@mixin grad($top, $bottom) {
-	background-color: mix($top, $bottom);
-	background-image: linear-gradient(bottom, $bottom 0%, $top 100%);
-	background-image: -webkit-linear-gradient(bottom, $bottom 0%, $top 100%);
-	background-image: -moz-linear-gradient(bottom, $bottom 0%, $top 100%);
-	background-image: -o-linear-gradient(bottom, $bottom 0%, $top 100%);
-	background-image: -ms-linear-gradient(bottom, $bottom 0%, $top 100%);
-}
-
-@mixin autograd($color, $amount: 10%) {
-	@include grad($color, darken($color, $amount));
 }
 
 @mixin grid_width($size, $divisions: 8, $gutter: 10px) {
@@ -81,7 +69,6 @@ h3 {
 .header_sub {
     font-size: 16px;
 }
-
 
 p {
     line-height: 20px;
@@ -141,6 +128,10 @@ hr {
             text-decoration: underline;
         }
     }
+}
+
+.errors {
+    color: $error_color;
 }
 
 .content {
