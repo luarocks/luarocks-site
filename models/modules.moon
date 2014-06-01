@@ -92,7 +92,7 @@ class Modules extends Model
 
     version_keys = {
       "version_name", "display_version_name", "rockspec_fname", "downloads",
-      "rockspec_downloads", "lua_version", "source_url"
+      "rockspec_downloads", "lua_version", "source_url", "development"
     }
 
     rock_keys = {
