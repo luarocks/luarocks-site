@@ -83,7 +83,7 @@ class Modules extends Model
     return if user.id == @user_id
 
     bucket = require "storage_bucket"
-    import Versions, Rocks from require "models"
+    import Versions, Rocks, LinkedModules from require "models"
 
     module_keys = {
       "name", "display_name", "downloads", "summary", "description", "license",
@@ -146,5 +146,6 @@ class Modules extends Model
 
           new_rock = Model.create Rocks, params
 
+    LinkedModules\find_or_create @id, user.id
     new_module
 

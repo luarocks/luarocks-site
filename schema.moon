@@ -228,6 +228,17 @@ make_schema = ->
     "PRIMARY KEY (user_id, github_user_id)"
   }
 
+  -- automatically keeps copy of module up to date through copy
+  create_table "linked_modules", {
+    {"module_id", foreign_key}
+    {"user_id", foreign_key}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (module_id, user_id)"
+  }
+
   require("lapis.exceptions.models").make_schema!
 
   import Manifests from require "models"
