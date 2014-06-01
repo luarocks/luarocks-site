@@ -30,9 +30,8 @@ take_module = (module_name) ->
 
   root = Manifests\root!
   if mm = ManifestModules\find module_id: mod.id, manifest_id: root.id
-      mm\delete!
-      assert ManifestModules\create root, new_module
-
+    mm\delete!
+    assert ManifestModules\create root, new_module
 
 if module_name
   assert take_module module_name

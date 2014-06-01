@@ -9,8 +9,8 @@ class UserSettings extends require "widgets.base"
     @edit_keys!
     hr!
     @reset_password!
-    hr!
-    @github_link!
+    -- hr!
+    -- @github_link!
 
   edit_keys: =>
     h3 id: "api_keys", "API Keys"
