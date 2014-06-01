@@ -1,4 +1,6 @@
 
+config = require("lapis.config").get!
+
 class UserSettings extends require "widgets.base"
   content: =>
     @render_errors!
@@ -80,15 +82,9 @@ class UserSettings extends require "widgets.base"
 
 
   github_link: =>
-    client_id = "cd3ed1705aa7655fe6a7"
-    import encode_query_string from require "lapis.util"
+    github = require "helpers.github"
 
     h3 "Link GitHub account"
-
-    params = encode_query_string {
-      :client_id
-      state: @csrf_token
-    }
 
     p ->
       text "Link a GitHub account to automatically transfer ownership of
@@ -97,5 +93,21 @@ class UserSettings extends require "widgets.base"
       text " account to your own."
 
     p ->
-      a href: "https://github.com/login/oauth/authorize?" .. params, "Link a new account"
+      a href: github\login_url(@csrf_token), "Link a new account"
+
+    if next @github_accounts
+      p ->
+        strong "Linked accounts"
+
+      ul ->
+        for account in *@github_accounts
+          li ->
+            text account.github_login
+            text " "
+            span class: "sub", ->
+              text "("
+              a href: "", "Remove"
+              text ")"
+
+
 

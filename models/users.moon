@@ -86,3 +86,8 @@ class Users extends Model
     url = "http://www.gravatar.com/avatar/#{ngx.md5 @email}?d=identicon"
     url = url .. "&s=#{size}" if size
     url
+
+  fetch_github_accounts: =>
+    import GithubAccounts from require "models"
+    GithubAccounts\select "where user_id = ? order by updated_at desc", @id
+

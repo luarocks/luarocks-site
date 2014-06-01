@@ -122,12 +122,16 @@ class MoonRocksUser extends lapis.Application
 
   [user_settings: "/settings"]: require_login respond_to {
     before: =>
+      import GithubAccounts from require "models"
+
       @user = @current_user
       @user\get_data!
       @title = "User Settings"
 
-    GET: =>
+      @github_accounts = @user\fetch_github_accounts!
       @api_keys = ApiKeys\select "where user_id = ?", @user.id
+
+    GET: =>
       render: true
 
     POST: capture_errors =>

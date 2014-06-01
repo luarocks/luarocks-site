@@ -225,6 +225,18 @@ make_schema = ->
     "PRIMARY KEY (version_id, date)"
   }
 
+  create_table "github_accounts", {
+    {"user_id", foreign_key}
+    {"github_login", text}
+    {"github_user_id", integer}
+    {"access_token", text}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (user_id, github_user_id)"
+  }
+
   require("lapis.exceptions.models").make_schema!
 
   import Manifests from require "models"
