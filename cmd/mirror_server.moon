@@ -55,7 +55,7 @@ local user
 mirror = ->
   connect_postgres!
   log "Mirroring #{SERVER} to user: #{USER}, (dev: #{development})"
-  import Users from require "models"
+  import Users, LinkedModules from require "models"
   user = Users\find slug: USER
 
   import do_rockspec_upload, do_rock_upload from require "helpers.uploaders"
@@ -83,6 +83,8 @@ mirror = ->
     else
       {}
 
+    uploaded = 0
+
     for version_name, rocks in pairs versions
       existing_ver = existing_versions[version_name]
 
@@ -98,10 +100,13 @@ mirror = ->
           log "   Skipping due to missing rockspec"
           continue
 
+        uploaded += 1
+
         rockspec, changed_enc = fix_encoding rockspec
         log "   Altered rockspec encoding" if changed_enc
         mod, version = assert do_rockspec_upload user, rockspec
         version\update(:development)
+        mod, version
 
       existing_rocks = if existing_ver
         {rock.arch, rock for rock in *existing_ver\get_rocks!}
@@ -115,9 +120,14 @@ mirror = ->
           log " - skipped"
         else
           log " - uploading"
+          uploaded += 1
+
           fname = "#{module_name}-#{version_name}.#{arch}.rock"
           rock = assert_request "#{SERVER}/#{fname}"
           do_rock_upload user, mod, version, fname, rock
 
+    if existing_mod and uploaded > 0
+      for link in *LinkedModules\select "where module_id = ?", existing_mod.id
+        link\update_user!
 
 mirror!
