@@ -9,8 +9,8 @@ class UserSettings extends require "widgets.base"
     @edit_keys!
     hr!
     @reset_password!
-    -- hr!
-    -- @github_link!
+    hr!
+    @github_link!
 
   edit_keys: =>
     h3 id: "api_keys", "API Keys"
@@ -94,6 +94,9 @@ class UserSettings extends require "widgets.base"
 
     p ->
       a href: github\login_url(@csrf_token), "Link a new account"
+
+    p ->
+      a href: @url_for("github_claim_modules"), "Claim modules with GitHub account"
 
     if next @github_accounts
       p ->

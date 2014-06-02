@@ -11,7 +11,7 @@ class Base extends Widget
 
   render_modules: (modules) =>
     unless next modules
-      div class: "empty_message", "No modules"
+      p class: "empty_message", "No modules"
       return
 
     div class: "module_list", ->

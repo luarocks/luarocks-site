@@ -36,6 +36,5 @@ class GithubAccounts extends Model
     for m in *module_ids
       module_id_set[m.id] = true
 
-    Modules\find_all [key for key in pairs module_id_set],
-      fields: "id, name, display_name"
+    Modules\find_all [key for key in pairs module_id_set]
 

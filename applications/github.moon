@@ -72,3 +72,52 @@ class MoonrocksGithub extends lapis.Application
   }
 
 
+  [github_claim_modules: "/github/claim"]: require_login respond_to {
+    before: =>
+      import Users, LinkedModules from require "models"
+
+      accounts = @current_user\find_github_accounts!
+
+      modules = {}
+      for account in *accounts
+        for m in *account\modules_for_account!
+          table.insert modules, m
+
+      Users\include_in modules, "user_id"
+
+      linked = if next modules
+        module_ids = table.concat [m.id for m in *modules], ", "
+        LinkedModules\select [[
+          where user_id = ? and module_id in (]] .. module_ids .. [[)
+        ]], @current_user.id
+      else
+        {}
+
+
+      linked_by_id = {link.module_id, true for link in *linked}
+
+      @linked_modules = {}
+      @claimable_modules = {}
+
+      for m in *modules
+        if linked_by_id[m.id]
+          table.insert @linked_modules, m
+        else
+          table.insert @claimable_modules, m
+
+    GET: =>
+      render: true
+
+    POST: =>
+      ngx.sleep 3
+
+      for mod in *@claimable_modules
+        mod\copy_to_user @current_user, true
+
+      redirect_to: @url_for("github_claim_modules")
+
+  }
+
+
+
+
