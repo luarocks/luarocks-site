@@ -166,11 +166,11 @@ class MoonRocks extends lapis.Application
     }
     render: true
 
-  [upload_rockspec: "/upload"]: respond_to {
+  [upload_rockspec: "/upload"]: require_login respond_to {
     before: =>
       @title = "Upload Rockspec"
 
-    GET: require_login =>
+    GET: =>
       render: true
 
     POST: capture_errors =>
@@ -207,7 +207,7 @@ class MoonRocks extends lapis.Application
 
     render: true
 
-  [edit_module: "/edit/modules/:user/:module"]: respond_to {
+  [edit_module: "/edit/modules/:user/:module"]: capture_errors_404 respond_to {
     before: =>
       load_module @
       assert_editable @, @module
@@ -228,7 +228,7 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for("module", @)
   }
 
-  [edit_module_version: "/edit/modules/:user/:module/:version"]: respond_to {
+  [edit_module_version: "/edit/modules/:user/:module/:version"]: capture_errors_404 respond_to {
     before: =>
       return unless load_module @
       assert_editable @, @module
@@ -248,7 +248,7 @@ class MoonRocks extends lapis.Application
 
   }
 
-  [module_version: "/modules/:user/:module/:version"]: =>
+  [module_version: "/modules/:user/:module/:version"]: capture_errors_404 =>
     return unless load_module @
 
     @title = "#{@module\name_for_display!} #{@version.version_name}"
@@ -259,12 +259,12 @@ class MoonRocks extends lapis.Application
   [delete_module: "/delete/:user/:module"]: delete_module
   [delete_module_version: "/delete/:user/:module/:version"]: delete_module
 
-  [upload_rock: "/modules/:user/:module/:version/upload"]: respond_to {
+  [upload_rock: "/modules/:user/:module/:version/upload"]: capture_errors_404 require_login respond_to {
     before: =>
       load_module @
       @title = "Upload Rock"
 
-    GET: require_login =>
+    GET: =>
       assert_editable @, @module
       render: true
 
@@ -274,9 +274,11 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for "module_version", @
   }
 
-  [add_to_manifest: "/add_to_manifest/:user/:module"]: respond_to {
+  [add_to_manifest: "/add-to-manifest/:user/:module"]: capture_errors_404 require_login respond_to {
     before: =>
       load_module @
+      assert_editable @, @module
+
       @title = "Add Module To Manifest"
 
       already_in = { m.id, true for m in *@module\all_manifests! }
@@ -284,16 +286,17 @@ class MoonRocks extends lapis.Application
         continue if already_in[m.id]
         m
 
-    GET: require_login =>
-      assert_editable @, @module
+    GET: =>
       render: true
 
     POST: capture_errors =>
       assert_csrf @
-      assert_editable @, @module
 
-      manifest_id = assert_error @params.manifest_id, "Missing manifest_id"
-      manifest = assert_error Manifests\find(id: manifest_id), "Invalid manifest id"
+      assert_valid @params, {
+        { "manifest_id", is_integer: true }
+      }
+
+      manifest = assert_error Manifests\find(id: @params.manifest_id), "Invalid manifest id"
 
       unless manifest\allowed_to_add @current_user
         yield_error "Don't have permission to add to manifest"
@@ -303,13 +306,14 @@ class MoonRocks extends lapis.Application
   }
 
 
-  [remove_from_manifest: "/remove_from_manifest/:user/:module/:manifest"]: capture_errors_404 respond_to {
+  [remove_from_manifest: "/remove-from-manifest/:user/:module/:manifest"]: capture_errors_404 require_login respond_to {
     before: =>
       load_module @
       load_manifest @
 
-    GET: require_login =>
       assert_editable @, @module
+
+    GET: =>
       @title = "Remove Module From Manifest"
 
       assert_error ManifestModules\find({
@@ -319,9 +323,8 @@ class MoonRocks extends lapis.Application
 
       render: true
 
-    POST: capture_errors =>
+    POST: =>
       assert_csrf @
-      assert_editable @, @module
 
       ManifestModules\remove @manifest, @module
       redirect_to: @url_for("module", @)

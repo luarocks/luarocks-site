@@ -24,7 +24,7 @@ class Manifests extends Model
     prepare_results, per_page = nil
 
     args = {...}
-    if type(...) == "table"
+    if type(... or nil) == "table"
       opts = ...
 
       if opts.prepare_results
