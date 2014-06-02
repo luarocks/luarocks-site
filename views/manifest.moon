@@ -10,7 +10,7 @@ class Manifest extends require "widgets.base"
 
     @render_pager @pager
 
-    @render_modules @modules
+    @render_modules @modules, "No modules have been added yet"
 
     @render_pager @pager
 

@@ -185,8 +185,6 @@ make_schema = ->
   create_index "manifest_modules", "manifest_id", "module_name", unique: true
   create_index "manifest_modules", "module_id"
 
-  migrations.create_migrations_table!
-
   --
   -- ApiKeys
   --
@@ -216,6 +214,9 @@ make_schema = ->
     "PRIMARY KEY (version_id, date)"
   }
 
+  --
+  -- GithubAccounts
+  --
   create_table "github_accounts", {
     {"user_id", foreign_key}
     {"github_login", text}
@@ -228,7 +229,9 @@ make_schema = ->
     "PRIMARY KEY (user_id, github_user_id)"
   }
 
-  -- automatically keeps copy of module up to date through copy
+  --
+  -- LinkedModules
+  --
   create_table "linked_modules", {
     {"module_id", foreign_key}
     {"user_id", foreign_key}
@@ -241,6 +244,8 @@ make_schema = ->
 
   require("lapis.exceptions.models").make_schema!
 
+  migrations.create_migrations_table!
+
   import Manifests from require "models"
   unless Manifests\find name: "root"
     Manifests\create "root", true
@@ -250,6 +255,6 @@ if ... == "test"
   db.select = -> { { c: 0 } }
   make_schema!
 
-{ :make_schema, :destroy_schema }
+{ :make_schema }
 
 

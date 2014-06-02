@@ -6,7 +6,7 @@ class ManifestAdmins extends Model
   @primary_key: {"user_id", "manifest_id"}
 
   @create: (manifest, user, is_owner=false) =>
-    Model.create @ {
+    Model.create @, {
       manifest_id: manifest.id
       user_id: user.id
       :is_owner

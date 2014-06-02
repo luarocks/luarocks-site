@@ -47,13 +47,20 @@ class Manifests extends Model
         modules
     }
 
-  source_url: (r) => r\build_url!
+  source_url: (r) =>
+    if @is_root!
+      r\build_url!
+    else
+      r\build_url "/m/#{@name}"
 
   url_key: (name) =>
     if name == "manifest"
       @name
     else
       @id
+
+  url_params: =>
+    "manifest", manifest: @name
 
   -- purge any caches for this manifest
   -- only the root manifest is cached right now
@@ -67,4 +74,7 @@ class Manifests extends Model
   has_module: (mod) =>
     import ManifestModules from require "models"
     ManifestModules\find manifest_id: @id, module_id: mod.id
+
+  is_root: =>
+    @name == "root"
 

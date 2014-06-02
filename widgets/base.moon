@@ -9,7 +9,7 @@ class Base extends Widget
     div class: "#{@@widget_name!}_page", ->
       @inner_content!
 
-  render_modules: (modules) =>
+  render_modules: (modules, empty_text="No modules") =>
     unless next modules
       p class: "empty_message", "No modules"
       return
@@ -83,7 +83,7 @@ class Base extends Widget
 
   render_pager: (pager, current_page=@page) =>
     num_pages = pager\num_pages!
-    return if num_pages == 1
+    return unless num_pages > 1
 
     page_url = (p) ->
       p == 1 and @req.parsed_url.path or "?page=#{p}"
