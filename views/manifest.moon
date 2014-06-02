@@ -8,6 +8,9 @@ class Manifest extends require "widgets.base"
 
     @term_snippet "luarocks install --server=#{@manifest\source_url @} <name>"
 
+    if @manifest.description
+      p @manifest.description
+
     @render_pager @pager
 
     @render_modules @modules, "No modules have been added yet"
