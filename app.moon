@@ -408,9 +408,12 @@ class MoonRocks extends lapis.Application
       trim_filter @
       assert_valid @params, {
         {"manifest_name", exists: true, max_length: 60}
+        {"description", optional: true, max_length: 1024*5}
       }
 
-      manifest = assert_error Manifests\create @params.manifest_name, not not @params.is_open
+      manifest = assert_error Manifests\create @params.manifest_name,
+        not not @params.is_open, @params.description
+
       ManifestAdmins\create manifest, @current_user, true
 
       redirect_to: @url_for(manifest)

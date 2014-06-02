@@ -9,9 +9,19 @@ class NewManifest extends require "widgets.base"
     form action: "", method: "post", class: "form", ->
       input type: "hidden", name: "csrf_token", value: @csrf_token
 
-      div class: "row", ->
-        label for: "manifest_name_field", "Manifest Name"
-        input type: "text", name: "manifest_name", id: "manifest_name_field", autofocus: "autofocus"
+      div class: "wide_row", ->
+        label ->
+          div class: "label", "Manifest Name"
+          input type: "text", name: "manifest_name", id: "manifest_name_field", autofocus: "autofocus"
+
+      div class: "wide_row", ->
+        label ->
+          div class: "label", ->
+            text "Description"
+            span class: "sub", ->
+              raw " &mdash; Optional"
+
+          textarea name: "description"
 
       div class: "wide_row", ->
         label ->

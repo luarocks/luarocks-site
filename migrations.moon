@@ -61,5 +61,6 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
 
   [1401727722]: =>
     add_column "manifests", "display_name", varchar null: true
+    add_column "manifests", "description", text null: true
 
 }

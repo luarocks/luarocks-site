@@ -155,6 +155,7 @@ make_schema = ->
     {"name", varchar}
     {"is_open", boolean} -- anyone can put a rock in it
     {"display_name", varchar null: true}
+    {"description", text null: true}
 
     "PRIMARY KEY (id)"
   }

@@ -3,7 +3,7 @@ import Model from require "lapis.db.model"
 import get_all_pages from require "helpers.models"
 
 class Manifests extends Model
-  @create: (name, is_open=false) =>
+  @create: (name, is_open=false, description) =>
     import slugify from require "lapis.util"
 
     display_name = name
@@ -17,7 +17,7 @@ class Manifests extends Model
     if @check_unique_constraint "name", name
       return nil, "manifest name already taken"
 
-    Model.create @, { :name, :is_open, :display_name }
+    Model.create @, { :name, :is_open, :display_name, :description }
 
   @root: =>
     (assert Manifests\find(name: "root"), "Missing root manifest")
