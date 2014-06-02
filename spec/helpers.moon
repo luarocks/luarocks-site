@@ -1,3 +1,4 @@
+import request from require "lapis.spec.server"
 
 -- returns headers for logged in user
 log_in_user = (user) ->
@@ -14,5 +15,14 @@ log_in_user = (user) ->
     "Cookie": "#{config.session_name}=#{val}; Path=/"
   }
 
+-- make a request as logged in as a user
+request_as = (user, url, opts={}) ->
+  opts.headers = log_in_user user if user
+  if opts.post and opts.post.csrf_token == nil
+    import generate_token from require "lapis.csrf"
+    opts.post.csrf_token = generate_token nil, user.id
 
-{ :log_in_user }
+  request url, opts
+
+
+{ :log_in_user, :request_as }

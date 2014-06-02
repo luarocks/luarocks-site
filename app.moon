@@ -39,6 +39,7 @@ import
   require_login
   require_admin
   capture_errors_404
+  not_found
   from require "helpers.apps"
 
 import concat, insert from table

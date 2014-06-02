@@ -13,6 +13,8 @@ import
 
 import truncate_tables from require "lapis.spec.db"
 
+import request_as from require "spec.helpers"
+
 factory = require "spec.factory"
 
 parse_manifest = (text) ->
@@ -212,3 +214,42 @@ describe "moonrocks", ->
       should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
 
+
+  describe "adding and removing modules #add", ->
+    local user, mod, add_url, remove_url
+
+    before_each ->
+      user = factory.Users!
+      mod = factory.Modules user_id: user.id
+      add_url = "/add-to-manifest/#{user.slug}/#{mod.name}"
+      remove_url = "/remove-from-manifest/#{user.slug}/#{mod.name}/#{root.id}"
+
+    it "should load redirect logged out on add", ->
+      assert.same 302, (request add_url)
+
+    it "should load redirect logged out on add", ->
+      assert.same 302, (request remove_url)
+
+    it "should load add page", ->
+      assert.same 200, (request_as user, add_url)
+
+    it "should load add the module", ->
+      assert.same 302, (request_as user, add_url, {
+        post: {
+          manifest_id: root.id
+        }
+      })
+
+      assert.same 1, #root\find_modules!\get_page!
+
+    it "should load remove page", ->
+      ManifestModules\create root, mod
+      assert.same 200, (request_as user, remove_url)
+
+    it "should remove module", ->
+      ManifestModules\create root, mod
+      assert.same 302, (request_as user, remove_url, {
+        post: {}
+      })
+
+      assert.same 0, #root\find_modules!\get_page!
