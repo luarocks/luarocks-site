@@ -157,6 +157,9 @@ make_schema = ->
     {"display_name", varchar null: true}
     {"description", text null: true}
 
+    {"created_at", time}
+    {"updated_at", time}
+
     "PRIMARY KEY (id)"
   }
 
@@ -169,6 +172,9 @@ make_schema = ->
     {"user_id", foreign_key}
     {"manifest_id", foreign_key}
     {"is_owner", boolean}
+
+    {"created_at", time}
+    {"updated_at", time}
 
     "PRIMARY KEY (user_id, manifest_id)"
   }

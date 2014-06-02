@@ -4,7 +4,7 @@ schema = require "lapis.db.schema"
 
 import add_column, create_index, drop_index, add_index, drop_column from schema
 
-{ :varchar, :boolean, :text } = schema.types
+{ :varchar, :boolean, :text, :time } = schema.types
 
 {
   -- migrate user slugs
@@ -63,4 +63,16 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
     add_column "manifests", "display_name", varchar null: true
     add_column "manifests", "description", text null: true
 
+    -- add timestamps
+    add_column "manifests", "created_at", time default: db.raw("now()")
+    add_column "manifests", "updated_at", time default: db.raw("now()")
+
+    add_column "manifest_admins", "created_at", time default: db.raw("now()")
+    add_column "manifest_admins", "updated_at", time default: db.raw("now()")
+
+    db.query "alter table manifests alter column created_at drop default"
+    db.query "alter table manifests alter column updated_at drop default"
+
+    db.query "alter table manifest_admins alter column created_at drop default"
+    db.query "alter table manifest_admins alter column updated_at drop default"
 }

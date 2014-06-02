@@ -3,6 +3,8 @@ import Model from require "lapis.db.model"
 import get_all_pages from require "helpers.models"
 
 class Manifests extends Model
+  @timestamp: true
+
   @create: (name, is_open=false, description) =>
     import slugify from require "lapis.util"
 

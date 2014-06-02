@@ -3,6 +3,7 @@ db = require "lapis.db"
 import Model from require "lapis.db.model"
 
 class ManifestAdmins extends Model
+  @timestamp: true
   @primary_key: {"user_id", "manifest_id"}
 
   @create: (manifest, user, is_owner=false) =>
