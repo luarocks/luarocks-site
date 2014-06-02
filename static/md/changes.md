@@ -1,9 +1,26 @@
 
 ## Changes
 
+**2014/6/2**
+
+ * Users can create manifests now
+
+**2014/6/1**
+
+ * Added GitHub account linking and the ability to claim modules from luarocks with verified GitHub username
+
+**2014/5/29**
+
+ * Added `development` flag for versions, added separate `/dev/` manifest for getting only development rockspecs
+ * All uploaded module versions will automatically have development flag set if the version name looks like development
+ * Added module version edit page for overriding development flag
+
 **2014/5/28**
 
  * Add [search page](/search)
+ * Sorted modules by name on listing pages
+ * Only root modules show up in recently added
+ * Sort by version name on module page
 
 **2014/3/3**
 
