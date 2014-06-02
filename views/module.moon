@@ -63,7 +63,7 @@ class Module extends require "widgets.base"
     return unless @module\allowed_to_edit @current_user
     div class: "admin_tools", ->
       span class: "label", ->
-        if @current_user\is_admin
+        if @current_user\is_admin!
           text "Admin Tools: "
         else
           text "Owner Tools: "
@@ -74,7 +74,7 @@ class Module extends require "widgets.base"
       raw " &middot; "
       a href: @url_for("delete_module", @), "Delete"
 
-      if @current_user\is_admin
+      if @current_user\is_admin!
         raw " &middot; "
         a href: @url_for("copy_module", @), "Copy module to other user"
 
