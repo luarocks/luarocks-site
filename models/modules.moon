@@ -83,7 +83,7 @@ class Modules extends Model
       link\delete!
 
   -- copies module/versions/rocks to user
-  copy_to_user: (user) =>
+  copy_to_user: (user, take_root=false) =>
     return if user.id == @user_id
 
     bucket = require "storage_bucket"
@@ -151,5 +151,14 @@ class Modules extends Model
           new_rock = Model.create Rocks, params
 
     LinkedModules\find_or_create @id, user.id
+
+    if take_root
+      import ManifestModules, Manifests from require "models"
+      root = Manifests\root!
+
+      if mm = ManifestModules\find module_id: @id, manifest_id: root.id
+        mm\delete!
+        assert ManifestModules\create root, new_module
+
     new_module
 

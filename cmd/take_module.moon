@@ -26,12 +26,7 @@ take_module = (module_name) ->
 
   return nil, "could not find module '#{module_name}'" unless mod
 
-  new_module = mod\copy_to_user user
-
-  root = Manifests\root!
-  if mm = ManifestModules\find module_id: mod.id, manifest_id: root.id
-    mm\delete!
-    assert ManifestModules\create root, new_module
+  mod\copy_to_user user, true
 
 if module_name
   assert take_module module_name
