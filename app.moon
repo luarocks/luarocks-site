@@ -37,6 +37,7 @@ import
   assert_editable
   generate_csrf
   require_login
+  require_admin
   capture_errors_404
   from require "helpers.apps"
 
@@ -356,3 +357,40 @@ class MoonRocks extends lapis.Application
 
     render: true
 
+  [copy_module: "/copy/modules/:user/:module"]: require_admin capture_errors {
+    on_error: =>
+      if @module
+        { render: true }
+      else
+        not_found
+
+    respond_to {
+      before: capture_errors_404 =>
+        return unless load_module @
+
+        for man in *@module\all_manifests!
+          if man.name == "root"
+            @in_root = true
+            break
+
+      GET: =>
+        render: true
+
+      POST: capture_errors =>
+        trim_filter @params
+        assert_valid @params, {
+          { "username", exists: true }
+        }
+
+        import slugify from require "lapis.util"
+        target_user = Users\find slug: slugify @params.username
+        assert_error target_user, "could not find user"
+        assert_error @module.user.id != target_user.id, "users are the same"
+
+        new_module = @module\copy_to_user target_user, not not @params.take_root
+
+        redirect_to: @url_for("module", user: target_user.slug, module: new_module.name)
+    }
+
+  }
+  

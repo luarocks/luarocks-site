@@ -62,10 +62,21 @@ class Module extends require "widgets.base"
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user
     div class: "admin_tools", ->
-      span class: "label", "Owner Tools: "
+      span class: "label", ->
+        if @current_user\is_admin
+          text "Admin Tools: "
+        else
+          text "Owner Tools: "
+
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
       raw " &middot; "
       a href: @url_for("edit_module", @), "Edit"
       raw " &middot; "
       a href: @url_for("delete_module", @), "Delete"
+
+      if @current_user\is_admin
+        raw " &middot; "
+        a href: @url_for("copy_module", @), "Copy module to other user"
+
+
 
