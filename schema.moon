@@ -154,6 +154,7 @@ make_schema = ->
     {"id", serial}
     {"name", varchar}
     {"is_open", boolean} -- anyone can put a rock in it
+    {"display_name", varchar null: true}
 
     "PRIMARY KEY (id)"
   }

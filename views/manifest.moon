@@ -1,7 +1,7 @@
 class Manifest extends require "widgets.base"
   content: =>
     h2 ->
-      code @manifest.name
+      text @manifest\name_for_display!
       text " Manifest"
       text " "
       span class: "header_count", "(#{@pager\total_items!})"

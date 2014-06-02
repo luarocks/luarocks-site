@@ -4,10 +4,20 @@ import get_all_pages from require "helpers.models"
 
 class Manifests extends Model
   @create: (name, is_open=false) =>
-    if @check_unique_constraint "name", name
-      return nil, "Manifest name already taken"
+    import slugify from require "lapis.util"
 
-    Model.create @, { :name, :is_open }
+    display_name = name
+    name = slugify name
+
+    if "" == name\gsub "[^%w]+", ""
+      return nil, "invalid manifest name"
+
+    display_name = nil if name == display_name
+
+    if @check_unique_constraint "name", name
+      return nil, "manifest name already taken"
+
+    Model.create @, { :name, :is_open, :display_name }
 
   @root: =>
     (assert Manifests\find(name: "root"), "Missing root manifest")
@@ -51,7 +61,7 @@ class Manifests extends Model
     if @is_root!
       r\build_url!
     else
-      r\build_url "/m/#{@name}"
+      r\build_url r\url_for "manifest", manifest: @name
 
   url_key: (name) =>
     if name == "manifest"
@@ -77,4 +87,7 @@ class Manifests extends Model
 
   is_root: =>
     @name == "root"
+
+  name_for_display: =>
+    @display_name or @name
 

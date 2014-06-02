@@ -58,4 +58,8 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
 
   [1401600469]: =>
     add_column "versions", "source_url", text null: true
+
+  [1401727722]: =>
+    add_column "manifests", "display_name", varchar null: true
+
 }

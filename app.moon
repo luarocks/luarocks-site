@@ -410,12 +410,11 @@ class MoonRocks extends lapis.Application
         {"manifest_name", exists: true, max_length: 60}
       }
 
-      import slugify from require "lapis.util"
-      name = slugify @params.manifest_name
-
-      manifest = assert_error Manifests\create name, not not @params.is_open
+      manifest = assert_error Manifests\create @params.manifest_name, not not @params.is_open
       ManifestAdmins\create manifest, @current_user, true
 
       redirect_to: @url_for(manifest)
   }
+
+
 
