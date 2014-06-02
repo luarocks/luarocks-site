@@ -66,7 +66,7 @@ class GitHub
     if status != 200
       return nil, "unexpected status from github #{status} - #{res}"
 
-    cjson.decode res
+    json.decode res
 
   user: (access_token) =>
     @_api_request "GET", "/user", { :access_token }

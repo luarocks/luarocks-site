@@ -4,7 +4,7 @@ class GithubRemove extends require "widgets.base"
 
     p ->
       text "The link to the GitHub account "
-      storng @account.github_login
+      strong @account.github_login
       text " will be remove from MoonRocks"
 
     @render_errors!
