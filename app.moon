@@ -65,7 +65,7 @@ load_module = =>
 load_manifest = (key="id") =>
   @manifest = assert_error Manifests\find([key]: @params.manifest), "Invalid manifest id"
 
-delete_module = respond_to {
+delete_module = capture_errors_404 respond_to {
   before: =>
     load_module @
     @title = "Delete #{@module\name_for_display!}?"

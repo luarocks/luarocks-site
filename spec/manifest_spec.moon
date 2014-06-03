@@ -215,7 +215,7 @@ describe "moonrocks", ->
       should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
 
 
-  describe "adding and removing modules #add", ->
+  describe "adding and removing modules", ->
     local user, mod, add_url, remove_url
 
     before_each ->

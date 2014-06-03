@@ -14,6 +14,7 @@ import generate_token from require "lapis.csrf"
 
 import
   Manifests
+  ManifestModules
   Users
   Modules
   Versions
@@ -66,7 +67,7 @@ describe "moonrocks", ->
     close_test_server!
 
   before_each ->
-    truncate_tables Users, Modules, Versions, Rocks
+    truncate_tables Users, Modules, Versions, Rocks, ManifestModules
 
   should_load "/"
 
@@ -103,7 +104,7 @@ describe "moonrocks", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
 
-    do_upload = (filename, file_content) ->
+    do_upload = (url, param_name, filename, file_content) ->
       unless pcall -> require "moonrocks.multipart"
         pending "Need moonrocks to run upload spec"
         return false
@@ -115,10 +116,10 @@ describe "moonrocks", ->
 
       data, boundary = encode {
         csrf_token: generate_token nil, user.id
-        rockspec_file: f
+        [param_name]: f
       }
 
-      request_as user, "/upload", {
+      request_as user, url, {
         method: "POST"
         headers: {
           "Content-type": "multipart/form-data; boundary=#{boundary}"
@@ -128,7 +129,7 @@ describe "moonrocks", ->
       }
 
     it "should upload rockspec", ->
-      status, body, headers = do_upload "etlua-dev-1.rockspec", rockspec
+      status, body, headers = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", rockspec
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
 
@@ -136,8 +137,39 @@ describe "moonrocks", ->
 
 
     it "should not upload invalid rockspec", ->
-      status = do_upload "etlua-dev-1.rockspec", "hello world"
+      status = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", "hello world"
       assert.same 200, status
       assert.same 0, #Versions\select!
+
+    describe "with module", ->
+      local mod, version, version_url
+
+      before_each ->
+        mod = factory.Modules user_id: user.id
+        version = factory.Versions module_id: mod.id
+
+        version_url = "/modules/#{user.slug}/#{mod.name}/#{version.version_name}"
+
+      it "should load rock upload page", ->
+        status, body = request_as user, "#{version_url}/upload"
+        assert.same 200, status
+
+      it "should not load rock upload page for not owner", ->
+        status, body = request "#{version_url}/upload"
+        assert.same 302, status
+
+        other_user = factory.Users!
+
+        status, body = request_as other_user, "#{version_url}/upload"
+        assert.same 404, status
+
+      it "should upload rock", ->
+        fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+        status, body = do_upload "#{version_url}/upload", "rock_file", fname, "hello world"
+        assert.same 302, status
+        rock = assert unpack Rocks\select!
+        assert.same "windows2000", rock.arch
+
+
 
 

@@ -1,6 +1,8 @@
 
 csrf = require "lapis.csrf"
 
+import yield_error from require "lapis.application"
+
 generate_csrf = =>
   csrf.generate_token @, @current_user and @current_user.id
 
@@ -9,7 +11,7 @@ assert_csrf = =>
 
 assert_editable = (thing) =>
   unless thing\allowed_to_edit @current_user
-    error "Don't have permission to edit"
+    yield_error "Don't have permission to edit"
 
 not_found = { render: "not_found", status: 404 }
 
