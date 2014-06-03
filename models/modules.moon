@@ -79,7 +79,7 @@ class Modules extends Model
       v\delete!
 
     -- remove the link
-    for link in *LinkedModules\select "module_id = ?", @id
+    for link in *LinkedModules\select "where module_id = ?", @id
       link\delete!
 
   -- copies module/versions/rocks to user
