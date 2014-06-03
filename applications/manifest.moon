@@ -55,7 +55,14 @@ cached_manifest = (fn) ->
 
 render_root_manifest = =>
   filter_version = if @params.version then assert_filter @
-  handle_render @, Manifests\root!, filter_version, @development or false
+  manifest = Manifests\root!
+
+  if @req.cmd_mth == "HEAD"
+    date = require "date"
+    @res\add_header "Last-Modified", date(manifest.updated_at)\fmt "${http}"
+    return ""
+
+  handle_render @, manifest, filter_version, @development or false
 
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest =>
