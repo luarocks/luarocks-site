@@ -57,17 +57,17 @@ build = {
 ]==]
 
 describe "moonrocks", ->
+  local root
+
   setup ->
     load_test_server!
-
-    truncate_tables Manifests
-    Manifests\create "root", true
 
   teardown ->
     close_test_server!
 
   before_each ->
-    truncate_tables Users, Modules, Versions, Rocks, ManifestModules
+    truncate_tables Manifests, Users, Modules, Versions, Rocks, ManifestModules
+    root = Manifests\create "root", true
 
   should_load "/"
 
@@ -132,9 +132,11 @@ describe "moonrocks", ->
       status, body, headers = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", rockspec
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
-
       assert.same 1, #Versions\select!
 
+      root_after = Manifests\find(root.id)
+      assert.same 1, root_after.modules_count
+      assert.same 1, root_after.versions_count
 
     it "should not upload invalid rockspec", ->
       status = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", "hello world"
