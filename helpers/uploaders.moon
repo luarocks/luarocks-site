@@ -85,6 +85,10 @@ do_rockspec_upload = (user, rockspec_text) ->
     unless ManifestModules\find manifest_id: root_manifest.id, module_id: mod.id
       ManifestModules\create root_manifest, mod
 
+  -- purge on additions
+  if new_module or new_version
+    mod\purge_manifests!
+
   mod, version, new_module, new_version
 
 
@@ -97,16 +101,9 @@ handle_rockspec_upload = =>
 
   file = @params.rockspec_file
 
-  mod, version_or_err, new_module, new_version = do_rockspec_upload @current_user, file.content
+  mod, version_or_err, new_mod, new_ver = do_rockspec_upload @current_user, file.content
   assert_error mod, version_or_err
-
-  if new_module or new_version
-    root = Manifests\root!
-    if root\has_module mod
-      root\purge!
-
-  mod, version_or_err, new_module, new_version
-
+  mod, version_or_err, new_mod, new_ver
 
 do_rock_upload = (user, mod, version, filename, rock_content) ->
   rock_info, err = parse_rock_fname mod.name, filename
@@ -123,7 +120,8 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
   unless out == 200
     return nil, "Failed to upload rock"
 
-  Rocks\create version, rock_info.arch, key
+  with Rocks\create version, rock_info.arch, key
+    mod\purge_manifests!
 
 handle_rock_upload = =>
   assert @module, "need module"

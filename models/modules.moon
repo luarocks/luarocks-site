@@ -44,14 +44,14 @@ class Modules extends Model
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
-  all_manifests: =>
+  all_manifests: (...) =>
     import ManifestModules, Manifests from require "models"
 
     assocs = ManifestModules\select "where module_id = ?", @id
     manifest_ids = [db.escape_literal(a.manifest_id) for a in *assocs]
 
     if next manifest_ids
-      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name asc"
+      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name asc", ...
     else
       {}
 
@@ -161,4 +161,8 @@ class Modules extends Model
         assert ManifestModules\create root, new_module
 
     new_module
+
+  purge_manifests: =>
+    for m in *@all_manifests fields: "id"
+      m\purge!
 

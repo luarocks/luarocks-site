@@ -26,3 +26,6 @@ class ManifestModules extends Model
     }
     manifest\purge!
     res
+
+  delete: =>
+    error "use ManifestModules\\purge"
