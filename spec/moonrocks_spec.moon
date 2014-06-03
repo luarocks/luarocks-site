@@ -8,7 +8,7 @@ should_load = (url, expected_status=200) ->
 
 import truncate_tables from require "lapis.spec.db"
 
-import log_in_user from require "spec.helpers"
+import request_as from require "spec.helpers"
 
 import generate_token from require "lapis.csrf"
 
@@ -92,22 +92,15 @@ describe "moonrocks", ->
   describe "with user", ->
     local user
 
-    request_logged_in = (url, opts={}) ->
-      opts.headers or= {}
-      for k,v in pairs log_in_user(user)
-        opts.headers[k] = v
-
-      request url, opts
-
     before_each ->
       user = factory.Users!
 
     it "should load settings page", ->
-      status, body = request_logged_in "/settings"
+      status, body = request_as user, "/settings"
       assert.same 200, status
 
     it "should load upload page", ->
-      status, body = request_logged_in "/upload"
+      status, body = request_as user,  "/upload"
       assert.same 200, status
 
     do_upload = (filename, file_content) ->
@@ -125,7 +118,7 @@ describe "moonrocks", ->
         rockspec_file: f
       }
 
-      request_logged_in "/upload", {
+      request_as user, "/upload", {
         method: "POST"
         headers: {
           "Content-type": "multipart/form-data; boundary=#{boundary}"

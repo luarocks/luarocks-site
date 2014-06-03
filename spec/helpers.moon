@@ -17,7 +17,12 @@ log_in_user = (user) ->
 
 -- make a request as logged in as a user
 request_as = (user, url, opts={}) ->
-  opts.headers = log_in_user user if user
+  opts.headers or= {}
+
+  if user
+    for k, v in pairs log_in_user user
+      opts.headers[k] = v
+
   if opts.post and opts.post.csrf_token == nil
     import generate_token from require "lapis.csrf"
     opts.post.csrf_token = generate_token nil, user.id
