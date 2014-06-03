@@ -146,9 +146,10 @@ class MoonRocks extends lapis.Application
     root = Manifests\root!
 
     @recent_modules = Modules\select [[
-      inner join manifest_modules on manifest_modules.module_id = modules.id
+      inner join manifest_modules
+        on manifest_modules.module_id = modules.id and manifest_modules.manifest_id = ?
       order by modules.created_at desc limit 5
-    ]], fields: "modules.*"
+    ]], root.id, fields: "modules.*"
 
     Users\include_in @recent_modules, "user_id"
 
