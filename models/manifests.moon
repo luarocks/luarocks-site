@@ -2,6 +2,8 @@
 import Model from require "lapis.db.model"
 import get_all_pages from require "helpers.models"
 
+db = require "lapis.db"
+
 class Manifests extends Model
   @timestamp: true
 
@@ -74,12 +76,18 @@ class Manifests extends Model
   url_params: =>
     "manifest", manifest: @name
 
-  -- purge any caches for this manifest
-  -- only the root manifest is cached right now
-  purge: =>
-    return unless ngx and ngx.shared
-    return unless @name == "root"
+  update_counts: =>
+    @update {
+      modules_count: db.raw "(select count(*) from manifest_modules where manifest_id = manifests.id)"
+      versions_count: db.raw "(select count(*) from versions where versions.module_id in (select module_id from manifest_modules where manifest_id = manifests.id))"
+    }
 
+  -- purge any caches for this manifest
+  -- updates the counts, and the updated_at field of manifest
+  purge: =>
+    @update_counts!
+
+    return unless ngx and ngx.shared
     for path in *{"/manifest", "/manifest-5.1", "/manifest-5.2"}
       ngx.shared.manifest_cache\set path, nil
 

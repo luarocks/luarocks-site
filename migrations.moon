@@ -4,7 +4,7 @@ schema = require "lapis.db.schema"
 
 import add_column, create_index, drop_index, add_index, drop_column from schema
 
-{ :varchar, :boolean, :text, :time } = schema.types
+{ :varchar, :boolean, :text, :time, :integer } = schema.types
 
 {
   -- migrate user slugs
@@ -75,4 +75,16 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
 
     db.query "alter table manifest_admins alter column created_at drop default"
     db.query "alter table manifest_admins alter column updated_at drop default"
+
+  [1401810343]: =>
+    add_column "manifests", "modules_count", integer
+    add_column "manifests", "versions_count", integer
+
+    db.query [[
+      update manifests set 
+        modules_count = (select count(*) from manifest_modules where manifest_id = manifests.id),
+        versions_count = (select count(*) from versions where versions.module_id in (select module_id from manifest_modules where manifest_id = manifests.id)),
+        updated_at = ?
+    ]], db.format_date!
+
 }

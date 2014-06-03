@@ -157,6 +157,9 @@ make_schema = ->
     {"display_name", varchar null: true}
     {"description", text null: true}
 
+    {"modules_count", integer}
+    {"versions_count", integer}
+
     {"created_at", time}
     {"updated_at", time}
 
