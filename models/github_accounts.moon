@@ -12,7 +12,7 @@ class GithubAccounts extends Model
       "^(https?|git)://github\\.com/#{@github_login}/"
       "^https?://cloud\\.github\\.com/downloads/#{@github_login}/"
       "^https?://raw\\.github\\.com/#{@github_login}/"
-      "^https?://#{@github_login}\.github\.io/"
+      "^https?://#{@github_login}\\.github\\.(io|com)/"
     }
 
     patt = table.concat(patterns, "|")
