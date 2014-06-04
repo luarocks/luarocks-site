@@ -47,11 +47,13 @@ serve_manifest = capture_errors_404 =>
   else
     Manifests\root!
 
-  -- on HEAD just return last modified (not available to users)
-  if thing.__class == Manifests and @req.cmd_mth == "HEAD"
+  if thing.__class == Manifests
     date = require "date"
-    @res\add_header "Last-Modified", date(manifest.updated_at)\fmt "${http}"
-    return { layout: false }
+    @res\add_header "Last-Modified", date(thing.updated_at)\fmt "${http}"
+
+    -- on HEAD just return last modified
+    if @req.cmd_mth == "HEAD"
+      return { layout: false }
 
   -- get the modules
   pager = thing\find_modules {
