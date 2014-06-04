@@ -71,5 +71,8 @@ class GitHub
   user: (access_token) =>
     @_api_request "GET", "/user", { :access_token }
 
+  orgs: (user) =>
+    @_api_request "GET", "/users/#{user}/orgs"
+
 config = require("lapis.config").get!
 GitHub config.github_client_id, config.github_client_secret

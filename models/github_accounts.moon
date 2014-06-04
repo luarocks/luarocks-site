@@ -5,15 +5,24 @@ class GithubAccounts extends Model
   @primary_key: {"user_id", "github_user_id"}
   @timestamp: true
 
+  orgs: =>
+    github = require "helpers.github"
+    github\orgs @github_login, @access_token
+
   modules_for_account: (user="luarocks") =>
     import Versions, Modules, Users from require "models"
 
-    patterns = {
-      "^(https?|git)://github\\.com/#{@github_login}/"
-      "^https?://cloud\\.github\\.com/downloads/#{@github_login}/"
-      "^https?://raw\\.github\\.com/#{@github_login}/"
-      "^https?://#{@github_login}\\.github\\.(io|com)/"
-    }
+    logins = { @github_login }
+    for org in *@orgs!
+      table.insert logins, org.login
+
+    patterns = for login in *logins
+      table.concat {
+        "^(https?|git)://github\\.com/#{login}/"
+        "^https?://cloud\\.github\\.com/downloads/#{login}/"
+        "^https?://raw\\.github\\.com/#{login}/"
+        "^https?://#{login}\\.github\\.(io|com)/"
+      }, "|"
 
     patt = table.concat(patterns, "|")
     repo_user = Users\find username: user
