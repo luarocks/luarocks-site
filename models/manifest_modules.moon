@@ -28,4 +28,5 @@ class ManifestModules extends Model
     res
 
   delete: =>
-    error "use ManifestModules\\purge"
+    import Manifests, Modules from require "models"
+    @@remove Manifests\find(@manifest_id), Modules\find(@module_id)
