@@ -23,6 +23,10 @@ class ManifestBackups extends Model
     manifest_url = "http://#{config.host}"
     temp_path = "/tmp/moonrocks_#{m.name}_mirror"
 
+    if @development
+      manifest_url ..= "/dev"
+      temp_path ..= "_dev"
+
     git = git_runner temp_path
 
     exec "mkdir -p #{temp_path}"
