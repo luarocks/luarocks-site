@@ -27,6 +27,8 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
+ZipWriter = require "ZipWriter"
+
 handle_render = (obj, ...) =>
   pager = obj\find_modules {
     fields: "id, name"
@@ -35,7 +37,36 @@ handle_render = (obj, ...) =>
   }
 
   modules = get_all_pages pager
-  render_manifest @, modules, ...
+  manifest = render_manifest @, modules, ...
+
+  if @zip
+    zip = ZipWriter.new!
+    buffer = {}
+
+    zip\open_writer (data) ->
+      return unless data
+      table.insert buffer, data
+
+    fname = "manifest"
+    if v = @params.version
+      fname = "#{fname}-#{v}"
+
+    zip\write fname, {
+      isfile: true
+      istext: true
+      isdir: false
+      exattrib: 0x81b60020 -- from https://github.com/moteus/ZipWriter/issues/2
+    }, coroutine.wrap ->
+      coroutine.yield manifest
+
+    zip\close!
+
+    @res.headers["Content-Type"] = "application/zip"
+
+    { layout: false, table.concat buffer }
+  else
+    { layout: false, manifest }
+
 
 assert_filter = =>
   assert_valid @params, {
@@ -73,6 +104,10 @@ class MoonRocksManifest extends lapis.Application
     render_root_manifest @
 
   "/manifest-:version": capture_errors_404 cached_manifest =>
+    if @params.version\match "%.zip$"
+      @zip = true
+      @params.version = @params.version\sub 1, -5
+
     render_root_manifest @
 
   "/dev/manifest-:version": capture_errors_404 cached_manifest =>

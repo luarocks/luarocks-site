@@ -80,7 +80,7 @@ render_manifest = (modules, filter_version=nil, development=nil) =>
       repository[mod.name] = mod_tbl
 
 
-  layout: false, persist.save_from_table_to_string {
+  persist.save_from_table_to_string {
     :repository
 
     commands: {}
