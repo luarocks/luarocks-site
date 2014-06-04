@@ -22,58 +22,57 @@ import
 import render_manifest, preload_modules from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
 import capture_errors_404 from require "helpers.apps"
+import zipped_file from require "helpers.zip"
 
 import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
-ZipWriter = require "ZipWriter"
+serve_manifest = capture_errors_404 =>
+  if @params.version
+    -- check for zip in version
+    if @params.version\match "%.zip$"
+      @zip = true
+      @params.version = @params.version\sub 1, -5
 
-handle_render = (obj, ...) =>
-  pager = obj\find_modules {
+    assert_valid @params, {
+      { "version", one_of: MANIFEST_LUA_VERSIONS }
+    }
+
+    @version = @params.version
+
+  -- find what we are fetching modules from
+  thing = if @params.user
+    assert_error Users\find(slug: @params.user), "invalid user"
+  else
+    Manifests\root!
+
+  -- on HEAD just return last modified (not available to users)
+  if thing.__class == Manifests and @req.cmd_mth == "HEAD"
+    date = require "date"
+    @res\add_header "Last-Modified", date(manifest.updated_at)\fmt "${http}"
+    return { layout: false }
+
+  -- get the modules
+  pager = thing\find_modules {
     fields: "id, name"
     per_page: 50
     prepare_results: preload_modules
   }
 
   modules = get_all_pages pager
-  manifest = render_manifest @, modules, ...
+  manifest_text = render_manifest @, modules, @version, @development
 
+  -- render to zip file if necessary
   if @zip
-    zip = ZipWriter.new!
-    buffer = {}
-
-    zip\open_writer (data) ->
-      return unless data
-      table.insert buffer, data
-
     fname = "manifest"
-    if v = @params.version
-      fname = "#{fname}-#{v}"
-
-    zip\write fname, {
-      isfile: true
-      istext: true
-      isdir: false
-      exattrib: 0x81b60020 -- from https://github.com/moteus/ZipWriter/issues/2
-    }, coroutine.wrap ->
-      coroutine.yield manifest
-
-    zip\close!
+    if @version
+      fname ..= "-#{@version}"
 
     @res.headers["Content-Type"] = "application/zip"
+    return layout: false, zipped_file fname, manifest_text
 
-    { layout: false, table.concat buffer }
-  else
-    { layout: false, manifest }
-
-
-assert_filter = =>
-  assert_valid @params, {
-    { "version", one_of: MANIFEST_LUA_VERSIONS }
-  }
-
-  @params.version
+  layout: false, manifest_text
 
 cached_manifest = (fn) ->
   cached {
@@ -84,49 +83,30 @@ cached_manifest = (fn) ->
     fn
   }
 
-render_root_manifest = =>
-  filter_version = if @params.version then assert_filter @
-  manifest = Manifests\root!
+is_dev = (fn) ->
+  =>
+    @development = true
+    fn @
 
-  if @req.cmd_mth == "HEAD"
-    date = require "date"
-    @res\add_header "Last-Modified", date(manifest.updated_at)\fmt "${http}"
-    return ""
-
-  handle_render @, manifest, filter_version, @development or false
+is_stable = (fn) ->
+  =>
+    @development = false
+    fn @
 
 class MoonRocksManifest extends lapis.Application
-  [root_manifest: "/manifest"]: cached_manifest =>
-    render_root_manifest @
+  [root_manifest: "/manifest"]: cached_manifest is_stable serve_manifest
 
-  [root_manifest_dev: "/dev/manifest"]: cached_manifest =>
-    @development = true
-    render_root_manifest @
+  [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
 
-  "/manifest-:version": capture_errors_404 cached_manifest =>
-    if @params.version\match "%.zip$"
-      @zip = true
-      @params.version = @params.version\sub 1, -5
+  "/manifest-:version": cached_manifest is_stable serve_manifest
 
-    render_root_manifest @
+  "/dev/manifest-:version": cached_manifest is_dev serve_manifest
 
-  "/dev/manifest-:version": capture_errors_404 cached_manifest =>
-    @development = true
-    render_root_manifest @
+  [user_manifest: "/manifests/:user/manifest"]: serve_manifest
+
+  "/manifests/:user/manifest-:version": serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
-
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
-
-  [user_manifest: "/manifests/:user/manifest"]: capture_errors_404 =>
-    user = assert_error Users\find(slug: @params.user), "Invalid user"
-    handle_render @, user
-
-  "/manifests/:user/manifest-:version": capture_errors_404 =>
-    user = assert_error Users\find(slug: @params.user), "Invalid user"
-    filter_version = assert_filter @
-    handle_render @, user, filter_version
-
-
 
 
