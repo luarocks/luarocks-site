@@ -11,10 +11,13 @@ http = require "socket.http"
 import parse_rockspec from require "helpers.uploaders"
 
 import
-  parse_manifest
-  assert_request
   connect_postgres
   from require "cmd.helpers"
+
+import
+  parse_manifest
+  assert_request
+  from require "helpers.mirror"
 
 -- attempt to convert latin-1 chars to utf8
 fix_encoding = (str) ->

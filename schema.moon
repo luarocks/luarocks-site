@@ -253,6 +253,21 @@ make_schema = ->
     "PRIMARY KEY (module_id, user_id)"
   }
 
+  create_table "manifest_backups", {
+    {"id", serial}
+    {"manifest_id", foreign_key}
+    {"development", boolean null: true}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    {"last_backup", time null: true}
+
+    {"repository_url", text}
+
+    "PRIMARY KEY (id)"
+  }
+
   require("lapis.exceptions.models").make_schema!
 
   migrations.create_migrations_table!

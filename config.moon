@@ -14,6 +14,8 @@ config { "development", "test", "production", "staging" }, ->
     database: "moonrocks"
   }
 
+  host "localhost:8080"
+
 
 config { "development", "test" }, ->
   num_workers 1
@@ -33,6 +35,8 @@ config { "production", "staging" }, ->
   notice_log "logs/notice.log"
 
   bucket_name "moonrocks"
+
+  host "rocks.moonscript.org"
 
 config "staging", ->
   port 8081
