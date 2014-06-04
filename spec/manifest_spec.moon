@@ -89,6 +89,15 @@ describe "moonrocks", ->
 
       should_load_manifest "/dev/manifest", is_empty_manifest
 
+      it "should do HEAD", ->
+        status, body, headers = request "/manifest", {
+          method: "HEAD"
+        }
+
+        assert.same 200, status
+        assert.same "", body
+        assert.truthy headers["Last-Modified"]
+
     describe "with development version", ->
       local version
 
