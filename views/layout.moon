@@ -57,6 +57,8 @@ class Layout extends Widget
             div class: "header_inner", ->
               @user_panel!
               h1 -> a href: @url_for"index", "MoonRocks"
+              form class: "header_search", action: @url_for("search"), method: "GET", ->
+                input type: "text", name: "q", placeholder: "Search modules...", value: @params.q
 
           div class: "main_column", ->
             @content_for "inner"

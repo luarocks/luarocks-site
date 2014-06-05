@@ -103,6 +103,9 @@ hr {
     }
 
     h1 {
+        display: inline-block;
+        vertical-align: middle;
+
         letter-spacing: 0.025em;
         margin: 0;
         font-size: 22px;
@@ -116,9 +119,33 @@ hr {
         }
     }
 
+    .header_search {
+        display: inline-block;
+        margin-left: 10px;
+        vertical-align: middle;
+
+        input[type=text] {
+            border: 0;
+            width: 200px;
+            font-size: 14px;
+            padding: 8px 10px;
+            border-radius: 4px;
+            background: $back_color;
+            color: #666;
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 5px rgba(0,0,0,0.4);
+            }
+        }
+
+    }
+
     .user_panel {
         float: right;
         font-size: 12px;
+        margin-top: 13px;
+        line-height: normal;
     }
 
     a {
