@@ -1,6 +1,13 @@
 
 ## Changes
 
+**2014/6/4**
+
+ * Add https
+ * Add support for zipped manifests
+ * Add support for HEAD request to manifest to get last modified time
+ * Support for URL patterns and organizations for GitHub module claiming
+
 **2014/6/2**
 
  * Users can create manifests now
