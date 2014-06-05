@@ -29,6 +29,8 @@ config { "production", "staging" }, ->
   num_workers 2
   code_cache "on"
 
+  enable_https true
+
   admin_email "leafot@gmail.com"
 
   daemon "on"

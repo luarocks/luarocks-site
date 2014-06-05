@@ -40,6 +40,7 @@ import
   require_admin
   capture_errors_404
   not_found
+  ensure_https
   from require "helpers.apps"
 
 import concat, insert from table
@@ -141,7 +142,7 @@ class MoonRocks extends lapis.Application
   handle_404: =>
     "Not found", status: 404
 
-  [index: "/"]: =>
+  [index: "/"]: ensure_https =>
     @page_description = "A website for submitting and distributing Lua rocks"
     root = Manifests\root!
 

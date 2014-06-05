@@ -20,6 +20,7 @@ import
 import
   assert_csrf
   require_login
+  ensure_https
   from require "helpers.apps"
 
 assert_table = (val) ->
@@ -39,7 +40,7 @@ validate_reset_token = =>
     true
 
 class MoonRocksUser extends lapis.Application
-  [user_login: "/login"]: respond_to {
+  [user_login: "/login"]: ensure_https respond_to {
     before: =>
       @title = "Login"
 
@@ -57,7 +58,7 @@ class MoonRocksUser extends lapis.Application
       redirect_to: @url_for"index"
   }
 
-  [user_register: "/register"]: respond_to {
+  [user_register: "/register"]: ensure_https respond_to {
     before: =>
       @title = "Register Account"
 
@@ -85,7 +86,7 @@ class MoonRocksUser extends lapis.Application
     @session.user = false
     redirect_to: "/"
 
-  [user_forgot_password: "/user/forgot_password"]: respond_to {
+  [user_forgot_password: "/user/forgot_password"]: ensure_https respond_to {
     GET: capture_errors =>
       validate_reset_token @
       render: true
@@ -120,7 +121,7 @@ class MoonRocksUser extends lapis.Application
         redirect_to: @url_for"user_forgot_password" .. "?sent=true"
   }
 
-  [user_settings: "/settings"]: require_login respond_to {
+  [user_settings: "/settings"]: ensure_https require_login respond_to {
     before: =>
       import GithubAccounts from require "models"
 
