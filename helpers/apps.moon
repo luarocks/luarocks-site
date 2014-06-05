@@ -33,7 +33,8 @@ require_admin = (fn) ->
 
 ensure_https = (fn) ->
   =>
-    if @req.parsed_url.scheme == "http" and config.enable_https
+    scheme = @req.headers['x-original-scheme']
+    if scheme == "http" and config.enable_https
       url_opts = {k,v for k,v in pairs @req.parsed_url}
       url_opts.scheme = "https"
       url_opts.port = nil
