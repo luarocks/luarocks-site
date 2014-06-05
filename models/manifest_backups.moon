@@ -30,7 +30,7 @@ class ManifestBackups extends Model
     git = git_runner temp_path
 
     exec "mkdir -p #{temp_path}"
-    res = git "status &> /dev/null"
+    res = git "status"
 
     if res > 0
       git "init"
