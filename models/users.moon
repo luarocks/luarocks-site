@@ -3,6 +3,8 @@ import Model from require "lapis.db.model"
 import generate_key from require "helpers.models"
 import slugify from require "lapis.util"
 
+db = require "lapis.db"
+
 bcrypt = require "bcrypt"
 
 class Users extends Model
@@ -90,4 +92,35 @@ class Users extends Model
   find_github_accounts: =>
     import GithubAccounts from require "models"
     GithubAccounts\select "where user_id = ? order by updated_at desc", @id
+
+  delete: =>
+    import
+      Modules
+      UserData
+      ApiKeys
+      GithubAccounts
+      ManifestAdmins
+      LinkedModules from require "models"
+
+    super!
+
+    -- delete modules
+    for m in *Modules\select "where user_id = ?", @id
+      m\delete!
+
+    -- delete user data
+    @get_data!\delete!
+
+    -- delete api keys
+    db.delete ApiKeys\table_name!, user_id: @id
+
+    -- delete github accounts
+    db.delete GithubAccounts\table_name!, user_id: @id
+
+    -- delete manifest admins
+    db.delete ManifestAdmins\table_name!, user_id: @id
+
+    -- delete linked modules
+    for link in *LinkedModules\select "where user_id = ?", @id
+      link\delete!
 
