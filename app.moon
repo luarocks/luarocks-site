@@ -348,17 +348,16 @@ class MoonRocks extends lapis.Application
 
 
   [search: "/search"]: =>
-    @title = "search"
-
     trim_filter @params
     if @params.q
-      query = "%" .. @params.q\lower!\gsub("%%", "") .. "%"
+      @title = "Search '#{@params.q}'"
+      manifests = unless @params.non_root
+        { Manifests\root!.id }
 
-      pager = Modules\paginated [[
-        where name like ?
-      ]], query
-
+      pager = Modules\search @params.q, manifests
       @results = paginated_modules @, pager
+    else
+      @title = "Search"
 
     render: true
 

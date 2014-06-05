@@ -82,6 +82,14 @@ make_schema = ->
   create_index "modules", "downloads"
   create_index "modules", "name"
 
+  unless schema.entity_exists "module_search_idx"
+    import Modules from require "models"
+
+    db.query [[
+      create index module_search_idx on modules
+      using gin(]] .. Modules.search_index .. [[)
+    ]]
+
   --
   -- Versions
   --
@@ -267,6 +275,7 @@ make_schema = ->
 
     "PRIMARY KEY (id)"
   }
+
 
   require("lapis.exceptions.models").make_schema!
 

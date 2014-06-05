@@ -6,6 +6,9 @@ import concat from table
 
 class Modules extends Model
   @timestamp: true
+  @search_index: [[
+    to_tsvector('english', coalesce(display_name, name) || ' ' || coalesce(summary, '') || ' ' || coalesce(description, ''))
+  ]]
 
   -- spec: parsed rockspec
   @create: (spec, user) =>
@@ -27,6 +30,17 @@ class Modules extends Model
       license: description.license
       homepage: description.homepage
     }
+
+  @search: (query, manifest_ids) =>
+    clause = if manifest_ids
+      ids = table.concat [tonumber id for id in *manifest_ids], ", "
+      "and exists(select 1 from manifest_modules where manifest_id in (#{ids}) and module_id = modules.id)"
+
+    @paginated [[
+      where to_tsquery('english', ?) @@ ]] .. @search_index .. [[
+      ]] .. (clause or "") .. [[
+      order by downloads desc
+    ]], query, per_page: 50
 
   url_key: (name) => @name
 
