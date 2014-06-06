@@ -19,7 +19,7 @@ format_number = (num) ->
 
 # (C) 2020 itch.io systems
 class M.Grapher
-  margin_left: 40
+  margin_left: 50
   margin_bottom: 30
   margin_right: 5
   margin_top: 20
