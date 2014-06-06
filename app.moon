@@ -25,6 +25,7 @@ import
   Rocks
   Users
   Versions
+  DownloadsDaily
   from require "models"
 
 import
@@ -158,8 +159,8 @@ class MoonRocks extends lapis.Application
     @popular_modules = Modules\select "order by downloads desc limit 5"
     Users\include_in @popular_modules, "user_id"
 
+    @downloads_daily = DownloadsDaily\fetch true, 30
     render: true
-
 
   [modules: "/modules"]: =>
     @title = "All Modules"

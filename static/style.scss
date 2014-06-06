@@ -356,17 +356,6 @@ pre {
     }
 }
 
-.about_page {
-    p {
-        line-height: 24px;
-    }
-    ul {
-        padding-left: 20px;
-        line-height: 20px;
-    }
-}
-
-
 .table {
     background: white;
     border: 1px solid desaturate(darken($back_color, 30%), 50%);
@@ -410,6 +399,111 @@ img.avatar {
 .external_url {
     word-wrap: break-word;
 }
+
+
+// syntax:
+
+/* builtins */
+.nb {
+    color: #FFA122;
+}
+
+/* strings */
+.s, .s1, .s2, .se {
+    color: #ffe898;
+}
+
+/* proper names, self */
+.nc, .vc, .bp {
+    color: #98d9ff;
+}
+
+/* true, false, nil */
+.kc {
+    color: #acfff0;
+}
+
+/* function lit, braces, parens  */
+.nf, .kt {
+    color: #9fff98;
+}
+
+/* operators */
+.o {
+    font-weight: bold;
+    color: #ff9898;
+}
+
+.nv {
+    color: #ff9898;
+}
+
+/* keywords */
+.k, .kd {
+    font-weight: bold;
+    color: #cb98ff;
+}
+
+.c1, .c2 {
+    color: #929292;
+}
+
+.m, .mi, .mf, .mh {
+    color: #9495ff;
+}
+
+.index_page {
+    .graph_container {
+        height: 180px;
+        margin-bottom: 40px;
+        margin-left: -40px;
+
+        .axis {
+            path, line {
+                fill: none;
+                stroke: darken($border_color, 10%);
+                shape-rendering: crispEdges;
+            }
+
+            text {
+                fill: $sub_color;
+            }
+        }
+
+        .x_guides, .y_guides {
+            stroke: lighten($border_color, 5%);
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+
+        .graph {
+            path {
+                fill: rgba($header_color, 0.3);
+                stroke: rgba($header_color, 0.8);
+            }
+        }
+
+        .dots {
+            circle {
+                fill: lighten($back_color, 5%);
+                stroke: $header_color;
+            }
+        }
+    }
+}
+
+.about_page {
+    p {
+        line-height: 24px;
+    }
+    ul {
+        padding-left: 20px;
+        line-height: 20px;
+    }
+}
+
+
+
 
 .module_page {
     .module_header {
@@ -481,58 +575,6 @@ img.avatar {
             }
         }
     }
-}
-
-
-// syntax:
-
-/* builtins */
-.nb {
-    color: #FFA122;
-}
-
-/* strings */
-.s, .s1, .s2, .se {
-    color: #ffe898;
-}
-
-/* proper names, self */
-.nc, .vc, .bp {
-    color: #98d9ff;
-}
-
-/* true, false, nil */
-.kc {
-    color: #acfff0;
-}
-
-/* function lit, braces, parens  */
-.nf, .kt {
-    color: #9fff98;
-}
-
-/* operators */
-.o {
-    font-weight: bold;
-    color: #ff9898;
-}
-
-.nv {
-    color: #ff9898;
-}
-
-/* keywords */
-.k, .kd {
-    font-weight: bold;
-    color: #cb98ff;
-}
-
-.c1, .c2 {
-    color: #929292;
-}
-
-.m, .mi, .mf, .mh {
-    color: #9495ff;
 }
 
 

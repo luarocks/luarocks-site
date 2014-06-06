@@ -32,7 +32,6 @@ class Layout extends Widget
           meta name: "description", content: @page_description
 
         link rel: "stylesheet", href: "/static/style.css?#{cache_buster}"
-        -- script type: "text/javascript", src: "/static/main.js"
 
         raw [[
           <script type="text/javascript">
@@ -83,5 +82,5 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for"about", "About"
 
-
+      @content_for "js_init"
 

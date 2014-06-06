@@ -6,8 +6,15 @@ class Base extends Widget
   @widget_name: => underscore @__name or "some_widget"
 
   content: =>
-    div class: "#{@@widget_name!}_page", ->
+    div class: @widget_selector(false), ->
       @inner_content!
+
+  widget_selector: (for_js=true) =>
+    selector = "#{@@widget_name!}_page"
+    if for_js
+      "'.#{selector}'"
+    else
+      selector
 
   render_modules: (modules, empty_text="No modules") =>
     unless next modules

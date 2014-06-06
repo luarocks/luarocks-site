@@ -1,4 +1,4 @@
-### Get Started
+## Get Started
 
     $ luarocks install --server=http://rocks.moonscript.org moonrocks
 
@@ -12,7 +12,7 @@ Install a module:
 
 Read more on the [About Page][1].
 
-### What Is This Site?
+## What Is This Site?
 
 **MoonRocks** is place where anyone can upload and host Lua modules.
 
