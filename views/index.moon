@@ -19,7 +19,7 @@ class Index extends require "widgets.base"
         h2 "Popular Modules"
         @render_modules @popular_modules
 
-    h2 "Daily Installs"
+    h2 "Daily Downloads"
     div id: "downloads_graph", class: "graph_container"
 
     @raw_ssi "home.html"
