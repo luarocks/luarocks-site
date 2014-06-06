@@ -1,5 +1,25 @@
 import time_ago_in_words from require "lapis.util"
 
+import escape from require "lapis.html"
+
+basic_format = do
+  import P, R, C, Cs, S, Cmt, Ct, Cg from require "lpeg"
+  stop = P"\r"^-1 * P"\n"
+
+  char = stop / "<br />" + 1
+
+  paragraph_body = Cs (char - stop * stop)^1
+  paragraphs = Ct paragraph_body * (stop^1 * paragraph_body)^0
+
+  (str) ->
+    str = escape str
+    body = if ps = paragraphs\match str
+      table.concat(ps, "</p><p>")
+    else
+      str
+
+    "<p>#{body}</p>"
+
 class Module extends require "widgets.base"
   inner_content: =>
     @admin_panel!
@@ -29,7 +49,7 @@ class Module extends require "widgets.base"
     if description = @module.description
       h3 "About"
       div class: "description", ->
-        p description
+        raw basic_format description
 
     h3 "Versions"
     for v in *@versions
@@ -40,7 +60,7 @@ class Module extends require "widgets.base"
         if v.development
           span class: "development_flag", "dev"
 
-        span class: "sub", time_ago_in_words(v.created_at)
+        span class: "sub", title: "#{v.created_at} UTC", time_ago_in_words(v.created_at)
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests
