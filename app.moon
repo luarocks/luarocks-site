@@ -305,7 +305,7 @@ class MoonRocks extends lapis.Application
       unless manifest\allowed_to_add @current_user
         yield_error "Don't have permission to add to manifest"
 
-      assert ManifestModules\create manifest, @module
+      assert_error ManifestModules\create manifest, @module
       redirect_to: @url_for("module", @)
   }
 
