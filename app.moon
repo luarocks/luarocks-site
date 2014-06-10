@@ -356,8 +356,9 @@ class MoonRocks extends lapis.Application
       manifests = unless @params.non_root
         { Manifests\root!.id }
 
-      pager = Modules\search @params.q, manifests
-      @results = paginated_modules @, pager
+      pcall ->
+        pager = Modules\search @params.q, manifests
+        @results = paginated_modules @, pager
     else
       @title = "Search"
 
