@@ -359,6 +359,14 @@ class MoonRocks extends lapis.Application
       pcall ->
         pager = Modules\search @params.q, manifests
         @results = paginated_modules @, pager
+
+      import slugify from require "lapis.util"
+      user_query = slugify @params.q
+
+      if #user_query != 0
+        user_query = "%#{slugify @params.q}%"
+        pager = Users\paginated "where slug like ?", user_query
+        @user_results = pager\get_page!
     else
       @title = "Search"
 

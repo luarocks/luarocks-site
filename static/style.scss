@@ -197,6 +197,18 @@ hr {
     color: $sub_color;
 }
 
+.user_list {
+    .user_row {
+        font-size: 16px;
+        margin: 10px 0;
+        background: white;
+        padding: 5px 10px;
+        border-radius: 2px;
+        border: 1px solid $border_color;
+        line-height: 1.5;
+    }
+}
+
 .module_list {
     .module_row {
         margin: 10px 0;
