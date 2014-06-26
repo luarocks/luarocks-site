@@ -30,8 +30,14 @@ Install [OpenResty][1].
 Check out this repository.
 
 Install the dependencies listed in
-<https://github.com/leafo/moonrocks-site/blob/master/package.rockspec>.
-(`luarocks install <dependency-url>` but I recommend `--local`)
+<https://github.com/leafo/moonrocks-site/blob/master/BoxFile>.
+
+If you use [MoonBox][6] then you can install all of the files in one go:
+
+```bash
+moonbox install
+source moonbox env enter
+```
 
 Run these commands to build.
 
@@ -100,7 +106,6 @@ make it look something like this: (it must return a table of options)
 }
 ```
 
-
 ### Why Tup?
 
 Tup has a filesystem monitor, it can rebuild any assets or moon files
@@ -109,7 +114,9 @@ for each component.
 
 To use it run:
 
-    tup monitor -a -f
+```bash
+tup monitor -a -f
+```
 
 
   [1]: http://openresty.org/
@@ -117,5 +124,6 @@ To use it run:
   [3]: https://github.com/leafo/lapis
   [4]: http://gittup.org/tup/
   [5]: http://www.mailgun.com/
+  [6]: https://github.com/kernelp4nic/moonbox
 
 
