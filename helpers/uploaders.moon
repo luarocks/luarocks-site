@@ -120,8 +120,10 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
   unless out == 200
     return nil, "Failed to upload rock"
 
-  with Rocks\create version, rock_info.arch, key
+  if Rocks\create version, rock_info.arch, key
     mod\purge_manifests!
+
+  true
 
 handle_rock_upload = =>
   assert @module, "need module"
