@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2014/7/19**
+
+ * Added ability to search by username
+ * Fixed a a bug where API would report error when overriding a rock version even though it succeeded
+
 **2014/6/4**
 
  * Add https
