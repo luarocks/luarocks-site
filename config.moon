@@ -5,6 +5,9 @@ config { "development", "test", "production", "staging" }, ->
   app_name "MoonRocks"
   track_exceptions true
 
+  redis_host "127.0.0.1"
+  redis_port 6379
+
   tool_version "0.0.1"
   pcall -> include require "secret.init"
 

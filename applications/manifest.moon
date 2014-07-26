@@ -4,6 +4,8 @@ MANIFEST_LUA_VERSIONS = { "5.1", "5.2" }
 
 lapis = require "lapis"
 
+import redis_cache from require "helpers.redis_cache"
+
 import
   assert_error
   capture_errors
@@ -78,7 +80,7 @@ serve_manifest = capture_errors_404 =>
 
 cached_manifest = (fn) ->
   cached {
-    dict: "manifest_cache"
+    dict: redis_cache "manifest"
     cache_key: (path) -> path
     exptime: 60 * 10
     when: -> config._name == "production"
