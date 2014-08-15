@@ -102,5 +102,6 @@ class MoonRocksApi extends lapis.Application
     @version = assert_error Versions\find(id: @params.version_id), "invalid version"
     @module = Modules\find id: @version.module_id
     rock = handle_rock_upload @
-    json: { :rock }
+    module_url = @build_url @url_for "module", user: @current_user, module: @module
+    json: { :rock, :module_url }
 
