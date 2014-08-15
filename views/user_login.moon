@@ -6,7 +6,7 @@ class UserLogin extends require "widgets.base"
 
     form action: @url_for"user_login", method: "POST", class: "form", ->
       div class: "row", ->
-        label for: "username_field", "Username"
+        label for: "username_field", "Username or email"
         input type: "text", name: "username", id: "username_field", autofocus: "autofocus"
 
       div class: "row", ->
