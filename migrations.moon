@@ -87,4 +87,13 @@ import add_column, create_index, drop_index, add_index, drop_column from schema
         updated_at = ?
     ]], db.format_date!
 
+
+  [1408086639]: =>
+    create_index "users", db.raw("lower(email)"), unique: true
+    create_index "users", db.raw("lower(username)"), unique: true
+
+    drop_index "users", "email"
+    drop_index "users", "username"
+
+
 }

@@ -28,7 +28,7 @@ class Users extends Model
     }
 
   @login: (username, password) =>
-    user = Users\find { :username }
+    user = Users\find [db.raw "lower(username)"]: username\lower!
     if user and user\check_password password
       user
     else

@@ -107,7 +107,7 @@ class MoonRocksUser extends lapis.Application
           { "email", exists: true, min_length: 3 }
         }
 
-        user = assert_error Users\find(email: @params.email),
+        user = assert_error Users\find([db.raw "lower(email)"]: @params.email\lower!),
           "don't know anyone with that email"
 
         token = user\generate_password_reset!

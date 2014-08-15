@@ -36,10 +36,11 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
-  create_index "users", "email", unique: true
-  create_index "users", "username", unique: true
   create_index "users", "slug", unique: true
   create_index "users", "flags"
+  create_index "users", db.raw("lower(username)"), unique: true
+  create_index "users", db.raw("lower(email)"), unique: true
+
 
   --
   -- UserData

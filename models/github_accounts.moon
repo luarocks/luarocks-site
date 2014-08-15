@@ -25,7 +25,7 @@ class GithubAccounts extends Model
       }, "|"
 
     patt = table.concat(patterns, "|")
-    repo_user = Users\find username: user
+    repo_user = Users\find [db.raw("lower(username)")]: user\lower!
 
     module_id_set = {}
 
