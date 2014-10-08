@@ -1,19 +1,18 @@
 ## About
 
-MoonRocks aims to be a community rock hosting service for Lua by providing an
-easy way to upload rocks and rockspecs compatible with [LuaRocks][1].
+MoonRocks is a community run `rock` and `rockspec` hosting service for Lua
+modules.  It provides an easy way to upload rocks and rockspecs compatible with
+the [LuaRocks][1] package manager.
 
-Anyone can join and upload a Lua module, which gets placed in their own
-Manifest. A manifest is a list of packages that LuaRocks can install from.
+Anyone can join and upload a Lua module. Modules are places in manifests,
+centralized lists of packages that LuaRocks can install from.
 
-In addition to a user's manifest, there is also the *root manifest*: a global
-manifest located at the URL of this site. Users can elect their modules into
-the root manifest so others can install their module when using the root
-manifest URL.
-
-This website is supplemented by a command line tool called `moonrocks` which
-lets you upload modules quickly and easily. Read more:
-<http://github.com/leafo/moonrocks>
+The *root manifest* is the global manifest on MoonRocks. It's a single
+namespace containing all the packages that can be installed right from LuaRocks
+with no additional configuration. In addition to the root manifest, all
+accounts have their own manifests with modules uploaded by the account, and
+anyone can [create a custom manifest](/new-manifest) for organizing collections
+of modules.
 
 ### More About Rockspecs & Rocks
 
@@ -34,6 +33,12 @@ For example, the following rockspec may result in the following rocks:
 
 
 MoonRocks is a website for hosting all of these kinds of files.
+
+Some module versions may be marked as *development*. These versions are placed
+in a development version of their regular manifest so they won't be installed
+by default. MoonRocks will automatically identify a module version as
+development by it's name. The owner of the module can override the
+classification if it was miscategorized.
 
 ### How LuaRocks Works
 
@@ -57,11 +62,11 @@ no rocks were available: <http://rocks.moonscript.org/enet-1.0-0.rockspec>
 After downloading the right file, LuaRocks will then perform the installation
 and the module is ready for use.
 
+### Using MoonRocks Manifest
 
-### Using MoonRocks Manifest Without `moonrocks` Tool
-
-If you want to always install from MoonRocks you can add the manifest url to
-your LuaRocks `config.lua`:
+Modern versions of the LuaRocks command line tool point to the MoonRocks manifest
+by default. If you need to manually configure your LuaRocks installation for
+older versions you can add it to your	`config.lua`:
 
     rocks_servers = {
       "http://rocks.moonscript.org/"
@@ -72,7 +77,6 @@ And install like so:
     $ luarocks install some_package
 
 Alternatively you can specify the MoonRocks server as a command line flag:
-
 
     $ luarocks install --server=http://rocks.moonscript.org some_package
 

@@ -1,14 +1,15 @@
 ## Get Started
 
-    $ luarocks install --server=http://rocks.moonscript.org moonrocks
+Modern version of [LuaRocks](http://luarocks.org) install from the MoonRocks repository by default.
+The most recent version of LuaRocks also supports uploading modules with the
+`upload` command:
 
-Upload a module:
+    $ luarocks upload my_thing-1.0-1.rockspec
 
+For older LuaRocks installations, use [`moonrocks`](https://github.com/leafo/moonrocks):
+
+    $ luarocks install moonrocks
     $ moonrocks upload my_thing-1.0-1.rockspec
-
-Install a module:
-
-    $ moonrocks install my_thing
 
 Read more on the [About Page][1].
 
