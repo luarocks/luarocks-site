@@ -26,7 +26,6 @@ describe "application.user", ->
   before_each ->
     truncate_tables Users
 
-
   it "should register a user", ->
     status, body, headers = request "/register", {
       post: {
@@ -42,7 +41,6 @@ describe "application.user", ->
     assert.same headers.location, 'http://127.0.0.1/'
     user = unpack Users\select!
     assert.truthy user
-
 
   describe "with user", ->
     local user

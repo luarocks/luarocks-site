@@ -2,7 +2,7 @@
 db = require "lapis.db"
 schema = require "lapis.db.schema"
 
-import add_column, create_index, drop_index, add_index, drop_column from schema
+import add_column, create_index, drop_index, drop_column from schema
 
 { :varchar, :boolean, :text, :time, :integer } = schema.types
 

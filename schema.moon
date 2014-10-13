@@ -277,6 +277,18 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
+  create_table "user_module_tags", {
+    {"user_id", foreign_key}
+    {"module_id", foreign_key}
+    {"tag", varchar}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (user_id, module_id, tag)"
+  }
+
+  create_index "user_module_tags", "module_id"
 
   require("lapis.exceptions.models").make_schema!
 
