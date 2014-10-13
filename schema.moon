@@ -277,6 +277,16 @@ make_schema = ->
     "PRIMARY KEY (id)"
   }
 
+  create_table "endorsements", {
+    {"user_id", foreign_key}
+    {"module_id", foreign_key}
+
+    {"created_at", time}
+    {"updated_at", time}
+
+    "PRIMARY KEY (user_id, module_id)"
+  }
+
   create_table "user_module_tags", {
     {"user_id", foreign_key}
     {"module_id", foreign_key}
