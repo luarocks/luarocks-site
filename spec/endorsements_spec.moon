@@ -27,4 +27,23 @@ describe "endorsements", ->
     mod = factory.Modules!
     user = factory.Users!
 
-    assert Endorsements\create user_id: user.id, module_id: mod.id
+    e = Endorsements\endorse user, mod
+    assert.truthy e
+    assert.same user.id, e.user_id
+    assert.same mod.id, e.module_id
+
+  it "should not endorse twice", ->
+    mod = factory.Modules!
+    user = factory.Users!
+
+    e = Endorsements\endorse user, mod
+    assert.truthy e
+    e = Endorsements\endorse user, mod
+    assert.falsy e
+
+  it "should remove endorsement", ->
+    mod = factory.Modules!
+    user = factory.Users!
+
+    e = Endorsements\endorse user, mod
+    e\delete!
