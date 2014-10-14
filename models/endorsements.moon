@@ -22,7 +22,7 @@ class Endorsements extends Model
     created = res.affected_rows
     return nil, "already endorsed" unless created and created > 0
 
-    -- TODO: increment endorsement count
+    increment_counter mod, "endorsements_count"
     Endorsements\load unpack res
 
   get_module: =>
@@ -33,8 +33,8 @@ class Endorsements extends Model
     @module
 
   delete: (...) =>
-    -- TODO: decrement endorsement count
-    super ...
-
-
+    with res = super ...
+      deleted = res.affected_rows
+      if deleted and deleted > 0
+        increment_counter @get_module!, "endorsements_count", -1
 

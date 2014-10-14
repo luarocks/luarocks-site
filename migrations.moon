@@ -96,4 +96,7 @@ import add_column, create_index, drop_index, drop_column from schema
     drop_index "users", "username"
 
 
+  [1413268904]: =>
+    add_column "modules", "endorsements_count", integer
+
 }

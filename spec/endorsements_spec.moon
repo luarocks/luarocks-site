@@ -32,6 +32,9 @@ describe "endorsements", ->
     assert.same user.id, e.user_id
     assert.same mod.id, e.module_id
 
+    mod\refresh!
+    assert.same 1, mod.endorsements_count
+
   it "should not endorse twice", ->
     mod = factory.Modules!
     user = factory.Users!
@@ -41,9 +44,17 @@ describe "endorsements", ->
     e = Endorsements\endorse user, mod
     assert.falsy e
 
+    mod\refresh!
+    assert.same 1, mod.endorsements_count
+
+
   it "should remove endorsement", ->
     mod = factory.Modules!
     user = factory.Users!
 
     e = Endorsements\endorse user, mod
     e\delete!
+
+    mod\refresh!
+    assert.same 0, mod.endorsements_count
+
