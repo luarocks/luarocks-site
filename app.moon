@@ -217,12 +217,12 @@ class MoonRocks extends lapis.Application
 
     PUT: =>
       @module\endorse @current_user
-      redirect_to: @url_for "module", user: @user, module: @module
+      redirect_to: @url_for @module
 
     DELETE: =>
       endorsement = @module\endorsement @current_user
       endorsement and endorsement\delete!
-      redirect_to: @url_for "module", user: @user, module: @module
+      redirect_to: @url_for @module
   }
 
   [edit_module: "/edit/modules/:user/:module"]: capture_errors_404 respond_to {

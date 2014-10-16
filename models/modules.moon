@@ -44,6 +44,9 @@ class Modules extends Model
 
   url_key: (name) => @name
 
+  url_params: =>
+    "module", user: assert(@user, "user not preloaded"), module: @
+
   name_for_display: =>
     @display_name or @name
 
