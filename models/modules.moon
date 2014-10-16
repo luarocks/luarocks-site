@@ -180,3 +180,14 @@ class Modules extends Model
     for m in *@all_manifests fields: "id"
       m\purge!
 
+  endorse: (user) =>
+    import Endorsements from require "models"
+    Endorsements\endorse user, @
+
+  endorsement: (user) =>
+    return unless user
+    import Endorsements from require "models"
+    Endorsements\find user_id: user.id, module_id: @id
+
+
+
