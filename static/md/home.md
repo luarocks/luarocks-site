@@ -15,7 +15,7 @@ Read more on the [About Page][1].
 
 ## What Is This Site?
 
-**MoonRocks** is place where anyone can upload and host Lua modules.
+**MoonRocks** is a place where anyone can upload and host Lua modules.
 
 Register an account and upload a `.rockspec` to create a new module. If your
 module name is not taken it will be added to the *root manifest*.
