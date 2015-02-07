@@ -56,6 +56,9 @@ class Users extends Model
 
   url_key: (name) => @slug
 
+  url_params: =>
+    "user_profile", user: @slug
+
   write_session: (r) =>
     r.session.user = {
       id: @id
@@ -94,6 +97,9 @@ class Users extends Model
   find_github_accounts: =>
     import GithubAccounts from require "models"
     GithubAccounts\select "where user_id = ? order by updated_at desc", @id
+
+  name_for_display: =>
+    @username
 
   delete: =>
     import
