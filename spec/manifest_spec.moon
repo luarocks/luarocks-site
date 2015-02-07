@@ -1,6 +1,6 @@
 
-import load_test_server, close_test_server, request
-  from require "lapis.spec.server"
+import request, request_as from require "spec.helpers"
+import load_test_server, close_test_server from require "lapis.spec.server"
 
 import
   ManifestModules
@@ -108,7 +108,6 @@ describe "moonrocks", ->
       should_load_manifest "/dev/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/dev/manifest-5.2", (m) -> has_module m, mod
 
-
     describe "with versioned version", ->
       local version
 
@@ -192,7 +191,7 @@ describe "moonrocks", ->
         assert.same 200, status
 
       it "should show development only manifest", ->
-        status, res =request "/m/root/development-only"
+        status, res = request "/m/root/development-only"
         assert.same 200, status
 
   describe "user manifest", ->

@@ -1,5 +1,15 @@
 import request from require "lapis.spec.server"
 
+take_screenshots = os.getenv "SCREENSHOT"
+
+local *
+
+_request = (...) ->
+  if take_screenshots
+    request_with_snap ...
+  else
+    request ...
+
 -- returns headers for logged in user
 log_in_user = (user) ->
   config = require("lapis.config").get "test"
@@ -27,7 +37,39 @@ request_as = (user, url, opts={}) ->
     import generate_token from require "lapis.csrf"
     opts.post.csrf_token = generate_token nil, user.id
 
-  request url, opts
+  _request url, opts
+
+request_with_snap = do
+  dir = "spec/screenshots"
+  counter = 1
+  (url, opts, ...) ->
+    out = { request url, opts, ... }
+
+    opts or= {}
+    if out[1] == 200 and not opts.post
+      if counter == 1
+        os.execute "rm #{dir}/*.png"
+
+      import get_current_server from require "lapis.spec.server"
+      server = get_current_server!
+
+      host, path = url\match "^https?://([^/]*)(.*)$"
+      unless host
+        host = "127.0.0.1"
+        path = url
+
+      full_url = "http://#{host}:#{server.app_port}#{path}"
+      headers = for k,v in pairs opts.headers or {}
+        "'--header=#{k}:#{v}'"
+
+      headers = table.concat headers
+
+      cmd = "CutyCapt #{headers} '--url=#{full_url}' '--out=#{dir}/#{counter}.png'"
+      assert os.execute cmd
+
+      counter += 1
+
+    unpack out
 
 
-{ :log_in_user, :request_as }
+{ :log_in_user, :request_as, request: _request }
