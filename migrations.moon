@@ -2,9 +2,24 @@
 db = require "lapis.db"
 schema = require "lapis.db.schema"
 
-import add_column, create_index, drop_index, drop_column from schema
+import
+  create_table
+  add_column
+  create_index
+  drop_index
+  drop_column
+  from schema
 
-{ :varchar, :boolean, :text, :time, :integer } = schema.types
+
+import
+  serial
+  varchar
+  text
+  time
+  integer
+  foreign_key
+  boolean
+  from schema.types
 
 {
   -- migrate user slugs
