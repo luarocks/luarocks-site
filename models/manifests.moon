@@ -33,6 +33,16 @@ class Manifests extends Model
     import ManifestAdmins from require "models"
     ManifestAdmins\find user_id: user.id, manifest_id: @id
 
+  find_admins: (opts={}) =>
+    import ManifestAdmins, Users from require "models"
+
+    opts.per_page or= 50
+    opts.prepare_results or= (admins) ->
+      Users\include_in admins, "user_id"
+      admins
+
+    ManifestAdmins\paginated "where manifest_id = ?", @id, opts
+
   find_modules: (opts={}) =>
     import ManifestModules, Modules from require "models"
 

@@ -6,6 +6,11 @@ class ManifestAdmins extends Model
   @timestamp: true
   @primary_key: {"user_id", "manifest_id"}
 
+  @relations: {
+    {"user", belongs_to: "Users"}
+    {"manifest", belongs_to: "Manifests"}
+  }
+
   @create: (manifest, user, is_owner=false) =>
     Model.create @, {
       manifest_id: manifest.id

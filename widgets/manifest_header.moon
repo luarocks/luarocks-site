@@ -6,7 +6,7 @@ class ManifestHeader extends require "widgets.base"
     h2 ->
       text @manifest\name_for_display!
       text " Manifest"
-      if @pager
+      if @show_count
         text " "
         span class: "header_count", "(#{@pager\total_items!})"
 

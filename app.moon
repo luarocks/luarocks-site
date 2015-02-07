@@ -154,6 +154,9 @@ class MoonRocks extends lapis.Application
 
   [manifest_maintainers: "/m/:manifest/maintainers"]: capture_errors_404 =>
     load_manifest @, "name"
+    @title = "#{@manifest.name} Manifest Maintainers"
+    @pager = @manifest\find_admins!
+    @admins = @pager\get_page!
     render: "manifest_maintainers"
 
   [about: "/about"]: =>
