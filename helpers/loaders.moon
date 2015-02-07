@@ -1,5 +1,5 @@
 
-import Users, Modules, Versions from require "models"
+import Users, Modules, Versions, Manifests from require "models"
 
 import
   assert_error
