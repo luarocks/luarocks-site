@@ -33,30 +33,25 @@ class Manifests extends Model
     import ManifestAdmins from require "models"
     ManifestAdmins\find user_id: user.id, manifest_id: @id
 
-  find_modules: (...) =>
+  find_modules: (opts={}) =>
     import ManifestModules, Modules from require "models"
-    prepare_results, per_page = nil
 
-    dev_only = false
+    dev_only = opts.dev_only
+    opts.dev_only = nil
 
-    args = {...}
-    if type(... or nil) == "table"
-      opts = ...
+    fields = opts.fields
+    opts.fields = nil
 
-      if opts.prepare_results
-        prepare_results = opts.prepare_results
-        opts.prepare_results = nil
+    module_prepare_results = opts.prepare_results
 
-      if opts.per_page
-        per_page = opts.per_page
-        opts.per_page = nil
-
-      if opts.dev_only
-        opts.dev_only = nil
-        dev_only = true
-
+    opts.prepare_results = (manifest_modules) ->
+      Modules\include_in manifest_modules, "module_id", fields: fields
+      modules = [mm.module for mm in *manifest_modules]
+      modules = module_prepare_results modules if module_prepare_results
+      modules
 
     clause = if dev_only
+      -- TODO: this query can be better
       db.interpolate_query [[
         inner join modules on manifest_modules.module_id = modules.id
         where manifest_id = ? and has_dev_version
@@ -68,14 +63,7 @@ class Manifests extends Model
         order by module_name asc
       ]], @id
 
-    ManifestModules\paginated clause, {
-      :per_page
-      prepare_results: (manifest_modules) ->
-        Modules\include_in manifest_modules, "module_id", unpack args
-        modules = [mm.module for mm in *manifest_modules]
-        modules = prepare_results modules if prepare_results
-        modules
-    }
+    ManifestModules\paginated clause, opts
 
   source_url: (r) =>
     if @is_root!
