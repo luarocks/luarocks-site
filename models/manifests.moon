@@ -37,6 +37,8 @@ class Manifests extends Model
     import ManifestModules, Modules from require "models"
     prepare_results, per_page = nil
 
+    dev_only = false
+
     args = {...}
     if type(... or nil) == "table"
       opts = ...
@@ -49,10 +51,24 @@ class Manifests extends Model
         per_page = opts.per_page
         opts.per_page = nil
 
-    ManifestModules\paginated [[
-      where manifest_id = ?
-      order by module_name asc
-    ]], @id, {
+      if opts.dev_only
+        opts.dev_only = nil
+        dev_only = true
+
+
+    clause = if dev_only
+      db.interpolate_query [[
+        inner join modules on manifest_modules.module_id = modules.id
+        where manifest_id = ? and has_dev_version
+        order by module_name asc
+      ]], @id
+    else
+      db.interpolate_query [[
+        where manifest_id = ?
+        order by module_name asc
+      ]], @id
+
+    ManifestModules\paginated clause, {
       :per_page
       prepare_results: (manifest_modules) ->
         Modules\include_in manifest_modules, "module_id", unpack args
