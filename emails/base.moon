@@ -15,7 +15,7 @@ class Email extends Widget
     url_for = @_find_helper "url_for"
     @build_url url_for nil, ...
 
-  subject: => "MoonRocks"
+  subject: => "LuaRocks"
 
   content: =>
     div -> @body!
@@ -26,7 +26,7 @@ class Email extends Widget
 
   footer: =>
     h4 ->
-      a href: "http://rocks.moonscript.org", "MoonRocks"
+      a href: "http://luarocks.org", "LuaRocks"
 
   hr: =>
     hr style: "border: 0; height: 1px; background: #dadada"

@@ -14,9 +14,11 @@ class UserSettings extends require "widgets.base"
 
   edit_keys: =>
     h3 id: "api_keys", "API Keys"
-    p "An API key is used to authenticate the MoonRocks command line tool to
-    create and modify modules. Treat it like a password and don't share it with
-    anyone."
+    p ->
+      text "An API key is used to authenticate the "
+      code "luarocks upload"
+      text " command line tool to create and modify modules. Treat it like
+      a password and don't share it with anyone."
 
     if #@api_keys == 0
       p "You currently don't have any keys."

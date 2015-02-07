@@ -1,8 +1,12 @@
-# MoonRocks
+# LuaRocks.org
 
-<http://rocks.moonscript.org>
+<http://luarocks.org>
 
 A webpage for hosting and serving Lua modules.
+
+This was formerly called [MoonRocks](http://rocks.moonscript.org), but has
+since taken over as the official LuaRocks website. This naming history
+is apparent in its implementation.
 
 The entire site runs on [OpenResty][1], an Nginx based platform with Lua
 support. The site itself is coded in [MoonScript][2] and uses [Lapis][3] as a
@@ -62,7 +66,7 @@ Now `http://localhost:8080` should load.
 
 ### Running tests
 
-MoonRocks uses [Busted](http://olivinelabs.com/busted/) for its tests:
+This site uses [Busted](http://olivinelabs.com/busted/) for its tests:
 
 ```bash
 make test_db

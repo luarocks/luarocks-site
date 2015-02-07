@@ -1,13 +1,13 @@
-## About
+## About this site
 
-MoonRocks is a community run `rock` and `rockspec` hosting service for Lua
+LuaRocks.org is a community run `rock` and `rockspec` hosting service for Lua
 modules.  It provides an easy way to upload rocks and rockspecs compatible with
 the [LuaRocks][1] package manager.
 
 Anyone can join and upload a Lua module. Modules are places in manifests,
 centralized lists of packages that LuaRocks can install from.
 
-The *root manifest* is the global manifest on MoonRocks. It's a single
+The *root manifest* is the global manifest on LuaRocks.org. It's a single
 namespace containing all the packages that can be installed right from LuaRocks
 with no additional configuration. In addition to the root manifest, all
 accounts have their own manifests with modules uploaded by the account, and
@@ -32,11 +32,11 @@ For example, the following rockspec may result in the following rocks:
     * enet-1.0-0.win32-x86.rock
 
 
-MoonRocks is a website for hosting all of these kinds of files.
+LuaRocks.org is a website for hosting all of these kinds of files.
 
 Some module versions may be marked as *development*. These versions are placed
 in a development version of their regular manifest so they won't be installed
-by default. MoonRocks will automatically identify a module version as
+by default. This site will automatically identify a module version as
 development by it's name. The owner of the module can override the
 classification if it was miscategorized.
 
@@ -49,36 +49,18 @@ this:
 
 LuaRocks will download a manifest from each of the manifest servers it has been
 configured to look at. A manifest is a list of modules that a server has
-available. You can see the MoonRocks root manifest by going to:
-<http://rocks.moonscript.org/manifest>. It will then try to find the module
+available. You can see the LuaRocks root manifest by going to:
+<http://luarocks.org/manifest>. It will then try to find the module
 your searched for that best matches your platform and the version you want (the
 most recent by default).
 
 After finding the right match, it will ask the server with that module for
 either a `.rock` or `.rockspec` which is needed to install locally. For
-example, if our search was using MoonRocks, it might find this `.rockspec` if
-no rocks were available: <http://rocks.moonscript.org/enet-1.0-0.rockspec>
+example, if our search was using LuaRocks.org, it might find this `.rockspec` if
+no rocks were available: <http://luarocks.org/enet-1.0-0.rockspec>
 
 After downloading the right file, LuaRocks will then perform the installation
 and the module is ready for use.
-
-### Using MoonRocks Manifest
-
-Modern versions of the LuaRocks command line tool point to the MoonRocks manifest
-by default. If you need to manually configure your LuaRocks installation for
-older versions you can add it to your	`config.lua`:
-
-    rocks_servers = {
-      "http://rocks.moonscript.org/"
-    }
-
-And install like so:
-
-    $ luarocks install some_package
-
-Alternatively you can specify the MoonRocks server as a command line flag:
-
-    $ luarocks install --server=http://rocks.moonscript.org some_package
 
 ### How This Site Is Built
 

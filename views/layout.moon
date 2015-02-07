@@ -24,9 +24,9 @@ class Layout extends Widget
         meta charset: "utf-8"
         title ->
           if @title
-            text "#{@title} - MoonRocks"
+            text "#{@title} - LuaRocks"
           else
-            text "MoonRocks"
+            text "LuaRocks"
 
         if @page_description
           meta name: "description", content: @page_description
@@ -55,7 +55,7 @@ class Layout extends Widget
           div class: "header", ->
             div class: "header_inner", ->
               @user_panel!
-              h1 -> a href: @url_for"index", "MoonRocks"
+              h1 -> a href: @url_for"index", "LuaRocks"
               form class: "header_search", action: @url_for("search"), method: "GET", ->
                 input type: "text", name: "q", placeholder: "Search modules...", value: @params.q
 

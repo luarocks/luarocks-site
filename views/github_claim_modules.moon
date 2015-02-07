@@ -4,7 +4,7 @@ class GithubClaimModules extends require "widgets.base"
     h2 "Claim Modules"
     p ->
       text "The following modules can be automatically claimed by your
-      MoonRocks account based on the GitHub accounts you've linked. You can
+      LuaRocks.org account based on the GitHub accounts you've linked. You can
       link a new GitHub account from the "
       a href: @url_for("user_settings"), "User Settings page"
       text ". When you claim a module it is copied into your account and your
