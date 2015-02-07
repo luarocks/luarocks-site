@@ -4,6 +4,14 @@
 test:
 	busted
 
+migrate::
+	lapis migrate
+	make schema.sql
+
+schema.sql::
+	pg_dump -s -U postgres moonrocks > schema.sql
+	pg_dump -a -t lapis_migrations -U postgres moonrocks >> schema.sql
+
 test_db:
 	-dropdb -U postgres moonrocks_test
 	createdb -U postgres moonrocks_test
@@ -16,10 +24,6 @@ prod_db::
 
 lint:
 	moonc -l $$(git ls-files | grep '\.moon$$' | grep -v config.moon)
-
-
-schema:
-	lapis exec 'require"schema".make_schema()'
 
 routes:
 	lapis exec 'require "cmd.routes"'
