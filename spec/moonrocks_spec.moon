@@ -23,79 +23,6 @@ import
 
 factory = require "spec.factory"
 
-rockspec = [==[
-package = "etlua"
-version = "1.2.0-1"
-
-source = {
-  url = "git://github.com/leafo/etlua.git",
-  branch = "v1.2.0"
-}
-
-description = {
-  summary = "Embedded templates for Lua",
-  detailed = [[
-    Allows you to render ERB style templates but with Lua. Supports <% %>, <%=
-    %> and <%- %> tags (with optional newline slurping) for embedding code.
-  ]],
-  homepage = "https://github.com/leafo/etlua",
-  maintainer = "Leaf Corcoran <leafot@gmail.com>",
-  license = "MIT"
-}
-
-dependencies = {
-  "lua >= 5.1",
-}
-
-build = {
-  type = "builtin",
-  modules = {
-    ["etlua"] = "etlua.lua",
-  },
-}
-]==]
-
-dev_rockspec = [==[
-package = "enet"
-version = "dev-1"
-
-source = {
-  url = "git://github.com/leafo/lua-enet.git"
-}
-
-description = {
-  summary = "A library for doing network communication in Lua",
-  detailed = [[
-    Binding to ENet, network communication layer on top of UDP.
-  ]],
-  homepage = "http://leafo.net/lua-enet",
-  license = "MIT"
-}
-
-dependencies = {
-  "lua >= 5.1"
-}
-
-external_dependencies = {
-  ENET = {
-    header = "enet/enet.h"
-  }
-}
-
-build = {
-  type = "builtin",
-  modules = {
-    enet = {
-      sources = {"enet.c"},
-      libraries = {"enet"},
-      incdirs = {"$(ENET_INCDIR)"},
-      libdirs = {"$(ENET_LIBDIR)"}
-    }
-  }
-}
-]==]
-
-
 describe "moonrocks", ->
   local root
 
@@ -169,7 +96,9 @@ describe "moonrocks", ->
       }
 
     it "should upload rockspec #ddd", ->
-      status, body, headers = do_upload "/upload", "rockspec_file", "etlua-1.2.0-1.rockspec", rockspec
+      status, body, headers = do_upload "/upload", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
+
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
       versions = Versions\select!
@@ -189,7 +118,9 @@ describe "moonrocks", ->
       assert.same 1, root_after.versions_count
 
     it "should upload development rockspec #ddd", ->
-      status, body, headers = do_upload "/upload", "rockspec_file", "enet-dev-1.rockspec", dev_rockspec
+      status, body, headers = do_upload "/upload", "rockspec_file",
+        "enet-dev-1.rockspec", require("spec.rockspecs.enet_dev")
+
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
       versions = Versions\select!
