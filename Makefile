@@ -4,6 +4,10 @@
 test:
 	busted
 
+init_schema::
+	createdb -U postgres itchio
+	cat schema.sql | psql -U postgres itchio
+
 migrate::
 	lapis migrate
 	make schema.sql

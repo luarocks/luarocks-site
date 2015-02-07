@@ -49,7 +49,7 @@ tup upd
 Create the schema:
 
 ```bash
-make schema
+make init_schema
 ```
 
 Start the server:
@@ -69,8 +69,10 @@ make test_db
 busted
 ```
 
-You only need to run `make test_db` if the schema of the database has changed
-(or has just been created).
+The `make test_db` command will copy the schema of the `moonrocks` local
+database into the test database, wiping out what whatever was there. You'll
+only need to run this command once and the beginning any any time the schema
+has changed.
 
 ### Setting up Google Cloud Storage
 
