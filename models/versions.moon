@@ -17,6 +17,10 @@ get_lua_version = (spec) ->
 class Versions extends Model
   @timestamp: true
 
+  @relations: {
+    {"module", belongs_to: "Modules"}
+  }
+
   @sort_versions: (versions) =>
     import parse_version from require "ext.luarocks.deps"
 
@@ -49,7 +53,7 @@ class Versions extends Model
     if @check_unique_constraint module_id: mod.id, version_name: version_name
       return nil, "This version is already uploaded"
 
-    Model.create @, {
+    version = Model.create @, {
       module_id: mod.id
       display_version_name: if version_name != spec.version then spec.version
       rockspec_fname: rockspec_key\match "/([^/]*)$"
@@ -59,6 +63,12 @@ class Versions extends Model
 
       :rockspec_key, :version_name
     }
+
+    if version.development
+      mod = version\get_module!
+      mod\update has_dev_version: true unless mod.has_dev_version
+
+    version
 
   update_from_spec: (spec) =>
     lua_version = get_lua_version spec
