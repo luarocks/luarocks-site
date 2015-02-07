@@ -23,7 +23,7 @@ import
 
 import render_manifest, preload_modules from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
-import capture_errors_404 from require "helpers.app"
+import capture_errors_404, assert_page from require "helpers.app"
 import zipped_file from require "helpers.zip"
 
 import cached from require "lapis.cache"
@@ -113,4 +113,9 @@ class MoonRocksManifest extends lapis.Application
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 
+  [manifests: "/manifests"]: capture_errors_404 =>
+    assert_page @
+    @pager = Manifests\paginated [[ order by id asc ]]
+    @manifests = @pager\get_page @page
+    render: true
 
