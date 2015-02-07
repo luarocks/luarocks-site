@@ -186,13 +186,24 @@ describe "moonrocks", ->
           }
         }, m.repository
 
-      it "should show manifest", ->
-        status, res = request "/m/root"
-        assert.same 200, status
 
-      it "should show development only manifest", ->
-        status, res = request "/m/root/development-only"
-        assert.same 200, status
+  describe "with many modules", ->
+    before_each ->
+      for i=1,3
+        mod = factory.Modules!
+        factory.ManifestModules manifest_id: root.id, module_id: mod.id
+
+      for i=1,2
+        mod = factory.Modules has_dev_version: true
+        factory.ManifestModules manifest_id: root.id, module_id: mod.id
+
+    it "should show manifest #ddd", ->
+      status, res = request "/m/root"
+      assert.same 200, status
+
+    it "should show development only manifest #ddd", ->
+      status, res = request "/m/root/development-only"
+      assert.same 200, status
 
   describe "user manifest", ->
     local user
