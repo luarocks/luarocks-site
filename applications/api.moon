@@ -27,7 +27,7 @@ import
 import
   assert_csrf
   require_login
-  from require "helpers.apps"
+  from require "helpers.app"
 
 api_request = (fn) ->
   capture_errors_json =>

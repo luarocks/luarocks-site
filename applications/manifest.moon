@@ -23,7 +23,7 @@ import
 
 import render_manifest, preload_modules from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
-import capture_errors_404 from require "helpers.apps"
+import capture_errors_404 from require "helpers.app"
 import zipped_file from require "helpers.zip"
 
 import cached from require "lapis.cache"

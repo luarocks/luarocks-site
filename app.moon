@@ -42,7 +42,7 @@ import
   capture_errors_404
   not_found
   ensure_https
-  from require "helpers.apps"
+  from require "helpers.app"
 
 import concat, insert from table
 

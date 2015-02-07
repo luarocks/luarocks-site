@@ -14,7 +14,7 @@ import
   assert_editable
   require_login
   capture_errors_404
-  from require "helpers.apps"
+  from require "helpers.app"
 
 import load_module from require "helpers.loaders"
 

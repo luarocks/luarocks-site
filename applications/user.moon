@@ -26,7 +26,7 @@ import
   ensure_https
   capture_errors_404
   assert_editable
-  from require "helpers.apps"
+  from require "helpers.app"
 
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"

@@ -4,7 +4,7 @@ bucket = require "storage_bucket"
 import assert_error, yield_error from require "lapis.application"
 import assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
-import assert_editable from require "helpers.apps"
+import assert_editable from require "helpers.app"
 
 import
   ManifestModules
