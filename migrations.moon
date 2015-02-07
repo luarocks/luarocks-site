@@ -114,4 +114,14 @@ import
   [1413268904]: =>
     add_column "modules", "endorsements_count", integer
 
+  [1423334387]: =>
+    add_column "modules", "has_dev_version", boolean
+    db.query [[
+      update modules set has_dev_version = exists(
+        select 1 from versions where module_id = modules.id
+        and development
+      )
+    ]]
+
+
 }

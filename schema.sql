@@ -327,7 +327,8 @@ CREATE TABLE modules (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     display_name character varying(255),
-    endorsements_count integer DEFAULT 0 NOT NULL
+    endorsements_count integer DEFAULT 0 NOT NULL,
+    has_dev_version boolean DEFAULT false NOT NULL
 );
 
 
@@ -918,6 +919,7 @@ COPY lapis_migrations (name) FROM stdin;
 1401810343
 1408086639
 1413268904
+1423334387
 \.
 
 
