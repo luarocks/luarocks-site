@@ -76,6 +76,8 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for("manifest", manifest: "root"), "Root Manifest"
           raw " &middot; "
+          a href: @url_for"manifests", "Manifests"
+          raw " &middot; "
           a href: @url_for"modules", "Modules"
           raw " &middot; "
           a href: @url_for"changes", "Changes"

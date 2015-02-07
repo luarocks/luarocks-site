@@ -6,6 +6,12 @@ class Manifests extends require "widgets.base"
       text " "
       span class: "header_count", "(#{@pager\total_items!})"
 
+    p ->
+      text "Manifests are collections of modules that you can install from. The "
+      a href: @url_for("manifest", manifest: "root"), -> code "root"
+      text " manifest is the default install location for MoonRocks. You can also "
+      a href: @url_for("new_manifest"), "create your own manifest."
+
     @render_pager @pager
 
     if next @manifests
