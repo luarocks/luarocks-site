@@ -211,9 +211,9 @@ class MoonRocks extends lapis.Application
 
     render: true
 
-  [endorse_module: "/endorse/:user/:module"] require_login capture_errors_404 respond_to {
+  [endorse_module: "/endorse/:user/:module"]: require_login capture_errors_404 respond_to {
     before: =>
-      return unless load_module @
+      load_module @
 
     PUT: =>
       @module\endorse @current_user
