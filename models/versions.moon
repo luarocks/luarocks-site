@@ -103,11 +103,11 @@ class Versions extends Model
 
     -- remove rocks
     import Rocks from require "models"
+    @get_module!\update_has_dev_version!
 
     rocks = Rocks\select "where version_id = ?", @id
     for r in *rocks
       r\delete!
-
 
   get_spec: =>
     http = if ngx
