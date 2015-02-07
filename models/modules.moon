@@ -10,6 +10,10 @@ class Modules extends Model
     to_tsvector('english', coalesce(display_name, name) || ' ' || coalesce(summary, '') || ' ' || coalesce(description, ''))
   ]]
 
+  @relations: {
+    {"user", belongs_to: "Users"}
+  }
+
   -- spec: parsed rockspec
   @create: (spec, user) =>
     description = spec.description or {}

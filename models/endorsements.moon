@@ -8,6 +8,11 @@ class Endorsements extends Model
   @primary_key: {"user_id", "module_id"}
   @timestamp: true
 
+  @relations: {
+    {"module", belongs_to: "Modules"}
+    {"user", belongs_to: "Users"}
+  }
+
   @endorse: (user, mod) =>
     tbl_name = db.escape_identifier @table_name!
     now = db.format_date!
@@ -24,13 +29,6 @@ class Endorsements extends Model
 
     increment_counter mod, "endorsements_count"
     Endorsements\load unpack res
-
-  get_module: =>
-    unless @module
-      import Modules from require "models"
-      @module = Modules\find @module_id
-
-    @module
 
   delete: (...) =>
     with res = super ...
