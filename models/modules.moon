@@ -192,5 +192,8 @@ class Modules extends Model
     import Endorsements from require "models"
     Endorsements\find user_id: user.id, module_id: @id
 
-
-
+  update_has_dev_version: =>
+    @update has_dev_version: db.raw [[exists(
+      select 1 from versions where module_id = modules.id
+      and development
+    )]]
