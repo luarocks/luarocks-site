@@ -152,6 +152,10 @@ class MoonRocks extends lapis.Application
     paginated_modules @, @manifest, dev_only: true
     render: "manifest"
 
+  [manifest_maintainers: "/m/:manifest/maintainers"]: capture_errors_404 =>
+    load_manifest @, "name"
+    render: "manifest_maintainers"
+
   [about: "/about"]: =>
     @title = "About"
     render: true
@@ -241,6 +245,5 @@ class MoonRocks extends lapis.Application
 
       redirect_to: @url_for(manifest)
   }
-
 
 

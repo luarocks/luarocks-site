@@ -119,3 +119,5 @@ class MoonRocksManifest extends lapis.Application
     @manifests = @pager\get_page @page
     render: true
 
+
+

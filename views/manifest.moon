@@ -1,14 +1,8 @@
+ManifestHeader = require "widgets.manifest_header"
+
 class Manifest extends require "widgets.base"
   content: =>
-    h2 ->
-      text @manifest\name_for_display!
-      text " Manifest"
-      text " "
-      span class: "header_count", "(#{@pager\total_items!})"
-
-    div class: "page_tabs", ->
-      a href: @url_for(@manifest), class: "tab #{@development_only and "" or "active"}", "All modules"
-      a href: @url_for(@manifest, development_only: true), class: "tab #{@development_only and "active" or ""}", "Development only"
+    widget ManifestHeader page_name: @development_only and "development_only" or "all"
 
     if @development_only
       p ->
