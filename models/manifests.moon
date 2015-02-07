@@ -65,9 +65,11 @@ class Manifests extends Model
 
     ManifestModules\paginated clause, opts
 
-  source_url: (r) =>
+  source_url: (r, dev=false) =>
     if @is_root!
-      r\build_url!
+      root = r\build_url!
+      root ..= "/dev" if dev
+      root
     else
       r\build_url r\url_for "manifest", manifest: @name
 

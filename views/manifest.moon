@@ -19,7 +19,7 @@ class Manifest extends require "widgets.base"
           text " manifest page"
         text "."
 
-    @term_snippet "luarocks install --server=#{@manifest\source_url @} <name>"
+    @term_snippet "luarocks install --server=#{@manifest\source_url @, @development_only} <name>"
 
     if @manifest.description
       p @manifest.description
