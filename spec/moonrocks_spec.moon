@@ -24,12 +24,12 @@ import
 factory = require "spec.factory"
 
 rockspec = [==[
--- etlua-dev-1.rockspec
 package = "etlua"
-version = "dev-1"
+version = "1.2.0-1"
 
 source = {
-  url = "git://github.com/leafo/etlua.git"
+  url = "git://github.com/leafo/etlua.git",
+  branch = "v1.2.0"
 }
 
 description = {
@@ -53,8 +53,48 @@ build = {
     ["etlua"] = "etlua.lua",
   },
 }
-
 ]==]
+
+dev_rockspec = [==[
+package = "enet"
+version = "dev-1"
+
+source = {
+  url = "git://github.com/leafo/lua-enet.git"
+}
+
+description = {
+  summary = "A library for doing network communication in Lua",
+  detailed = [[
+    Binding to ENet, network communication layer on top of UDP.
+  ]],
+  homepage = "http://leafo.net/lua-enet",
+  license = "MIT"
+}
+
+dependencies = {
+  "lua >= 5.1"
+}
+
+external_dependencies = {
+  ENET = {
+    header = "enet/enet.h"
+  }
+}
+
+build = {
+  type = "builtin",
+  modules = {
+    enet = {
+      sources = {"enet.c"},
+      libraries = {"enet"},
+      incdirs = {"$(ENET_INCDIR)"},
+      libdirs = {"$(ENET_LIBDIR)"}
+    }
+  }
+}
+]==]
+
 
 describe "moonrocks", ->
   local root
@@ -128,11 +168,41 @@ describe "moonrocks", ->
         :data
       }
 
-    it "should upload rockspec", ->
-      status, body, headers = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", rockspec
+    it "should upload rockspec #ddd", ->
+      status, body, headers = do_upload "/upload", "rockspec_file", "etlua-1.2.0-1.rockspec", rockspec
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
-      assert.same 1, #Versions\select!
+      versions = Versions\select!
+      assert.same 1, #versions
+      version = unpack versions
+      assert.same false, version.development
+      assert.same "etlua-1.2.0-1.rockspec", version.rockspec_fname
+      assert.same "1.2.0-1", version.version_name
+      assert.same "git://github.com/leafo/etlua.git", version.source_url
+      assert.same "lua >= 5.1", version.lua_version
+
+      mod = version\get_module!
+      assert.same false, mod.has_dev_version
+
+      root_after = Manifests\find(root.id)
+      assert.same 1, root_after.modules_count
+      assert.same 1, root_after.versions_count
+
+    it "should upload development rockspec #ddd", ->
+      status, body, headers = do_upload "/upload", "rockspec_file", "enet-dev-1.rockspec", dev_rockspec
+      assert.same 302, status
+      assert.truthy headers.location\match "/modules/"
+      versions = Versions\select!
+      assert.same 1, #versions
+      version = unpack versions
+      assert.same true, version.development
+      assert.same "enet-dev-1.rockspec", version.rockspec_fname
+      assert.same "dev-1", version.version_name
+      assert.same "git://github.com/leafo/lua-enet.git", version.source_url
+      assert.same "lua >= 5.1", version.lua_version
+
+      mod = version\get_module!
+      assert.same true, mod.has_dev_version
 
       root_after = Manifests\find(root.id)
       assert.same 1, root_after.modules_count

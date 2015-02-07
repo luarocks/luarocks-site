@@ -36,5 +36,3 @@ describe "modules", ->
     mod\update_has_dev_version!
     assert.truthy mod.has_dev_version
 
-
-
