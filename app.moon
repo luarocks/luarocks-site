@@ -46,91 +46,8 @@ import
 
 import concat, insert from table
 
-load_module = =>
-  @user = assert_error Users\find(slug: @params.user), "Invalid user"
-  @module = assert_error Modules\find(user_id: @user.id, name: @params.module\lower!), "Invalid module"
-  @module.user = @user
-
-  if @params.version
-    @version = assert_error Versions\find({
-      module_id: @module.id
-      version_name: @params.version\lower!
-    }), "Invalid version"
-
-  if @route_name and (@module.name != @params.module or @version and @version.version_name != @params.version)
-    url = @url_for @route_name, user: @user, module: @module, version: @version
-    @write status: 301, redirect_to: url
-    return false
-
-  true
-
-load_manifest = (key="id") =>
-  @manifest = assert_error Manifests\find([key]: @params.manifest), "Invalid manifest id"
-
-delete_module = capture_errors_404 respond_to {
-  before: =>
-    load_module @
-    @title = "Delete #{@module\name_for_display!}?"
-
-  GET: require_login =>
-    assert_editable @, @module
-
-    if @version and @module\count_versions! == 1
-      return redirect_to: @url_for "delete_module", @params
-
-    render: true
-
-  POST: require_login capture_errors =>
-    assert_csrf @
-    assert_editable @, @module
-
-    assert_valid @params, {
-      { "module_name", equals: @module.name }
-    }
-
-    if @version
-      if @module\count_versions! == 1
-        error "can not delete only version"
-
-      @version\delete!
-      redirect_to: @url_for "module", @params
-    else
-      @module\delete!
-      redirect_to: @url_for "index"
-}
-
-paginated_modules = (object_or_pager, opts={}) =>
-  assert_valid @params, {
-    {"page", optional: true, is_integer: true}
-  }
-
-  if type(opts) == "function"
-    opts = { prepare_results: opts }
-
-  opts.prepare_results or= (mods) ->
-    Users\include_in mods, "user_id", fields: "id, slug, username"
-    mods
-
-  @page = tonumber(@params.page) or 1
-
-  @pager = if object_or_pager.get_page
-    -- it's already a pager, hijack it
-    object_or_pager.prepare_results = opts.prepare_results
-    object_or_pager
-  else
-    opts.per_page or= 50
-    opts.fields or= "id, name, display_name, user_id, downloads, summary"
-    object_or_pager\find_modules opts
-
-  @modules = @pager\get_page @page
-
-  if @page > 1 and not next @modules
-    return redirect_to: @req.parsed_url.path
-
-  if @page > 1 and @title
-    @title ..= " - Page #{@page}"
-
-  @modules
+import load_module, load_manifest from require "helpers.loaders"
+import paginated_modules from require "helpers.modules"
 
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
@@ -140,6 +57,7 @@ class MoonRocks extends lapis.Application
   @include "applications.api"
   @include "applications.user"
   @include "applications.manifest"
+  @include "applications.modules"
   @include "applications.github"
 
   @before_filter =>
@@ -148,6 +66,8 @@ class MoonRocks extends lapis.Application
 
   handle_404: =>
     "Not found", status: 404
+
+  "/console": require("lapis.console").make!
 
   [index: "/"]: ensure_https =>
     @page_description = "A website for submitting and distributing Lua rocks"
@@ -189,34 +109,6 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for "module", user: @current_user, module: mod
   }
 
-  [user_profile: "/modules/:user"]: capture_errors_404 =>
-    @user = assert_error Users\find(slug: @params.user), "invalid user"
-
-    @title = "#{@user.username}'s Modules"
-    paginated_modules @, @user, (mods) ->
-      for mod in *mods
-        mod.user = @user
-      mods
-
-    render: true
-
-  [module: "/modules/:user/:module"]: capture_errors_404 =>
-    return unless load_module @
-
-    @title = "#{@module\name_for_display!}"
-    @page_description = @module.summary if @module.summary
-
-    @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
-    @manifests = @module\all_manifests!
-
-    Versions\sort_versions @versions
-
-    for v in *@versions
-      if v.id == @module.current_version_id
-        @current_version = v
-
-    render: true
-
   [endorse_module: "/endorse/:user/:module"]: require_login capture_errors_404 respond_to {
     before: =>
       load_module @
@@ -230,58 +122,6 @@ class MoonRocks extends lapis.Application
       endorsement and endorsement\delete!
       redirect_to: @url_for @module
   }
-
-  [edit_module: "/edit/modules/:user/:module"]: capture_errors_404 respond_to {
-    before: =>
-      load_module @
-      assert_editable @, @module
-
-      @title = "Edit '#{@module\name_for_display!}'"
-
-    GET: =>
-      render: true
-
-    POST: =>
-      changes = @params.m
-
-      trim_filter changes, {
-        "license", "description", "display_name", "homepage"
-      }, db.NULL
-
-      @module\update changes
-      redirect_to: @url_for("module", @)
-  }
-
-  [edit_module_version: "/edit/modules/:user/:module/:version"]: capture_errors_404 respond_to {
-    before: =>
-      return unless load_module @
-      assert_editable @, @module
-
-    GET: =>
-      render: true
-
-    POST: capture_errors =>
-      development = if @params.v
-        assert_valid @params, {
-          {"v", type: "table"}
-        }
-        @params.v.development
-
-      @version\update development: not not development
-      redirect_to: @url_for("module_version", @)
-
-  }
-
-  [module_version: "/modules/:user/:module/:version"]: capture_errors_404 =>
-    return unless load_module @
-
-    @title = "#{@module\name_for_display!} #{@version.version_name}"
-    @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
-
-    render: true
-
-  [delete_module: "/delete/:user/:module"]: delete_module
-  [delete_module_version: "/delete/:user/:module/:version"]: delete_module
 
   [upload_rock: "/modules/:user/:module/:version/upload"]: capture_errors_404 require_login respond_to {
     before: =>
@@ -298,61 +138,6 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for "module_version", @
   }
 
-  [add_to_manifest: "/add-to-manifest/:user/:module"]: capture_errors_404 require_login respond_to {
-    before: =>
-      load_module @
-      assert_editable @, @module
-
-      @title = "Add Module To Manifest"
-
-      already_in = { m.id, true for m in *@module\all_manifests! }
-      @manifests = for m in *Manifests\select!
-        continue if already_in[m.id]
-        m
-
-    GET: =>
-      render: true
-
-    POST: capture_errors =>
-      assert_csrf @
-
-      assert_valid @params, {
-        { "manifest_id", is_integer: true }
-      }
-
-      manifest = assert_error Manifests\find(id: @params.manifest_id), "Invalid manifest id"
-
-      unless manifest\allowed_to_add @current_user
-        yield_error "Don't have permission to add to manifest"
-
-      assert_error ManifestModules\create manifest, @module
-      redirect_to: @url_for("module", @)
-  }
-
-
-  [remove_from_manifest: "/remove-from-manifest/:user/:module/:manifest"]: capture_errors_404 require_login respond_to {
-    before: =>
-      load_module @
-      load_manifest @
-
-      assert_editable @, @module
-
-    GET: =>
-      @title = "Remove Module From Manifest"
-
-      assert_error ManifestModules\find({
-        manifest_id: @manifest.id
-        module_id: @module.id
-      }), "Module is not in manifest"
-
-      render: true
-
-    POST: =>
-      assert_csrf @
-
-      ManifestModules\remove @manifest, @module
-      redirect_to: @url_for("module", @)
-  }
 
   [manifest: "/m/:manifest"]: capture_errors_404 =>
     load_manifest @, "name"

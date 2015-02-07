@@ -7,6 +7,7 @@ import
   respond_to
   capture_errors
   assert_error
+  yield_error
   from require "lapis.application"
 
 import assert_valid from require "lapis.validate"
@@ -15,13 +16,20 @@ import trim_filter from require "lapis.util"
 import
   ApiKeys
   Users
+  Manifests
+  ManifestModules
   from require "models"
 
 import
   assert_csrf
   require_login
   ensure_https
+  capture_errors_404
+  assert_editable
   from require "helpers.apps"
+
+import load_module, load_manifest from require "helpers.loaders"
+import paginated_modules from require "helpers.modules"
 
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
@@ -40,6 +48,17 @@ validate_reset_token = =>
     true
 
 class MoonRocksUser extends lapis.Application
+  [user_profile: "/modules/:user"]: capture_errors_404 =>
+    @user = assert_error Users\find(slug: @params.user), "invalid user"
+
+    @title = "#{@user.username}'s Modules"
+    paginated_modules @, @user, (mods) ->
+      for mod in *mods
+        mod.user = @user
+      mods
+
+    render: true
+
   [user_login: "/login"]: ensure_https respond_to {
     before: =>
       @title = "Login"
@@ -154,3 +173,60 @@ class MoonRocksUser extends lapis.Application
 
       redirect_to: @url_for"user_settings" .. "?password_reset=true"
   }
+
+  [add_to_manifest: "/add-to-manifest/:user/:module"]: capture_errors_404 require_login respond_to {
+    before: =>
+      load_module @
+      assert_editable @, @module
+
+      @title = "Add Module To Manifest"
+
+      already_in = { m.id, true for m in *@module\all_manifests! }
+      @manifests = for m in *Manifests\select!
+        continue if already_in[m.id]
+        m
+
+    GET: =>
+      render: true
+
+    POST: capture_errors =>
+      assert_csrf @
+
+      assert_valid @params, {
+        { "manifest_id", is_integer: true }
+      }
+
+      manifest = assert_error Manifests\find(id: @params.manifest_id), "Invalid manifest id"
+
+      unless manifest\allowed_to_add @current_user
+        yield_error "Don't have permission to add to manifest"
+
+      assert_error ManifestModules\create manifest, @module
+      redirect_to: @url_for("module", @)
+  }
+
+
+  [remove_from_manifest: "/remove-from-manifest/:user/:module/:manifest"]: capture_errors_404 require_login respond_to {
+    before: =>
+      load_module @
+      load_manifest @
+
+      assert_editable @, @module
+
+    GET: =>
+      @title = "Remove Module From Manifest"
+
+      assert_error ManifestModules\find({
+        manifest_id: @manifest.id
+        module_id: @module.id
+      }), "Module is not in manifest"
+
+      render: true
+
+    POST: =>
+      assert_csrf @
+
+      ManifestModules\remove @manifest, @module
+      redirect_to: @url_for("module", @)
+  }
+
