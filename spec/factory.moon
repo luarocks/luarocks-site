@@ -51,4 +51,22 @@ Rocks = (opts={}) ->
 
   assert Model.create models.Rocks, opts
 
-{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks }
+Manifests = (opts={}) ->
+  opts.description or= "Manifest description #{next_counter "manifest-desc"}"
+  opts.name or= "manifest-#{next_counter "manifest-slug"}"
+  assert Model.create models.Manifests, opts
+
+ManifestModules = (opts={}) ->
+  unless opts.module_id
+    mod = factory.Modules!
+    opts.module_id = mod.id
+    opts.module_name = mod.name
+
+  unless opts.module_name
+    opts.module_name = models.Modules\find(opts.module_id).name
+
+  opts.manifest_id or= factory.Manifests!
+
+  assert Model.create models.ManifestModules, opts
+
+{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestModules }
