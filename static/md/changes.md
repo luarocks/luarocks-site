@@ -1,6 +1,10 @@
 
 ## Changes
 
+**2015/2/7**
+
+ * Added *development only* versions of manifest
+
 **2014/7/19**
 
  * Added ability to search by username

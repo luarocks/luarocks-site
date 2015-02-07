@@ -40,6 +40,25 @@ $error_color: mix($back_color, red, 30%);
     text-overflow: ellipsis;
 }
 
+@mixin border_box {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    transition: $args;
+}
+
+@mixin prefixed($prop, $args...) {
+    -webkit-#{$prop}: $args;
+    -moz-#{$prop}: $args;
+    -ms-#{$prop}: $args;
+    #{$prop}: $args;
+}
+
 body {
     color: $body_color;
     font-size: $base_font_size;
@@ -641,4 +660,40 @@ img.avatar {
     }
 }
 
+
+.page_tabs {
+    border-bottom: 1px solid $border_color;
+    margin-bottom: 40px;
+
+    .tab, .tab_sub {
+        font-size: 16px;
+        padding-bottom: 5px;
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+        top: 1px;
+    }
+
+    .tab_sub {
+        color: #999;
+        margin-right: 40px;
+    }
+
+    .tab {
+        @include transition(all 0.2s ease);
+        color: $body_color;
+        text-decoration: none;
+        border-bottom: 1px solid rgba($link_color, 0);
+        margin-right: 40px;
+
+        &.has_sub {
+            margin-right: 0px;
+        }
+
+        &.active, &:hover {
+            color: $link_color;
+            border-bottom: 1px solid rgba($link_color, 1);
+        }
+    }
+}
 

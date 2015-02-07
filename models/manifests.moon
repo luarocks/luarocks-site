@@ -77,8 +77,9 @@ class Manifests extends Model
     else
       @id
 
-  url_params: =>
-    "manifest", manifest: @name
+  url_params: (r, opts) =>
+    route = opts and opts.development_only and "manifest_development" or "manifest"
+    route, manifest: @name
 
   update_counts: =>
     @update {
