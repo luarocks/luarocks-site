@@ -40,6 +40,7 @@ describe "moonrocks", ->
 
   should_load "/about"
   should_load "/m/root"
+  should_load "/m/root/development-only"
   should_load "/modules"
   should_load "/manifest"
 

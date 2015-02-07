@@ -62,7 +62,6 @@ describe "moonrocks", ->
   should_load_manifest "/dev/manifest-5.1", is_empty_manifest
   should_load_manifest "/dev/manifest-5.2", is_empty_manifest
 
-
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
       "manifest should have module"
@@ -188,6 +187,13 @@ describe "moonrocks", ->
           }
         }, m.repository
 
+      it "should show manifest", ->
+        status, res = request "/m/root"
+        assert.same 200, status
+
+      it "should show development only manifest", ->
+        status, res =request "/m/root/development-only"
+        assert.same 200, status
 
   describe "user manifest", ->
     local user
