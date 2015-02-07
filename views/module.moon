@@ -31,7 +31,7 @@ class Module extends require "widgets.base"
 
     div class: "metadata_columns", ->
       div class: "column", ->
-        h3 "Author"
+        h3 "Owner"
         user_url = @url_for "user_profile", user: @user.slug
         a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
         a href: user_url, @user.username
