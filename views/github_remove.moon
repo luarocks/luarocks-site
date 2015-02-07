@@ -5,7 +5,7 @@ class GithubRemove extends require "widgets.base"
     p ->
       text "The link to the GitHub account "
       strong @account.github_login
-      text " will be remove from MoonRocks"
+      text " will be removed from LuaRocks.org"
 
     @render_errors!
     form action: "", method: "POST", class: "form", ->

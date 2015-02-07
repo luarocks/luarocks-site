@@ -48,5 +48,5 @@ class UploadRockspec extends require "widgets.base"
     directory."
 
     p "You're now ready to upload both your source rock and your rockspec to
-    MoonRocks!"
+    LuaRocks.org!"
 

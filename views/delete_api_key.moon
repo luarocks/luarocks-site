@@ -4,7 +4,7 @@ class DeleteApiKey extends require "widgets.base"
     pre @key.key
     div "Created on: #{@key.created_at}"
 
-    p "Any tools using this key will no longer have access to MoonRocks."
+    p "Any tools using this key will no longer have access to LuaRocks.org."
 
     form action: @req.cmd_url, method: "POST", class: "form", ->
       input type: "hidden", name: "csrf_token", value: @csrf_token
