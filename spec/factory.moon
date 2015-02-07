@@ -58,14 +58,14 @@ Manifests = (opts={}) ->
 
 ManifestModules = (opts={}) ->
   unless opts.module_id
-    mod = factory.Modules!
+    mod = Modules!
     opts.module_id = mod.id
     opts.module_name = mod.name
 
   unless opts.module_name
     opts.module_name = models.Modules\find(opts.module_id).name
 
-  opts.manifest_id or= factory.Manifests!
+  opts.manifest_id or= Manifests!
 
   assert Model.create models.ManifestModules, opts
 
