@@ -69,4 +69,8 @@ ManifestModules = (opts={}) ->
 
   assert Model.create models.ManifestModules, opts
 
-{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestModules }
+ApiKeys = (opts={}) ->
+  opts.user_id or= Users!.id
+  models.ApiKeys\generate opts.user_id, "specs"
+
+{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestModules, :ApiKeys }
