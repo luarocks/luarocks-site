@@ -71,5 +71,37 @@ request_with_snap = do
 
     unpack out
 
+do_upload_as = (user, url, param_name, filename, file_content, opts) ->
+  import generate_token from require "lapis.csrf"
 
-{ :log_in_user, :request_as, request: _request }
+  unless pcall -> require "moonrocks.multipart"
+    pending "Need moonrocks to run upload spec"
+    return false
+
+  import File, encode from require "moonrocks.multipart"
+
+  f = with File filename, "application/octet-stream"
+    .content = -> file_content
+
+  data, boundary = encode {
+    csrf_token: user and generate_token nil, user.id
+    [param_name]: f
+  }
+
+  req_opts = {
+    method: "POST"
+    headers: {
+      "Content-type": "multipart/form-data; boundary=#{boundary}"
+    }
+
+    :data
+  }
+
+  if opts
+    for k, v in pairs opts
+      req_opts[k] = v
+
+  request_as user, url, req_opts
+
+
+{ :log_in_user, :request_as, request: _request, :do_upload_as }

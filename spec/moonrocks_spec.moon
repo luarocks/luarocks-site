@@ -8,7 +8,7 @@ should_load = (url, expected_status=200) ->
 
 import truncate_tables from require "lapis.spec.db"
 
-import request_as from require "spec.helpers"
+import request_as, do_upload_as from require "spec.helpers"
 
 import generate_token from require "lapis.csrf"
 
@@ -61,6 +61,9 @@ describe "moonrocks", ->
   describe "with user", ->
     local user
 
+    do_upload = (...) ->
+      do_upload_as user, ...
+
     before_each ->
       user = factory.Users!
 
@@ -71,30 +74,6 @@ describe "moonrocks", ->
     it "should load upload page", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
-
-    do_upload = (url, param_name, filename, file_content) ->
-      unless pcall -> require "moonrocks.multipart"
-        pending "Need moonrocks to run upload spec"
-        return false
-
-      import File, encode from require "moonrocks.multipart"
-
-      f = with File filename, "application/octet-stream"
-        .content = -> file_content
-
-      data, boundary = encode {
-        csrf_token: generate_token nil, user.id
-        [param_name]: f
-      }
-
-      request_as user, url, {
-        method: "POST"
-        headers: {
-          "Content-type": "multipart/form-data; boundary=#{boundary}"
-        }
-
-        :data
-      }
 
     it "should upload rockspec #ddd", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
