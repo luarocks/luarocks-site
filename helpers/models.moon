@@ -1,6 +1,6 @@
 
 db = require "lapis.db"
-import insert from table
+import insert, concat from table
 
 increment_counter = (keys, amount=1) =>
   amount = tonumber amount

@@ -2,20 +2,17 @@
 bucket = require "storage_bucket"
 
 import Model from require "lapis.db.model"
-import increment_counter from require "helpers.models"
+import increment_counter, safe_insert from require "helpers.models"
 
 class Rocks extends Model
   @timestamp: true
 
   @create: (version, arch, rock_key) =>
-    if @check_unique_constraint { version_id: version.id, :arch }
-      return nil, "Rock already exists"
-
-    Model.create @, {
+    safe_insert @, {
       version_id: version.id
       rock_fname: rock_key\match "/([^/]*)$"
       :arch, :rock_key
-    }
+    }, {version_id: version.id, :arch }
 
   url: => bucket\file_url @rock_key
 
