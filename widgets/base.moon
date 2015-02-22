@@ -104,6 +104,9 @@ class Base extends Widget
 
       span class: "pager_label", "Page #{current_page} of #{num_pages}"
 
+  csrf_input: =>
+    input type: "hidden", name: "csrf_token", value: @csrf_token
+
 if ... == "test"
   print Base\format_number 1
   print Base\format_number 12
