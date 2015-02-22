@@ -78,8 +78,8 @@ class MoonRocksApi extends lapis.Application
 
   "/api/1/:key/check_rockspec": api_request =>
     assert_valid @params, {
-      { "package", exists: true }
-      { "version", exists: true }
+      { "package", exists: true, type: "string" }
+      { "version", exists: true, type: "string" }
     }
 
     module = Modules\find user_id: @current_user.id, name: @params.package\lower!
@@ -99,6 +99,10 @@ class MoonRocksApi extends lapis.Application
     json: { :module, :version, :module_url, :manifests, :is_new }
 
   "/api/1/:key/upload_rock/:version_id": api_request =>
+    assert_valid @params, {
+      {"version_id", is_integer: true}
+    }
+
     @version = assert_error Versions\find(id: @params.version_id), "invalid version"
     @module = Modules\find id: @version.module_id
     rock = handle_rock_upload @
