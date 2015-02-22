@@ -23,16 +23,13 @@ class Endorsements extends Model
       ) returning user_id, module_id, created_at, updated_at
     ", user.id, mod.id, now, now, user.id, mod.id
 
-
     created = res.affected_rows
     return nil, "already endorsed" unless created and created > 0
 
     increment_counter mod, "endorsements_count"
     Endorsements\load unpack res
 
-  delete: (...) =>
-    with res = super ...
-      deleted = res.affected_rows
-      if deleted and deleted > 0
-        increment_counter @get_module!, "endorsements_count", -1
+  delete: =>
+    if super
+      increment_counter @get_module!, "endorsements_count", -1
 
