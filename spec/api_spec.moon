@@ -82,3 +82,30 @@ describe "application.api", ->
 
       assert.same {}, res
 
+    it "shold upload rockspec", ->
+      status, res, headers = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua"), {
+          expect: "json"
+        }
+
+      assert.same 200, status
+      assert.truthy res.module_url
+      assert.truthy res.version
+      assert.truthy res.module
+      assert.truthy res.is_new
+
+      versions = Versions\select!
+      assert.same 1, #versions
+      version = unpack versions
+      assert.same version.id, res.version.id
+
+      modules = Modules\select!
+      assert.same 1, #modules
+      mod = unpack modules
+      assert.same mod.id, res.module.id
+
+      -- adds to root manifest
+      assert.same 1, #res.manifests
+      root\refresh!
+      assert.same 1, root.modules_count
+
