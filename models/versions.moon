@@ -97,17 +97,20 @@ class Versions extends Model
     @_rocks
 
   delete: =>
-    super!
-    -- delete rockspec
-    bucket\delete_file @rockspec_key
+    if super!
+      -- delete rockspec
+      bucket\delete_file @rockspec_key
 
-    -- remove rocks
-    import Rocks from require "models"
-    @get_module!\update_has_dev_version!
+      if mod = @get_module!
+        mod\update_has_dev_version!
 
-    rocks = Rocks\select "where version_id = ?", @id
-    for r in *rocks
-      r\delete!
+      -- remove rocks
+      import Rocks from require "models"
+      rocks = Rocks\select "where version_id = ?", @id
+      for r in *rocks
+        r\delete!
+
+      true
 
   get_spec: =>
     http = if ngx

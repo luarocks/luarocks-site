@@ -90,18 +90,20 @@ class Modules extends Model
   delete: =>
     import Versions, ManifestModules, LinkedModules from require "models"
 
-    super!
-    -- Remove module from manifests
-    db.delete ManifestModules\table_name!, module_id: @id
+    if super!
+      -- Remove module from manifests
+      db.delete ManifestModules\table_name!, module_id: @id
 
-    -- Remove versions
-    versions = Versions\select "where module_id = ? ", @id
-    for v in *versions
-      v\delete!
+      -- Remove versions
+      versions = Versions\select "where module_id = ? ", @id
+      for v in *versions
+        v\delete!
 
-    -- remove the link
-    for link in *LinkedModules\select "where module_id = ?", @id
-      link\delete!
+      -- remove the link
+      for link in *LinkedModules\select "where module_id = ?", @id
+        link\delete!
+
+      true
 
   -- copies module/versions/rocks to user
   copy_to_user: (user, take_root=false) =>

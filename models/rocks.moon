@@ -27,5 +27,6 @@ class Rocks extends Model
     version\increment_download {"downloads"}
 
   delete: =>
-    super!
-    bucket\delete_file @rock_key
+    if super!
+      bucket\delete_file @rock_key
+      true
