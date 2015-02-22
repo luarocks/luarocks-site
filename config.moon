@@ -38,6 +38,7 @@ config { "production", "staging" }, ->
 
   daemon "on"
   notice_log "logs/notice.log"
+  logging false
 
   bucket_name "moonrocks"
 
