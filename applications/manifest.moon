@@ -83,7 +83,7 @@ cached_manifest = (fn) ->
     dict: redis_cache "manifest"
     cache_key: (path) -> path
     exptime: 60 * 10
-    when: -> config._name == "production"
+    when: -> false -- config._name == "production"
     fn
   }
 
