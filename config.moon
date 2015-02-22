@@ -19,7 +19,6 @@ config { "development", "test", "production", "staging" }, ->
 
   host "localhost:8080"
 
-
 config { "development", "test" }, ->
   num_workers 1
   code_cache "off"

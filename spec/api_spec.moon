@@ -109,3 +109,20 @@ describe "application.api", ->
       root\refresh!
       assert.same 1, root.modules_count
 
+    it "should upload rock", ->
+      mod = factory.Modules user_id: user.id
+      version = factory.Versions module_id: mod.id
+
+      fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+      status, res = do_upload_as nil, "#{prefix}/upload_rock/#{version.id}",
+        "rock_file", fname, "hello world", {
+          expect: "json"
+        }
+
+      assert.same 200, status
+      assert.truthy res.rock
+      assert.truthy res.module_url
+
+      rock = assert unpack Rocks\select!
+      assert.same "windows2000", rock.arch
+
