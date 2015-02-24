@@ -5,7 +5,9 @@ cache_buster = require "helpers.cache_buster"
 class Layout extends Widget
   user_panel: =>
     div class: "user_panel", ->
-      a href: "https://github.com/keplerproject/luarocks/wiki", "Documentation"
+      a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Download"
+      raw " &middot; "
+      a href: "https://github.com/keplerproject/luarocks/wiki/Documentation", "Documentation"
       raw " &middot; "
 
       if @current_user
