@@ -10,8 +10,8 @@ LuaRocks is free software and uses the same license as Lua.
 
 Installing LuaRocks in a Unix system:
 
-    $ wget http://luarocks.org/releases/luarocks-2.2.0.tar.gz
-    $ tar zxpf luarocks-2.2.0.tar.gz
+    $ wget http://luarocks.org/releases/luarocks-2.2.1.tar.gz
+    $ tar zxpf luarocks-2.2.1.tar.gz
     $ cd luarocks-2.2.0
     $ ./configure; sudo make bootstrap
     $ sudo luarocks install luasocket
