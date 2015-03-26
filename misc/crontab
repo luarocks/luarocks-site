@@ -1,0 +1,1 @@
+10 12 * * * /bin/bash /home/luarocks/sites/moonrocks-site/cmd/mirror_to_git.sh
