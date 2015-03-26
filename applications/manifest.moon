@@ -30,13 +30,27 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
+zipable = (fn) ->
+  =>
+    should_zip = if @params.version and @params.version\match "%.zip$"
+      @params.version = @params.version\sub 1, -5
+      true
+
+    @write fn @
+
+    if should_zip and (@options.status or 200) == 200 and @req.cmd_mth == "GET"
+      fname = "manifest"
+      if @version
+        fname ..= "-#{@version}"
+
+      @res.headers["Content-Type"] = "application/zip"
+      @buffer = { zipped_file fname, table.concat @buffer }
+
+    nil
+
 serve_manifest = capture_errors_404 =>
   if @params.version
-    -- check for zip in version
-    if @params.version\match "%.zip$"
-      @zip = true
-      @params.version = @params.version\sub 1, -5
-
+    require("moon").p @params
     assert_valid @params, {
       { "version", one_of: MANIFEST_LUA_VERSIONS }
     }
@@ -67,23 +81,14 @@ serve_manifest = capture_errors_404 =>
   modules = get_all_pages pager
   manifest_text = render_manifest @, modules, @version, @development
 
-  -- render to zip file if necessary
-  if @zip
-    fname = "manifest"
-    if @version
-      fname ..= "-#{@version}"
-
-    @res.headers["Content-Type"] = "application/zip"
-    return layout: false, zipped_file fname, manifest_text
-
   layout: false, manifest_text
 
 cached_manifest = (fn) ->
   cached {
     dict: redis_cache "manifest"
-    cache_key: (path) -> path
+    cache_key: (path) -> path\gsub "%.zip$", ""
     exptime: 60 * 10
-    when: -> false -- config._name == "production"
+    when: -> true -- config._name == "production"
     fn
   }
 
@@ -102,9 +107,9 @@ class MoonRocksManifest extends lapis.Application
 
   [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
 
-  "/manifest-:version": cached_manifest is_stable serve_manifest
+  "/manifest-:version": zipable cached_manifest is_stable serve_manifest
 
-  "/dev/manifest-:version": cached_manifest is_dev serve_manifest
+  "/dev/manifest-:version": zipable cached_manifest is_dev serve_manifest
 
   [user_manifest: "/manifests/:user/manifest"]: serve_manifest
 
