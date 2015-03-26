@@ -5,8 +5,8 @@ test:
 	busted
 
 init_schema::
-	createdb -U postgres itchio
-	cat schema.sql | psql -U postgres itchio
+	createdb -U postgres moonrocks
+	cat schema.sql | psql -U postgres moonrocks
 
 migrate::
 	lapis migrate
