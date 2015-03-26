@@ -103,10 +103,14 @@ class Manifests extends Model
   -- updates the counts, and the updated_at field of manifest
   purge: =>
     @update_counts!
+    if @is_root!
+      import redis_cache from require "helpers.redis_cache"
+      cache = redis_cache("manifest")!
+      -- uhh might want to fix this up
+      cache\delete "/manifest", "/manifest-5.1", "/manifest-5.2", "/manifest-5.3",
+        "/dev/manifest", "/dev/manifest-5.1", "/dev/manifest-5.2", "/dev/manifest-5.3"
 
-    return unless ngx and ngx.shared
-    for path in *{"/manifest", "/manifest-5.1", "/manifest-5.2"}
-      ngx.shared.manifest_cache\set path, nil
+    true
 
   has_module: (mod) =>
     import ManifestModules from require "models"
