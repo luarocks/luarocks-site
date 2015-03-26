@@ -1,6 +1,6 @@
 -- app responsible for rendering manifests
 
-MANIFEST_LUA_VERSIONS = { "5.1", "5.2" }
+MANIFEST_LUA_VERSIONS = { "5.1", "5.2", "5.3" }
 
 lapis = require "lapis"
 
