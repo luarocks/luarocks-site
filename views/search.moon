@@ -19,7 +19,7 @@ class Search extends require "widgets.base"
         label for: "root_toggle", "Include non-root"
         input type: "checkbox", name: "non_root", id: "root_toggle", checked: @params.non_root and "checked" or nil
 
-      div ->
+      div class: "button_row", ->
         input type: "submit", value: "Search"
 
   render_search_results: =>

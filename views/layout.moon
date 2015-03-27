@@ -3,9 +3,11 @@ import Widget from require "lapis.html"
 cache_buster = require "helpers.cache_buster"
 
 class Layout extends Widget
+  @include "widgets.helpers"
+
   user_panel: =>
     div class: "user_panel", ->
-      a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Download"
+      a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Install"
       raw " &middot; "
       a href: "https://github.com/keplerproject/luarocks/wiki/Documentation", "Docs"
       raw " &middot; "
@@ -64,7 +66,15 @@ class Layout extends Widget
               @user_panel!
               h1 -> a href: @url_for"index", "LuaRocks"
               form class: "header_search", action: @url_for("search"), method: "GET", ->
-                input type: "text", name: "q", placeholder: "Search modules...", value: @params.q
+                input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q
+
+          if @show_intro_banner
+            div class: "intro_banner", ->
+              div class: "intro_banner_inner", ->
+                img src: "/static/logo.svg"
+
+                div class: "intro_text", ->
+                  @raw_ssi "intro.html"
 
           div class: "main_column", ->
             @content_for "inner"

@@ -1,9 +1,13 @@
 $lua_blue: #00257A; // color of lua logo
 $back_color: lighten($lua_blue, 72%);
 $header_color: lighten(desaturate($lua_blue, 60%), 5%);
+$button_color: #637393;
 $site_width: 800px;
 $link_color: #008FEE;
-$base_font_size: 14px;
+
+$base_font_size: 16px;
+$small_font_size: 14px;
+
 $body_color: #47555C;
 $border_color: #C1CCE4;
 $line_height: 24px;

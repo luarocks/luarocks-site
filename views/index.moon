@@ -1,7 +1,6 @@
 import to_json from require "lapis.util"
 
 class Index extends require "widgets.base"
-
   inner_content: =>
     div class: "home_columns", ->
       div class: "column", ->
@@ -16,7 +15,7 @@ class Index extends require "widgets.base"
         @render_modules @recent_modules
 
       div class: "column last", ->
-        h2 "Popular Modules"
+        h2 "Most Downloaded"
         @render_modules @popular_modules
 
     h2 "Daily Downloads"

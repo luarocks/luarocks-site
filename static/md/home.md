@@ -1,11 +1,4 @@
-## Welcome!
-
-**LuaRocks** is the package manager for Lua modules. 
-
-LuaRocks allows you to install Lua modules as self-contained packages called _rocks_, which also contain version dependency information. It supports both local and remote repositories, and multiple local rocks trees. You can download and install LuaRocks on Unix and Windows.
-
-LuaRocks is free software and uses the same license as Lua.
-
+<div id="quick-start"></div>
 ## Quick start
 
 Installing LuaRocks in a Unix system:
@@ -19,9 +12,12 @@ Installing LuaRocks in a Unix system:
     Lua 5.3.0 Copyright (C) 1994-2015 Lua.org, PUC-Rio
     > require "socket"
 
+
+On Windows? [Installation instructions for Windows](https://github.com/keplerproject/luarocks/wiki/Installation-instructions-for-Windows).
+
 ## Contributing modules
 
-This is a place where anyone can upload and host Lua modules.
+Anyone can upload and host Lua modules.
 
 Register an account and upload a `.rockspec` to create a new module. If your
 module name is not taken it will be added to the *root manifest*.

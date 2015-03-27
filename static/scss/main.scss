@@ -14,7 +14,7 @@ a {
 }
 
 h1, h2, h3 {
-    margin: 20px 0;
+    margin: 40px 0 20px 0;
 }
 
 h2 {
@@ -25,16 +25,32 @@ h3 {
     font-size: 18px;
 }
 
+button, input[type='submit'], .button {
+    background: $button_color;
+    line-height: 35px;
+    height: 35px;
+    padding: 0 30px;
+    font-size: $base_font_size;
+    font-family: 'Open Sans', sans-serif;
+    border: 0;
+    color: #FFF;
+}
+
+input {
+    font-family: 'Open Sans', sans-serif;
+    font-size: $base_font_size;
+}
+
 .header_sub {
     font-size: 16px;
 }
 
 p {
-    line-height: 20px;
-    margin: 10px 0 20px 0;
+    line-height: 1.5;
+    margin: 20px 0;
 
     > code {
-        background: darken($back_color, 10%);
+        background: rgba(#446, 0.1);
         padding: 2px 4px;
         border-radius: 6px;
     }
@@ -53,7 +69,6 @@ hr {
 
     color: white;
     padding: 10px;
-    margin-bottom: 20px;
     line-height: 31px;
 
     .header_inner {
@@ -80,7 +95,7 @@ hr {
 
     .header_search {
         display: inline-block;
-        margin-left: 10px;
+        margin-left: 15px;
         vertical-align: middle;
 
         input[type=text] {
@@ -102,8 +117,8 @@ hr {
 
     .user_panel {
         float: right;
-        font-size: 12px;
-        margin-top: 13px;
+        font-size: $small_font_size;
+        margin-top: 8px;
         line-height: normal;
     }
 
@@ -133,7 +148,7 @@ hr {
 .main_column {
     width: $site_width;
     margin: 0 auto;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 
 .footer {
@@ -198,6 +213,7 @@ hr {
         .summary {
             color: gray;
             margin-top: 5px;
+            font-size: $small_font_size;
         }
 
         .downloads {
@@ -250,7 +266,7 @@ hr {
     box-shadow: 0 0 0 1px $border_color;
     border-radius: 2px;
     padding: 10px 15px;
-    margin: 10px 0;
+    margin-top: 20px;
     font-size: 14px;
 
     color: #9C445D;
@@ -287,13 +303,12 @@ hr {
 
 .form {
     .row {
-        margin: 5px 0;
+        margin: 10px 0;
 
         label {
             display: inline-block;
             margin-right: 10px;
-            width: 150px;
-            font-size: 14px;
+            width: 200px;
             text-align: right;
             color: $sub_color;
         }
@@ -335,7 +350,8 @@ hr {
     }
 
     .button_row {
-        margin-top: 10px;
+        margin-top: 20px;
+
         a {
             color: #666;
             &:hover {
@@ -364,6 +380,7 @@ pre {
     border: 1px solid desaturate(darken($back_color, 30%), 50%);
     box-shadow: 1px 1px 0 desaturate(darken($back_color, 40%), 50%);
     font-size: 14px;
+    margin: 20px 0;
 
     td {
         padding: 6px 8px;
@@ -455,7 +472,42 @@ img.avatar {
     color: #9495ff;
 }
 
+.intro_banner {
+    background: white;
+    border-bottom: 1px solid #C1CCE4;
+    margin-bottom: 30px;
+    padding: 25px 0;
+
+    .intro_banner_inner {
+        width: $site_width;
+        margin: 0 auto;
+    }
+
+    img {
+        float: left;
+        width: 130px;
+        height: 124px;
+    }
+
+    .intro_text {
+        margin-left: 155px;
+    }
+
+    p {
+        margin: 10px 0;
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+}
+
 .index_page {
+
     .graph_container {
         height: 180px;
         margin-bottom: 40px;
@@ -496,12 +548,10 @@ img.avatar {
 }
 
 .about_page {
-    p {
-        line-height: 24px;
-    }
+
     ul {
         padding-left: 20px;
-        line-height: 20px;
+        line-height: 1.5;
     }
 }
 

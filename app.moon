@@ -71,6 +71,7 @@ class MoonRocks extends lapis.Application
   "/console": require("lapis.console").make!
 
   [index: "/"]: ensure_https =>
+    @show_intro_banner = true
     @page_description = "A website for submitting and distributing Lua rocks"
     root = Manifests\root!
 
