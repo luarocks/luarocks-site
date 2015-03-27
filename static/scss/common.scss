@@ -1,0 +1,60 @@
+$lua_blue: #00257A; // color of lua logo
+$back_color: lighten($lua_blue, 72%);
+$header_color: lighten(desaturate($lua_blue, 60%), 5%);
+$site_width: 800px;
+$link_color: #008FEE;
+$base_font_size: 14px;
+$body_color: #47555C;
+$border_color: #C1CCE4;
+$line_height: 24px;
+$sub_color: mix($body_color, gray, 20%);
+$error_color: mix($back_color, red, 30%);
+$tag_color: lighten($header_color, 20%);
+
+@mixin unselectable {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+@mixin grid_width($size, $divisions: 8, $gutter: 10px) {
+    width: #{floor($size * (($site_width - (($divisions - 1) * $gutter)) / $divisions) + ($size - 1) * $gutter)};
+}
+
+@mixin grid_cell($size, $divisions: 8, $gutter: 10px) {
+    display: inline-block;
+    vertical-align: top;
+    font-size: $base_font_size;
+
+    @include grid_width($size, $divisions, $gutter);
+    margin-right: $gutter;
+
+    &:last-child, &.last {
+        margin-right: 0;
+    }
+}
+
+@mixin single_line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin border_box {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    transition: $args;
+}
+
+@mixin prefixed($prop, $args...) {
+    -webkit-#{$prop}: $args;
+    -moz-#{$prop}: $args;
+    -ms-#{$prop}: $args;
+    #{$prop}: $args;
+}

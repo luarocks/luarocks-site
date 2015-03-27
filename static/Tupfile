@@ -1,4 +1,4 @@
 .gitignore
 
-: foreach *.scss |> sassc < %f > %o |> %B.css
+: foreach *.scss |> sassc -I scss < %f > %o |> %B.css
 : foreach *.coffee |> coffee -c %f |> %B.js
