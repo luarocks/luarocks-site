@@ -30,6 +30,6 @@ class Endorsements extends Model
     Endorsements\load unpack res
 
   delete: =>
-    if super
+    if super!
       increment_counter @get_module!, "endorsements_count", -1
 

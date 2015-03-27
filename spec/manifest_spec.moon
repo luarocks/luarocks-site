@@ -74,8 +74,8 @@ describe "moonrocks", ->
     should_load_manifest "/dev/manifest#{v}", is_empty_manifest
 
     if v != ""
-      should_load_zip_manifest "/manifest#{v}.zip", is_zip_manifest
-      should_load_zip_manifest "/dev/manifest#{v}.zip", is_zip_manifest
+      should_load_zip_manifest "/manifest#{v}.zip"
+      should_load_zip_manifest "/dev/manifest#{v}.zip"
 
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],

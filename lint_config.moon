@@ -140,7 +140,7 @@ html_builer = {
 
 {
   whitelist_globals: {
-    ["."]: { "ngx" }
+    ["."]: { "ngx", "jit" }
 
     ["spec/"]: {
       "it", "describe", "before_each", "setup", "teardown", "pending"
