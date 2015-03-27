@@ -8,8 +8,8 @@ import
   create_index
   drop_index
   drop_column
+  drop_table
   from schema
-
 
 import
   serial
@@ -135,5 +135,15 @@ import
   [1427445542]: =>
     add_column "versions", "revision", integer default: 1
     add_column "rocks", "revision", integer default: 1
+
+  [1427448938]: =>
+    drop_table "dependencies"
+    create_table "dependencies", {
+      {"version_id", foreign_key}
+      {"dependency_name", varchar}
+      {"dependency", varchar}
+
+      "PRIMARY KEY (version_id, dependency_name)"
+    }
 
 }

@@ -64,9 +64,9 @@ ALTER TABLE api_keys OWNER TO postgres;
 --
 
 CREATE TABLE dependencies (
-    module_id integer NOT NULL,
-    dependency character varying(255) NOT NULL,
-    full_dependency character varying(255) NOT NULL
+    version_id integer NOT NULL,
+    dependency_name character varying(255) NOT NULL,
+    dependency character varying(255) NOT NULL
 );
 
 
@@ -591,7 +591,7 @@ ALTER TABLE ONLY api_keys
 --
 
 ALTER TABLE ONLY dependencies
-    ADD CONSTRAINT dependencies_pkey PRIMARY KEY (module_id, dependency);
+    ADD CONSTRAINT dependencies_pkey PRIMARY KEY (version_id, dependency_name);
 
 
 --
@@ -950,6 +950,7 @@ COPY lapis_migrations (name) FROM stdin;
 1427443263
 1427444511
 1427445542
+1427448938
 \.
 
 

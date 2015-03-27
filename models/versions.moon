@@ -127,6 +127,36 @@ class Versions extends Model
     import parse_rockspec from require "helpers.uploaders"
     parse_rockspec body
 
+  update_dependencies: (spec) =>
+    import Dependencies from require "models"
+    spec or= @get_spec!
+    return nil, "invalid spec" unless spec
+
+    db.delete "dependencies", {
+      version_id: @id
+    }
+
+    import trim from require "lapis.util"
+
+    return unless type(spec.dependencies) == "table"
+
+    seen = {}
+    tuples = for d in *spec.dependencies
+      d = trim d
+      name = d\match("[^%s]+") or d
+      continue if seen[name]
+      seen[name] = true
+      db.interpolate_query "(?, ?, ?)", @id, name, d
+
+    return unless next tuples
+
+    tbl = db.escape_identifier Dependencies\table_name!
+    db.query "
+      insert into #{tbl} (version_id, dependency_name, dependency)
+      values #{table.concat tuples, ", "}
+    "
+    true
+
   increment_revision: =>
     @update revision: db.raw "revision + 1"
 
