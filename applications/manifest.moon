@@ -39,6 +39,8 @@ zipable = (fn) ->
     @write fn @
 
     if should_zip and (@options.status or 200) == 200 and @req.cmd_mth == "GET"
+      @version or= @params.version
+
       fname = "manifest"
       if @version
         fname ..= "-#{@version}"
