@@ -12,6 +12,8 @@ import request_as, do_upload_as from require "spec.helpers"
 
 import generate_token from require "lapis.csrf"
 
+import from_json from require "lapis.util"
+
 import
   Manifests
   ManifestModules
@@ -75,7 +77,7 @@ describe "moonrocks", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
 
-    it "should upload rockspec #ddd", ->
+    it "should upload rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
         "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
 
@@ -97,7 +99,7 @@ describe "moonrocks", ->
       assert.same 1, root_after.modules_count
       assert.same 1, root_after.versions_count
 
-    it "should upload development rockspec #ddd", ->
+    it "should upload development rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
         "enet-dev-1.rockspec", require("spec.rockspecs.enet_dev")
 
@@ -123,6 +125,25 @@ describe "moonrocks", ->
       status = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", "hello world"
       assert.same 200, status
       assert.same 0, #Versions\select!
+
+    it "should not let code in rockspec run", ->
+      status, res = do_upload "/upload?json=true", "rockspec_file", "etlua-dev-1.rockspec", [[
+        print 'what the check'
+      ]]
+
+      assert.same {errors: {"Failed to eval rockspec"}}, from_json res
+      assert.same 200, status
+      assert.same 0, #Versions\select!
+
+
+    it "should not let malicious code in rockspec run #ddd", ->
+      status, res = do_upload "/upload?json=true", "rockspec_file", "etlua-dev-1.rockspec", [[
+        while true do end
+      ]]
+
+      -- no way to pcall capture debug hook in luajit so we just let it blow
+      -- up, better than crashing server
+      assert.same 500, status
 
     describe "with module", ->
       local mod, version, version_url

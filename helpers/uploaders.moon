@@ -34,7 +34,22 @@ parse_rockspec = (text) ->
   return nil, "Failed to parse rockspec" unless fn
   spec = {}
   setfenv fn, spec
-  return nil, "Failed to eval rockspec" unless pcall(fn)
+
+  -- disable jit otherwise the offending code might be compiled and stop
+  -- sending debug events
+  jit.off fn
+
+  co = coroutine.create fn
+  lines = 0
+
+  check = (...) ->
+    lines += 1
+    error "too many lines evaluated" if lines > 1000
+
+  debug.sethook co, check, "l"
+
+  unless coroutine.resume co
+    return nil, "Failed to eval rockspec"
 
   unless spec.package
     return nil, "Invalid rockspec (missing package)"
@@ -44,8 +59,6 @@ parse_rockspec = (text) ->
 
   unless strip_non_ascii(spec.package) == spec.package
     return nil, "Invalid rockspec (invalid package name, ascii only)"
-
-
 
   unless spec.version
     return nil, "Invalid rockspec (missing version)"
