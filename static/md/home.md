@@ -1,5 +1,5 @@
 <div id="quick-start"></div>
-## Quick start
+## Quick Start
 
 Installing LuaRocks in a Unix system:
 
@@ -15,7 +15,7 @@ Installing LuaRocks in a Unix system:
 
 On Windows? [Installation instructions for Windows](https://github.com/keplerproject/luarocks/wiki/Installation-instructions-for-Windows).
 
-## Contributing modules
+## Contributing Modules
 
 Anyone can upload and host Lua modules.
 
