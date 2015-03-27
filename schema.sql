@@ -381,7 +381,8 @@ CREATE TABLE rocks (
     rock_key character varying(255) NOT NULL,
     rock_fname character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    revision integer DEFAULT 1 NOT NULL
 );
 
 
@@ -493,7 +494,8 @@ CREATE TABLE versions (
     display_version_name character varying(255),
     lua_version character varying(255),
     development boolean DEFAULT false NOT NULL,
-    source_url text
+    source_url text,
+    revision integer DEFAULT 1 NOT NULL
 );
 
 
@@ -869,6 +871,13 @@ CREATE UNIQUE INDEX users_slug_idx ON users USING btree (slug);
 
 
 --
+-- Name: users_username_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX users_username_idx ON users USING gin (username gin_trgm_ops);
+
+
+--
 -- Name: versions_downloads_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -939,6 +948,8 @@ COPY lapis_migrations (name) FROM stdin;
 1413268904
 1423334387
 1427443263
+1427444511
+1427445542
 \.
 
 

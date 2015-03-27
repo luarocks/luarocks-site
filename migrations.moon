@@ -132,4 +132,8 @@ import
     db.query "create index users_username_idx on users using gin(username gin_trgm_ops)"
 
 
+  [1427445542]: =>
+    add_column "versions", "revision", integer default: 1
+    add_column "rocks", "revision", integer default: 1
+
 }

@@ -115,7 +115,12 @@ class MoonRocks extends lapis.Application
       =>
         assert_csrf @
         mod, version = handle_rockspec_upload @
-        redirect_to: @url_for "module", user: @current_user, module: mod
+        redirect_to = @url_for "module", user: @current_user, module: mod
+
+        if @params.json
+          { json: { success: true, :redirect_to } }
+        else
+          { :redirect_to }
     }
   }
 

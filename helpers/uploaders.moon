@@ -107,6 +107,7 @@ do_rockspec_upload = (user, rockspec_text) ->
     unless version.rockspec_key == key
       version\update rockspec_key: key
     version\update_from_spec spec
+    version\increment_revision!
   else
     version, err = Versions\create mod, spec, key
     return nil, err unless version
@@ -124,7 +125,6 @@ do_rockspec_upload = (user, rockspec_text) ->
     mod\purge_manifests!
 
   mod, version, new_module, new_version
-
 
 handle_rockspec_upload = =>
   assert_error @current_user, "Must be logged in"
@@ -156,6 +156,8 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
 
   if Rocks\create version, rock_info.arch, key
     mod\purge_manifests!
+  else
+    Rocks\find(version_id: version.id, arch: rock_info.arch)\increment_revision!
 
   true
 

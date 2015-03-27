@@ -77,7 +77,7 @@ describe "moonrocks", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
 
-    it "should upload rockspec #ddd", ->
+    it "should upload rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
         "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
 
@@ -98,6 +98,24 @@ describe "moonrocks", ->
       root_after = Manifests\find(root.id)
       assert.same 1, root_after.modules_count
       assert.same 1, root_after.versions_count
+
+
+    it "should override rockspec rockspec", ->
+      mod = factory.Modules user_id: user.id, name: "etlua"
+      version = factory.Versions {
+        module_id: mod.id
+        version_name: "1.2.0-1"
+        rockspec_fname: "etlua-1.2.0-1.rockspec"
+      }
+
+      status, body, headers = do_upload "/upload?json=true", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
+
+      assert.same 1, #Modules\select!
+      assert.same 1, #Versions\select!
+
+      version\refresh!
+      assert.same 2, version.revision
 
     it "should upload development rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
@@ -134,7 +152,6 @@ describe "moonrocks", ->
       assert.same {errors: {"Failed to eval rockspec"}}, from_json res
       assert.same 200, status
       assert.same 0, #Versions\select!
-
 
     it "should not let malicious code in rockspec run #ddd", ->
       status, res = do_upload "/upload?json=true", "rockspec_file", "etlua-dev-1.rockspec", [[
@@ -174,6 +191,13 @@ describe "moonrocks", ->
         rock = assert unpack Rocks\select!
         assert.same "windows2000", rock.arch
 
+      it "should upload new version of rock", ->
+        rock = factory.Rocks version_id: version.id, arch: "windows2000"
 
+        fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+        do_upload "#{version_url}/upload", "rock_file", fname, "hello world"
+        assert.same 1, #Rocks\select!
 
+        rock\refresh!
+        assert.same 2, rock.revision
 

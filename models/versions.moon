@@ -77,7 +77,7 @@ class Versions extends Model
 
   url_key: (name) => @version_name
 
-  url: => bucket\file_url @rockspec_key
+  url: => bucket\file_url @rockspec_key .. "?#{@revision}"
 
   name_for_display: =>
     @display_version_name or @version_name
@@ -126,4 +126,7 @@ class Versions extends Model
 
     import parse_rockspec from require "helpers.uploaders"
     parse_rockspec body
+
+  increment_revision: =>
+    @update revision: db.raw "revision + 1"
 
