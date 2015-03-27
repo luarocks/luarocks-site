@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2015/3/26**
+
+ * Restore caching to manifests
+ * Add new intro banner on homepage
+
 **2015/2/7**
 
  * Added *development only* versions of manifest
