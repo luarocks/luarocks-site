@@ -10,25 +10,43 @@ class UploadRockspec extends require "widgets.base"
     p "You should include a source rock with your rockspec to ensure it's
       installable. See the bottom of the page for directions."
 
+    p ->
+      strong ->
+        em ->
+          text "It's recommened to command line to upload, see below."
+
     form action: @url_for"upload_rockspec", method: "POST", enctype: "multipart/form-data", ->
       input type: "hidden", name: "csrf_token", value: @csrf_token
 
       div class: "file_uploader", ->
         label ->
           strong "Choose a *.rockspec file"
-          input type: "file", name: "rockspec_file"
+          input type: "file", name: "rockspec_file", accept: ".rockspec"
 
       div class: "file_uploader", ->
         label ->
           strong "Choose a *.src.rock file"
-          input type: "file", name: "rock_file"
+          input type: "file", name: "rock_file", accept: ".src.rock"
 
       div class: "form_buttons", ->
         input type: "submit"
 
     hr!
 
-    h3 "How to create a source rock"
+    h3 "Uploading from the command line"
+
+    p ->
+      text "The recommened way to upload a new module is to use the "
+      code "luarocks upload"
+      text " command line tool. The "
+      a href: "https://github.com/keplerproject/luarocks/wiki/upload", "upload command"
+      text " will automatically create and upload a source rock along with your rockspec."
+
+    p "Run from the command line:"
+
+    @term_snippet "luarocks upload my_module-1.0.rockspec"
+
+    h3 "How to manually create a source rock"
 
     p "A source rock is different than a rockspec because it contains all the
     files necessary to build and install your module. A rockspec is only a
@@ -46,7 +64,3 @@ class UploadRockspec extends require "widgets.base"
     p "LuaRocks will download all the necessary files as described in the
     rockspec and package into the correctly named source rock in the current
     directory."
-
-    p "You're now ready to upload both your source rock and your rockspec to
-    LuaRocks.org!"
-
