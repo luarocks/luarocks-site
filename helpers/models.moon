@@ -94,6 +94,10 @@ safe_insert = (data, check_cond=data) =>
     ") returning *"
   }, "  "
 
-  db.query q
+  res = db.query q
+  if next res
+    @load (unpack res)
+  else
+    nil, "already exists"
 
 { :increment_counter, :generate_key, :get_all_pages, :find_all_in_batches, :safe_insert }
