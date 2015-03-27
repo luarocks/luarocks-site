@@ -32,4 +32,15 @@ lint:
 routes:
 	lapis exec 'require "cmd.routes"'
 
+# save a copy of dev database into dev_backup
+checkpoint:
+	mkdir -p dev_backup
+	pg_dump -F c -U postgres moonrocks > dev_backup/$$(date +%F_%H-%M-%S).dump
+
+# restore latest dev backup
+restore_checkpoint::
+	-dropdb -U postgres moonrocks
+	createdb -U postgres moonrocks
+	pg_restore -U postgres -d moonrocks $$(find dev_backup | grep \.dump | sort -V | tail -n 1)
+
 
