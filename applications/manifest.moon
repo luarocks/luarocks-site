@@ -90,7 +90,10 @@ cached_manifest = (fn) ->
     dict: redis_cache "manifest"
     cache_key: (path) -> path\gsub "%.zip$", ""
     exptime: 60 * 10
-    when: -> config._name == "production"
+    when: =>
+      return false unless @req.cmd_mth == "GET"
+      config._name == "production"
+
     fn
   }
 
