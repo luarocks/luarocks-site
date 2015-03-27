@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2015/3/27**
+
+ * Improve searching by module name and user name
+ * Re-uploading rockspec/rock now purges the files instantly
+
 **2015/3/26**
 
  * Restore caching to manifests
