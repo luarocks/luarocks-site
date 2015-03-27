@@ -77,7 +77,7 @@ describe "moonrocks", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
 
-    it "should upload rockspec", ->
+    it "should upload rockspec #ddd", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
         "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
 

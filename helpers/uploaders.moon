@@ -37,18 +37,24 @@ parse_rockspec = (text) ->
 
   -- disable jit otherwise the offending code might be compiled and stop
   -- sending debug events
-  jit.off fn
+  jit and jit.off fn
 
   co = coroutine.create fn
   lines = 0
 
-  check = (...) ->
+  check = ->
     lines += 1
-    error "too many lines evaluated" if lines > 1000
+    error "too many lines evaluated" if lines > 40
 
+  -- luajit does not appear to let you set debug hook on coroutine, it just
+  -- applies globally. We do it anyway incase this is ever fixed. Additionally
+  -- it's impossible to capture the error raised in a hook, so it just forces
+  -- 500 from openresty
   debug.sethook co, check, "l"
+  status = pcall -> assert coroutine.resume co
+  debug.sethook co
 
-  unless coroutine.resume co
+  unless status
     return nil, "Failed to eval rockspec"
 
   unless spec.package
