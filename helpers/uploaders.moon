@@ -5,6 +5,7 @@ import assert_error, yield_error from require "lapis.application"
 import assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
 import assert_editable from require "helpers.app"
+import strip_non_ascii from require "helpers.strings"
 
 import
   ManifestModules
@@ -38,8 +39,22 @@ parse_rockspec = (text) ->
   unless spec.package
     return nil, "Invalid rockspec (missing package)"
 
+  if spec.package == ""
+    return nil, "Invalid rockspec (blank package)"
+
+  unless strip_non_ascii(spec.package) == spec.package
+    return nil, "Invalid rockspec (invalid package name, ascii only)"
+
+
+
   unless spec.version
     return nil, "Invalid rockspec (missing version)"
+
+  if spec.version == ""
+    return nil, "Invalid rockspec (blank version)"
+
+  unless strip_non_ascii(spec.version) == spec.version
+    return nil, "Invalid rockspec (invalid version name, ascii only)"
 
   spec
 
