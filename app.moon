@@ -104,10 +104,18 @@ class MoonRocks extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
-      assert_csrf @
-      mod, version = handle_rockspec_upload @
-      redirect_to: @url_for "module", user: @current_user, module: mod
+    POST: capture_errors {
+      on_error: =>
+        if @params.json
+          { json: { errors: @errors } }
+        else
+          { render: true }
+
+      =>
+        assert_csrf @
+        mod, version = handle_rockspec_upload @
+        redirect_to: @url_for "module", user: @current_user, module: mod
+    }
   }
 
   [endorse_module: "/endorse/:user/:module"]: require_login capture_errors_404 respond_to {
