@@ -24,6 +24,9 @@ parse_manifest = (text) ->
   assert pcall(fn)
   m
 
+shell_escape = (str) ->
+  str\gsub "'", "''"
+
 request_manifest = (url) ->
   status, body = request url
   assert.same 200, status
@@ -32,6 +35,18 @@ request_manifest = (url) ->
 should_load_manifest = (url, fn) ->
   it "should load manifest #{url}", ->
     m = request_manifest url
+    fn m if fn
+
+should_load_zip_manifest = (url, fn) ->
+  it "should zip load manifest #{url}", ->
+    status, body = request url
+    assert.same 200, status
+    assert body\match("^PK"), "not valid zip"
+
+    import encode_base64 from require "lapis.util.encoding"
+    f = io.popen "echo '#{shell_escape encode_base64 body}' | base64 -d | funzip", "r"
+    unzipped = f\read "*a"
+    m = parse_manifest unzipped
     fn m if fn
 
 describe "moonrocks", ->
@@ -54,13 +69,13 @@ describe "moonrocks", ->
       modules: {}
     }, m
 
-  should_load_manifest "/manifest", is_empty_manifest
-  should_load_manifest "/manifest-5.1", is_empty_manifest
-  should_load_manifest "/manifest-5.2", is_empty_manifest
+  for v in *{"", "-5.1", "-5.2", "-5.3"}
+    should_load_manifest "/manifest#{v}", is_empty_manifest
+    should_load_manifest "/dev/manifest#{v}", is_empty_manifest
 
-  should_load_manifest "/dev/manifest", is_empty_manifest
-  should_load_manifest "/dev/manifest-5.1", is_empty_manifest
-  should_load_manifest "/dev/manifest-5.2", is_empty_manifest
+    if v != ""
+      should_load_zip_manifest "/manifest#{v}.zip", is_zip_manifest
+      should_load_zip_manifest "/dev/manifest#{v}.zip", is_zip_manifest
 
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
@@ -86,6 +101,9 @@ describe "moonrocks", ->
       should_load_manifest "/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifest-5.2", (m) -> has_module m, mod
 
+      should_load_zip_manifest "/manifest-5.1.zip", (m) -> has_module m, mod
+      should_load_zip_manifest "/manifest-5.2.zip", (m) -> has_module m, mod
+
       should_load_manifest "/dev/manifest", is_empty_manifest
 
       it "should do HEAD", ->
@@ -107,6 +125,9 @@ describe "moonrocks", ->
       should_load_manifest "/dev/manifest", (m) -> has_module m, mod
       should_load_manifest "/dev/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/dev/manifest-5.2", (m) -> has_module m, mod
+
+      should_load_zip_manifest "/dev/manifest-5.1.zip", (m) -> has_module m, mod
+      should_load_zip_manifest "/dev/manifest-5.2.zip", (m) -> has_module m, mod
 
     describe "with versioned version", ->
       local version
