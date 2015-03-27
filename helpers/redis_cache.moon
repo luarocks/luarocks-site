@@ -49,6 +49,7 @@ redis_cache = (prefix) ->
         r\setex r_key, expire, content
 
       delete: (...) =>
+        return unless r
         r\del unpack ["#{prefix}:#{k}" for k in *{...}]
     }
 

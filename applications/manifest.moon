@@ -88,7 +88,7 @@ cached_manifest = (fn) ->
     dict: redis_cache "manifest"
     cache_key: (path) -> path\gsub "%.zip$", ""
     exptime: 60 * 10
-    when: -> true -- config._name == "production"
+    when: -> config._name == "production"
     fn
   }
 
