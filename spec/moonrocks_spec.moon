@@ -21,6 +21,7 @@ import
   Modules
   Versions
   Rocks
+  Dependencies
   from require "models"
 
 factory = require "spec.factory"
@@ -35,7 +36,7 @@ describe "moonrocks", ->
     close_test_server!
 
   before_each ->
-    truncate_tables Manifests, Users, Modules, Versions, Rocks, ManifestModules
+    truncate_tables Manifests, Users, Modules, Versions, Rocks, ManifestModules, Dependencies
     root = Manifests\create "root", true
 
   should_load "/"
@@ -99,8 +100,22 @@ describe "moonrocks", ->
       assert.same 1, root_after.modules_count
       assert.same 1, root_after.versions_count
 
+      deps = Dependencies\select "order by dependency asc"
+      assert.same {
+        {
+          version_id: version.id
+          dependency_name: "lapis"
+          dependency: "lapis"
+        },
+        {
+          version_id: version.id
+          dependency_name: "lua"
+          dependency: "lua >= 5.1"
+        }
+      }, deps
 
-    it "should override rockspec rockspec", ->
+
+    it "should override rockspec", ->
       mod = factory.Modules user_id: user.id, name: "etlua"
       version = factory.Versions {
         module_id: mod.id

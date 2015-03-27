@@ -68,12 +68,16 @@ class Versions extends Model
       mod = version\get_module!
       mod\update has_dev_version: true unless mod.has_dev_version
 
+    version\update_dependencies spec
     version
 
   update_from_spec: (spec) =>
     lua_version = get_lua_version spec
+
     if lua_version != @lua_version
       @update lua_version: lua_version or db.NULL
+
+    @update_dependencies spec
 
   url_key: (name) => @version_name
 
