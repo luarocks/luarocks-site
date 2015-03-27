@@ -48,6 +48,12 @@ class Users extends Model
       if user and user\salt! == user_session.key
         user
 
+  @search: (query) =>
+    @paginated [[
+      where username % ?
+      order by similarity(username, ?) desc
+    ]], query, query, per_page: 50
+
   update_password: (pass, r) =>
     @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
     @write_session r if r

@@ -128,4 +128,8 @@ import
     db.query "create extension pg_trgm;"
     db.query "create index modules_name_search_idx on modules using gin(#{Modules.name_search_index} gin_trgm_ops)"
 
+  [1427444511]: =>
+    db.query "create index users_username_idx on users using gin(username gin_trgm_ops)"
+
+
 }

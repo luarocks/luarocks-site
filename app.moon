@@ -182,20 +182,16 @@ class MoonRocks extends lapis.Application
     trim_filter @params
     if @params.q
       @title = "Search '#{@params.q}'"
+      query = @params.q\gsub "[%?]", ""
+
       manifests = unless @params.non_root
         { Manifests\root!.id }
 
       pcall ->
-        pager = Modules\search @params.q, manifests
+        pager = Modules\search query, manifests
         @results = paginated_modules @, pager
 
-      import slugify from require "lapis.util"
-      user_query = slugify @params.q
-
-      if #user_query != 0
-        user_query = "%#{slugify @params.q}%"
-        pager = Users\paginated "where slug like ?", user_query
-        @user_results = pager\get_page!
+      @user_results = Users\search(query)\get_page!
     else
       @title = "Search"
 
