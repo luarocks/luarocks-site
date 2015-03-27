@@ -83,6 +83,9 @@ class Layout extends Widget
           div class: "right", ->
             a href: "http://twitter.com/moonscript", "@moonscript"
             raw " &middot; "
+            revision = require "revision"
+            a href: "https://github.com/leafo/moonrocks-site/commit/#{revision}", rel: "nofollow", revision
+            raw " &middot; "
             a href: "http://github.com/leafo/moonrocks-site", "Source"
             raw " &middot; "
             a href: "https://github.com/leafo/moonrocks-site/issues", "Issues"
