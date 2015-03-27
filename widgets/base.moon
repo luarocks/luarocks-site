@@ -67,10 +67,10 @@ class Base extends Widget
 
     div class: "pager", ->
       if current_page > 1
-        a href: page_url(current_page - 1), class: "prev_page", "Prev"
+        a href: page_url(current_page - 1), class: "prev_page button", "Prev"
 
       if current_page < num_pages
-        a href: page_url(current_page + 1), class: "next_page", "Next"
+        a href: page_url(current_page + 1), class: "next_page button", "Next"
 
       span class: "pager_label", "Page #{current_page} of #{num_pages}"
 

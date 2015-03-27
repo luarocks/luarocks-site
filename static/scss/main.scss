@@ -26,6 +26,8 @@ h3 {
 }
 
 button, input[type='submit'], .button {
+    display: inline-block;
+    text-decoration: none;
     background: $button_color;
     line-height: 35px;
     height: 35px;
@@ -34,6 +36,16 @@ button, input[type='submit'], .button {
     font-family: 'Open Sans', sans-serif;
     border: 0;
     color: #FFF;
+
+
+    &:hover {
+        background-color: lighten($button_color, 5%);
+        color: white;
+    }
+
+    &:active {
+        background-color: darken($button_color, 5%);
+    }
 }
 
 input {
@@ -639,23 +651,7 @@ img.avatar {
     margin: 20px 0;
 
     a {
-        line-height: 30px;
-        height: 30px;
-        display: inline-block;
-        padding: 0 8px;
         margin-right: 5px;
-
-        background-color: lighten(desaturate($link_color, 10%), 10%);
-        color: white;
-        text-decoration: none;
-
-        &:hover {
-            background-color: lighten(desaturate($link_color, 10%), 15%);
-        }
-
-        &:active {
-            background-color: lighten(desaturate($link_color, 10%), 8%);
-        }
     }
 
     .pager_label {
