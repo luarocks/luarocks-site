@@ -123,5 +123,9 @@ import
       )
     ]]
 
+  [1427443263]: =>
+    import Modules from require "models"
+    db.query "create extension pg_trgm;"
+    db.query "create index modules_name_search_idx on modules using gin(#{Modules.name_search_index} gin_trgm_ops)"
 
 }

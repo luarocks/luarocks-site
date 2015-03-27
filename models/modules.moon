@@ -6,8 +6,13 @@ import concat from table
 
 class Modules extends Model
   @timestamp: true
+
   @search_index: [[
     to_tsvector('english', coalesce(display_name, name) || ' ' || coalesce(summary, '') || ' ' || coalesce(description, ''))
+  ]]
+
+  @name_search_index: [[
+    coalesce(display_name, name)
   ]]
 
   @relations: {
@@ -41,10 +46,10 @@ class Modules extends Model
       "and exists(select 1 from manifest_modules where manifest_id in (#{ids}) and module_id = modules.id)"
 
     @paginated [[
-      where to_tsquery('english', ?) @@ ]] .. @search_index .. [[
+      where (to_tsquery('english', ?) @@ ]] .. @search_index .. [[ or ]] .. @name_search_index .. [[ % ?)
       ]] .. (clause or "") .. [[
       order by downloads desc
-    ]], query, per_page: 50
+    ]], query, query, per_page: 50
 
   url_key: (name) => @name
 

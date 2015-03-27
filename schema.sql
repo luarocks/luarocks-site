@@ -23,6 +23,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -778,6 +792,13 @@ CREATE INDEX modules_name_idx ON modules USING btree (name);
 
 
 --
+-- Name: modules_name_search_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX modules_name_search_idx ON modules USING gin ((COALESCE(display_name, name)) gin_trgm_ops);
+
+
+--
 -- Name: modules_user_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -910,16 +931,14 @@ COPY lapis_migrations (name) FROM stdin;
 1370275336
 1370277180
 1393557726
-1401338237
 1401338238
 1401600469
 1401727722
-1401727723
-1401727724
 1401810343
 1408086639
 1413268904
 1423334387
+1427443263
 \.
 
 
