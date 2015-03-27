@@ -7,11 +7,17 @@ db = require "lapis.db"
 
 bcrypt = require "bcrypt"
 
+import strip_non_ascii from require "helpers.strings"
+
 class Users extends Model
   @timestamp: true
 
   @create: (username, password, email) =>
     encrypted_password = bcrypt.digest password, bcrypt.salt 5
+
+    stripped = strip_non_ascii username
+    return nil, "username must be ascii only" unless stripped == username
+
     slug = slugify username
 
     if @check_unique_constraint "username", username
