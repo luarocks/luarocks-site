@@ -43,7 +43,7 @@ zipable = (fn) ->
       if @version
         fname ..= "-#{@version}"
 
-      @res.headers["Content-Type"] = "application/zip"
+      @options.content_type = "application/zip"
       @buffer = { zipped_file fname, table.concat @buffer }
 
     nil
