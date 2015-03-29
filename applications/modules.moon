@@ -21,6 +21,7 @@ import load_module from require "helpers.loaders"
 import
   Versions
   Rocks
+  Dependencies
   from require "models"
 
 delete_module = capture_errors_404 respond_to {
@@ -68,9 +69,19 @@ class MoonRocksModules extends lapis.Application
 
     Versions\sort_versions @versions
 
+
     for v in *@versions
       if v.id == @module.current_version_id
         @current_version = v
+
+
+    unless @current_version
+      vs = [v for v in *@versions]
+      table.sort vs, (a, b) -> b.id < a.id
+      @current_version = vs[1]
+
+    if @current_version
+      @dependencies = Dependencies\select "where version_id = ?", @current_version.id
 
     render: true
 

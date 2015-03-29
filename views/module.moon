@@ -62,6 +62,12 @@ class Module extends require "widgets.base"
 
         span class: "sub", title: "#{v.created_at} UTC", time_ago_in_words(v.created_at)
 
+    if @dependencies and next @dependencies
+      h3 "Dependencies"
+      for d in *@dependencies
+        div class: "dependency_row", ->
+          code d.dependency
+
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests
       h3 "Manifests"
