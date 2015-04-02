@@ -31,6 +31,8 @@ Install PostgreSQL. Create a database called `moonrocks`.
 
 Install [OpenResty][1].
 
+Install Redis.
+
 Check out this repository.
 
 Install the dependencies listed in
