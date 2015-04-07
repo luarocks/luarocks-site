@@ -134,6 +134,10 @@ hr {
         line-height: normal;
     }
 
+    .logo {
+        float: left;
+    }
+
     a {
         color: lighten($link_color, 30%);
         text-decoration: none;
