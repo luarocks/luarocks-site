@@ -136,6 +136,20 @@ hr {
 
     .logo {
         float: left;
+
+        .text_logo {
+            width: 150px;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .icon_logo {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            position: relative;
+            top: -5px;
+        }
     }
 
     a {
