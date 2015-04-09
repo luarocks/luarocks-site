@@ -41,7 +41,7 @@ config { "production", "staging" }, ->
 
   bucket_name "moonrocks"
 
-  host "rocks.moonscript.org"
+  host "luarocks.org"
 
 config "staging", ->
   port 8081
