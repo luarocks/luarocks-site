@@ -64,12 +64,11 @@ class Layout extends Widget
           div class: "header", ->
             div class: "header_inner", ->
               @user_panel!
-              div class: "logo", ->
-                a href: @url_for"index", ->
-                  if @current_user
-                    img class: "icon_logo", alt: "LuaRocks", src: "/static/header_luarocks_icon.svg"
-                  else
-                    img class: "text_logo", alt: "LuaRocks", src: "/static/header_luarocks_name.svg"
+              a href: @url_for"index", ->
+                if @current_user
+                  img class: "icon_logo", alt: "LuaRocks", src: "/static/header_luarocks_icon.svg"
+                else
+                  img class: "text_logo", alt: "LuaRocks", src: "/static/header_luarocks_name.svg"
 
               form class: "header_search", action: @url_for("search"), method: "GET", ->
                 input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q

@@ -1,9 +1,8 @@
 body {
     color: $body_color;
     font-size: $base_font_size;
-    font-family: sans-serif;
-    margin: 0;
     font-family: 'Open Sans', sans-serif;
+    margin: 0;
 }
 
 a {
@@ -78,10 +77,8 @@ hr {
 
 .header {
     background: $header_color;
-
+    height: 55px;
     color: white;
-    padding: 10px;
-    line-height: 31px;
 
     .header_inner {
         width: $site_width;
@@ -109,6 +106,7 @@ hr {
         display: inline-block;
         margin-left: 15px;
         vertical-align: middle;
+        margin-top: 10px;
 
         input[type=text] {
             border: 0;
@@ -130,26 +128,23 @@ hr {
     .user_panel {
         float: right;
         font-size: $small_font_size;
-        margin-top: 8px;
+        margin-top: 18px;
         line-height: normal;
     }
 
-    .logo {
-        float: left;
+    .text_logo {
+        width: 150px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 13px;
+    }
 
-        .text_logo {
-            width: 150px;
-            display: inline-block;
-            margin-top: 3px;
-        }
-
-        .icon_logo {
-            display: inline-block;
-            width: 45px;
-            height: 45px;
-            position: relative;
-            top: -5px;
-        }
+    .icon_logo {
+        display: inline-block;
+        vertical-align: top;
+        width: 45px;
+        height: 45px;
+        margin-top: 4px;
     }
 
     a {
