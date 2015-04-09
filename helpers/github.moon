@@ -56,7 +56,7 @@ class GitHub
       :method
       url: "#{@api_prefix}#{url}"
       headers: {
-        "User-agent": "rocks.moonscript.org"
+        "User-agent": "luarocks.org"
         "Authorization": auth and "Basic #{auth}" or nil
       }
     }
