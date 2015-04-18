@@ -52,7 +52,6 @@ zipable = (fn) ->
 
 serve_manifest = capture_errors_404 =>
   if @params.version
-    require("moon").p @params
     assert_valid @params, {
       { "version", one_of: MANIFEST_LUA_VERSIONS }
     }
