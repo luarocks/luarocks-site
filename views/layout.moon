@@ -109,5 +109,9 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for"about", "About"
 
+        div class: "sub_footer", ->
+          a href: "https://www.mashape.com", ->
+            img alt: "Sponsored by Mashape", src: "https://s3.amazonaws.com/mashape-sponsorship/sponsorship.png"
+
       @content_for "js_init"
 

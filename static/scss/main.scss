@@ -191,6 +191,24 @@ hr {
     }
 }
 
+.sub_footer {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 40px;
+
+    img {
+        opacity: 0.8;
+        -webkit-filter: grayscale(100%);
+        @include transition(all 0.2s ease);
+
+        &:hover {
+            opacity: 1;
+            -webkit-filter: grayscale(0%);
+        }
+    }
+
+}
+
 .header_count {
     color: $sub_color;
 }
