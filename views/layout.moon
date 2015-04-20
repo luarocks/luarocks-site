@@ -89,11 +89,11 @@ class Layout extends Widget
             a href: "http://twitter.com/moonscript", "@moonscript"
             raw " &middot; "
             revision = require "revision"
-            a href: "https://github.com/leafo/moonrocks-site/commit/#{revision}", rel: "nofollow", revision
+            a href: "https://github.com/leafo/luarocks-site/commit/#{revision}", rel: "nofollow", revision
             raw " &middot; "
-            a href: "http://github.com/leafo/moonrocks-site", "Source"
+            a href: "http://github.com/leafo/luarocks-site", "Source"
             raw " &middot; "
-            a href: "https://github.com/leafo/moonrocks-site/issues", "Issues"
+            a href: "https://github.com/leafo/luarocks-site/issues", "Issues"
 
           a href: @url_for("index"), "Home"
           raw " &middot; "
