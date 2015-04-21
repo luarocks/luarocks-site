@@ -35,7 +35,7 @@ class Layout extends Widget
           else
             text "LuaRocks"
 
-        link href: "http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700", rel: "stylesheet", type: "text/css"
+        link href: "https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700", rel: "stylesheet", type: "text/css"
 
         if @page_description
           meta name: "description", content: @page_description
