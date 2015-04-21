@@ -65,8 +65,7 @@ class MoonRocks extends lapis.Application
     @current_user = Users\read_session @
     @csrf_token = generate_csrf @
 
-  handle_404: =>
-    "Not found", status: 404
+  handle_404: => not_found
 
   "/console": require("lapis.console").make!
 
