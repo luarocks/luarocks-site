@@ -114,6 +114,8 @@ class Users extends Model
     @username
 
   delete: =>
+    return unless super!
+
     import
       Modules
       UserData
@@ -121,8 +123,6 @@ class Users extends Model
       GithubAccounts
       ManifestAdmins
       LinkedModules from require "models"
-
-    super!
 
     -- delete modules
     for m in *Modules\select "where user_id = ?", @id
@@ -144,3 +144,4 @@ class Users extends Model
     for link in *LinkedModules\select "where user_id = ?", @id
       link\delete!
 
+    true
