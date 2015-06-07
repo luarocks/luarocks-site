@@ -36,7 +36,7 @@ class UploadRockspec extends require "widgets.base"
     h3 "Uploading from the command line"
 
     p ->
-      text "The recommened way to upload a new module is to use the "
+      text "The recommended way to upload a new module is to use the "
       code "luarocks upload"
       text " command line tool. The "
       a href: "https://github.com/keplerproject/luarocks/wiki/upload", "upload command"
@@ -48,7 +48,7 @@ class UploadRockspec extends require "widgets.base"
 
     h3 "How to manually create a source rock"
 
-    p "A source rock is different than a rockspec because it contains all the
+    p "A source rock is different to a rockspec because it contains all the
     files necessary to build and install your module. A rockspec is only a
     manifest of the components that make up your module but not the actual
     files."
@@ -62,5 +62,5 @@ class UploadRockspec extends require "widgets.base"
     @term_snippet "luarocks pack my_module-1.0.rockspec"
 
     p "LuaRocks will download all the necessary files as described in the
-    rockspec and package into the correctly named source rock in the current
+    rockspec and package them into the correctly named source rock in the current
     directory."
