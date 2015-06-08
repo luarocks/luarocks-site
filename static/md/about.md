@@ -51,7 +51,7 @@ LuaRocks will download a manifest from each of the manifest servers it has been
 configured to look at. A manifest is a list of modules that a server has
 available. You can see the LuaRocks root manifest by going to:
 <http://luarocks.org/manifest>. It will then try to find the module
-your searched for that best matches your platform and the version you want (the
+you searched for that best matches your platform and the version you want (the
 most recent by default).
 
 After finding the right match, it will ask the server with that module for
