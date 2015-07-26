@@ -1,0 +1,3 @@
+.gitignore
+!scss = |> ^ scss %o^ sassc -I include/ < %f > %o |>
+: foreach *.scss |> !scss |> %B.css
