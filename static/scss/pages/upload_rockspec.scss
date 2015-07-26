@@ -1,0 +1,18 @@
+.file_uploader {
+    background: white;
+    border: 1px solid $border_color;
+    border-radius: 2px;
+    display: inline-block;
+    padding: 10px;
+
+    margin-right: 10px;
+
+    strong {
+        display: block;
+        margin-bottom: 8px;
+    }
+}
+
+.form_buttons {
+    margin-top: 20px;
+}

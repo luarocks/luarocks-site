@@ -1,0 +1,37 @@
+.graph_container {
+    height: 180px;
+    margin-bottom: 40px;
+    margin-left: -50px;
+
+    .axis {
+        path, line {
+            fill: none;
+            stroke: darken($border_color, 10%);
+            shape-rendering: crispEdges;
+        }
+
+        text {
+            fill: $sub_color;
+        }
+    }
+
+    .x_guides, .y_guides {
+        stroke: lighten($border_color, 5%);
+        fill: none;
+        shape-rendering: crispEdges;
+    }
+
+    .graph {
+        path {
+            fill: rgba($header_color, 0.3);
+            stroke: rgba($header_color, 0.8);
+        }
+    }
+
+    .dots {
+        circle {
+            fill: lighten($back_color, 5%);
+            stroke: $header_color;
+        }
+    }
+}

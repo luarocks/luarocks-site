@@ -1,0 +1,71 @@
+.module_header {
+    margin: 20px 0;
+
+    h2, p {
+        margin: 0;
+    }
+
+    h2 {
+        margin-bottom: 5px;
+    }
+}
+
+.metadata_columns {
+    font-size: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid $border_color;
+    border-top: 1px solid $border_color;
+    white-space: nowrap;
+
+    .column {
+        white-space: normal;
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        &:first-child {
+            border-left: 0;
+            padding-left: 0px;
+        }
+
+        margin-right: 40px;
+        padding-left: 20px;
+        border-left: 1px solid $border_color;
+        display: inline-block;
+        vertical-align: top;
+        font-size: $base_font_size;
+    }
+}
+
+.version_row, .manifest_row {
+    margin-bottom: 6px;
+
+    .development_flag {
+        display: inline-block;
+        margin-left: 10px;
+        text-transform: uppercase;
+        font-size: 12px;
+        height: 17px;
+        line-height: 17px;
+        letter-spacing: 0.03em;
+
+        background: $tag_color;
+        color: white;
+        border-radius: 2px;
+        padding: 0 4px;
+    }
+
+    .sub {
+        margin-left: 10px;
+        color: #999;
+
+        a {
+            color: #888;
+            &:hover {
+                color: darken(#888, 10%);
+            }
+        }
+    }
+}
