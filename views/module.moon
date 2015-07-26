@@ -61,6 +61,7 @@ class Module extends require "widgets.base"
           span class: "development_flag", "dev"
 
         span class: "sub", title: "#{v.created_at} UTC", time_ago_in_words(v.created_at)
+        spna class: "sub", @plural v.downloads, "download", "downloads"
 
     if @dependencies and next @dependencies
       h3 "Dependencies"
