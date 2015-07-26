@@ -1,4 +1,6 @@
 .gitignore
 
-: foreach *.scss |> sassc -I scss < %f > %o |> %B.css
+!join = |> ^ join %o^ cat %f > %o |>
+: scss/*.css scss/pages/*.css scss/widgets/*.css |> !join |> style.css
+
 : foreach *.coffee |> coffee -c %f |> %B.js

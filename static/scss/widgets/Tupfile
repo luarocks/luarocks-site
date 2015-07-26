@@ -1,0 +1,3 @@
+.gitignore
+
+: foreach *.scss |> (echo '@import "common";'; echo ".%B_widget {"; cat %f; echo "}") | sassc -I ../include > %o |> %B.css
