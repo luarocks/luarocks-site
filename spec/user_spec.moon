@@ -3,13 +3,10 @@ import get_session from require "lapis.session"
 import parse_cookie_string from require "lapis.util"
 import generate_token from require "lapis.csrf"
 
-import
-  load_test_server
-  close_test_server
-  request
-  from require "lapis.spec.server"
+import use_test_server from require "lapis.spec"
 
 import truncate_tables from require "lapis.spec.db"
+import request from require "spec.helpers"
 
 import
   Users
@@ -17,11 +14,7 @@ import
 
 
 describe "application.user", ->
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
+  use_test_server!
 
   before_each ->
     truncate_tables Users

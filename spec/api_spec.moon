@@ -4,11 +4,7 @@ import generate_token from require "lapis.csrf"
 
 factory = require "spec.factory"
 
-import
-  load_test_server
-  close_test_server
-  request
-  from require "lapis.spec.server"
+import use_test_server from require "lapis.spec"
 
 import
   Users
@@ -22,13 +18,9 @@ import
   from require "models"
 
 describe "application.api", ->
+  use_test_server!
+
   local root, user
-
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
 
   before_each ->
     truncate_tables Users, ApiKeys, Manifests, ManifestModules, Modules,

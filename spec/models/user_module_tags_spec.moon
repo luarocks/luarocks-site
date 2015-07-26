@@ -1,7 +1,4 @@
-
-import load_test_server, close_test_server, request
-  from require "lapis.spec.server"
-
+import use_test_env from require "lapis.spec"
 import truncate_tables from require "lapis.spec.db"
 
 import
@@ -12,12 +9,8 @@ import
 
 factory = require "spec.factory"
 
-describe "tags", ->
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
+describe "models.user_module_tags", ->
+  use_test_env!
 
   before_each ->
     truncate_tables Users, UserModuleTags, Modules
@@ -28,4 +21,5 @@ describe "tags", ->
 
     tag = UserModuleTags\create user_id: user.id, module_id: mod.id, tag: "Hello world"
     assert.same "hello-world", tag.tag
+
 

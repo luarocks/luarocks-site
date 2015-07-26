@@ -1,8 +1,4 @@
-
-
-import load_test_server, close_test_server, request
-  from require "lapis.spec.server"
-
+import use_test_env from require "lapis.spec"
 import truncate_tables from require "lapis.spec.db"
 
 import
@@ -13,12 +9,8 @@ import
 
 factory = require "spec.factory"
 
-describe "endorsements", ->
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
+describe "models.endorsements", ->
+  use_test_env!
 
   before_each ->
     truncate_tables Users, Modules, Endorsements
@@ -46,7 +38,6 @@ describe "endorsements", ->
 
     mod\refresh!
     assert.same 1, mod.endorsements_count
-
 
   it "should remove endorsement", ->
     mod = factory.Modules!

@@ -1,6 +1,4 @@
-
-import request, request_as from require "spec.helpers"
-import load_test_server, close_test_server from require "lapis.spec.server"
+import use_test_server from require "lapis.spec"
 
 import
   ManifestModules
@@ -13,7 +11,7 @@ import
 
 import truncate_tables from require "lapis.spec.db"
 
-import request_as from require "spec.helpers"
+import request, request_as from require "spec.helpers"
 
 factory = require "spec.factory"
 
@@ -50,13 +48,9 @@ should_load_zip_manifest = (url, fn) ->
     fn m if fn
 
 describe "moonrocks", ->
+  use_test_server!
+
   local root
-
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
 
   before_each ->
     truncate_tables Manifests, ManifestModules, Users, Modules, Rocks, Versions

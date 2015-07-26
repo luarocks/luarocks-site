@@ -1,9 +1,4 @@
-import
-  load_test_server
-  close_test_server
-  request
-  from require "lapis.spec.server"
-
+import use_test_env from require "lapis.spec"
 import truncate_tables from require "lapis.spec.db"
 
 factory = require "spec.factory"
@@ -14,12 +9,8 @@ import
   Versions
   from require "models"
 
-describe "modules", ->
-  setup ->
-    load_test_server!
-
-  teardown ->
-    close_test_server!
+describe "models.modules", ->
+  use_test_env!
 
   before_each ->
     truncate_tables Manifests, Users, Versions
@@ -35,4 +26,5 @@ describe "modules", ->
 
     mod\update_has_dev_version!
     assert.truthy mod.has_dev_version
+
 
