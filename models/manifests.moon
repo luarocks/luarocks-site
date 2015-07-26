@@ -92,6 +92,21 @@ class Manifests extends Model
 
     ManifestModules\paginated clause, opts
 
+  find_versions: (opts={}) =>
+    import Versions, Modules, Users from require "models"
+
+    opts.per_page or= 30
+    opts.prepare_results or= (versions) ->
+      Modules\include_in versions, "module_id"
+      Users\include_in [v.module for v in *versions], "user_id"
+
+      versions
+
+    Versions\paginated "
+      where module_id in (select module_id from manifest_modules where manifest_id = ?)
+      order by id desc
+    ", @id, opts
+
   source_url: (r, dev=false) =>
     if @is_root!
       root = r\build_url!

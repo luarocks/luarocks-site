@@ -10,6 +10,18 @@
     }
 }
 
+.header_sub {
+    font-size: $small_font_size;
+    margin-left: 5px;
+    color: $sub_color_light;
+    display: inline-block;
+    vertical-align: 4px;
+
+    a {
+        color: $sub_color;
+    }
+}
+
 .graph_container {
     height: 180px;
     margin-bottom: 40px;

@@ -42,6 +42,7 @@ import
   capture_errors_404
   not_found
   ensure_https
+  assert_page
   from require "helpers.app"
 
 import concat, insert from table
@@ -171,7 +172,15 @@ class MoonRocks extends lapis.Application
     @title = "#{@manifest.name} Manifest Maintainers"
     @pager = @manifest\find_admins!
     @admins = @pager\get_page!
-    render: "manifest_maintainers"
+    render: true
+
+  [manifest_recent_versions: "/m/:manifest/recent"]: capture_errors_404 =>
+    load_manifest @, "name"
+    @title = "#{@manifest.name} Recent Versions"
+    @pager = @manifest\find_versions!
+    assert_page @
+    @versions = @pager\get_page @page
+    render: true
 
   [about: "/about"]: =>
     @title = "About"
@@ -180,7 +189,6 @@ class MoonRocks extends lapis.Application
   [changes: "/changes"]: =>
     @title = "Changes"
     render: true
-
 
   [search: "/search"]: =>
     trim_filter @params

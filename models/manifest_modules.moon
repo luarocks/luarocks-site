@@ -17,6 +17,11 @@ import Model from require "lapis.db.model"
 class ManifestModules extends Model
   @primary_key: {"manifest_id", "module_id"}
 
+  @relations: {
+    {"manifest", belongs_to: "Manifests"}
+    {"module", belongs_to: "Modules"}
+  }
+
   @create: (manifest, mod) =>
     if @check_unique_constraint manifest_id: manifest.id, module_name: mod.name
       return nil, "Manifest already has a module named `#{mod.name}`"

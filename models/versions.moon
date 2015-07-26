@@ -13,7 +13,6 @@ get_lua_version = (spec) ->
 
   nil
 
--- a rockspec
 -- Generated schema dump: (do not edit)
 --
 -- CREATE TABLE versions (

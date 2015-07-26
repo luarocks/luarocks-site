@@ -10,6 +10,8 @@ class Index extends require "widgets.page"
           span class: "header_sub", ->
             text "("
             a href: @url_for("manifest", manifest: "root"), "View all"
+            text ") ("
+            a href: @url_for("manifest_recent_versions", manifest: "root"), "Recent versions"
             text ")"
 
         @render_modules @recent_modules

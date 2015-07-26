@@ -54,10 +54,6 @@ input {
     font-size: $base_font_size;
 }
 
-.header_sub {
-    font-size: 16px;
-}
-
 p {
     line-height: 1.5;
     margin: 20px 0;
@@ -500,5 +496,20 @@ img.avatar {
             border-bottom: 1px solid rgba($link_color, 1);
         }
     }
+}
+
+.development_flag {
+    display: inline-block;
+    margin-left: 10px;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: 17px;
+    line-height: 17px;
+    letter-spacing: 0.03em;
+
+    background: $tag_color;
+    color: white;
+    border-radius: 2px;
+    padding: 0 4px;
 }
 

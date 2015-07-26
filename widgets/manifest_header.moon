@@ -13,7 +13,8 @@ class ManifestHeader extends require "widgets.base"
     div class: "page_tabs", ->
       @render_tab "all", "All modules", @url_for @manifest
       @render_tab "development_only", "Development modules", @url_for @manifest, development_only: true
-      @render_tab "maintainers", "Manifest maintainers", @url_for "manifest_maintainers", manifest: @manifest.name
+      @render_tab "maintainers", "Maintainers", @url_for "manifest_maintainers", manifest: @manifest.name
+      @render_tab "recent_versions", "Recent additions", @url_for "manifest_recent_versions", manifest: @manifest.name
 
   render_tab: (name, label, href) =>
     a href: href, class: "tab #{name == @page_name and "active" or ""}", label
