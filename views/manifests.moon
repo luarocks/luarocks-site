@@ -1,5 +1,5 @@
 
-class Manifests extends require "widgets.base"
+class Manifests extends require "widgets.page"
   inner_content: =>
     h2 ->
       text "All Manifests"

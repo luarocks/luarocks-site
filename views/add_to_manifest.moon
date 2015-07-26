@@ -1,4 +1,4 @@
-class AddToManifest extends require "widgets.base"
+class AddToManifest extends require "widgets.page"
   content: =>
     h2 "Add Module To Manifest"
     

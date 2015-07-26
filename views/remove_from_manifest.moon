@@ -1,4 +1,4 @@
-class RemoveFromManifest extends require "widgets.base"
+class RemoveFromManifest extends require "widgets.page"
   content: =>
     h2 "Remove From Manifest"
     @render_modules { @module }

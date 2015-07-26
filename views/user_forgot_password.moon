@@ -1,5 +1,5 @@
 
-class UserForgotPassword extends require "widgets.base"
+class UserForgotPassword extends require "widgets.page"
   content: =>
     div class: "user_forgot_password", ->
       if @token

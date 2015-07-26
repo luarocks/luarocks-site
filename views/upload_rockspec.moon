@@ -1,4 +1,4 @@
-class UploadRockspec extends require "widgets.base"
+class UploadRockspec extends require "widgets.page"
   inner_content: =>
     h2 "Upload Rockspec"
     @render_errors!

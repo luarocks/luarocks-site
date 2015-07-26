@@ -1,5 +1,5 @@
 
-class UploadRock extends require "widgets.base"
+class UploadRock extends require "widgets.page"
   content: =>
     h2 "Upload Rock"
     @render_errors!

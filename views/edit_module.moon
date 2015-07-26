@@ -1,5 +1,5 @@
 
-class EditModule extends require "widgets.base"
+class EditModule extends require "widgets.page"
   inner_content: =>
     h2 "Edit Module '#{@module\name_for_display!}'"
 

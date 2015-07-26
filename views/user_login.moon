@@ -1,5 +1,5 @@
 
-class UserLogin extends require "widgets.base"
+class UserLogin extends require "widgets.page"
   content: =>
     h2 "Login"
     @render_errors!

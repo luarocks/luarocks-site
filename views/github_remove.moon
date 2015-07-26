@@ -1,4 +1,4 @@
-class GithubRemove extends require "widgets.base"
+class GithubRemove extends require "widgets.page"
   inner_content: =>
     h2 "Are you sure you want to unlink this account?"
 

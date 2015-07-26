@@ -1,5 +1,5 @@
 
-class NotFound extends require "widgets.base"
+class NotFound extends require "widgets.page"
   content: =>
     h2 "404: Not found"
 

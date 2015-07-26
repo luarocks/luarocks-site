@@ -1,4 +1,4 @@
-class DeleteApiKey extends require "widgets.base"
+class DeleteApiKey extends require "widgets.page"
   content: =>
     h2 "Are you sure you want to revoke this api key?"
     pre @key.key

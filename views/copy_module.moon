@@ -1,4 +1,4 @@
-class CopyModule extends require "widgets.base"
+class CopyModule extends require "widgets.page"
   inner_content: =>
     h2 "Copy module"
 

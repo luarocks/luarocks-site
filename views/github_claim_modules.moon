@@ -1,5 +1,5 @@
 
-class GithubClaimModules extends require "widgets.base"
+class GithubClaimModules extends require "widgets.page"
   inner_content: =>
     h2 "Claim Modules"
     p ->

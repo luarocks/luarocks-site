@@ -1,4 +1,4 @@
-class Modules extends require "widgets.base"
+class Modules extends require "widgets.page"
   content: =>
     h2 ->
       text "All Modules"

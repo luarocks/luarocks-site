@@ -1,4 +1,4 @@
-class NewManifest extends require "widgets.base"
+class NewManifest extends require "widgets.page"
   inner_content: =>
     h2 "Create New Manifest"
     p "A manifest is a collection of modules that has its own URLs for

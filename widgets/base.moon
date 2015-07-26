@@ -4,18 +4,29 @@ import underscore from require "lapis.util"
 
 class Base extends Widget
   @include "widgets.helpers"
-  @widget_name: => underscore @__name or "some_widget"
+
+  @widget_name: => underscore(@__name or "unknown") .. "_widget"
+
+  -- classes chained from inheritance hierarchy
+  @css_classes: =>
+    return if @ == Base
+
+    unless rawget @, "_css_classes"
+      classes = @widget_name!
+      if @__parent and @__parent.css_classes
+        if parent_classes = @__parent\css_classes!
+          classes ..= " #{parent_classes}"
+
+      @_css_classes = classes
+
+    @_css_classes
 
   content: =>
-    div class: @widget_selector(false), ->
+    div class: @@css_classes!, ->
       @inner_content!
 
-  widget_selector: (for_js=true) =>
-    selector = "#{@@widget_name!}_page"
-    if for_js
-      "'.#{selector}'"
-    else
-      selector
+  widget_selector:  =>
+    "'.#{@@widget_name!}'"
 
   render_modules: (modules, empty_text="No modules") =>
     unless next modules

@@ -1,5 +1,5 @@
 
-class extends require "widgets.base"
+class extends require "widgets.page"
   content: =>
     h2 ->
       text "#{@user.username}'s Modules"

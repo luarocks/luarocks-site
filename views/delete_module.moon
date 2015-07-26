@@ -1,4 +1,4 @@
-class DeleteModule extends require "widgets.base"
+class DeleteModule extends require "widgets.page"
   content: =>
     h2 "Are you sure you want to delete this module?"
 

@@ -1,6 +1,6 @@
 import to_json from require "lapis.util"
 
-class Index extends require "widgets.base"
+class Index extends require "widgets.page"
   inner_content: =>
     div class: "home_columns", ->
       div class: "column", ->

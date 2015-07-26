@@ -1,5 +1,5 @@
 
-class UserRegister extends require "widgets.base"
+class UserRegister extends require "widgets.page"
   content: =>
     h2 "Register"
     @render_errors!

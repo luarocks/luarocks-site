@@ -20,7 +20,7 @@ basic_format = do
 
     "<p>#{body}</p>"
 
-class Module extends require "widgets.base"
+class Module extends require "widgets.page"
   inner_content: =>
     @admin_panel!
 

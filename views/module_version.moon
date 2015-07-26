@@ -1,5 +1,5 @@
 
-class ModuleVersion extends require "widgets.base"
+class ModuleVersion extends require "widgets.page"
   rock_url: (item) =>
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
