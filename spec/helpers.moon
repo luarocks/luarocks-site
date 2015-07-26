@@ -1,14 +1,16 @@
 import request from require "lapis.spec.server"
 
-take_screenshots = os.getenv "SCREENSHOT"
+_request = (url, opts, ...) ->
+  out = { request url, opts, ... }
+  opts or= {}
 
-local *
+  busted = require "busted"
+  busted.publish {"lapis", "request"}, url, opts, ...
 
-_request = (...) ->
-  if take_screenshots
-    request_with_snap ...
-  else
-    request ...
+  if out[1] == 200 and not opts.post and out[3].content_type == "text/html"
+    busted.publish {"lapis", "screenshot"}, url, opts, ...
+
+  unpack out
 
 -- returns headers for logged in user
 log_in_user = (user) ->
@@ -38,38 +40,6 @@ request_as = (user, url, opts={}) ->
     opts.post.csrf_token = generate_token nil, user.id
 
   _request url, opts
-
-request_with_snap = do
-  dir = "spec/screenshots"
-  counter = 1
-  (url, opts, ...) ->
-    out = { request url, opts, ... }
-
-    opts or= {}
-    if out[1] == 200 and not opts.post
-      if counter == 1
-        os.execute "rm #{dir}/*.png"
-
-      import get_current_server from require "lapis.spec.server"
-      server = get_current_server!
-
-      host, path = url\match "^https?://([^/]*)(.*)$"
-      unless host
-        host = "127.0.0.1"
-        path = url
-
-      full_url = "http://#{host}:#{server.app_port}#{path}"
-      headers = for k,v in pairs opts.headers or {}
-        "'--header=#{k}:#{v}'"
-
-      headers = table.concat headers
-
-      cmd = "CutyCapt #{headers} '--url=#{full_url}' '--out=#{dir}/#{counter}.png'"
-      assert os.execute cmd
-
-      counter += 1
-
-    unpack out
 
 do_upload_as = (user, url, param_name, filename, file_content, opts) ->
   import generate_token from require "lapis.csrf"
