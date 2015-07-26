@@ -1,6 +1,12 @@
 
 ## Changes
 
+**2015/7/26**
+
+ * Add manifest recently added tab
+ * Show download counts of versions on module page
+ * Refactor CSS, refactor specs
+
 **2015/3/27**
 
  * Improve searching by module name and user name
