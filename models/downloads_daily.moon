@@ -4,6 +4,16 @@ import Model from require "lapis.db.model"
 
 import concat from table
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE downloads_daily (
+--   version_id integer NOT NULL,
+--   date date NOT NULL,
+--   count integer DEFAULT 0 NOT NULL
+-- );
+-- ALTER TABLE ONLY downloads_daily
+--   ADD CONSTRAINT downloads_daily_pkey PRIMARY KEY (version_id, date);
+--
 class DailyCounter extends Model
   @tmz: -7
 

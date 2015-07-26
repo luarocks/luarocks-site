@@ -9,6 +9,26 @@ bcrypt = require "bcrypt"
 
 import strip_non_ascii from require "helpers.strings"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE users (
+--   id integer NOT NULL,
+--   username character varying(255) NOT NULL,
+--   encrypted_password character varying(255) NOT NULL,
+--   email character varying(255) NOT NULL,
+--   slug character varying(255) NOT NULL,
+--   flags integer DEFAULT 0 NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY users
+--   ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+-- CREATE INDEX users_flags_idx ON users USING btree (flags);
+-- CREATE UNIQUE INDEX users_lower_email_idx ON users USING btree (lower((email)::text));
+-- CREATE UNIQUE INDEX users_lower_username_idx ON users USING btree (lower((username)::text));
+-- CREATE UNIQUE INDEX users_slug_idx ON users USING btree (slug);
+-- CREATE INDEX users_username_idx ON users USING gin (username gin_trgm_ops);
+--
 class Users extends Model
   @timestamp: true
 

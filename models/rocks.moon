@@ -5,6 +5,25 @@ bucket = require "storage_bucket"
 import Model from require "lapis.db.model"
 import increment_counter, safe_insert from require "helpers.models"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE rocks (
+--   id integer NOT NULL,
+--   version_id integer NOT NULL,
+--   arch character varying(255) NOT NULL,
+--   downloads integer DEFAULT 0 NOT NULL,
+--   rock_key character varying(255) NOT NULL,
+--   rock_fname character varying(255) NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   revision integer DEFAULT 1 NOT NULL
+-- );
+-- ALTER TABLE ONLY rocks
+--   ADD CONSTRAINT rocks_pkey PRIMARY KEY (id);
+-- CREATE INDEX rocks_rock_fname_idx ON rocks USING btree (rock_fname);
+-- CREATE UNIQUE INDEX rocks_rock_key_idx ON rocks USING btree (rock_key);
+-- CREATE UNIQUE INDEX rocks_version_id_arch_idx ON rocks USING btree (version_id, arch);
+--
 class Rocks extends Model
   @timestamp: true
 

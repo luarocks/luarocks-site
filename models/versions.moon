@@ -14,6 +14,31 @@ get_lua_version = (spec) ->
   nil
 
 -- a rockspec
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE versions (
+--   id integer NOT NULL,
+--   module_id integer NOT NULL,
+--   version_name character varying(255) NOT NULL,
+--   rockspec_key character varying(255) NOT NULL,
+--   rockspec_fname character varying(255) NOT NULL,
+--   downloads integer DEFAULT 0 NOT NULL,
+--   rockspec_downloads integer DEFAULT 0 NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   display_version_name character varying(255),
+--   lua_version character varying(255),
+--   development boolean DEFAULT false NOT NULL,
+--   source_url text,
+--   revision integer DEFAULT 1 NOT NULL
+-- );
+-- ALTER TABLE ONLY versions
+--   ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
+-- CREATE INDEX versions_downloads_idx ON versions USING btree (downloads);
+-- CREATE UNIQUE INDEX versions_module_id_version_name_idx ON versions USING btree (module_id, version_name);
+-- CREATE INDEX versions_rockspec_fname_idx ON versions USING btree (rockspec_fname);
+-- CREATE UNIQUE INDEX versions_rockspec_key_idx ON versions USING btree (rockspec_key);
+--
 class Versions extends Model
   @timestamp: true
 

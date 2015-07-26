@@ -4,6 +4,17 @@ import Model from require "lapis.db.model"
 
 import increment_counter from require "helpers.models"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE endorsements (
+--   user_id integer NOT NULL,
+--   module_id integer NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY endorsements
+--   ADD CONSTRAINT endorsements_pkey PRIMARY KEY (user_id, module_id);
+--
 class Endorsements extends Model
   @primary_key: {"user_id", "module_id"}
   @timestamp: true

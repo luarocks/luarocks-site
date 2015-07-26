@@ -1,6 +1,19 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE github_accounts (
+--   user_id integer NOT NULL,
+--   github_login text NOT NULL,
+--   github_user_id integer DEFAULT 0 NOT NULL,
+--   access_token text NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY github_accounts
+--   ADD CONSTRAINT github_accounts_pkey PRIMARY KEY (user_id, github_user_id);
+--
 class GithubAccounts extends Model
   @primary_key: {"user_id", "github_user_id"}
   @timestamp: true

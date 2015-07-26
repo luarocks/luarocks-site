@@ -13,6 +13,20 @@ git_runner = (path) ->
   (cmd) ->
     exec "cd #{path} && git #{cmd}"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE manifest_backups (
+--   id integer NOT NULL,
+--   manifest_id integer NOT NULL,
+--   development boolean DEFAULT false,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   last_backup timestamp without time zone,
+--   repository_url text NOT NULL
+-- );
+-- ALTER TABLE ONLY manifest_backups
+--   ADD CONSTRAINT manifest_backups_pkey PRIMARY KEY (id);
+--
 class ManifestBackups extends Model
   @timestamp: true
 

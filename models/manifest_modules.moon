@@ -2,6 +2,18 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE manifest_modules (
+--   manifest_id integer NOT NULL,
+--   module_id integer NOT NULL,
+--   module_name character varying(255) NOT NULL
+-- );
+-- ALTER TABLE ONLY manifest_modules
+--   ADD CONSTRAINT manifest_modules_pkey PRIMARY KEY (manifest_id, module_id);
+-- CREATE UNIQUE INDEX manifest_modules_manifest_id_module_name_idx ON manifest_modules USING btree (manifest_id, module_name);
+-- CREATE INDEX manifest_modules_module_id_idx ON manifest_modules USING btree (module_id);
+--
 class ManifestModules extends Model
   @primary_key: {"manifest_id", "module_id"}
 

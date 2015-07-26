@@ -4,6 +4,23 @@ import get_all_pages from require "helpers.models"
 
 db = require "lapis.db"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE manifests (
+--   id integer NOT NULL,
+--   name character varying(255) NOT NULL,
+--   is_open boolean NOT NULL,
+--   display_name character varying(255),
+--   description text,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   modules_count integer DEFAULT 0 NOT NULL,
+--   versions_count integer DEFAULT 0 NOT NULL
+-- );
+-- ALTER TABLE ONLY manifests
+--   ADD CONSTRAINT manifests_pkey PRIMARY KEY (id);
+-- CREATE UNIQUE INDEX manifests_name_idx ON manifests USING btree (name);
+--
 class Manifests extends Model
   @timestamp: true
 

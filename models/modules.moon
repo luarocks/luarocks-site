@@ -4,6 +4,33 @@ import Model from require "lapis.db.model"
 
 import concat from table
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE modules (
+--   id integer NOT NULL,
+--   user_id integer NOT NULL,
+--   name character varying(255) NOT NULL,
+--   downloads integer DEFAULT 0 NOT NULL,
+--   current_version_id integer NOT NULL,
+--   summary character varying(255),
+--   description text,
+--   license character varying(255),
+--   homepage character varying(255),
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   display_name character varying(255),
+--   endorsements_count integer DEFAULT 0 NOT NULL,
+--   has_dev_version boolean DEFAULT false NOT NULL
+-- );
+-- ALTER TABLE ONLY modules
+--   ADD CONSTRAINT modules_pkey PRIMARY KEY (id);
+-- CREATE INDEX module_search_idx ON modules USING gin (to_tsvector('english'::regconfig, (((((COALESCE(display_name, name))::text || ' '::text) || (COALESCE(summary, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text))));
+-- CREATE INDEX modules_downloads_idx ON modules USING btree (downloads);
+-- CREATE INDEX modules_name_idx ON modules USING btree (name);
+-- CREATE INDEX modules_name_search_idx ON modules USING gin ((COALESCE(display_name, name)) gin_trgm_ops);
+-- CREATE INDEX modules_user_id_idx ON modules USING btree (user_id);
+-- CREATE UNIQUE INDEX modules_user_id_name_idx ON modules USING btree (user_id, name);
+--
 class Modules extends Model
   @timestamp: true
 
