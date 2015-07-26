@@ -1,3 +1,15 @@
+.home_columns {
+    font-size: 0;
+
+    .column {
+        @include grid_cell(4);
+
+        h2 {
+            margin-top: 0;
+        }
+    }
+}
+
 .graph_container {
     height: 180px;
     margin-bottom: 40px;
@@ -35,3 +47,4 @@
         }
     }
 }
+

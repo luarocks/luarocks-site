@@ -270,38 +270,6 @@ hr {
     }
 }
 
-.manifest_list {
-    .manifest_row {
-        margin: 10px 0;
-        background: white;
-        padding: 5px 10px;
-        border-radius: 2px;
-        border: 1px solid $border_color;
-        line-height: 1.5;
-
-        .title {
-            font-size: 16px;
-        }
-
-        .open_flag {
-            display: inline-block;
-            vertical-align: top;
-            margin-top: 4px;
-            margin-left: 10px;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.03em;
-            height: 17px;
-            line-height: 17px;
-
-            background: $tag_color;
-            color: white;
-            border-radius: 2px;
-            padding: 0 4px;
-        }
-    }
-}
-
 
 .admin_tools {
     $admin_color: #FFCAD9;
@@ -333,17 +301,6 @@ hr {
 }
 
 
-.home_columns {
-    font-size: 0;
-
-    .column {
-        @include grid_cell(4);
-
-        h2 {
-            margin-top: 0;
-        }
-    }
-}
 
 .form {
     .row {
