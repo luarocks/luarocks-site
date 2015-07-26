@@ -227,50 +227,6 @@ hr {
     }
 }
 
-.module_list {
-    .module_row {
-        margin: 10px 0;
-        background: white;
-        padding: 5px 10px;
-        border-radius: 2px;
-        border: 1px solid $border_color;
-        line-height: 1.5;
-
-        .title {
-            font-size: 16px;
-        }
-
-        .author {
-            color: gray;
-            a {
-                color: #444;
-                &:hover {
-                    color: #666;
-                }
-            }
-        }
-
-        .main, .summary {
-            @include single_line;
-        }
-
-        .summary {
-            color: gray;
-            margin-top: 5px;
-            font-size: $small_font_size;
-        }
-
-        .downloads {
-            color: gray;
-
-            .value {
-                color: #444;
-            }
-        }
-    }
-}
-
-
 .admin_tools {
     $admin_color: #FFCAD9;
     background: $admin_color;

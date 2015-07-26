@@ -33,27 +33,7 @@ class Base extends Widget
       p class: "empty_message", "No modules"
       return
 
-    div class: "module_list", ->
-      for mod in *modules
-        div class: "module_row", ->
-          div class: "main", ->
-            a {
-              class: "title",
-              href: @url_for("module", user: mod.user.slug, module: mod.name)
-            }, mod\name_for_display!
-
-            span class: "author", ->
-              text " by "
-              a href: @url_for("user_profile", user: mod.user.slug), mod.user.username
-              text ""
-
-            span class: "downloads", ->
-              raw " &mdash; "
-              text " downloads: "
-              span class: "value", @format_number mod.downloads
-
-          div class: "summary", ->
-            text mod.summary
+    widget require("widgets.module_list") :modules
 
   term_snippet: (cmd) =>
     pre class: "highlight lang_bash term_snippet", ->
