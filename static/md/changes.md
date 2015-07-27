@@ -5,6 +5,7 @@
 
  * Add manifest recently added tab
  * Show download counts of versions on module page
+ * Link to modules on dependency list
  * Refactor CSS, refactor specs
 
 **2015/3/27**
