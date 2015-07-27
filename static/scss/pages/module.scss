@@ -39,12 +39,12 @@
     }
 }
 
-.version_row, .manifest_row {
+.version_row, .manifest_row, .dependency_row {
     margin-bottom: 6px;
 
     .sub {
         margin-left: 10px;
-        color: #999;
+        color: $sub_color;
 
         a {
             color: #888;

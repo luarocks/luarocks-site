@@ -67,7 +67,16 @@ class Module extends require "widgets.page"
       h3 "Dependencies"
       for d in *@dependencies
         div class: "dependency_row", ->
-          code d.dependency
+          if d.manifest_module
+            mod = d.manifest_module\get_module!
+            a href: @url_for(mod), mod\name_for_display!
+          else
+            text d.dependency_name
+
+          if v = d\parse_version!
+            text " "
+            span class: "dep_version_name sub", v
+
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests

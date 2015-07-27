@@ -31,4 +31,6 @@ class Dependencies extends Model
 
     dependencies
 
+  parse_version: =>
+    @dependency\match("[^%s]+%s*(.*)$")
 
