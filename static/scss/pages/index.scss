@@ -22,3 +22,39 @@
     }
 }
 
+.intro_banner {
+    background: white;
+    border-bottom: 1px solid #C1CCE4;
+    margin-bottom: 30px;
+    padding: 25px 0;
+
+    .intro_banner_inner {
+        width: $site_width;
+        margin: 0 auto;
+    }
+
+    img {
+        float: left;
+        width: 130px;
+        height: 124px;
+    }
+
+    .intro_text {
+        margin-left: 155px;
+    }
+
+    p {
+        margin: 10px 0;
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+}
+
+
+
