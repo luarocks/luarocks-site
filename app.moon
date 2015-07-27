@@ -91,10 +91,12 @@ class MoonRocks extends lapis.Application
 
   [modules: "/modules"]: =>
     @title = "All Modules"
+
     paginated_modules @, Modules\paginated "order by name asc", {
       per_page: 50
       fields: "id, name, display_name, user_id, downloads, summary"
     }
+
     render: true
 
   [upload_rockspec: "/upload"]: require_login respond_to {

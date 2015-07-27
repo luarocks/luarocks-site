@@ -1,12 +1,11 @@
 
 import assert_valid from require "lapis.validate"
+import assert_page from require "helpers.app"
 
 import Users from require "models"
 
 paginated_modules = (object_or_pager, opts={}) =>
-  assert_valid @params, {
-    {"page", optional: true, is_integer: true}
-  }
+  assert_page @
 
   if type(opts) == "function"
     opts = { prepare_results: opts }
@@ -15,11 +14,11 @@ paginated_modules = (object_or_pager, opts={}) =>
     Users\include_in mods, "user_id", fields: "id, slug, username"
     mods
 
-  @page = tonumber(@params.page) or 1
-
   @pager = if object_or_pager.get_page
     -- it's already a pager, hijack it
-    object_or_pager.prepare_results = opts.prepare_results
+    object_or_pager.opts or= {}
+    object_or_pager.opts.prepare_results = opts.prepare_results
+
     object_or_pager
   else
     opts.per_page or= 50
