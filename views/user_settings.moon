@@ -2,7 +2,7 @@
 config = require("lapis.config").get!
 
 class UserSettings extends require "widgets.page"
-  content: =>
+  inner_content: =>
     @render_errors!
     h2 "User Settings"
 

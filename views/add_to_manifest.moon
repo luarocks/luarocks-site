@@ -1,5 +1,5 @@
 class AddToManifest extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Add Module To Manifest"
     
     @render_modules { @module }

@@ -1,6 +1,6 @@
 
 class UserLogin extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Login"
     @render_errors!
 

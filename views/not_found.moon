@@ -1,6 +1,6 @@
 
 class NotFound extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "404: Not found"
 
     @render_errors!

@@ -1,6 +1,6 @@
 
 class UploadRock extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Upload Rock"
     @render_errors!
 

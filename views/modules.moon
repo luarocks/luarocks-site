@@ -1,5 +1,5 @@
 class Modules extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 ->
       text "All Modules"
       text " "

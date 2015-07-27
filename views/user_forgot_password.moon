@@ -1,6 +1,6 @@
 
 class UserForgotPassword extends require "widgets.page"
-  content: =>
+  inner_content: =>
     div class: "user_forgot_password", ->
       if @token
         @set_password_form!

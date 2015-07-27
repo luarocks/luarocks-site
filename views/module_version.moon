@@ -3,7 +3,7 @@ class ModuleVersion extends require "widgets.page"
   rock_url: (item) =>
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
-  content: =>
+  inner_content: =>
     h2 "#{@module\name_for_display!} #{@version\name_for_display!}"
     @admin_panel!
 

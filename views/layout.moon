@@ -81,8 +81,7 @@ class Layout extends Widget
                 div class: "intro_text", ->
                   @raw_ssi "intro.html"
 
-          div class: "main_column", ->
-            @content_for "inner"
+          @content_for "inner"
 
         div class: "footer", ->
           div class: "right", ->

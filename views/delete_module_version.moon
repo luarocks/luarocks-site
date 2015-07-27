@@ -1,5 +1,5 @@
 class DeleteModuleVersion extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Delete Module Version"
     h3 "#{@module\name_for_display!} #{@version\name_for_display!}"
 

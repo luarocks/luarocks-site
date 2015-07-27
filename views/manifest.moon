@@ -1,7 +1,7 @@
 ManifestHeader = require "widgets.manifest_header"
 
 class Manifest extends require "widgets.page"
-  content: =>
+  inner_content: =>
     widget ManifestHeader page_name: @development_only and "development_only" or "all", show_count: true
 
     if @development_only

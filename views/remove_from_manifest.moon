@@ -1,5 +1,5 @@
 class RemoveFromManifest extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Remove From Manifest"
     @render_modules { @module }
     @render_errors!

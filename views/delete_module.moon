@@ -1,5 +1,5 @@
 class DeleteModule extends require "widgets.page"
-  content: =>
+  inner_content: =>
     h2 "Are you sure you want to delete this module?"
 
     @render_modules { @module }
