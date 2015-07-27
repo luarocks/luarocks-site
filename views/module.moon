@@ -23,8 +23,8 @@ basic_format = do
 class Module extends require "widgets.page"
   content: =>
     div class: @@css_classes!, ->
-      @admin_panel!
       @header!
+
 
       if @module\in_root_manifest!
         div class: "installer", ->
@@ -39,6 +39,8 @@ class Module extends require "widgets.page"
         h1 @module\name_for_display!
         if summary = @module.summary
           p class: "module_summary", summary
+
+        @admin_panel!
 
       div class: "metadata_columns", ->
         div class: "module_header_inner", ->

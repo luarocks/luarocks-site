@@ -8,7 +8,7 @@ class Helpers
     if num == 1
       "#{num} #{single}"
     else
-      "#{num} #{plural}"
+      "#{@format_number num} #{plural}"
 
   format_number: (num) =>
     tostring(num)\reverse!\gsub("(...)", "%1,")\match("^(.-),?$")\reverse!
