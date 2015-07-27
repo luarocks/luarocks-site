@@ -3,9 +3,12 @@
 
 **2015/7/26**
 
- * Add manifest recently added tab
+ * New design for module pages
+ * Add to [global stats page](/stats)
  * Show download counts of versions on module page
- * Link to modules on dependency list
+ * Show which modules depend on current module on module page
+ * Modules on dependency list link to their respective module on luarocks.org
+ * Add manifest recently added tab
  * Refactor CSS, refactor specs
 
 **2015/3/27**
