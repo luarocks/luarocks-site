@@ -146,4 +146,7 @@ import
       "PRIMARY KEY (version_id, dependency_name)"
     }
 
+  [1437970205]: =>
+    create_index "dependencies", "dependency_name"
+
 }

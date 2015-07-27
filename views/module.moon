@@ -94,6 +94,11 @@ class Module extends require "widgets.page"
             text " "
             span class: "dep_version_name sub", v
 
+    if next @depended_on
+      h3 "Dependency for"
+      for i, mod in ipairs @depended_on
+        text ", " unless i == 1
+        a href: @url_for(mod), mod\name_for_display!
 
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests

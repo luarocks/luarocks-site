@@ -247,3 +247,18 @@ class Modules extends Model
   short_license: =>
     return nil if not @license or @license\match "^%s*$"
     @license\gsub("<http.->", "")\match "^%s*(.-)%s*$"
+
+  find_depended_on: =>
+    import Modules, Users from require "models"
+
+    modules = Modules\select "
+      where id in
+        (select distinct module_id from versions where id in
+          (select version_id from dependencies where dependency_name = ?))
+      order by name asc
+    ", @name
+
+    Users\include_in modules, "user_id"
+    modules
+
+
