@@ -73,14 +73,6 @@ class Layout extends Widget
               form class: "header_search", action: @url_for("search"), method: "GET", ->
                 input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q
 
-          if @show_intro_banner
-            div class: "intro_banner", ->
-              div class: "intro_banner_inner", ->
-                img src: "/static/logo.svg"
-
-                div class: "intro_text", ->
-                  @raw_ssi "intro.html"
-
           @content_for "inner"
 
         div class: "footer", ->

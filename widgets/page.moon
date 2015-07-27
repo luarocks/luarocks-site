@@ -7,7 +7,6 @@ class Page extends require "widgets.base"
     return if @ == Page
     Page.__parent.css_classes @
 
-
   content: =>
     div class: "main_column", ->
       div class: @@css_classes!, ->

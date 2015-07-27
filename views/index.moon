@@ -1,6 +1,18 @@
 import to_json from require "lapis.util"
 
 class Index extends require "widgets.page"
+  content: =>
+    div class: "intro_banner", ->
+      div class: "intro_banner_inner", ->
+        img src: "/static/logo.svg"
+
+        div class: "intro_text", ->
+          @raw_ssi "intro.html"
+
+    div class: "main_column", ->
+      div class: @@css_classes!, ->
+        @inner_content!
+
   inner_content: =>
     div class: "home_columns", ->
       div class: "column", ->
