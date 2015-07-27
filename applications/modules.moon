@@ -79,7 +79,7 @@ class MoonRocksModules extends lapis.Application
       @current_version = vs[1]
 
     if @current_version
-      @dependencies = Dependencies\select "where version_id = ?", @current_version.id
+      @dependencies = @current_version\get_dependencies!
       Dependencies\preload_modules @dependencies, @module\get_primary_manifest!
 
     render: true

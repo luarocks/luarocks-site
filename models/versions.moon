@@ -43,6 +43,7 @@ class Versions extends Model
 
   @relations: {
     {"module", belongs_to: "Modules"}
+    {"dependencies", has_many: "Dependencies"}
   }
 
   @sort_versions: (versions) =>
