@@ -13,3 +13,22 @@ import Model from require "lapis.db.model"
 --
 class Dependencies extends Model
   @primary_key: {"version_id", "dependency_name"}
+
+  @preload_modules: (dependencies, manifest) =>
+    import Manifests, ManifestModules, Modules, Users from require "models"
+    manifest or= Manifests\root!
+
+    ManifestModules\include_in dependencies, "module_name", {
+      flip: true
+      local_key: "dependency_name"
+      where: {
+        manifest_id: manifest.id
+      }
+    }
+
+    Modules\include_in [dep.manifest_module for dep in *dependencies when dep.manifest_module], "module_id"
+    Users\include_in [dep.manifest_module.module for dep in *dependencies when dep.manifest_module], "user_id"
+
+    dependencies
+
+
