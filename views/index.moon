@@ -20,7 +20,13 @@ class Index extends require "widgets.page"
         h2 "Most Downloaded"
         @render_modules @popular_modules
 
-    h2 "Daily Module Downloads"
+    h2 ->
+      text "Daily Module Downloads"
+      span class: "header_sub", ->
+        text "("
+        a href: @url_for("stats"), "More graphs"
+        text ")"
+
     div id: "downloads_graph", class: "graph_container"
 
     @raw_ssi "home.html"
