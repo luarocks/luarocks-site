@@ -98,7 +98,7 @@ class Modules extends Model
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
-  get_manifests: (...) =>
+  get_manifests: =>
     unless @manifests
       import Manifests from require "models"
 
@@ -115,6 +115,13 @@ class Modules extends Model
     for m in *@get_manifests!
       if m.name == "root"
         return m
+
+  in_root_manifest: =>
+    for m in *@get_manifests!
+      if m.name == "root"
+        return true
+
+    false
 
   count_versions: =>
     res = db.query "select count(*) as c from versions where module_id = ?", @id
@@ -236,3 +243,7 @@ class Modules extends Model
       select 1 from versions where module_id = modules.id
       and development
     )]]
+
+  short_license: =>
+    return nil if not @license or @license\match "^%s*$"
+    @license\gsub("<http.->", "")\match "^%s*(.-)%s*$"

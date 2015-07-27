@@ -21,35 +21,52 @@ basic_format = do
     "<p>#{body}</p>"
 
 class Module extends require "widgets.page"
-  inner_content: =>
-    @admin_panel!
+  content: =>
+    div class: @@css_classes!, ->
+      @admin_panel!
+      @header!
 
+      if @module\in_root_manifest!
+        div class: "installer", ->
+          @term_snippet "luarocks install #{@module.name}"
+
+      div class: "main_column", ->
+        @inner_content!
+
+  header: =>
     div class: "module_header", ->
-      h2 @module\name_for_display!
-      if summary = @module.summary
-        p summary
+      div class: "module_header_inner", ->
+        h1 @module\name_for_display!
+        if summary = @module.summary
+          p class: "module_summary", summary
 
-    div class: "metadata_columns", ->
-      div class: "column", ->
-        h3 "Uploader"
-        user_url = @url_for "user_profile", user: @user.slug
-        a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
-        a href: user_url, @user.username
+      div class: "metadata_columns", ->
+        div class: "module_header_inner", ->
+          div class: "column", ->
+            h3 "Uploader"
+            user_url = @url_for "user_profile", user: @user.slug
+            a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
+            a href: user_url, @user.username
 
-      div class: "column", ->
-        if license = @module.license
-          h3 "License"
-          text license
+          if license = @module\short_license!
+            div class: "column", ->
+              h3 "License"
+              text license
 
-      div class: "column", ->
-        if url = @module\format_homepage_url!
-          h3 "Homepage"
-          a class: "external_url", href: url, @truncate url, 60
+          if url = @module\format_homepage_url!
+            div class: "column", ->
+              h3 "Homepage"
+              a class: "external_url", href: url, @truncate url, 30
 
+          div class: "column", ->
+            h3 "Downloads"
+            text @format_number @module.downloads
+
+  inner_content: =>
     if description = @module.description
-      h3 "About"
-      div class: "description", ->
-        raw basic_format description
+      if description != @module.summary
+        div class: "description", ->
+          raw basic_format description
 
     h3 "Versions"
     for v in *@versions

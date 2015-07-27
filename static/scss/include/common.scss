@@ -10,7 +10,10 @@ $small_font_size: 14px;
 
 $body_color: #47555C;
 $border_color: #C1CCE4;
+$light_border_color: lighten(#C1CCE4, 5%); // for use on white background
 $line_height: 24px;
+
+$font_family: 'Open Sans', sans-serif;
 
 $sub_color: mix($body_color, gray, 20%);
 $sub_color_light: mix(mix($body_color, gray, 20%), white, 80%);
