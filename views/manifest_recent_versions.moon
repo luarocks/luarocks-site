@@ -34,9 +34,9 @@ class ManifestRecentVersions extends require "widgets.page"
           text " "
           span class: "created_at", time_ago_in_words(version.created_at)
 
-          raw " &mdash; "
-          span class: "downloads", @plural version.downloads, "download", "downloads"
-
+          if version.downloads > 0
+            raw " &mdash; "
+            span class: "downloads", @plural version.downloads, "download", "downloads"
 
     @render_pager @pager
 

@@ -9,6 +9,31 @@ class M.Index
       x_ticks: 7
     }
 
+class M.Stats
+  constructor: (el, @opts) ->
+    @el = $ el
+
+    new M.CumulativeGrapher "#cumulative_modules", @opts.graphs.cumulative_modules, {
+      label: "Cumulative modules"
+      no_dots: true
+      days_per_unit: 7
+    }
+
+    new M.CumulativeGrapher "#cumulative_users", @opts.graphs.cumulative_users, {
+      label: "Cumulative users"
+      no_dots: true
+      days_per_unit: 7
+    }
+
+    new M.CumulativeGrapher "#cumulative_versions", @opts.graphs.cumulative_versions, {
+      label: "Cumulative versions"
+      no_dots: true
+      days_per_unit: 7
+    }
+
+
+
+
 class M.Grapher
   @format_number: format_number = (num) ->
     if num > 10000
@@ -34,6 +59,7 @@ class M.Grapher
     min_y: 10
     x_ticks: 10
     fit_dots: false
+    days_per_unit: 1
   }
 
   constructor: (el, @data, opts) ->
@@ -189,7 +215,7 @@ class M.Grapher
     t = left
     while t <= right
       val = fn t
-      t = d3.time.day.offset t, 1
+      t = d3.time.day.offset t, @opts.days_per_unit
       val
 
   format_data: ->
@@ -244,6 +270,7 @@ class M.CumulativeGrapher extends M.RangeGrapher
     x_ticks: 8
     fit_dots: true
     min_range: 7 # min number of days
+    days_per_unit: 1
   }
 
   get_y: (d) => d.count

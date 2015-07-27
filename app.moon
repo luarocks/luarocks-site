@@ -267,4 +267,12 @@ class MoonRocks extends lapis.Application
       redirect_to: @url_for(manifest)
   }
 
+  [stats: "/stats"]: =>
+    import cumulative_created from require "helpers.stats"
+
+    @cumulative_users = cumulative_created Users, nil, "created_at", "week"
+    @cumulative_modules = cumulative_created Modules, nil, "created_at", "week"
+    @cumulative_versions = cumulative_created Versions, nil, "created_at", "week"
+
+    render: true
 
