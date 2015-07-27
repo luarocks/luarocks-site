@@ -9,27 +9,31 @@ class M.Index
       x_ticks: 7
     }
 
-format_number = (num) ->
-  if num > 10000
-    "#{Math.floor(num / 1000)}k"
-  else if num > 1000
-    "#{Math.floor(num / 100) / 10}k"
-  else
-    "#{num}"
-
-# (C) 2020 itch.io systems
 class M.Grapher
+  @format_number: format_number = (num) ->
+    if num > 10000
+      "#{Math.floor(num / 1000)}k"
+    else if num >= 1000
+      "#{Math.floor(num / 100) / 10}k"
+    else
+      "#{num}"
+
   margin_left: 50
   margin_bottom: 30
-  margin_right: 5
-  margin_top: 20
+  margin_right: 30
+  margin_top: 5
+
+  dot_hitbox_w: 30
+  dot_hitbox_h: 120
 
   axis_spacing: 8
+  axis_graph_padding: 10
 
   default_opts: {
     label: "Count"
     min_y: 10
     x_ticks: 10
+    fit_dots: false
   }
 
   constructor: (el, @data, opts) ->
@@ -107,18 +111,53 @@ class M.Grapher
     @draw_dots data
 
   draw_dots: (data) ->
-    # popups
+    data = @filter_dots_data data
+
+    return if @opts.num_days > 60 || @opts.no_dots
+
     dots = @svg.append("g")
       .attr("class", "dots")
       .selectAll("g").data(data)
         .enter()
 
-    # dots
     dots
       .append("circle")
       .attr("cx", @get_x_scaled)
       .attr("cy", @get_y_scaled)
       .attr("r", 4)
+
+    if @opts.label_dots
+      # label
+      label = @svg.append("g")
+       .attr("class", "label dots")
+       .attr("transform", "translate(#{@margin_left}, 25)")
+
+      label.append("circle")
+       .attr("cx", 0)
+       .attr("cy", -5)
+       .attr("r", 4)
+
+      label.append("text")
+       .text(@opts.label)
+       .attr("x", 10)
+
+
+  filter_dots_data: (data) ->
+    if @opts.fit_dots
+      real_w = @w - @margin_left - @margin_right - @axis_graph_padding
+      can_fit = Math.floor real_w / @dot_hitbox_w
+      if data.length > can_fit
+        # this isn't exact because hitboxes go out of graph but oh well
+        dots_to_fit = Math.floor (real_w - @dot_hitbox_w*2) / @dot_hitbox_w
+        take_every = Math.floor (data.length - 2) / dots_to_fit
+        subset = for i in [1..data.length-2] by take_every
+          data[i]
+
+        subset.push data[data.length - 1]
+        subset.unshift data[1]
+        return subset
+
+    data
 
   popup_label: (d) ->
     "#{@opts.label}: #{d.count}"
@@ -129,38 +168,48 @@ class M.Grapher
   get_x_scaled: => @_x_scale @get_x arguments...
   get_y_scaled: => @_y_scale @get_y arguments...
 
-  format_y_axis: (num) => format_number num
+  format_y_axis: (num) => M.Grapher.format_number num
 
   x_ticks: -> @opts.x_ticks
   y_ticks: -> Math.min 5, @opts.min_y
 
-  format_data: ->
+  get_range: =>
     today = d3.time.day new Date
-    ago = d3.time.day.offset today, -(@opts.num_days - 1)
+    offset = @opts.day_offset || 0
 
+    left = d3.time.day.offset today, -(@opts.num_days + offset - 1)
+    right = d3.time.day.offset today, -(offset)
+
+    [left, right]
+
+  # map range 1 day at a time
+  map_range: (fn) ->
+    [left, right] = @get_range()
+
+    t = left
+    while t <= right
+      val = fn t
+      t = d3.time.day.offset t, 1
+      val
+
+  format_data: ->
     counts_by_date = {}
     for v in @data
       counts_by_date[v.date] = v
 
-    counts_dense = []
-    t = ago
-    while t <= today
+    @map_range (t) =>
       formatted = @time_format t
-      counts_dense.push counts_by_date[formatted] || {
+      counts_by_date[formatted] || {
         count: 0
         date: formatted
       }
-      t = d3.time.day.offset t, 1
-
-    counts_dense
 
   x_scale: (data) ->
-    today = d3.time.day new Date
-    ago = d3.time.day.offset today, -(@opts.num_days - 1)
+    [left, right] = @get_range()
 
     d3.time.scale()
-      .domain([ago, today])
-      .rangeRound([@margin_left + 10, @w - @margin_right])
+      .domain([left, right])
+      .rangeRound([@margin_left + @axis_graph_padding, @w - @margin_right])
 
   y_scale: (data) ->
     max = d3.max data, @get_y
@@ -168,4 +217,51 @@ class M.Grapher
     d3.scale.linear()
       .domain([0, Math.max Math.floor(max*1.3) || 0, @opts.min_y])
       .rangeRound([@h - @margin_bottom, @margin_top])
+
+class M.RangeGrapher extends M.Grapher
+  # get the range from the dates provided
+  get_range: =>
+    format = d3.time.format "%Y-%m-%d"
+
+    first = @data[0]
+    last = @data[@data.length - 1]
+
+    first = format.parse first.date
+    last = format.parse last.date
+
+    min_range = @opts.min_range || 7
+
+    range_ago = d3.time.day.offset last, -min_range
+
+    if range_ago < first
+      first = range_ago
+
+    [first, last]
+
+class M.CumulativeGrapher extends M.RangeGrapher
+  default_opts: {
+    min_y: 100
+    x_ticks: 8
+    fit_dots: true
+    min_range: 7 # min number of days
+  }
+
+  get_y: (d) => d.count
+
+  format_data: ->
+    by_date = {}
+    for v in @data
+      by_date[v.date] = v
+
+    last = 0
+    @map_range (t) =>
+      formatted = @time_format t
+      last = by_date[formatted]?.count || last
+
+      {
+        count: last
+        date: formatted
+      }
+
+
 
