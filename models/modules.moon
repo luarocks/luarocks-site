@@ -44,6 +44,7 @@ class Modules extends Model
 
   @relations: {
     {"user", belongs_to: "Users"}
+    {"versions", has_many: "Versions", order: "created_at desc"}
   }
 
   -- spec: parsed rockspec
@@ -114,13 +115,6 @@ class Modules extends Model
     for m in *@get_manifests!
       if m.name == "root"
         return m
-
-  get_versions: =>
-    unless @_versions
-      import Versions from require "models"
-      @_versions = Versions\select "where module_id = ?", @id
-
-    @_versions
 
   count_versions: =>
     res = db.query "select count(*) as c from versions where module_id = ?", @id

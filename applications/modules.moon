@@ -64,7 +64,7 @@ class MoonRocksModules extends lapis.Application
     @title = "#{@module\name_for_display!}"
     @page_description = @module.summary if @module.summary
 
-    @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
+    @versions = @module\get_versions!
     @manifests = @module\get_manifests!
 
     Versions\sort_versions @versions
