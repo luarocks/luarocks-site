@@ -97,16 +97,23 @@ class Modules extends Model
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
-  all_manifests: (...) =>
-    import ManifestModules, Manifests from require "models"
+  get_manifests: (...) =>
+    unless @manifests
+      import Manifests from require "models"
 
-    assocs = ManifestModules\select "where module_id = ?", @id
-    manifest_ids = [db.escape_literal(a.manifest_id) for a in *assocs]
+      @manifests = Manifests\select "
+        where id in
+          (select manifest_id from manifest_modules where module_id = ?)
+        order by name asc
+      ", @id
 
-    if next manifest_ids
-      Manifests\select "where id in (#{concat manifest_ids, ","}) order by name asc", ...
-    else
-      {}
+    @manifests
+
+  -- gets the first non-root manifest
+  get_primary_manifest: =>
+    for m in *@get_manifests!
+      if m.name == "root"
+        return m
 
   get_versions: =>
     unless @_versions
@@ -218,7 +225,7 @@ class Modules extends Model
     new_module
 
   purge_manifests: =>
-    for m in *@all_manifests fields: "id"
+    for m in *@get_manifests fields: "id"
       m\purge!
 
   endorse: (user) =>

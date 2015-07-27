@@ -181,7 +181,7 @@ class MoonRocksUser extends lapis.Application
 
       @title = "Add Module To Manifest"
 
-      already_in = { m.id, true for m in *@module\all_manifests! }
+      already_in = { m.id, true for m in *@module\get_manifests! }
       @manifests = for m in *Manifests\select!
         continue if already_in[m.id]
         m

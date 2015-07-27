@@ -220,7 +220,7 @@ class MoonRocks extends lapis.Application
       before: capture_errors_404 =>
         return unless load_module @
 
-        for man in *@module\all_manifests!
+        for man in *@module\get_manifests!
           if man.name == "root"
             @in_root = true
             break

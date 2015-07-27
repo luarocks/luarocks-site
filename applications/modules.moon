@@ -65,15 +65,13 @@ class MoonRocksModules extends lapis.Application
     @page_description = @module.summary if @module.summary
 
     @versions = Versions\select "where module_id = ? order by created_at desc", @module.id
-    @manifests = @module\all_manifests!
+    @manifests = @module\get_manifests!
 
     Versions\sort_versions @versions
-
 
     for v in *@versions
       if v.id == @module.current_version_id
         @current_version = v
-
 
     unless @current_version
       vs = [v for v in *@versions]
