@@ -248,7 +248,11 @@ class MoonRocks extends lapis.Application
   }
 
   [new_manifest: "/new-manifest"]: require_login respond_to {
-    GET: => render: true
+    before: =>
+      @title = "New manifest"
+
+    GET: =>
+      render: true
 
     POST: capture_errors =>
       import ManifestAdmins from require "models"
@@ -269,11 +273,61 @@ class MoonRocks extends lapis.Application
   }
 
   [stats: "/stats"]: =>
+    @title = "Stats"
+
     import cumulative_created from require "helpers.stats"
 
     @cumulative_users = cumulative_created Users, nil, "created_at", "week"
     @cumulative_modules = cumulative_created Modules, nil, "created_at", "week"
     @cumulative_versions = cumulative_created Versions, nil, "created_at", "week"
+
+    render: true
+
+  [popular_this_week: "/stats/this-week"]: capture_errors_404 =>
+    @title = "Top this Lua modules this week"
+
+    @days = @params.days or 7
+    @days = math.min 60, math.max 1, @days
+
+    @top_versions = DownloadsDaily\select "
+      where date >= (now() at time zone 'utc' - ?::interval)
+      group by version_id
+      order by sum desc
+      limit 20
+    ", "#{@days} days", fields: "sum(count), version_id", load: false
+
+
+    @top_new_versions = DownloadsDaily\select "
+      where date >= (now() at time zone 'utc' - ?::interval)
+
+      and version_id not in (
+        select version_id from downloads_daily
+          where
+            date >= (now() at time zone 'utc' - ?::interval) and
+            date < (now() at time zone 'utc' - ?::interval)
+          group by version_id
+          order by sum(count) desc
+          limit 20
+      )
+
+      group by version_id
+      order by sum desc
+      limit 20
+    ", "#{@days} days", "#{@days * 2} days", "#{@days} days", {
+      fields: "sum(count), version_id"
+      load: false
+    }
+
+
+    all_tuples = { unpack @top_versions }
+    for t in *@top_new_versions
+      table.insert all_tuples, t
+
+
+    Versions\include_in all_tuples, "version_id"
+    versions = [v.version for v in *all_tuples when v.version]
+    Modules\include_in versions, "module_id"
+    Users\include_in [v.module for v in *versions], "user_id"
 
     render: true
 

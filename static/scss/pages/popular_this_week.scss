@@ -1,0 +1,17 @@
+
+a.sub {
+    color: $sub_color;
+}
+
+.table {
+    font-size: $base_font_size;
+    margin-bottom: 60px;
+
+    td:first-child, td:nth-child(2) {
+        text-align: right;
+    }
+
+    tr:nth-child(2n) {
+        background: mix(white, #eee, 50%);
+    }
+}

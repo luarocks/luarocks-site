@@ -1,5 +1,7 @@
 import to_json from require "lapis.util"
 
+Header = require "widgets.stats_header"
+
 class Stats extends require "widgets.page"
   @needs: {
     "cumulative_users"
@@ -18,7 +20,7 @@ class Stats extends require "widgets.page"
     "M.Stats(#{@widget_selector!}, #{to_json data});"
 
   inner_content: =>
-    h2 "Stats"
+    widget Header page_name: "global"
 
     h3 "Cumulative modules"
     div id: "cumulative_modules", class: "graph_container"
