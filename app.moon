@@ -318,7 +318,6 @@ class MoonRocks extends lapis.Application
       load: false
     }
 
-
     all_tuples = { unpack @top_versions }
     for t in *@top_new_versions
       table.insert all_tuples, t

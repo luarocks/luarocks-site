@@ -1,10 +1,15 @@
 
 ## Changes
 
+**2015/7/27**
+
+ * Add [top this week stats page](/stats/this-week)
+ * Add [dependency stats page](/stats/dependencies)
+
 **2015/7/26**
 
  * New design for module pages
- * Add to [global stats page](/stats)
+ * Add [global stats page](/stats)
  * Show download counts of versions on module page
  * Show which modules depend on current module on module page
  * Modules on dependency list link to their respective module on luarocks.org
