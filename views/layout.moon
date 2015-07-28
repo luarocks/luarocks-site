@@ -77,7 +77,7 @@ class Layout extends Widget
 
         div class: "footer", ->
           div class: "right", ->
-            a href: "http://twitter.com/moonscript", "@moonscript"
+            a href: "http://twitter.com/luarocksorg", "@luarocksorg"
             raw " &middot; "
             revision = require "revision"
             a href: "https://github.com/leafo/luarocks-site/commit/#{revision}", rel: "nofollow", revision
