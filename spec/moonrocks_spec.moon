@@ -43,6 +43,10 @@ describe "moonrocks", ->
   should_load "/register"
   should_load "/user/forgot_password"
 
+  should_load "/stats"
+  should_load "/stats/this-week"
+  should_load "/stats/dependencies"
+
   -- logged out users shouldn't have access
   should_load "/upload", 302
   should_load "/settings", 302
