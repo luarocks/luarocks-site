@@ -323,7 +323,6 @@ class MoonRocks extends lapis.Application
     for t in *@top_new_versions
       table.insert all_tuples, t
 
-
     Versions\include_in all_tuples, "version_id"
     versions = [v.version for v in *all_tuples when v.version]
     Modules\include_in versions, "module_id"
@@ -331,3 +330,15 @@ class MoonRocks extends lapis.Application
 
     render: true
 
+  [dependency_stats: "/stats/dependencies"]: capture_errors_404 =>
+    import Dependencies from require "models"
+    @top_depended = Dependencies\select "
+      group by dependency_name
+      order by count desc
+      limit 30
+    ", fields: "dependency_name, count(*)"
+
+    Dependencies\preload_modules @top_depended
+    @top_depended = [t for t in *@top_depended when t.manifest_module]
+
+    render: true
