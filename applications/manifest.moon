@@ -123,6 +123,7 @@ class MoonRocksManifest extends lapis.Application
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
 
   [manifests: "/manifests"]: capture_errors_404 =>
+    @title = "All manifests"
     assert_page @
     @pager = Manifests\paginated [[ order by id asc ]]
     @manifests = @pager\get_page @page

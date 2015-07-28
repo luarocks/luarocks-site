@@ -29,14 +29,20 @@ class Index extends require "widgets.page"
         @render_modules @recent_modules
 
       div class: "column last", ->
-        h2 "Most Downloaded"
+        h2 ->
+          text "Most Downloaded"
+          span class: "header_sub", ->
+            text "("
+            a href: @url_for("popular_this_week"), "This week"
+            text ")"
+
         @render_modules @popular_modules
 
     h2 ->
       text "Daily Module Downloads"
       span class: "header_sub", ->
         text "("
-        a href: @url_for("stats"), "More graphs"
+        a href: @url_for("stats"), "More graphs & stats"
         text ")"
 
     div id: "downloads_graph", class: "graph_container"
