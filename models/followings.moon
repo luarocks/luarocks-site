@@ -1,8 +1,8 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
 
-class ObjectFollows extends Model
-  @primary_key: {"source_user", "object_type", "object_id"}
+class Followings extends Model
+  @primary_key: {"source_user_id", "object_type", "object_id"}
   @timestamp: true
 
   @relations: {
