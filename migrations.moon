@@ -19,6 +19,7 @@ import
   integer
   foreign_key
   boolean
+  enum
   from schema.types
 
 {
@@ -149,4 +150,20 @@ import
   [1437970205]: =>
     create_index "dependencies", "dependency_name"
 
+  [1438259102]: =>
+    create_table "followings", {
+      {"source_user_id", foreign_key}
+      {"object_type", enum}
+      {"object_id", foreign_key}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (source_user_id, object_type, object_id)"
+    }
+
+    create_index "followings", "object_type", "object_id"
+
+    add_column "users", "following_count", integer
+    add_column "modules", "followers_count", integer
 }
