@@ -2,8 +2,9 @@
 class EditModuleVersion extends require "widgets.page"
   inner_content: =>
     h2 ->
-      text "Edit Module '#{@module\name_for_display!}' Version "
-      code @version.version_name
+      text "Edit "
+      a href: @url_for(@version),
+        "#{@module\name_for_display!} #{@version.version_name}"
 
     @render_errors!
 
@@ -25,7 +26,7 @@ class EditModuleVersion extends require "widgets.page"
               div class: "label", "Repository rockspec URL"
               p class: "sub", "If your development rockspec changes frequently
               you can serve it directly from your repository instead of the copy
-              located on LuaRocks's server."
+              located on LuaRocks' server."
 
               input type: "text", name: "v[external_rockspec_url]", placeholder: "optional", value: @version.external_rockspec_url
 
