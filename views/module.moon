@@ -2,23 +2,7 @@ import time_ago_in_words from require "lapis.util"
 
 import escape from require "lapis.html"
 
-basic_format = do
-  import P, R, C, Cs, S, Cmt, Ct, Cg from require "lpeg"
-  stop = P"\r"^-1 * P"\n"
-
-  char = stop / "<br />" + 1
-
-  paragraph_body = Cs (char - stop * stop)^1
-  paragraphs = Ct paragraph_body * (stop^1 * paragraph_body)^0
-
-  (str) ->
-    str = escape str
-    body = if ps = paragraphs\match str
-      table.concat(ps, "</p><p>")
-    else
-      str
-
-    "<p>#{body}</p>"
+Header = require "widgets.module_header"
 
 class Module extends require "widgets.page"
   content: =>
@@ -34,35 +18,9 @@ class Module extends require "widgets.page"
         @inner_content!
 
   header: =>
-    div class: "module_header", ->
-      div class: "module_header_inner", ->
-        h1 @module\name_for_display!
-        if summary = @module.summary
-          p class: "module_summary", summary
-
-        @admin_panel!
-
-      div class: "metadata_columns", ->
-        div class: "module_header_inner", ->
-          div class: "column", ->
-            h3 "Uploader"
-            user_url = @url_for "user_profile", user: @user.slug
-            a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
-            a href: user_url, @user.username
-
-          if license = @module\short_license!
-            div class: "column", ->
-              h3 "License"
-              text license
-
-          if url = @module\format_homepage_url!
-            div class: "column", ->
-              h3 "Homepage"
-              a class: "external_url", href: url, @truncate url, 30
-
-          div class: "column", ->
-            h3 "Downloads"
-            text @format_number @module.downloads
+    widget Header {
+      admin_panel: @\admin_panel
+    }
 
   inner_content: =>
     if description = @module.description
