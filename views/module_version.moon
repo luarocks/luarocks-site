@@ -26,10 +26,22 @@ class ModuleVersion extends require "widgets.page"
     ul class: "rock_list", ->
       li class: "arch", ->
         a href: @rock_url(@version), "rockspec"
+        if @version.external_rockspec_url
+          text " "
+          span class: "sub", ->
+            text "("
+            a {
+              rel: "nofollow"
+              href: @version.external_rockspec_url
+              "External"
+            }
+            text ")"
+
 
       for rock in *@rocks
         li class: "arch", ->
           a href: @rock_url(rock), rock.arch
+
 
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user

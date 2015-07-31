@@ -2,3 +2,13 @@ h3 {
     font-weight: bold;
 }
 
+
+
+.rock_list {
+    .sub {
+        color: $sub_color_light;
+        a {
+        color: $sub_color;
+        }
+    }
+}
