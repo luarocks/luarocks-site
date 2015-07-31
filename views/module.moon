@@ -9,9 +9,12 @@ class Module extends require "widgets.page"
     div class: @@css_classes!, ->
       @header!
 
-      if @module\in_root_manifest!
+      if root = @module\in_root_manifest!
         div class: "installer", ->
-          @term_snippet "luarocks install #{@module.name}"
+          if @dev_only!
+            @term_snippet "luarocks install --server=#{root\source_url @, true} #{@module.name}"
+          else
+            @term_snippet "luarocks install #{@module.name}"
 
       div class: "main_column", ->
         @inner_content!
@@ -20,6 +23,14 @@ class Module extends require "widgets.page"
     widget Header {
       admin_panel: @\admin_panel
     }
+
+  dev_only: =>
+    return false unless next @versions
+
+    for v in *@versions
+      return false unless v.development
+
+    true
 
   inner_content: =>
     if description = @module.description

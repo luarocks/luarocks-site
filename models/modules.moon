@@ -120,7 +120,7 @@ class Modules extends Model
   in_root_manifest: =>
     for m in *@get_manifests!
       if m.name == "root"
-        return true
+        return m
 
     false
 
