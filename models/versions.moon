@@ -106,6 +106,14 @@ class Versions extends Model
 
   url_key: (name) => @version_name
 
+  url_params: =>
+    mod = @get_module!
+    "module_version", {
+      module: mod
+      user: mod\get_user!
+      version: @version_name
+    }
+
   url: =>
     if @external_rockspec_url
       @external_rockspec_url, true
