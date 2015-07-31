@@ -1,6 +1,12 @@
 
 ## Changes
 
+**2015/7/31**
+
+* Add new header to module version page
+* Add warning about uploading rock on dev version
+* Add rockspec url proxying for dev versions
+
 **2015/7/27**
 
  * Add [top this week stats page](/stats/this-week)
