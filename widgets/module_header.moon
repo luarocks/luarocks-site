@@ -8,7 +8,16 @@ class ModuleHeader extends require "widgets.base"
 
   inner_content: =>
     div class: "module_header_inner", ->
-      h1 @module\name_for_display!
+      if @version
+        div class: "top_buttons", ->
+          a class: "round_button", href: @url_for(@module), "← Return to module"
+
+      h1 ->
+        text @module\name_for_display!
+        if @version
+          text " "
+          span class: "sub", @version.version_name
+
       if summary = @module.summary
         p class: "module_summary", summary
 
@@ -32,8 +41,13 @@ class ModuleHeader extends require "widgets.base"
             h3 "Homepage"
             a class: "external_url", href: url, @truncate url, 30
 
-        div class: "column", ->
-          h3 "Downloads"
-          text @format_number @module.downloads
+        if @version
+          div class: "column", ->
+            h3 "Version downloads"
+            text @format_number @version.downloads
+        else
+          div class: "column", ->
+            h3 "Downloads"
+            text @format_number @module.downloads
 
 

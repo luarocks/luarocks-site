@@ -1,16 +1,26 @@
+Header = require "widgets.module_header"
+
+import time_ago_in_words from require "lapis.util"
 
 class ModuleVersion extends require "widgets.page"
   rock_url: (item) =>
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
+  content: =>
+    div class: @@css_classes!, ->
+      widget Header {
+        admin_panel: @\admin_panel
+      }
+
+      div class: "main_column", ->
+        @inner_content!
+
   inner_content: =>
-    h2 "#{@module\name_for_display!} #{@version\name_for_display!}"
-    @admin_panel!
-
-    div ->
-      text "Downloads: "
-      span class: "value", @format_number @version.downloads
-
+    p ->
+      text "Version #{@version.version_name} of #{@module\name_for_display!}
+      was uploaded #{time_ago_in_words @version.created_at}."
+      if @version.development
+        text " This is a development version of the module."
 
     h3 "Available Downloads"
     ul class: "rock_list", ->
@@ -21,13 +31,11 @@ class ModuleVersion extends require "widgets.page"
         li class: "arch", ->
           a href: @rock_url(rock), rock.arch
 
-    a href: @url_for("module", user: @user.slug, module: @module.name), "Back To Module"
-
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user
 
     div class: "admin_tools", ->
-      span class: "label", "Owner Tools: "
+      span class: "label", "Version Owner: "
       a href: @url_for("upload_rock", @), "Upload Rock"
       raw " &middot; "
       a href: @url_for("edit_module_version", @), "Edit"

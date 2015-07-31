@@ -9,7 +9,6 @@ class Module extends require "widgets.page"
     div class: @@css_classes!, ->
       @header!
 
-
       if @module\in_root_manifest!
         div class: "installer", ->
           @term_snippet "luarocks install #{@module.name}"
@@ -84,7 +83,7 @@ class Module extends require "widgets.page"
         if @current_user\is_admin!
           text "Admin Tools: "
         else
-          text "Owner Tools: "
+          text "Module Owner: "
 
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
       raw " &middot; "

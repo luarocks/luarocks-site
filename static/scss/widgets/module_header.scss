@@ -13,6 +13,32 @@ h1 {
     margin-bottom: 5px;
     font-size: 42px;
     font-weight: normal;
+
+    .sub {
+        color: $sub_color;
+    }
+}
+
+.top_buttons {
+    margin: 10px 0 15px 0;
+}
+
+.round_button {
+    @include transition(all 0.2s ease);
+    opacity: 0.8;
+    display: inline-block;
+    border: 1px solid rgba($link_color, 0.8);
+    border-radius: 15px;
+    text-decoration: none;
+    background: none;
+    padding: 2px 12px;
+    font-size: $small_font_size;
+
+    &:hover {
+        color: white;
+        opacity: 1;
+        background: $link_color;
+    }
 }
 
 .module_summary {
@@ -24,7 +50,6 @@ h1 {
     width: $site_width;
     margin: 0 auto;
 }
-
 
 .metadata_columns {
     margin-top: 25px;
