@@ -90,7 +90,7 @@ class MoonRocksModules extends lapis.Application
       load_module @
       assert_editable @, @module
 
-      @title = "Edit '#{@module\name_for_display!}'"
+      @title = "Edit #{@module\name_for_display!}"
 
     GET: =>
       render: true
@@ -111,17 +111,41 @@ class MoonRocksModules extends lapis.Application
       return unless load_module @
       assert_editable @, @module
 
+      @title = "Edit #{@module\name_for_display!} #{@version.version_name}"
+
     GET: =>
       render: true
 
     POST: capture_errors =>
-      development = if @params.v
-        assert_valid @params, {
-          {"v", type: "table"}
-        }
-        @params.v.development
+      assert_csrf @
 
-      @version\update development: not not development
+      @params.v or= {}
+
+      assert_valid @params, {
+        {"v", type: "table"}
+      }
+
+      version_update = trim_filter @params.v
+      development = not not version_update.development
+
+      external_rockspec_url = if @current_user\is_admin!
+        assert_valid version_update, {
+          {"external_rockspec_url", type: "string", optional: true}
+        }
+
+        if url = version_update.external_rockspec_url
+          unless url\match "%w+://"
+            url = "http://" .. url
+          url
+        else
+          db.NULL
+
+
+      @version\update {
+        :development
+        :external_rockspec_url
+      }
+
       redirect_to: @url_for("module_version", @)
 
   }

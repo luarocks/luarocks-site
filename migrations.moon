@@ -166,4 +166,8 @@ import
 
     add_column "users", "following_count", integer
     add_column "modules", "followers_count", integer
+
+  [1438314813]: =>
+    add_column "versions", "external_rockspec_url", text null: true
+
 }

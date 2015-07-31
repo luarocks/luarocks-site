@@ -1,0 +1,39 @@
+
+
+.development_group {
+    border: 1px solid $border_color;
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+
+    p {
+        margin-bottom: 0;
+    }
+
+    .sub {
+        margin: 5px 0;
+        color: $sub_color;
+    }
+
+    .label {
+        font-weight: bold;
+    }
+
+    span.label {
+        margin-left: 5px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .wide_row {
+        margin: 0 0 20px 0;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .input_row {
+
+    }
+}

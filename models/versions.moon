@@ -106,7 +106,11 @@ class Versions extends Model
 
   url_key: (name) => @version_name
 
-  url: => bucket\file_url @rockspec_key .. "?#{@revision}"
+  url: =>
+    if @external_rockspec_url
+      @external_rockspec_url
+    else
+      bucket\file_url @rockspec_key .. "?#{@revision}"
 
   name_for_display: =>
     @display_version_name or @version_name
