@@ -29,7 +29,8 @@ get_lua_version = (spec) ->
 --   lua_version character varying(255),
 --   development boolean DEFAULT false NOT NULL,
 --   source_url text,
---   revision integer DEFAULT 1 NOT NULL
+--   revision integer DEFAULT 1 NOT NULL,
+--   external_rockspec_url text
 -- );
 -- ALTER TABLE ONLY versions
 --   ADD CONSTRAINT versions_pkey PRIMARY KEY (id);

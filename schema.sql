@@ -24,6 +24,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: hstore; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
+
+
+--
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -178,6 +192,21 @@ ALTER SEQUENCE exception_types_id_seq OWNED BY exception_types.id;
 
 
 --
+-- Name: followings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE followings (
+    source_user_id integer NOT NULL,
+    object_type smallint NOT NULL,
+    object_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE followings OWNER TO postgres;
+
+--
 -- Name: github_accounts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -192,6 +221,38 @@ CREATE TABLE github_accounts (
 
 
 ALTER TABLE github_accounts OWNER TO postgres;
+
+--
+-- Name: hello; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE hello (
+    id integer NOT NULL
+);
+
+
+ALTER TABLE hello OWNER TO postgres;
+
+--
+-- Name: hello_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE hello_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE hello_id_seq OWNER TO postgres;
+
+--
+-- Name: hello_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE hello_id_seq OWNED BY hello.id;
+
 
 --
 -- Name: lapis_migrations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -342,7 +403,8 @@ CREATE TABLE modules (
     updated_at timestamp without time zone NOT NULL,
     display_name character varying(255),
     endorsements_count integer DEFAULT 0 NOT NULL,
-    has_dev_version boolean DEFAULT false NOT NULL
+    has_dev_version boolean DEFAULT false NOT NULL,
+    followers_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -450,7 +512,8 @@ CREATE TABLE users (
     slug character varying(255) NOT NULL,
     flags integer DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    following_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -495,7 +558,8 @@ CREATE TABLE versions (
     lua_version character varying(255),
     development boolean DEFAULT false NOT NULL,
     source_url text,
-    revision integer DEFAULT 1 NOT NULL
+    revision integer DEFAULT 1 NOT NULL,
+    external_rockspec_url text
 );
 
 
@@ -534,6 +598,13 @@ ALTER TABLE ONLY exception_requests ALTER COLUMN id SET DEFAULT nextval('excepti
 --
 
 ALTER TABLE ONLY exception_types ALTER COLUMN id SET DEFAULT nextval('exception_types_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY hello ALTER COLUMN id SET DEFAULT nextval('hello_id_seq'::regclass);
 
 
 --
@@ -624,6 +695,14 @@ ALTER TABLE ONLY exception_requests
 
 ALTER TABLE ONLY exception_types
     ADD CONSTRAINT exception_types_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: followings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY followings
+    ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id);
 
 
 --
@@ -738,6 +817,13 @@ CREATE INDEX api_keys_user_id_idx ON api_keys USING btree (user_id);
 
 
 --
+-- Name: dependencies_dependency_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX dependencies_dependency_name_idx ON dependencies USING btree (dependency_name);
+
+
+--
 -- Name: exception_requests_exception_type_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -749,6 +835,13 @@ CREATE INDEX exception_requests_exception_type_id_idx ON exception_requests USIN
 --
 
 CREATE INDEX exception_types_label_idx ON exception_types USING btree (label);
+
+
+--
+-- Name: followings_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX followings_object_type_object_id_idx ON followings USING btree (object_type, object_id);
 
 
 --
@@ -951,6 +1044,9 @@ COPY lapis_migrations (name) FROM stdin;
 1427444511
 1427445542
 1427448938
+1437970205
+1438259102
+1438314813
 \.
 
 

@@ -20,7 +20,8 @@ import concat from table
 --   updated_at timestamp without time zone NOT NULL,
 --   display_name character varying(255),
 --   endorsements_count integer DEFAULT 0 NOT NULL,
---   has_dev_version boolean DEFAULT false NOT NULL
+--   has_dev_version boolean DEFAULT false NOT NULL,
+--   followers_count integer DEFAULT 0 NOT NULL
 -- );
 -- ALTER TABLE ONLY modules
 --   ADD CONSTRAINT modules_pkey PRIMARY KEY (id);

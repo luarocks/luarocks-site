@@ -10,6 +10,7 @@ import Model from require "lapis.db.model"
 -- );
 -- ALTER TABLE ONLY dependencies
 --   ADD CONSTRAINT dependencies_pkey PRIMARY KEY (version_id, dependency_name);
+-- CREATE INDEX dependencies_dependency_name_idx ON dependencies USING btree (dependency_name);
 --
 class Dependencies extends Model
   @primary_key: {"version_id", "dependency_name"}
