@@ -108,7 +108,7 @@ class Versions extends Model
 
   url: =>
     if @external_rockspec_url
-      @external_rockspec_url
+      @external_rockspec_url, true
     else
       bucket\file_url @rockspec_key .. "?#{@revision}"
 

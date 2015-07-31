@@ -63,7 +63,17 @@ assert object
 if object.increment_download and should_increment!
   object\increment_download!
 
-url = object\url!
+url, untrusted = object\url!
+
+if untrusted
+  -- trailing slash required for domain urls
+  unless url\match "//.-/"
+    url ..= "/"
+
+  -- ensure that the page is not excuted in the browser if it's HTML
+  ngx.header.content_type = 'text/x-rockspec'
+
+
 ngx.header["x-object_url"] = url
 ngx.var._url = url
 
