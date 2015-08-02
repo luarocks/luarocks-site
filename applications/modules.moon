@@ -4,6 +4,7 @@ db = require "lapis.db"
 import
   capture_errors
   respond_to
+  assert_error
   from require "lapis.application"
 
 import assert_valid from require "lapis.validate"
@@ -22,6 +23,7 @@ import
   Versions
   Rocks
   Dependencies
+  Modules
   from require "models"
 
 delete_module = capture_errors_404 respond_to {
@@ -161,3 +163,19 @@ class MoonRocksModules extends lapis.Application
   [delete_module: "/delete/:user/:module"]: delete_module
   [delete_module_version: "/delete/:user/:module/:version"]: delete_module
 
+  [follow_module: "/module/:module_id/follow"]: capture_errors {
+    on_error: => json: { errors: @errors }
+    =>
+      assert_valid @params, {
+        {"module_id", is_integer: true}
+      }
+
+      @module = assert_error Modules\find(@params.module_id),
+        "invalid module"
+
+      FollowingsFlow = require "flows.followings"
+      followed = FollowingsFlow(@)\follow_object @module
+      json: { success: followed }
+  }
+
+  [unfollow_module: "/module/:module_id/unfollow"]: capture_errors_404 =>
