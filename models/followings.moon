@@ -38,5 +38,25 @@ class Followings extends Model
       assert opts.object_id, "missing object id"
       opts.object_type = @object_types\for_db opts.object_type
 
-    safe_insert @, opts
+    f = safe_insert @, opts
+    f\increment 1 if f
+    f
+
+  delete: =>
+    if super!
+      @increment -1
+      true
+
+  increment: (amount=1) =>
+    amount = assert tonumber amount
+    import Users from require "models"
+
+    Users\load(id: @source_user_id)\update {
+      following_count: db.raw "following_count + #{amount}"
+    }, timestamp: false
+
+    cls = @@model_for_object_type @object_type
+    cls\load(id: @object_id)\update {
+      followers_count: db.raw "followers_count + #{amount}"
+    }, timestamp: false
 

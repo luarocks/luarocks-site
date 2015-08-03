@@ -97,7 +97,7 @@ import
     add_column "manifests", "versions_count", integer
 
     db.query [[
-      update manifests set 
+      update manifests set
         modules_count = (select count(*) from manifest_modules where manifest_id = manifests.id),
         versions_count = (select count(*) from versions where versions.module_id in (select module_id from manifest_modules where manifest_id = manifests.id)),
         updated_at = ?
