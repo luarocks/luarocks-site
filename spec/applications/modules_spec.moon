@@ -18,7 +18,7 @@ describe "applications.modules", ->
     current_user = factory.Users!
     mod = factory.Modules!
     status, res = request_as current_user, "/module/#{mod.id}/follow"
-    assert.same 200, status
+    assert.same 302, status
 
     followings = Followings\select!
 
@@ -34,7 +34,7 @@ describe "applications.modules", ->
     mod = following\get_object!
 
     status, res = request_as following\get_source_user!, "/module/#{mod.id}/unfollow"
-    assert.same 200, status
+    assert.same 302, status
 
     followings = Followings\select!
     assert.same 0, #followings

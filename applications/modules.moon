@@ -165,7 +165,7 @@ class MoonRocksModules extends lapis.Application
   [delete_module: "/delete/:user/:module"]: delete_module
   [delete_module_version: "/delete/:user/:module/:version"]: delete_module
 
-  [follow_module: "/module/:module_id/follow"]: capture_errors_404 =>
+  [follow_module: "/module/:module_id/follow"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
     }
@@ -174,10 +174,10 @@ class MoonRocksModules extends lapis.Application
       "invalid module"
 
     FollowingsFlow = require "flows.followings"
-    followed = FollowingsFlow(@)\follow_object @module
-    json: { success: followed }
+    FollowingsFlow(@)\follow_object @module
+    redirect_to: @url_for @module
 
-  [unfollow_module: "/module/:module_id/unfollow"]: capture_errors_404 =>
+  [unfollow_module: "/module/:module_id/unfollow"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
     }
@@ -187,4 +187,4 @@ class MoonRocksModules extends lapis.Application
 
     FollowingsFlow = require "flows.followings"
     unfollowed = FollowingsFlow(@)\unfollow_object @module
-    json: { success: unfollowed }
+    redirect_to: @url_for @module
