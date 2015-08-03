@@ -29,4 +29,12 @@ describe "applications.modules", ->
     assert.same Followings.object_types.module, following.object_type
     assert.same mod.id, following.object_id
 
+  it "unfollows module", ->
+    following = factory.Followings!
+    mod = following\get_object!
 
+    status, res = request_as following\get_source_user!, "/module/#{mod.id}/unfollow"
+    assert.same 200, status
+
+    followings = Followings\select!
+    assert.same 0, #followings

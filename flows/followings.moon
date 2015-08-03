@@ -15,10 +15,18 @@ class FollowingsFlow extends Flow
   follow_object: (object) =>
     Followings\create {
       source_user_id: @current_user.id
+      :object
+    }
+
+  unfollow_object: (object) =>
+    following = Followings\find {
+      source_user_id: @current_user.id
       object_type: Followings\object_type_for_object object
       object_id: object.id
     }
 
+    return unless following
+    following\delete!
 
-  unfollow_object: (object) =>
+
 

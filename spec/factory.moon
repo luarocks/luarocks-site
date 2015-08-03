@@ -73,4 +73,10 @@ ApiKeys = (opts={}) ->
   opts.user_id or= Users!.id
   models.ApiKeys\generate opts.user_id, "specs"
 
-{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests, :ManifestModules, :ApiKeys }
+Followings = (opts={}) ->
+  opts.object or= Modules!
+  opts.source_user_id or= Users!.id
+  models.Followings\create opts
+
+{ :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests,
+  :ManifestModules, :ApiKeys, :Followings }

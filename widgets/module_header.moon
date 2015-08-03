@@ -8,6 +8,11 @@ class ModuleHeader extends require "widgets.base"
 
   inner_content: =>
     div class: "module_header_inner", ->
+      form action: @url_for("follow_module", module_id: @module.id), action: "post", ->
+        @csrf_input
+        button "Follow"
+
+
       if @version
         div class: "top_buttons", ->
           a class: "round_button", href: @url_for(@module), "← Return to module"

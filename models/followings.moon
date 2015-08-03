@@ -1,6 +1,8 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
 
+import safe_insert from require "helpers.models"
+
 -- Generated schema dump: (do not edit)
 --
 -- CREATE TABLE followings (
@@ -25,7 +27,16 @@ class Followings extends Model
     }}
   }
 
-  @create: (opts) =>
-    opts.object_type = @@object_types\for_db opts.object_type
-    Model.create @, opts
+  @create: (opts={}) =>
+    assert opts.source_user_id, "missing source user id"
+
+    if object = opts.object
+      opts.object = nil
+      opts.object_id = object.id
+      opts.object_type = @object_type_for_object object
+    else
+      assert opts.object_id, "missing object id"
+      opts.object_type = @object_types\for_db opts.object_type
+
+    safe_insert @, opts
 
