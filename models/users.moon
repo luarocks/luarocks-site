@@ -166,3 +166,13 @@ class Users extends Model
       link\delete!
 
     true
+
+  follows: (object) =>
+    return unless object
+    import Followings from require "models"
+    Followings\find {
+      source_user_id: @id
+      object_type: Followings\object_type_for_object object
+      object_id: object.id
+    }
+
