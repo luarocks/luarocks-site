@@ -8,10 +8,15 @@ class ModuleHeader extends require "widgets.base"
 
   inner_content: =>
     div class: "module_header_inner", ->
-      form action: @url_for("follow_module", module_id: @module.id), action: "post", ->
+      form {
+        action: @url_for(@module_following and "unfollow_module" or"follow_module", module_id: @module.id)
+        method: "post"
+      }, ->
         @csrf_input
-        button "Follow"
-
+        if @module_following
+          button "Unfollow"
+        else
+          button "Follow"
 
       if @version
         div class: "top_buttons", ->

@@ -70,6 +70,8 @@ class MoonRocksModules extends lapis.Application
     @manifests = @module\get_manifests!
     @depended_on = @module\find_depended_on!
 
+    @module_following = @current_user and @current_user\follows @module
+
     Versions\sort_versions @versions
 
     for v in *@versions
