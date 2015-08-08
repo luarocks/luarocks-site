@@ -1,4 +1,7 @@
 
+import login_and_return_url from require "helpers.app"
+
+
 class ModuleHeader extends require "widgets.base"
   @needs: {
     "module"
@@ -60,10 +63,17 @@ class ModuleHeader extends require "widgets.base"
         method: "post"
       }, ->
         @csrf_input
-        if @module_following
-          button "Unfollow"
+        if @current_user
+          if @module_following
+            button "Unfollow"
+          else
+            button "Follow"
         else
-          button "Follow"
+          a {
+            class:"button"
+            href: login_and_return_url(@, nil, "follow_module")
+            "Follow"
+          }
 
         if @module.followers_count > 0
           span class: "followers_count", @format_number @module.followers_count
