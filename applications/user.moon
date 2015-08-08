@@ -26,6 +26,7 @@ import
   ensure_https
   capture_errors_404
   assert_editable
+  verify_return_to
   from require "helpers.app"
 
 import load_module, load_manifest from require "helpers.loaders"
@@ -67,6 +68,8 @@ class MoonRocksUser extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      assert_csrf @
+
       assert_valid @params, {
         { "username", exists: true }
         { "password", exists: true }
@@ -74,7 +77,8 @@ class MoonRocksUser extends lapis.Application
 
       user = assert_error Users\login @params.username, @params.password
       user\write_session @
-      redirect_to: @url_for"index"
+
+      redirect_to: verify_return_to(@params.return_to) or @url_for"index"
   }
 
   [user_register: "/register"]: ensure_https respond_to {
@@ -97,7 +101,7 @@ class MoonRocksUser extends lapis.Application
       user = assert_error Users\create username, password, email
 
       user\write_session @
-      redirect_to: @url_for"index"
+      redirect_to: verify_return_to(@params.return_to) or @url_for"index"
   }
 
   -- TODO: make this post

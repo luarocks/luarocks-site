@@ -21,9 +21,10 @@ class Layout extends Widget
         raw " &middot; "
         a href: @url_for"user_logout", "Log Out"
       else
-        a href: @url_for"user_login", "Log In"
+        login_params = { return_to: @params.return_to, intent: @params.intent }
+        a href: @url_for("user_login", nil, login_params), "Log In"
         raw " &middot; "
-        a href: @url_for"user_register", "Register"
+        a href: @url_for("user_register", nil, login_params), "Register"
 
   content: =>
     html_5 ->
