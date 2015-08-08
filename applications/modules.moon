@@ -103,7 +103,7 @@ class MoonRocksModules extends lapis.Application
       changes = @params.m
 
       trim_filter changes, {
-        "license", "description", "display_name", "homepage"
+        "license", "description", "display_name", "homepage", "summary"
       }, db.NULL
 
       @module\update changes

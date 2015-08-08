@@ -15,7 +15,12 @@ class EditModule extends require "widgets.page"
             span class: "sub", ->
               raw " &mdash; Leave blank to default to name of module"
 
-          input type: "text", name: "m[display_name]", value: @module.display_name
+          input type: "text", name: "m[display_name]", value: @module.display_name, placeholder: @module.name
+
+      div class: "wide_row", ->
+        label ->
+          div class: "label", "Summary"
+          input type: "text", name: "m[summary]", value: @module.summary
 
       div class: "wide_row", ->
         label ->
