@@ -160,6 +160,8 @@ class MoonRocksModules extends lapis.Application
     @title = "#{@module\name_for_display!} #{@version.version_name}"
     @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
 
+    @module_following = @current_user and @current_user\follows @module
+
     render: true
 
   [delete_module: "/delete/:user/:module"]: delete_module
