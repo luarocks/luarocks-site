@@ -170,4 +170,40 @@ import
   [1438314813]: =>
     add_column "versions", "external_rockspec_url", text null: true
 
+  [1438999272]: =>
+    create_table "notifications", {
+      {"id", serial}
+      {"user_id", foreign_key}
+
+      {"type", integer}
+
+      {"object_type", enum}
+      {"object_id", foreign_key}
+
+      {"count", integer}
+
+      {"seen", boolean}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "notifications", "user_id", "seen", "id"
+    create_index "notifications", "user_id", "type", "object_type", "object_id", where: "not seen", unique: "true"
+
+    create_table "notification_objects", {
+      {"notification_id", foreign_key}
+
+      {"object_type", enum}
+      {"object_id", foreign_key}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (notification_id, object_type, object_id)"
+    }
+
+
 }
