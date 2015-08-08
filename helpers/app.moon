@@ -18,12 +18,21 @@ assert_editable = (thing) =>
 
 not_found = { render: "not_found", status: 404 }
 
+login_and_return_url = (url=ngx.var.request_uri, intent) =>
+  @url_for "user_login", nil, {
+    return_to: @build_url url
+    :intent
+  }
+
 require_login = (fn) ->
   =>
     if @current_user
       fn @
     else
-      redirect_to: @url_for"user_login"
+      if @req.cmd_mth == "GET"
+        redirect_to: login_and_return_url @
+      else
+        redirect_to: @url_for "user_login"
 
 require_admin = (fn) ->
   =>
@@ -61,5 +70,20 @@ assert_page = =>
   @page
 
 
+verify_return_to = (url) ->
+  return false unless url
+
+  return url unless url\match("^%w+://") or url\match "^//"
+  domain = url\match "//([^:/]+)"
+  return false unless domain
+  domain = domain\lower!
+
+  return url if domain == config.host\match "^[^:]*"
+  return url if domain\sub(-#config.host) == config.host
+
+  false
+
+
 { :assert_editable, :generate_csrf, :assert_csrf, :require_login,
-  :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page }
+  :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page,
+  :login_and_return_url, :verify_return_to }
