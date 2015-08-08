@@ -12,7 +12,7 @@ describe "applications.modules", ->
   use_test_server!
 
   before_each ->
-    truncate_tables Modules, Versions, Followings, Users
+    truncate_tables Modules, Versions, Followings, Users, Notifications, NotificationObjects
 
   it "follows module", ->
     current_user = factory.Users!
@@ -49,4 +49,18 @@ describe "applications.modules", ->
     mod\refresh!
     assert.same 0, current_user.following_count
     assert.same 0, mod.followers_count
+
+  it "does/undoes notification for follow", ->
+    current_user = factory.Users!
+    mod = factory.Modules!
+    status, res = request_as current_user, "/module/#{mod.id}/follow"
+
+    assert.same 1, Notifications\count!
+    assert.same 1, NotificationObjects\count!
+
+    status, res = request_as current_user, "/module/#{mod.id}/unfollow"
+
+    assert.same 0, Notifications\count!
+    assert.same 0, NotificationObjects\count!
+
 
