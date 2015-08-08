@@ -8,19 +8,8 @@ class ModuleHeader extends require "widgets.base"
 
   inner_content: =>
     div class: "module_header_inner", ->
-      form {
-        action: @url_for(@module_following and "unfollow_module" or"follow_module", module_id: @module.id)
-        method: "post"
-      }, ->
-        @csrf_input
-        if @module_following
-          button "Unfollow"
-        else
-          button "Follow"
 
-      if @version
-        div class: "top_buttons", ->
-          a class: "round_button", href: @url_for(@module), "← Return to module"
+      @follow_area!
 
       h1 ->
         text @module\name_for_display!
@@ -30,6 +19,10 @@ class ModuleHeader extends require "widgets.base"
 
       if summary = @module.summary
         p class: "module_summary", summary
+
+      if @version
+        div class: "nav_buttons", ->
+          a class: "round_button", href: @url_for(@module), "← Return to module"
 
       @admin_panel!
 
@@ -59,5 +52,20 @@ class ModuleHeader extends require "widgets.base"
           div class: "column", ->
             h3 "Downloads"
             text @format_number @module.downloads
+
+  follow_area: =>
+    div class: "follow_area", ->
+      form {
+        action: @url_for(@module_following and "unfollow_module" or"follow_module", module_id: @module.id)
+        method: "post"
+      }, ->
+        @csrf_input
+        if @module_following
+          button "Unfollow"
+        else
+          button "Follow"
+
+        if @module.followers_count > 0
+          span class: "followers_count", @format_number @module.followers_count
 
 

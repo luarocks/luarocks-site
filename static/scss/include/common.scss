@@ -4,6 +4,7 @@ $header_color: lighten(desaturate($lua_blue, 60%), 5%);
 $button_color: #637393;
 $site_width: 800px;
 $link_color: #008FEE;
+$button_height: 35px;
 
 $base_font_size: 16px;
 $small_font_size: 14px;
@@ -20,6 +21,8 @@ $sub_color_light: mix(mix($body_color, gray, 20%), white, 80%);
 
 $error_color: mix($back_color, red, 30%);
 $tag_color: lighten($header_color, 20%);
+
+$button_color: $link_color;
 
 @mixin unselectable {
     -moz-user-select: none;
