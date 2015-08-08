@@ -1,7 +1,7 @@
 
 import Flow from require "lapis.flow"
 
-import Followings from require "models"
+import Followings, Notifications from require "models"
 
 import assert_error from require "lapis.application"
 
@@ -13,10 +13,18 @@ class FollowingsFlow extends Flow
     assert_error @current_user, "must be logged in"
   
   follow_object: (object) =>
-    Followings\create {
+    f = Followings\create {
       source_user_id: @current_user.id
       :object
     }
+
+    if f and object.get_user
+      Notifications\notify_for object\get_user!,
+        object,
+        "follow",
+        @current_user
+
+    f
 
   unfollow_object: (object) =>
     following = Followings\find {
@@ -26,7 +34,12 @@ class FollowingsFlow extends Flow
     }
 
     return unless following
+
+    if object.get_user
+      Notifications\undo_notify object\get_user!,
+        object,
+        "follow",
+        @current_user
+
     following\delete!
-
-
 
