@@ -1,8 +1,8 @@
 import time_ago_in_words from require "lapis.util"
 
-import escape from require "lapis.html"
-
 Header = require "widgets.module_header"
+
+import basic_format from require "helpers.html"
 
 class Module extends require "widgets.page"
   content: =>

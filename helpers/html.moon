@@ -1,3 +1,6 @@
+import escape from require "lapis.html"
+
+
 basic_format = do
   import P, R, C, Cs, S, Cmt, Ct, Cg from require "lpeg"
   stop = P"\r"^-1 * P"\n"
