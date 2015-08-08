@@ -148,6 +148,19 @@ hr {
         font-size: $small_font_size;
         margin-top: 18px;
         line-height: normal;
+
+        .unread_notifications {
+            background: white;
+            display: inline-block;
+            vertical-align: 0px;
+            height: 22px;
+            line-height: 22px;
+            color: $link_color;
+            padding: 0 8px;
+
+            margin-right: 10px;
+            border-radius: 18px;
+        }
     }
 
     .text_logo {
@@ -483,8 +496,10 @@ img.avatar {
     }
 }
 
-.development_flag {
+.development_flag, .new_tag {
     display: inline-block;
+    vertical-align: 2px;
+    font-weight: bold;
     margin-left: 10px;
     text-transform: uppercase;
     font-size: 12px;

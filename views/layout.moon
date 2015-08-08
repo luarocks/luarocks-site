@@ -7,6 +7,10 @@ class Layout extends Widget
 
   user_panel: =>
     div class: "user_panel", ->
+      if @current_user and @current_user\get_unseen_notifications_count! > 0
+        a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
+          @current_user\get_unseen_notifications_count!
+
       a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Install"
       raw " &middot; "
       a href: "https://github.com/keplerproject/luarocks/wiki/Documentation", "Docs"

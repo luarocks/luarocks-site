@@ -176,3 +176,13 @@ class Users extends Model
       object_id: object.id
     }
 
+  get_unseen_notifications_count: =>
+    return @unseen_notification_count if @unseen_notification_count
+
+    import Notifications from require "models"
+    res = unpack Notifications\select "
+      where user_id = ? and not seen
+    ", @id, fields: "sum(count)"
+    @unseen_notification_count = res and res.sum or 0
+    @unseen_notification_count
+
