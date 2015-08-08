@@ -234,3 +234,31 @@ class MoonRocksUser extends lapis.Application
       redirect_to: @url_for("module", @)
   }
 
+
+  [notifications: "/notifications"]: require_login =>
+    import Notifications from require "models"
+    @unseen_notifications = Notifications\select "
+      where user_id = ? and not seen
+      order by id desc
+    ", @current_user.id
+
+    @seen_notifications = Notifications\select "
+      where user_id = ? and seen
+      order by id desc
+      limit 20
+    ", @current_user.id
+
+    if next(@unseen_notifications) and not @params.keep_notifications
+      db.update Notifications\table_name!, {
+        seen: true
+      }, id: db.list [n.id for n in *@unseen_notifications]
+
+    all = [n for n in *@unseen_notifications]
+    for n in *@seen_notifications
+      table.insert all, n
+
+    Notifications\preload_for_display all
+    @title = "Notifications"
+    render: true
+
+

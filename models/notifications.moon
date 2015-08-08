@@ -139,19 +139,19 @@ class Notifications extends Model
   prefix: =>
     switch @type
       when @@types.follow
-        "You got followed by"
-      when @@types.join
-        if @count == 1
-          "Someone joined "
-        else
-          "#{@count} people joined "
-      when @@types.submit
-        nil
+        switch @object_type
+          when @@object_types.module
+            "Your module"
       else
         error "unknown notification type: #{@@types\to_name @type}"
 
   suffix: =>
-    nil
+    switch @type
+      when @@types.follow
+        if @count > 1
+          "got a #{@count} new followers"
+        else
+          "got a new follower"
 
   object_title: =>
     object = @get_object!
