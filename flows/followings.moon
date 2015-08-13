@@ -19,10 +19,10 @@ class FollowingsFlow extends Flow
     }
 
     if f and object.get_user
-      Notifications\notify_for object\get_user!,
-        object,
-        "follow",
-        @current_user
+      target_user = object\get_user!
+      unless target_user.id == @current_user.id
+        Notifications\notify_for target_user, object,
+          "follow", @current_user
 
     f
 
