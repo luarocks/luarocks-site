@@ -287,6 +287,13 @@ hr {
             color: $sub_color;
         }
 
+        textarea {
+            width: 50%;
+            @include border_box;
+            vertical-align: top;
+            height: 100px;
+        }
+
     }
 
     .wide_row {

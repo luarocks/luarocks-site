@@ -20,3 +20,10 @@ class UserData extends Model
       :user_id
       data: "{}"
     }
+
+  -- without @
+  twitter_handle: =>
+    return unless @twitter
+    @twitter\match("twitter.com/([^/]+)") or @twitter\match("^@(.+)") or @twitter
+
+

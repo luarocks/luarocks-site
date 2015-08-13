@@ -191,8 +191,26 @@ class MoonRocksUser extends lapis.Application
   }
 
   ["user_settings.profile": "/settings/profile"]: ensure_https require_login respond_to {
+    before: =>
+      @user = @current_user
+      @title = "Profile - User Settings"
+
     GET: =>
       render: true
+
+    POST: capture_errors =>
+      assert_csrf @
+
+      assert_valid @params, {
+        {"profile", type: "table"}
+      }
+
+      profile = trim_filter @params.profile,
+        {"website", "twitter", "profile"}, db.NULL
+
+      @user\get_data!\update profile
+      redirect_to: @url_for "user_settings.profile"
+
   }
 
   -- old settings url goes to api keys page since that's where tool points to

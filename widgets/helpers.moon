@@ -13,6 +13,10 @@ class Helpers
   format_number: (num) =>
     tostring(num)\reverse!\gsub("(...)", "%1,")\match("^(.-),?$")\reverse!
 
+  format_url: (str) =>
+    return str if str\match "^(%w+)://"
+    "http://" .. str
+
   truncate: (str, length) =>
     return str if #str <= length
     str\sub(1, length) .. "..."

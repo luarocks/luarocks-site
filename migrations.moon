@@ -205,5 +205,10 @@ import
       "PRIMARY KEY (notification_id, object_type, object_id)"
     }
 
+  [1439449229]: =>
+    drop_column "user_data", "data"
+    add_column "user_data", "twitter", text null: true
+    add_column "user_data", "website", text null: true
+    add_column "user_data", "profile", text null: true
 
 }
