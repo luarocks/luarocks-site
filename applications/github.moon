@@ -42,7 +42,7 @@ class MoonrocksGithub extends lapis.Application
       else
         GithubAccounts\create data
 
-      redirect_to: @url_for "user_settings"
+      redirect_to: @url_for "user_settings.link_github"
   }
 
 
@@ -68,7 +68,7 @@ class MoonrocksGithub extends lapis.Application
       github = require "helpers.github"
       github\delete_access_token @account.access_token
 
-      redirect_to: @url_for "user_settings"
+      redirect_to: @url_for "user_settings.link_github"
   }
 
 

@@ -38,17 +38,17 @@ api_request = (fn) ->
 class MoonRocksApi extends lapis.Application
   [new_api_key: "/api_keys/new"]: require_login respond_to {
     POST: capture_errors {
-      on_error: => redirect_to: @url_for "user_settings"
+      on_error: => redirect_to: @url_for "user_settings.api_keys"
 
       =>
         assert_csrf @
         ApiKeys\generate @current_user.id
-        redirect_to: @url_for "user_settings"
+        redirect_to: @url_for "user_settings.api_keys"
     }
   }
 
   [delete_api_key: "/api_key/:key/delete"]: require_login capture_errors {
-    on_error: => redirect_to: @url_for "user_settings"
+    on_error: => redirect_to: @url_for "user_settings.api_keys"
 
     respond_to {
       before: =>
@@ -60,7 +60,7 @@ class MoonRocksApi extends lapis.Application
       POST: =>
         assert_csrf @
         @key\delete!
-        redirect_to: @url_for "user_settings"
+        redirect_to: @url_for "user_settings.api_keys"
     }
   }
 

@@ -6,7 +6,7 @@ class GithubClaimModules extends require "widgets.page"
       text "The following modules can be automatically claimed by your
       LuaRocks.org account based on the GitHub accounts you've linked. You can
       link a new GitHub account from the "
-      a href: @url_for("user_settings"), "User Settings page"
+      a href: @url_for("user_settings.link_github"), "Account Settings page"
       text ". When you claim a module it is copied into your account and your
       copy takes the old module's place in the root manifest."
 

@@ -144,16 +144,18 @@ class MoonRocksUser extends lapis.Application
         redirect_to: @url_for"user_forgot_password" .. "?sent=true"
   }
 
-  [user_settings: "/settings"]: ensure_https require_login respond_to {
-    before: =>
-      import GithubAccounts from require "models"
-
+  ["user_settings.link_github": "/settings/link-github"]: ensure_https require_login respond_to {
+    GET: =>
       @user = @current_user
-      @user\get_data!
-      @title = "User Settings"
-
+      @title = "Link GitHub - User Settings"
       @github_accounts = @user\find_github_accounts!
-      @api_keys = ApiKeys\select "where user_id = ?", @user.id
+      render: true
+  }
+
+  ["user_settings.reset_password": "/settings/reset-password"]: ensure_https require_login respond_to {
+    before: =>
+      @user = @current_user
+      @title = "Reset Password - User Settings"
 
     GET: =>
       render: true
@@ -161,22 +163,41 @@ class MoonRocksUser extends lapis.Application
     POST: capture_errors =>
       assert_csrf @
 
-      if passwords = @params.password
-        assert_table passwords
-        trim_filter passwords
+      assert_valid @params, {
+        {"password", type: "table"}
+      }
 
-        assert_valid passwords, {
-          { "new_password", exists: true, min_length: 2 }
-          { "new_password_repeat", equals: passwords.new_password }
-        }
+      passwords = @params.password
 
-        assert_error @user\check_password(passwords.current_password),
-          "Invalid old password"
+      assert_valid passwords, {
+        { "new_password", exists: true, min_length: 2 }
+        { "new_password_repeat", equals: passwords.new_password }
+      }
 
-        @user\update_password passwords.new_password, @
+      assert_error @user\check_password(passwords.current_password),
+        "Invalid old password"
 
-      redirect_to: @url_for"user_settings" .. "?password_reset=true"
+      @user\update_password passwords.new_password, @
+
+      redirect_to: @url_for "user_settings.reset_password", nil, reset_password: "true"
   }
+
+  ["user_settings.api_keys": "/settings/api-keys"]: ensure_https require_login respond_to {
+    GET: =>
+      @user = @current_user
+      @title = "Api Keys - User Settings"
+      @api_keys = @user\get_api_keys!
+      render: true
+  }
+
+  ["user_settings.profile": "/settings/profile"]: ensure_https require_login respond_to {
+    GET: =>
+      render: true
+  }
+
+  -- old settings url goes to api keys page since that's where tool points to
+  "/settings": ensure_https require_login =>
+    redirect_to: @url_for "user_settings.api_keys"
 
   [add_to_manifest: "/add-to-manifest/:user/:module"]: capture_errors_404 require_login respond_to {
     before: =>

@@ -7,8 +7,9 @@ class DeleteApiKey extends require "widgets.page"
     p "Any tools using this key will no longer have access to LuaRocks.org."
 
     form action: @req.cmd_url, method: "POST", class: "form", ->
-      input type: "hidden", name: "csrf_token", value: @csrf_token
+      @csrf_input!
+
       div class: "button_row", ->
         input type: "submit", value: "Revoke"
         text " "
-        a href: @url_for"user_settings", "Cancel"
+        a href: @url_for"user_settings.api_keys", "Cancel"

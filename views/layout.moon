@@ -21,7 +21,7 @@ class Layout extends Widget
         raw " &middot; "
         a href: @url_for"upload_rockspec", "Upload"
         raw " &middot; "
-        a href: @url_for"user_settings", "Settings"
+        a href: @url_for"user_settings.profile", "Settings"
         raw " &middot; "
         a href: @url_for"user_logout", "Log Out"
       else

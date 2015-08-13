@@ -33,6 +33,10 @@ import strip_non_ascii from require "helpers.strings"
 class Users extends Model
   @timestamp: true
 
+  @relations: {
+    {"api_keys", has_many: "ApiKeys"}
+  }
+
   @create: (username, password, email) =>
     encrypted_password = bcrypt.digest password, bcrypt.salt 5
 
