@@ -78,7 +78,7 @@ class MoonRocksUser extends lapis.Application
       user = assert_error Users\login @params.username, @params.password
       user\write_session @
 
-      redirect_to: verify_return_to(@params.return_to) or @url_for"index"
+      redirect_to: verify_return_to(@params.return_to) or @url_for "index"
   }
 
   [user_register: "/register"]: ensure_https respond_to {

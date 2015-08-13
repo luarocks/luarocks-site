@@ -72,6 +72,7 @@ assert_page = =>
 
 verify_return_to = (url) ->
   return false unless url
+  return false if url == ""
 
   return url unless url\match("^%w+://") or url\match "^//"
   domain = url\match "//([^:/]+)"
