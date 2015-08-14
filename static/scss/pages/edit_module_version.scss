@@ -31,8 +31,34 @@
             margin-bottom: 0;
         }
     }
+}
 
-    .input_row {
+.rock_list {
+    margin: 0;
+    padding: 0;
 
+    .action_buttons {
+        float: right;
+    }
+
+    .timestamp, .downloads {
+        margin-left: 10px;
+        color: $sub_color;
+    }
+
+    .delete_btn {
+        background: $red_button_color;
+        &:hover {
+            background: lighten($red_button_color, 5%);
+        }
+    }
+
+    .arch {
+        line-height: $button_height;
+        border: 1px solid $border_color;
+        background: white;
+        padding: 10px 20px;
+        list-style: none;
+        margin: 0 0 10px 0;
     }
 }

@@ -1,3 +1,4 @@
+import time_ago_in_words from require "lapis.util"
 
 class EditModuleVersion extends require "widgets.page"
   inner_content: =>
@@ -32,7 +33,39 @@ class EditModuleVersion extends require "widgets.page"
 
 
       div class: "button_row", ->
-        input type: "submit"
+        button "Save"
         raw " &middot; "
         a href: @url_for("module_version", @), "Cancel"
+
+    @manage_rocks!
+
+  manage_rocks: =>
+    return unless next @rocks
+    h2 "Manage rocks"
+    ul class: "rock_list", ->
+      for rock in *@rocks
+        version = rock\get_version!
+        mod = version\get_module!
+        user = mod\get_user!
+
+        li class: "arch", ->
+          div class: "action_buttons", ->
+            a {
+              class: "button delete_btn"
+              href: @url_for "delete_rock", {
+                arch: rock
+                :version
+                module: mod
+                :user
+              }
+              "Delete"
+            }
+
+          a href: @url_for(rock), rock.arch
+          text " "
+          span class: "timestamp", time_ago_in_words(rock.created_at)
+          text " "
+          span class: "downloads", @plural rock.downloads, "download", "downloads"
+          text " "
+
 

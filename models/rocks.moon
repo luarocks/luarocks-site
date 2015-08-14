@@ -68,3 +68,4 @@ class Rocks extends Model
     return false unless user
     @get_version!\allowed_to_edit user
 
+

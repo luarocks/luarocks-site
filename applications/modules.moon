@@ -116,6 +116,7 @@ class MoonRocksModules extends lapis.Application
       assert_editable @, @module
 
       @title = "Edit #{@module\name_for_display!} #{@version.version_name}"
+      @rocks = @version\get_rocks!
 
     GET: =>
       render: true
@@ -166,6 +167,24 @@ class MoonRocksModules extends lapis.Application
 
   [delete_module: "/delete/:user/:module"]: delete_module
   [delete_module_version: "/delete/:user/:module/:version"]: delete_module
+
+  [delete_rock: "/delete/:user/:module/:version/:arch"]: require_login capture_errors_404 respond_to {
+    before: =>
+      load_module @
+      assert_editable @, @rock
+
+      @title = "Delete #{@module\name_for_display!}?"
+
+    GET: =>
+      render: true
+
+    POST: capture_errors =>
+      assert_csrf @
+
+      @rock\delete!
+      redirect_to: @url_for @version
+  }
+
 
   [follow_module: "/module/:module_id/follow"]: require_login capture_errors_404 =>
     assert_valid @params, {

@@ -45,6 +45,7 @@ class Versions extends Model
   @relations: {
     {"module", belongs_to: "Modules"}
     {"dependencies", has_many: "Dependencies"}
+    {"rocks", has_many: "Rocks"}
   }
 
   @sort_versions: (versions) =>
@@ -131,13 +132,6 @@ class Versions extends Model
     increment_counter Modules\load(id: @module_id), "downloads"
     DownloadsDaily\increment @id
 
-  get_rocks: =>
-    unless @_rocks
-      import Rocks from require "models"
-      @_rocks = Rocks\select "where version_id = ?", @id
-
-    @_rocks
-
   delete: =>
     if super!
       -- delete rockspec
@@ -147,9 +141,7 @@ class Versions extends Model
         mod\update_has_dev_version!
 
       -- remove rocks
-      import Rocks from require "models"
-      rocks = Rocks\select "where version_id = ?", @id
-      for r in *rocks
+      for r in *@get_rocks!
         r\delete!
 
       true
