@@ -66,8 +66,21 @@ describe "moonrocks", ->
     before_each ->
       user = factory.Users!
 
+
     it "should load settings page", ->
       status, body = request_as user, "/settings"
+      assert.same 302, status
+
+      status, body = request_as user, "/settings/link-github"
+      assert.same 200, status
+
+      status, body = request_as user, "/settings/reset-password"
+      assert.same 200, status
+
+      status, body = request_as user, "/settings/api-keys"
+      assert.same 200, status
+
+      status, body = request_as user, "/settings/profile"
       assert.same 200, status
 
     it "should load upload page", ->

@@ -18,7 +18,6 @@ class UserData extends Model
   @create: (user_id) =>
     Model.create @, {
       :user_id
-      data: "{}"
     }
 
   -- without @

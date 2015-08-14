@@ -9,15 +9,21 @@ import truncate_tables from require "lapis.spec.db"
 import request from require "spec.helpers"
 
 import
-  Users
+  Users, UserData
   from require "models"
 
+factory = require "spec.factory"
 
 describe "application.user", ->
   use_test_server!
 
   before_each ->
-    truncate_tables Users
+    truncate_tables Users, UserData
+
+  it "makes user data object", ->
+    user = factory.Users!
+    user\get_data!
+    assert.same 1, UserData\count!
 
   it "should register a user", ->
     status, body, headers = request "/register", {
