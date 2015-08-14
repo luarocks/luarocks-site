@@ -202,3 +202,7 @@ class Versions extends Model
   increment_revision: =>
     @update revision: db.raw "revision + 1"
 
+  allowed_to_edit: (user) =>
+    return false unless user
+    @get_module!\allowed_to_edit user
+

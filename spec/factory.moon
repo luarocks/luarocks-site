@@ -19,7 +19,15 @@ Users = (opts={}) ->
   opts.email or= next_email!
   opts.password or= "my-password"
 
-  assert models.Users\create opts.username, opts.password, opts.email
+  user = assert models.Users\create opts.username, opts.password, opts.email
+  opts.password = nil
+  opts.username = nil
+  opts.email = nil
+
+  if next opts
+    user\update opts
+
+  user
 
 Modules = (opts={}) ->
   opts.name or= "module_#{next_counter "module"}"

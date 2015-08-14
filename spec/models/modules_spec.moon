@@ -13,7 +13,7 @@ describe "models.modules", ->
   use_test_env!
 
   before_each ->
-    truncate_tables Manifests, Users, Versions
+    truncate_tables Manifests, Users, Versions, Modules
 
   it "should refresh has_dev_version with no dev versions", ->
     mod = factory.Modules!
@@ -26,5 +26,12 @@ describe "models.modules", ->
 
     mod\update_has_dev_version!
     assert.truthy mod.has_dev_version
+
+  it "allowed_to_edit only retrns true for owner/admin", ->
+    mod = factory.Modules!
+    assert.falsy mod\allowed_to_edit nil
+    assert.truthy mod\allowed_to_edit mod\get_user!
+    assert.falsy mod\allowed_to_edit factory.Users!
+    assert.truthy mod\allowed_to_edit factory.Users flags: 1
 
 

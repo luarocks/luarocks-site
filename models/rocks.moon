@@ -51,3 +51,7 @@ class Rocks extends Model
   increment_revision: =>
     @update revision: db.raw "revision + 1"
 
+  allowed_to_edit: (user) =>
+    return false unless user
+    @get_version!\allowed_to_edit user
+
