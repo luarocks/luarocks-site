@@ -198,3 +198,5 @@ class Versions extends Model
     return false unless user
     @get_module!\allowed_to_edit user
 
+  content_type: =>
+    "text/x-rockspec"

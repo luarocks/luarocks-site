@@ -70,9 +70,10 @@ if untrusted
   unless url\match "//.-/"
     url ..= "/"
 
-  -- ensure that the page is not excuted in the browser if it's HTML
-  ngx.header.content_type = 'text/x-rockspec'
+  assert object.content_type, "external url must provide content type"
 
+if object.content_type
+  ngx.header.content_type = object\content_type!
 
 ngx.header["x-object_url"] = url
 ngx.var._url = url
