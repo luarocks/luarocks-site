@@ -62,6 +62,7 @@ class MoonRocksUser extends lapis.Application
 
   [user_login: "/login"]: ensure_https respond_to {
     before: =>
+      @canonical_url = @build_url @url_for "user_login"
       @title = "Login"
 
     GET: =>
@@ -83,6 +84,7 @@ class MoonRocksUser extends lapis.Application
 
   [user_register: "/register"]: ensure_https respond_to {
     before: =>
+      @canonical_url = @build_url @url_for "user_register"
       @title = "Register Account"
 
     GET: =>

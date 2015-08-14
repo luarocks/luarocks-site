@@ -40,6 +40,9 @@ class Layout extends Widget
           else
             text "LuaRocks"
 
+        if @canonical_url
+          link rel: "canonical", href: @canonical_url
+
         link href: "https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700", rel: "stylesheet", type: "text/css"
 
         if @page_description
