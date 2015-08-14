@@ -27,6 +27,10 @@ import increment_counter, safe_insert from require "helpers.models"
 class Rocks extends Model
   @timestamp: true
 
+  @relations: {
+    {"version", belongs_to: "Versions"}
+  }
+
   @create: (version, arch, rock_key) =>
     safe_insert @, {
       version_id: version.id
@@ -35,6 +39,15 @@ class Rocks extends Model
     }, {version_id: version.id, :arch }
 
   url: => bucket\file_url @rock_key .. "?#{@revision}"
+
+  url_key: => @arch
+
+  url_params: =>
+    version = @get_version!
+    mod = version\get_module!
+    user = mod\get_user!
+
+    nil, "/manifests/#{user\url_key!}/#{@rock_fname}"
 
   increment_download: =>
     import Versions from require "models"
