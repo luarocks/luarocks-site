@@ -1,6 +1,14 @@
 
 ## Changes
 
+**2015/8/14**
+
+* Add module follow buttons
+* Add notifications for follows
+* Add ability to delete individual rocks
+* Split settings page apart into tabs
+* Add twitter, website, and profile accounts settings fields
+
 **2015/7/31**
 
 * Add new header to module version page
