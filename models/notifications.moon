@@ -2,6 +2,24 @@ db = require "lapis.db"
 import Model, enum from require "lapis.db.model"
 import upsert from require "helpers.models"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE notifications (
+--   id integer NOT NULL,
+--   user_id integer NOT NULL,
+--   type integer DEFAULT 0 NOT NULL,
+--   object_type smallint NOT NULL,
+--   object_id integer NOT NULL,
+--   count integer DEFAULT 0 NOT NULL,
+--   seen boolean DEFAULT false NOT NULL,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY notifications
+--   ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+-- CREATE INDEX notifications_user_id_seen_id_idx ON notifications USING btree (user_id, seen, id);
+-- CREATE UNIQUE INDEX notifications_user_id_type_object_type_object_id_idx ON notifications USING btree (user_id, type, object_type, object_id) WHERE (NOT seen);
+--
 class Notifications extends Model
   @timestamp: true
 
