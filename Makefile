@@ -27,7 +27,7 @@ prod_db::
 	pg_restore -U postgres -d moonrocks_prod $$(find /home/leafo/bin/backups/ | grep moonrocks | sort -V | tail -n 1)
 
 lint:
-	moonc -l $$(git ls-files | grep '\.moon$$' | grep -v config.moon)
+	git ls-files | grep '\.moon$$' | grep -v config.moon | xargs -n 100 moonc -l
 
 routes:
 	lapis exec 'require "cmd.routes"'

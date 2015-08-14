@@ -5,6 +5,7 @@ factory = require "spec.factory"
 
 import
   Manifests
+  Modules
   Users
   Versions
   from require "models"
