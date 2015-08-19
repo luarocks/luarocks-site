@@ -9,6 +9,16 @@ class UserHeader extends require "widgets.page_header"
 
   inner_content: =>
     div class: "page_header_inner", ->
+      div class: "social_links", ->
+        data = @user\get_data!
+        if github = data\github_handle!
+          a href: "https://github.com/#{github}", title: github, ->
+            span class: "icon-github"
+
+        if twitter = data\twitter_handle!
+          a href: "https://twitter.com/#{twitter}", title: twitter, ->
+            span class: "icon-twitter"
+
       h1 ->
         a href: @url_for(@user), ->
           img class: "avatar", src: @user\gravatar(60)
@@ -34,3 +44,17 @@ class UserHeader extends require "widgets.page_header"
           div class: "column", ->
             h3 "Downloads"
             text @format_number @user\count_downloads!
+
+        if url = @user\get_data!.website
+          div class: "column", ->
+            h3 "Website"
+            url_title = url\gsub "https?://", ""
+            a {
+              class: "external_url"
+              rel: "nofollow"
+              href: url
+              @truncate url_title, 30
+            }
+
+
+

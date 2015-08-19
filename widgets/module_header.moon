@@ -44,7 +44,7 @@ class ModuleHeader extends require "widgets.page_header"
           url_title = url\gsub "https?://", ""
           div class: "column", ->
             h3 "Homepage"
-            a class: "external_url", href: url, @truncate url_title, 30
+            a class: "external_url", rel: "nofollow", href: url, @truncate url_title, 30
 
         if @version
           div class: "column", ->

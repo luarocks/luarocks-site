@@ -19,3 +19,21 @@ h1 {
 .metadata_columns {
     margin-top: 15px;
 }
+
+.social_links {
+    float: right;
+    font-size: 24px;
+    margin-top: 14px;
+
+    a {
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 12px;
+        color: rgba($sub_color, 0.8);
+        @include transition(color 0.1s ease);
+
+        &:hover {
+            color: $link_color
+        }
+    }
+}

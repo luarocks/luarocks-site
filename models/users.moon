@@ -121,9 +121,8 @@ class Users extends Model
   source_url: (r) => r\build_url "/manifests/#{@slug}"
 
   get_data: =>
-    return if @data
     import UserData from require "models"
-    @data = UserData\find(@id) or UserData\create(@id)
+    @data or= UserData\find(@id) or UserData\create(@id)
     @data
 
   gravatar: (size) =>
