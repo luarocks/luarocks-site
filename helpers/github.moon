@@ -1,7 +1,6 @@
 
 import encode_query_string, parse_query_string from require "lapis.util"
 http = require "lapis.nginx.http"
-
 json = require "cjson"
 
 class GitHub

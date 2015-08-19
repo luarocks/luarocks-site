@@ -27,6 +27,10 @@ config { "development", "test" }, ->
 
   bucket_name "moonrocks_dev"
 
+
+config "test", ->
+  code_cache "on"
+
 config { "production", "staging" }, ->
   num_workers 2
   code_cache "on"
