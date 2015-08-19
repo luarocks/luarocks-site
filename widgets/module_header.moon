@@ -43,9 +43,10 @@ class ModuleHeader extends require "widgets.base"
             text license
 
         if url = @module\format_homepage_url!
+          url_title = url\gsub "https?://", ""
           div class: "column", ->
             h3 "Homepage"
-            a class: "external_url", href: url, @truncate url, 30
+            a class: "external_url", href: url, @truncate url_title, 30
 
         if @version
           div class: "column", ->
