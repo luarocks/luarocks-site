@@ -5,31 +5,6 @@ cache_buster = require "helpers.cache_buster"
 class Layout extends Widget
   @include "widgets.helpers"
 
-  user_panel: =>
-    div class: "user_panel", ->
-      if @current_user and @current_user\get_unseen_notifications_count! > 0
-        a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
-          @current_user\get_unseen_notifications_count!
-
-      a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Install"
-      raw " &middot; "
-      a href: "https://github.com/keplerproject/luarocks/wiki/Documentation", "Docs"
-      raw " &middot; "
-
-      if @current_user
-        a href: @url_for("user_profile", user: @current_user), class: "login", -> b @current_user.username
-        raw " &middot; "
-        a href: @url_for"upload_rockspec", "Upload"
-        raw " &middot; "
-        a href: @url_for"user_settings.profile", "Settings"
-        raw " &middot; "
-        a href: @url_for"user_logout", "Log Out"
-      else
-        login_params = { return_to: @params.return_to, intent: @params.intent }
-        a href: @url_for("user_login", nil, login_params), "Log In"
-        raw " &middot; "
-        a href: @url_for("user_register", nil, login_params), "Register"
-
   content: =>
     html_5 ->
       head ->
@@ -44,6 +19,7 @@ class Layout extends Widget
           link rel: "canonical", href: @canonical_url
 
         link href: "https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700", rel: "stylesheet", type: "text/css"
+        link href: "/static/icons/style.css", rel: "stylesheet", type: "text/css"
 
         if @page_description
           meta name: "description", content: @page_description
@@ -113,4 +89,30 @@ class Layout extends Widget
             img width: "117", height: "47", alt: "Sponsored by Kong", src: "/static/kong.svg"
 
       @content_for "js_init"
+
+  user_panel: =>
+    div class: "user_panel", ->
+      if @current_user and @current_user\get_unseen_notifications_count! > 0
+        a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
+          @current_user\get_unseen_notifications_count!
+
+      a href: "https://github.com/keplerproject/luarocks/wiki/Download", "Install"
+      raw " &middot; "
+      a href: "https://github.com/keplerproject/luarocks/wiki/Documentation", "Docs"
+      raw " &middot; "
+
+      if @current_user
+        a href: @url_for("user_profile", user: @current_user), class: "login", -> b @current_user.username
+        raw " &middot; "
+        a href: @url_for"upload_rockspec", "Upload"
+        raw " &middot; "
+        a href: @url_for"user_settings.profile", "Settings"
+        raw " &middot; "
+        a href: @url_for"user_logout", "Log Out"
+      else
+        login_params = { return_to: @params.return_to, intent: @params.intent }
+        a href: @url_for("user_login", nil, login_params), "Log In"
+        raw " &middot; "
+        a href: @url_for("user_register", nil, login_params), "Register"
+
 
