@@ -44,7 +44,9 @@ parse_rockspec = (text) ->
 
   check = ->
     lines += 1
-    error "too many lines evaluated" if lines > 2000
+    if lines > 2000
+      debug.sethook! if jit -- remove the global hook set by luajit
+      error "too many lines evaluated"
 
   -- luajit does not appear to let you set debug hook on coroutine, it just
   -- applies globally. We do it anyway incase this is ever fixed. Additionally

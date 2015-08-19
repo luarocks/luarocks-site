@@ -177,14 +177,13 @@ describe "moonrocks", ->
       assert.same 200, status
       assert.same 0, #Versions\select!
 
-    it "should not let malicious code in rockspec run #ddd", ->
+    it "should not let malicious code in rockspec run", ->
       status, res = do_upload "/upload?json=true", "rockspec_file", "etlua-dev-1.rockspec", [[
         while true do end
       ]]
 
-      -- no way to pcall capture debug hook in luajit so we just let it blow
-      -- up, better than crashing server
-      assert.same 500, status
+      assert.same 200, status
+      assert.same {errors: {"Failed to eval rockspec"}}, from_json res
 
     describe "with module", ->
       local mod, version, version_url
@@ -196,7 +195,7 @@ describe "moonrocks", ->
         version_url = "/modules/#{user.slug}/#{mod.name}/#{version.version_name}"
 
       it "should load rock upload page", ->
-        status, body = request_as user, "#{version_url}/upload"
+        status, body, headers = request_as user, "#{version_url}/upload"
         assert.same 200, status
 
       it "should not load rock upload page for not owner", ->
