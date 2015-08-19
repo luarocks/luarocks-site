@@ -1,6 +1,11 @@
 
 ## Changes
 
+**2015/8/19**
+
+* Add new header to all user pages
+* Add github account to profile settings page
+
 **2015/8/14**
 
 * Add module follow buttons
