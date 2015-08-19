@@ -38,7 +38,7 @@ class UserHeader extends require "widgets.page_header"
 
         div class: "column", ->
           h3 "Registered"
-          text time_ago_in_words @user.created_at
+          span title: @user.created_at, time_ago_in_words @user.created_at
 
         if module_count > 0
           div class: "column", ->
