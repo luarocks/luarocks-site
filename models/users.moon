@@ -190,3 +190,6 @@ class Users extends Model
     @unseen_notification_count = res and res.sum or 0
     @unseen_notification_count
 
+  count_downloads: =>
+    res = unpack db.query "select sum(downloads) from modules where user_id = ?", @id
+    res.sum or 0

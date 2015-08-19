@@ -1,0 +1,92 @@
+    margin: 0;
+    background: white;
+
+    border-bottom: 1px solid $light_border_color;
+    padding-top: 15px;
+
+h1, p {
+    margin: 0;
+}
+
+h1 {
+    margin-bottom: 5px;
+    font-size: 42px;
+    font-weight: normal;
+    margin-right: 167px;
+
+    .sub {
+        color: $sub_color;
+    }
+}
+
+.follow_area {
+    float: right;
+    margin-top: 15px;
+    white-space: nowrap;
+
+    button {
+        &:not(:last-child) {
+            border-radius: 3px 0 0 3px;
+        }
+    }
+
+    .followers_count {
+        @include border_box;
+        border: 1px solid $border_color;
+        border-left: 0;
+        display: inline-block;
+        vertical-align: top;
+        padding: 0 10px;
+        height: $button_height;
+        line-height: $button_height - 2px;
+        color: $sub_color;
+        background: mix($back_color, white, 50%);
+        border-radius: 0 3px 3px 0;
+    }
+}
+
+.nav_buttons {
+    margin: 15px 0 0 0;
+}
+
+.page_header_inner {
+    width: $site_width;
+    margin: 0 auto;
+}
+
+.metadata_columns {
+    margin-top: 25px;
+    border-top: 1px solid $light_border_color;
+    white-space: nowrap;
+
+    .column {
+        @include border_box;
+        white-space: normal;
+        height: 75px;
+
+        margin-right: 40px;
+        border-left: 1px solid $light_border_color;
+        display: inline-block;
+        vertical-align: top;
+        font-size: 18px;
+        padding: 15px 0 15px 20px;
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 3px;
+
+            font-size: 12px;
+            color: $sub_color_light;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        &:first-child {
+            border-left: 0;
+            padding-left: 0px;
+        }
+
+    }
+}
+
+

@@ -1,8 +1,7 @@
 
 import login_and_return_url from require "helpers.app"
 
-
-class ModuleHeader extends require "widgets.base"
+class ModuleHeader extends require "widgets.page_header"
   @needs: {
     "module"
   }
@@ -10,8 +9,7 @@ class ModuleHeader extends require "widgets.base"
   admin_panel: =>
 
   inner_content: =>
-    div class: "module_header_inner", ->
-
+    div class: "page_header_inner", ->
       @follow_area!
 
       h1 ->
@@ -30,7 +28,7 @@ class ModuleHeader extends require "widgets.base"
       @admin_panel!
 
     div class: "metadata_columns", ->
-      div class: "module_header_inner", ->
+      div class: "page_header_inner", ->
         div class: "column", ->
           h3 "Uploader"
           user_url = @url_for "user_profile", user: @user.slug
