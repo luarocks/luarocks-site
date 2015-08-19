@@ -208,7 +208,7 @@ class MoonRocksUser extends lapis.Application
       }
 
       profile = trim_filter @params.profile,
-        {"website", "twitter", "profile"}, db.NULL
+        {"website", "twitter", "github", "profile"}, db.NULL
 
       @user\get_data!\update profile
       redirect_to: @url_for "user_settings.profile"

@@ -42,6 +42,10 @@ class MoonrocksGithub extends lapis.Application
       else
         GithubAccounts\create data
 
+      data = @current_user\get_data!
+      unless data.github
+        data\update github: user.login
+
       redirect_to: @url_for "user_settings.link_github"
   }
 

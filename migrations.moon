@@ -211,4 +211,10 @@ import
     add_column "user_data", "website", text null: true
     add_column "user_data", "profile", text null: true
 
+  [1439949273]: =>
+    add_column "user_data", "github", text null: true
+    db.query "update user_data set github = (
+      select github_login from github_accounts where github_accounts.user_id = user_data.user_id
+      limit 1
+    )"
 }

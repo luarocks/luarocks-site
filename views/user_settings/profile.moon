@@ -31,6 +31,17 @@ class UserSettingsProfile extends require "widgets.user_settings_page"
 
       div class: "row", ->
         label ->
+          div class: "label", "GitHub account"
+
+        input {
+          type: "text"
+          class: "medium_input"
+          name: "profile[github]"
+          value: data.github and data\github_handle!
+        }
+
+      div class: "row", ->
+        label ->
           div class: "label", "Profile"
 
         textarea name: "profile[profile]", data.profile
