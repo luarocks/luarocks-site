@@ -52,3 +52,17 @@ describe "applications.github", ->
 
     assert.same "test-account", current_user\get_data!.github
 
+  it "doesn't override user set github account", ->
+    data = current_user\get_data!
+    data\update github: "leafo"
+
+    status = request_as current_user, "/github/auth", {
+      post: {
+        state: csrf_token
+        hello: "world"
+      }
+    }
+
+    data\refresh!
+    assert.same "leafo", data.github
+
