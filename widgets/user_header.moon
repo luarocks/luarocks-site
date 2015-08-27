@@ -52,7 +52,7 @@ class UserHeader extends require "widgets.page_header"
             a {
               class: "external_url"
               rel: "nofollow"
-              href: url
+              href: @format_url url
               @truncate url_title, 30
             }
 
