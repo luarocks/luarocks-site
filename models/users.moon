@@ -3,6 +3,8 @@ import Model from require "lapis.db.model"
 import generate_key from require "helpers.models"
 import slugify from require "lapis.util"
 
+date = require "date"
+
 db = require "lapis.db"
 
 bcrypt = require "bcrypt"
@@ -189,3 +191,13 @@ class Users extends Model
   count_downloads: =>
     res = unpack db.query "select sum(downloads) from modules where user_id = ?", @id
     res.sum or 0
+
+  update_last_active: =>
+    span = if @last_active_at
+      date.diff(date(true), date(@last_active_at))\spandays!
+
+    if not span or span > 0.5
+      @update {
+        last_active_at: db.raw"date_trunc('second', now() at time zone 'utc')"
+      }, timestamp: false
+

@@ -9,7 +9,7 @@ class AdminUser extends require "widgets.page"
 
     @field_table @user, {
       "id", "username", "slug", "email", "following_count", "updated_at",
-      "created_at"
+      "created_at", "last_active_at"
     }
 
     if next @followings

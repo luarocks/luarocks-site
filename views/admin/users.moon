@@ -19,6 +19,7 @@ class AdminUsers extends require "widgets.page"
         tr ->
           td "User"
           td "Registered"
+          td "Last active"
           td "Email"
           td "Followings"
           td "Modules"
@@ -29,8 +30,8 @@ class AdminUsers extends require "widgets.page"
           td ->
             a href: @url_for(user), user\name_for_display!
 
-          td ->
-            @render_date user.created_at
+          td -> @render_date user.created_at
+          td -> user.last_active_at and @render_date user.last_active_at
 
           td user.email
           td @format_number user.following_count

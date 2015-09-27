@@ -64,6 +64,10 @@ class MoonRocks extends lapis.Application
 
   @before_filter =>
     @current_user = Users\read_session @
+
+    if @current_user
+      @current_user\update_last_active!
+
     @csrf_token = generate_csrf @
 
   handle_404: => not_found

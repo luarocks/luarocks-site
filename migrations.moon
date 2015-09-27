@@ -224,4 +224,7 @@ import
       modules_count: db.raw "(select count(*) from modules where user_id = users.id)"
     }
 
+  [1443382411]: =>
+    add_column "users", "last_active_at", time null: true
+
 }

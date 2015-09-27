@@ -40,7 +40,7 @@ class TableHelpers
 
     if val and (field\match("_at$") or field\match("_date_utc$"))
       opts.title = val
-      custom_val = -> @format_date val
+      custom_val = -> @render_date val
 
     if val and field == "ip"
       custom_val = ->
