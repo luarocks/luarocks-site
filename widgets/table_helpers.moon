@@ -33,14 +33,14 @@ class TableHelpers
       when "boolean"
         opts.style = "color: #{val and "green" or "red"}"
       when "number"
-        val = @number_format val
+        val = @format_number val
       when "nil"
         unless custom_val
           opts.style = "color: gray; font-style: italic"
 
     if val and (field\match("_at$") or field\match("_date_utc$"))
       opts.title = val
-      custom_val = -> @date_format val
+      custom_val = -> @format_date val
 
     if val and field == "ip"
       custom_val = ->
@@ -53,7 +53,7 @@ class TableHelpers
     unless fields
       fields = @_extract_table_fields object
 
-    element "table", class: "nice_table field_table", ->
+    element "table", class: "table field_table", ->
       for field in *fields
         field, val, opts = @_format_table_value object, field
 

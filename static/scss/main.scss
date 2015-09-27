@@ -363,6 +363,12 @@ pre {
     font-size: 14px;
     margin: 20px 0;
 
+    &.field_table {
+        tr > td:first-child {
+            text-align: right;
+        }
+    }
+
     td {
         padding: 6px 8px;
     }

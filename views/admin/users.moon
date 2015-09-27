@@ -5,6 +5,14 @@ class AdminUsers extends require "widgets.page"
   inner_content: =>
     h2 "Users"
 
+    form class: "form", ->
+      label ->
+        text "Find by email"
+        text " "
+        input type: "text", name: "email", placeholder: "email"
+        text " "
+        button "Find"
+
     @render_pager @pager
     element "table", class: "table", ->
       thead ->
@@ -27,7 +35,7 @@ class AdminUsers extends require "widgets.page"
           td @format_number user.following_count
 
           td ->
-            a href: "", "Admin"
+            a href: @url_for("admin.user", id: user.id), "Admin"
 
     @render_pager @pager
 
