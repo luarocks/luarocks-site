@@ -186,6 +186,10 @@ class Modules extends Model
       params.current_version_id = -1
       new_module = Model.create Modules, params
 
+      user\update {
+        modules_count: db.raw "modules_count + 1"
+      }, timestamp: false
+
     versions = @get_versions!
     for version in *versions
       new_version = Versions\find {
