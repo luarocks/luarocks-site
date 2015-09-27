@@ -21,6 +21,7 @@ class AdminUsers extends require "widgets.page"
           td "Registered"
           td "Email"
           td "Followings"
+          td "Modules"
           td ""
 
       for user in *@users
@@ -33,6 +34,7 @@ class AdminUsers extends require "widgets.page"
 
           td user.email
           td @format_number user.following_count
+          td @format_number user.modules_count
 
           td ->
             a href: @url_for("admin.user", id: user.id), "Admin"
