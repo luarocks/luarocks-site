@@ -35,4 +35,10 @@ describe "models.modules", ->
     assert.falsy mod\allowed_to_edit factory.Users!
     assert.truthy mod\allowed_to_edit factory.Users flags: 1
 
+  it "deletes module", ->
+    mod = factory.Modules!
+    mod\delete!
+
+    user = mod\get_user!
+    assert.same -1, user.modules_count
 

@@ -123,6 +123,8 @@ describe "moonrocks", ->
         }
       }, deps
 
+      user\refresh!
+      assert.same 1, user.modules_count
 
     it "should override rockspec", ->
       mod = factory.Modules user_id: user.id, name: "etlua"
@@ -162,6 +164,9 @@ describe "moonrocks", ->
       root_after = Manifests\find(root.id)
       assert.same 1, root_after.modules_count
       assert.same 1, root_after.versions_count
+
+      user\refresh!
+      assert.same 1, user.modules_count
 
     it "should not upload invalid rockspec", ->
       status = do_upload "/upload", "rockspec_file", "etlua-dev-1.rockspec", "hello world"

@@ -217,4 +217,11 @@ import
       select github_login from github_accounts where github_accounts.user_id = user_data.user_id
       limit 1
     )"
+
+  [1443373251]: =>
+    add_column "users", "modules_count", integer
+    db.update "users", {
+      modules_count: db.raw "(select count(*) from modules where user_id = users.id)"
+    }
+
 }

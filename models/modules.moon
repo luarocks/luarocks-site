@@ -3,6 +3,7 @@ db = require "lapis.db"
 import Model from require "lapis.db.model"
 
 import concat from table
+import safe_insert from require "helpers.models"
 
 -- Generated schema dump: (do not edit)
 --
@@ -53,10 +54,7 @@ class Modules extends Model
     description = spec.description or {}
     name = spec.package\lower!
 
-    if @check_unique_constraint user_id: user.id, :name
-      return nil, "Module already exists"
-
-    Model.create @, {
+    mod = safe_insert @, {
       :name
       user_id: user.id
       display_name: if name != spec.package then spec.package
@@ -67,7 +65,17 @@ class Modules extends Model
       description: description.detailed
       license: description.license
       homepage: description.homepage
+    }, {
+      :name
+      user_id: user.id
     }
+
+    if mod
+      user\update {
+        modules_count: db.raw "modules_count + 1"
+      }, timestamp: false
+
+    mod
 
   @search: (query, manifest_ids) =>
     clause = if manifest_ids
@@ -143,6 +151,10 @@ class Modules extends Model
       -- remove the link
       for link in *LinkedModules\select "where module_id = ?", @id
         link\delete!
+
+      @get_user!\update {
+        modules_count: db.raw "modules_count - 1"
+      }, timestamp: false
 
       true
 
