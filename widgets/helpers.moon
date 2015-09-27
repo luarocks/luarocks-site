@@ -38,3 +38,8 @@ class Helpers
           break
 
       @format_number(bytes) .. suffix
+
+  render_date: (d, abs_first=false) =>
+    import time_ago_in_words from require "lapis.util"
+    span class: "date", title: tostring(d), time_ago_in_words(d)
+

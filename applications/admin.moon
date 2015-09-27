@@ -9,17 +9,29 @@ import
   assert_error
   from require "lapis.application"
 
-import assert_csrf from require "helpers.app"
+import assert_csrf, assert_page from require "helpers.app"
 import assert_valid from require "lapis.validate"
 
 class MoonRocksAdmin extends lapis.Application
   @path: "/admin"
+  @name: "admin."
 
   @before_filter =>
     unless @current_user and @current_user\is_admin!
       @write not_found
 
-  [admin_become_user: "/become-user"]: respond_to {
+  [users: "/users"]: =>
+    assert_page @
+    import Users from require "models"
+    @pager = Users\paginated "order by id desc", {
+      per_page: 50
+    }
+
+    @users = @pager\get_page @page
+
+    render: true
+
+  [become_user: "/become-user"]: respond_to {
     POST: capture_errors_json =>
       assert_csrf @
       import Users from require "models"
