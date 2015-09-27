@@ -43,12 +43,15 @@ class MoonRocksAdmin extends lapis.Application
     render: true
 
   [user: "/user/:id"]: capture_errors_json =>
-    import Users from require "models"
+    import Users, Followings from require "models"
+
     assert_valid @params, {
       {"id", is_integer: true}
     }
 
     @user = assert_error Users\find(id: @params.id), "invalid user"
+    @followings = Followings\select "where source_user_id = ?", @user.id
+    Followings\preload_objects @followings
 
     render: true
 

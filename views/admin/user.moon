@@ -1,8 +1,7 @@
 
 class AdminUser extends require "widgets.page"
   @include "widgets.table_helpers"
-  @needs: {"user"}
-
+  @needs: {"user", "followings"}
 
   inner_content: =>
     h2 ->
@@ -13,6 +12,23 @@ class AdminUser extends require "widgets.page"
       "created_at"
     }
 
+    if next @followings
+      h3 "Followings"
+      element "table", class: "table", ->
+        thead ->
+          tr ->
+            td "Object"
+            td "Created at"
+
+        for f in *@followings
+          obj = f\get_object!
+          continue unless obj
+          tr ->
+            td ->
+              a href: @url_for(obj), obj.title or obj.name
+
+            td ->
+              @render_date f.created_at
 
     fieldset ->
       legend "Admin tools"
