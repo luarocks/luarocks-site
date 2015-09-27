@@ -69,7 +69,7 @@ mirror = ->
     user = assert Users\create USER, password, "leafot+#{USER}@gmail.com"
     log "Created #{USER} with password #{password}"
 
-  user_modules = user\all_modules!
+  user_modules = user\get_modules!
   modules_by_name = {mod.name, mod for mod in *user_modules}
 
   manifest = assert_request "#{SERVER}/manifest"

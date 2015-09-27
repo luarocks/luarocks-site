@@ -31,6 +31,6 @@ take_module = (module_name) ->
 if module_name
   assert take_module module_name
 else
-  for mod in *user\all_modules!
+  for mod in *user\get_modules!
     take_module mod.name
 

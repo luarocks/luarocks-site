@@ -106,10 +106,6 @@ class Users extends Model
   salt: =>
     @encrypted_password\sub 1, 29
 
-  all_modules: (...) =>
-    import get_all_pages from require "helpers.models"
-    get_all_pages @find_modules ...
-
   find_modules: (...) =>
     import Modules from require "models"
     Modules\paginated [[

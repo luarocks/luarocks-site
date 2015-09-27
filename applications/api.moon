@@ -74,7 +74,7 @@ class MoonRocksApi extends lapis.Application
 
   -- NOT USED
   "/api/1/:key/modules": api_request =>
-    json: { modules: @current_user\all_modules! }
+    json: { modules: @current_user\get_modules! }
 
   "/api/1/:key/check_rockspec": api_request =>
     assert_valid @params, {
