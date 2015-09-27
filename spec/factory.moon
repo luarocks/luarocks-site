@@ -38,14 +38,22 @@ Modules = (opts={}) ->
   assert Model.create models.Modules, opts
 
 Versions = (opts={}) ->
-  opts.module_id or= Modules!.id
+  module_name = "some_module"
+
+  if opts.module_id
+    mod = models.Modules\find opts.module_id
+    module_name = mod.name
+  else
+    mod = Modules!
+    module_name = mod.name
+    opts.module_id = mod.id
 
   opts.version_name or= if opts.development
     "scm-#{next_counter "version"}"
   else
     "0.0.0-#{next_counter "version"}"
 
-  opts.rockspec_fname = "some_module-#{opts.version_name}.rockspec"
+  opts.rockspec_fname = "#{module_name}-#{opts.version_name}.rockspec"
   opts.rockspec_key = "/spec/#{opts.rockspec_fname}"
 
   assert Model.create models.Versions, opts

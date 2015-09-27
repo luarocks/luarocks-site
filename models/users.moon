@@ -35,6 +35,7 @@ class Users extends Model
 
   @relations: {
     {"api_keys", has_many: "ApiKeys"}
+    {"modules", has_many: "Modules"}
   }
 
   @create: (username, password, email) =>
