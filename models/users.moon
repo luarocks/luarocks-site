@@ -22,7 +22,9 @@ import strip_non_ascii from require "helpers.strings"
 --   flags integer DEFAULT 0 NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
 --   updated_at timestamp without time zone NOT NULL,
---   following_count integer DEFAULT 0 NOT NULL
+--   following_count integer DEFAULT 0 NOT NULL,
+--   modules_count integer DEFAULT 0 NOT NULL,
+--   last_active_at timestamp without time zone
 -- );
 -- ALTER TABLE ONLY users
 --   ADD CONSTRAINT users_pkey PRIMARY KEY (id);

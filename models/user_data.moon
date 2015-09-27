@@ -9,7 +9,8 @@ import Model from require "lapis.db.model"
 --   password_reset_token character varying(255),
 --   twitter text,
 --   website text,
---   profile text
+--   profile text,
+--   github text
 -- );
 -- ALTER TABLE ONLY user_data
 --   ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
