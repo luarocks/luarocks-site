@@ -24,20 +24,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: hstore; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
-
-
---
--- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
-
-
---
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -98,20 +84,6 @@ CREATE TABLE downloads_daily (
 
 
 ALTER TABLE downloads_daily OWNER TO postgres;
-
---
--- Name: endorsements; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE endorsements (
-    user_id integer NOT NULL,
-    module_id integer NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE endorsements OWNER TO postgres;
 
 --
 -- Name: exception_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -221,38 +193,6 @@ CREATE TABLE github_accounts (
 
 
 ALTER TABLE github_accounts OWNER TO postgres;
-
---
--- Name: hello; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE hello (
-    id integer NOT NULL
-);
-
-
-ALTER TABLE hello OWNER TO postgres;
-
---
--- Name: hello_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE hello_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hello_id_seq OWNER TO postgres;
-
---
--- Name: hello_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE hello_id_seq OWNED BY hello.id;
-
 
 --
 -- Name: lapis_migrations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -432,6 +372,61 @@ ALTER SEQUENCE modules_id_seq OWNED BY modules.id;
 
 
 --
+-- Name: notification_objects; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE notification_objects (
+    notification_id integer NOT NULL,
+    object_type smallint NOT NULL,
+    object_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE notification_objects OWNER TO postgres;
+
+--
+-- Name: notifications; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE notifications (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    type integer DEFAULT 0 NOT NULL,
+    object_type smallint NOT NULL,
+    object_id integer NOT NULL,
+    count integer DEFAULT 0 NOT NULL,
+    seen boolean DEFAULT false NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE notifications OWNER TO postgres;
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE notifications_id_seq OWNER TO postgres;
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
+
+
+--
 -- Name: rocks; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -479,26 +474,14 @@ CREATE TABLE user_data (
     user_id integer NOT NULL,
     email_verified boolean DEFAULT false NOT NULL,
     password_reset_token character varying(255),
-    data text NOT NULL
+    twitter text,
+    website text,
+    profile text,
+    github text
 );
 
 
 ALTER TABLE user_data OWNER TO postgres;
-
---
--- Name: user_module_tags; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE user_module_tags (
-    user_id integer NOT NULL,
-    module_id integer NOT NULL,
-    tag character varying(255) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE user_module_tags OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -513,7 +496,9 @@ CREATE TABLE users (
     flags integer DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    following_count integer DEFAULT 0 NOT NULL
+    following_count integer DEFAULT 0 NOT NULL,
+    modules_count integer DEFAULT 0 NOT NULL,
+    last_active_at timestamp without time zone
 );
 
 
@@ -604,13 +589,6 @@ ALTER TABLE ONLY exception_types ALTER COLUMN id SET DEFAULT nextval('exception_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY hello ALTER COLUMN id SET DEFAULT nextval('hello_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
 ALTER TABLE ONLY manifest_backups ALTER COLUMN id SET DEFAULT nextval('manifest_backups_id_seq'::regclass);
 
 
@@ -626,6 +604,13 @@ ALTER TABLE ONLY manifests ALTER COLUMN id SET DEFAULT nextval('manifests_id_seq
 --
 
 ALTER TABLE ONLY modules ALTER COLUMN id SET DEFAULT nextval('modules_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
 
 
 --
@@ -671,14 +656,6 @@ ALTER TABLE ONLY dependencies
 
 ALTER TABLE ONLY downloads_daily
     ADD CONSTRAINT downloads_daily_pkey PRIMARY KEY (version_id, date);
-
-
---
--- Name: endorsements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY endorsements
-    ADD CONSTRAINT endorsements_pkey PRIMARY KEY (user_id, module_id);
 
 
 --
@@ -770,6 +747,22 @@ ALTER TABLE ONLY modules
 
 
 --
+-- Name: notification_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY notification_objects
+    ADD CONSTRAINT notification_objects_pkey PRIMARY KEY (notification_id, object_type, object_id);
+
+
+--
+-- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: rocks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -783,14 +776,6 @@ ALTER TABLE ONLY rocks
 
 ALTER TABLE ONLY user_data
     ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
-
-
---
--- Name: user_module_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY user_module_tags
-    ADD CONSTRAINT user_module_tags_pkey PRIMARY KEY (user_id, module_id, tag);
 
 
 --
@@ -908,6 +893,20 @@ CREATE UNIQUE INDEX modules_user_id_name_idx ON modules USING btree (user_id, na
 
 
 --
+-- Name: notifications_user_id_seen_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX notifications_user_id_seen_id_idx ON notifications USING btree (user_id, seen, id);
+
+
+--
+-- Name: notifications_user_id_type_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX notifications_user_id_type_object_type_object_id_idx ON notifications USING btree (user_id, type, object_type, object_id) WHERE (NOT seen);
+
+
+--
 -- Name: rocks_rock_fname_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -926,13 +925,6 @@ CREATE UNIQUE INDEX rocks_rock_key_idx ON rocks USING btree (rock_key);
 --
 
 CREATE UNIQUE INDEX rocks_version_id_arch_idx ON rocks USING btree (version_id, arch);
-
-
---
--- Name: user_module_tags_module_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX user_module_tags_module_id_idx ON user_module_tags USING btree (module_id);
 
 
 --
@@ -1040,13 +1032,18 @@ COPY lapis_migrations (name) FROM stdin;
 1408086639
 1413268904
 1423334387
-1427443263
-1427444511
 1427445542
 1427448938
+1427443263
+1427444511
 1437970205
 1438259102
 1438314813
+1438999272
+1439449229
+1439949273
+1443373251
+1443382411
 \.
 
 
