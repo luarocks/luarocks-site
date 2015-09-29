@@ -23,13 +23,20 @@ class Manifests extends require "widgets.page"
 
   render_manifest: (manifest) =>
     div class: "manifest_row", ->
+      if admins = manifest.manifest_admins
+        span class: "manifest_admins", ->
+          text "maintained by "
+          for i, admin in pairs admins
+            text ", " if i > 1
+            a href: @url_for(admin.user), admin.user\name_for_display!
+
       div class: "main", ->
         a {
           class: "title",
           href: @url_for(manifest)
         }, manifest\name_for_display!
 
-        span class: "downloads", ->
+        span class: "modules_count", ->
           raw " &mdash; "
           text " modules: "
           span class: "value", @format_number manifest.modules_count

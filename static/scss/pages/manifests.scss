@@ -8,6 +8,11 @@
         border: 1px solid $border_color;
         line-height: 1.5;
 
+        .manifest_admins {
+            float: right;
+            color: $sub_color;
+        }
+
         .title {
             font-size: 16px;
         }
