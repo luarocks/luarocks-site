@@ -13,7 +13,7 @@ class Layout extends Widget
           if @title
             text "#{@title} - LuaRocks"
           else
-            text "LuaRocks"
+            text "LuaRocks - The Lua package manager"
 
         if @canonical_url
           link rel: "canonical", href: @canonical_url
