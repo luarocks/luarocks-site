@@ -19,6 +19,11 @@ config { "development", "test", "production", "staging" }, ->
 
   host "localhost:8080"
 
+  systemd {
+    name: "luarocks"
+    user: true
+  }
+
 config { "development", "test" }, ->
   num_workers 1
   code_cache "off"
@@ -26,7 +31,6 @@ config { "development", "test" }, ->
   notice_log "stderr"
 
   bucket_name "moonrocks_dev"
-
 
 config "test", ->
   code_cache "on"
