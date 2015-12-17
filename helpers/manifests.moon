@@ -48,10 +48,8 @@ preload_modules = (mods) ->
 
   mods
 
--- render the manifest with no queries
-render_manifest = (modules, filter_version=nil, development=nil) =>
-  @res.headers["Content-type"] = "text/x-lua"
-
+-- build the manifest with no queries
+build_manifest = (modules, filter_version=nil, development=nil) ->
   repository = {}
 
   if filter_version
@@ -79,13 +77,12 @@ render_manifest = (modules, filter_version=nil, development=nil) =>
     if next mod_tbl
       repository[mod.name] = mod_tbl
 
+  { :repository, commands: {}, modules: {} }
 
-  persist.save_from_table_to_string {
-    :repository
+serve_lua_table = (tab) =>
+  @res.headers["Content-type"] = "text/x-lua"
 
-    commands: {}
-    modules: {}
-  }
+  layout: false, persist.save_from_table_to_string tab
 
 
-{ :preload_modules, :render_manifest }
+{ :build_manifest, :preload_modules, :serve_lua_table }
