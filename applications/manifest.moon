@@ -21,7 +21,7 @@ import
   Rocks
   from require "models"
 
-import render_manifest, preload_modules from require "helpers.manifests"
+import build_manifest, preload_modules, serve_lua_table from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
 import capture_errors_404, assert_page from require "helpers.app"
 import zipped_file from require "helpers.zip"
@@ -30,15 +30,24 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
+-- XXX: This is totally wrong, RESTful APIs should use Content negotiation
+-- (header Accept) to specify the desired media type. This approach is used
+-- only for backward compatibility.
+with_format = (fn) ->
+  =>
+    if format = (@params.version or '')\match "%.(%a+)$"
+      @format = format
+      @params.version = @params.version\sub 1, -format\len! - 2
+    else
+      @format = "lua"
+
+    fn @
+
 zipable = (fn) ->
   =>
-    should_zip = if @params.version and @params.version\match "%.zip$"
-      @params.version = @params.version\sub 1, -5
-      true
-
     @write fn @
 
-    if should_zip and (@options.status or 200) == 200 and @req.cmd_mth == "GET"
+    if @format == "zip" and (@options.status or 200) == 200 and @req.cmd_mth == "GET"
       @version or= @params.version
 
       fname = "manifest"
@@ -80,9 +89,12 @@ serve_manifest = capture_errors_404 =>
   }
 
   modules = get_all_pages pager
-  manifest_text = render_manifest @, modules, @version, @development
+  manifest = build_manifest modules, @version, @development
 
-  layout: false, manifest_text
+  if @format == "json"
+    json: manifest
+  else
+    serve_lua_table @, manifest
 
 cached_manifest = (fn) ->
   cached {
@@ -111,13 +123,13 @@ class MoonRocksManifest extends lapis.Application
 
   [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
 
-  "/manifest-:version": zipable cached_manifest is_stable serve_manifest
+  "/manifest-:version": with_format zipable cached_manifest is_stable serve_manifest
 
-  "/dev/manifest-:version": zipable cached_manifest is_dev serve_manifest
+  "/dev/manifest-:version": with_format zipable cached_manifest is_dev serve_manifest
 
   [user_manifest: "/manifests/:user/manifest"]: serve_manifest
 
-  "/manifests/:user/manifest-:version": serve_manifest
+  "/manifests/:user/manifest-:version": with_format serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
