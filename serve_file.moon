@@ -13,7 +13,7 @@ assert = (thing) ->
 should_increment = ->
   if agent = ngx.var.http_user_agent
     agent = agent\lower!
-    if agent\match"luasocket" or agent\match"wget"
+    if agent\match"luarocks" or agent\match"luasocket" or agent\match"wget" or agent\match"curl"
       true
 
 is_rockspec = ->
