@@ -30,9 +30,6 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
--- XXX: This is totally wrong, RESTful APIs should use Content negotiation
--- (header Accept) to specify the desired media type. This approach is used
--- only for backward compatibility.
 with_format = (fn) ->
   =>
     if format = (@params.version or '')\match "%.(%a+)$"
@@ -41,21 +38,28 @@ with_format = (fn) ->
     else
       @format = "lua"
 
-    fn @
+    switch @format
+      when "lua", "json", "zip"
+        fn @
+      else
+        layout: false, status: 404
 
 zipable = (fn) ->
   =>
     @write fn @
 
-    if @format == "zip" and (@options.status or 200) == 200 and @req.cmd_mth == "GET"
-      @version or= @params.version
+    return unless @format == "zip"
+    return unless (@options.status or 200) == 200
+    return unless @req.cmd_mth == "GET"
 
-      fname = "manifest"
-      if @version
-        fname ..= "-#{@version}"
+    @version or= @params.version
 
-      @options.content_type = "application/zip"
-      @buffer = { zipped_file fname, table.concat @buffer }
+    fname = "manifest"
+    if @version
+      fname ..= "-#{@version}"
+
+    @options.content_type = "application/zip"
+    @buffer = { zipped_file fname, table.concat @buffer }
 
     nil
 
