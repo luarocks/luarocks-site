@@ -35,6 +35,14 @@ should_load_manifest = (url, fn) ->
     m = request_manifest url
     fn m if fn
 
+should_load_json_manifest = (url, fn) ->
+  it "should load json manifest #{url}", ->
+    status, res = request url, {
+      expect: "json"
+    }
+    assert.same 200, status
+    fn res if fn
+
 should_load_zip_manifest = (url, fn) ->
   it "should zip load manifest #{url}", ->
     status, body = request url
@@ -67,9 +75,13 @@ describe "moonrocks", ->
     should_load_manifest "/manifest#{v}", is_empty_manifest
     should_load_manifest "/dev/manifest#{v}", is_empty_manifest
 
+
     if v != ""
       should_load_zip_manifest "/manifest#{v}.zip"
       should_load_zip_manifest "/dev/manifest#{v}.zip"
+
+      should_load_json_manifest "/manifest#{v}.json"
+      should_load_json_manifest "/dev/manifest#{v}.json"
 
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
@@ -100,6 +112,27 @@ describe "moonrocks", ->
 
       should_load_manifest "/dev/manifest", is_empty_manifest
 
+      should_load_json_manifest "/dev/manifest-5.1.json", (res) ->
+        assert.same {
+          modules: {}
+          commands: {}
+          repository: {}
+        }, res
+
+      should_load_json_manifest "/manifest-5.1.json", (res) ->
+        mod = version\get_module!
+        assert.same {
+          modules: {}
+          commands: {}
+          repository: {
+            [mod.name]: {
+              [version.version_name]: {
+                {arch: "rockspec"}
+              }
+            }
+          }
+        }, res
+
       it "should do HEAD", ->
         status, body, headers = request "/manifest", {
           method: "HEAD"
@@ -122,6 +155,27 @@ describe "moonrocks", ->
 
       should_load_zip_manifest "/dev/manifest-5.1.zip", (m) -> has_module m, mod
       should_load_zip_manifest "/dev/manifest-5.2.zip", (m) -> has_module m, mod
+
+      should_load_json_manifest "/manifest-5.1.json", (res) ->
+        assert.same {
+          modules: {}
+          commands: {}
+          repository: {}
+        }, res
+
+      should_load_json_manifest "/dev/manifest-5.1.json", (res) ->
+        mod = version\get_module!
+        assert.same {
+          modules: {}
+          commands: {}
+          repository: {
+            [mod.name]: {
+              [version.version_name]: {
+                {arch: "rockspec"}
+              }
+            }
+          }
+        }, res
 
     describe "with versioned version", ->
       local version
@@ -201,6 +255,7 @@ describe "moonrocks", ->
           }
         }, m.repository
 
+      should_load_json_manifest "/dev/manifest-5.1.json"
 
   describe "with many modules", ->
     before_each ->
@@ -229,6 +284,7 @@ describe "moonrocks", ->
     should_load_manifest "/manifests/tester/manifest", is_empty_manifest
     should_load_manifest "/manifests/tester/manifest-5.1", is_empty_manifest
     should_load_manifest "/manifests/tester/manifest-5.2", is_empty_manifest
+    should_load_json_manifest "/manifests/tester/manifest-5.2.json"
 
     describe "with regular version", ->
       local mod, version
@@ -241,6 +297,7 @@ describe "moonrocks", ->
       should_load_manifest "/manifests/tester/manifest", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
+      should_load_json_manifest "/manifests/tester/manifest-5.2.json"
 
     -- development versions show up by default in user manifest at the moment
     describe "with development version", ->
@@ -253,7 +310,7 @@ describe "moonrocks", ->
       should_load_manifest "/manifests/tester/manifest", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
-
+      should_load_json_manifest "/manifests/tester/manifest-5.2.json"
 
   describe "adding and removing modules", ->
     local user, mod, add_url, remove_url
