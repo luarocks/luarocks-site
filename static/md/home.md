@@ -3,13 +3,13 @@
 
 Installing LuaRocks in a Unix system:
 
-    $ wget http://luarocks.org/releases/luarocks-2.2.2.tar.gz
-    $ tar zxpf luarocks-2.2.2.tar.gz
-    $ cd luarocks-2.2.2
+    $ wget http://luarocks.org/releases/luarocks-2.3.0.tar.gz
+    $ tar zxpf luarocks-2.3.0.tar.gz
+    $ cd luarocks-2.3.0
     $ ./configure; sudo make bootstrap
     $ sudo luarocks install luasocket
     $ lua
-    Lua 5.3.1 Copyright (C) 1994-2015 Lua.org, PUC-Rio
+    Lua 5.3.2 Copyright (C) 1994-2015 Lua.org, PUC-Rio
     > require "socket"
 
 
