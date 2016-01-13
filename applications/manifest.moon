@@ -40,21 +40,21 @@ valid_format = (format) ->
     when "lua", "json", "zip" then true
     else false
 
-expand_splat = (fn) ->
+expand_params = (fn) ->
   =>
     @format = "lua"
 
-    -- splat_rest will contain @params.splat without the matched substring
-    splat_rest = @params.splat\gsub "^(-[%d.]*%d)", (s) ->
+    -- params_rest will contain @params.params without the matched substring
+    params_rest = @params.params\gsub "^(-[%d.]*%d)", (s) ->
       @version = s\sub 2
       ""
     if @version and not valid_lua_version @version
       return status_404
 
-    splat_rest = splat_rest\gsub "(%.%a+)$", (s) ->
+    params_rest = params_rest\gsub "(%.%a+)$", (s) ->
       @format = s\sub 2
       ""
-    if not valid_format(@format) or splat_rest != ""
+    if not valid_format(@format) or params_rest != ""
       return status_404
 
     fn @
@@ -133,13 +133,13 @@ is_stable = (fn) ->
 
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest is_stable serve_manifest
-  "/manifest*": expand_splat cached_manifest is_stable serve_manifest
+  "/manifest:params": expand_params cached_manifest is_stable serve_manifest
 
   [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
-  "/dev/manifest*": expand_splat cached_manifest is_dev serve_manifest
+  "/dev/manifest:params": expand_params cached_manifest is_dev serve_manifest
 
   [user_manifest: "/manifests/:user/manifest"]: serve_manifest
-  "/manifests/:user/manifest*": expand_splat serve_manifest
+  "/manifests/:user/manifest:params": expand_params serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
