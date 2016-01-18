@@ -34,6 +34,7 @@ describe "moonrocks", ->
   should_load "/m/root/development-only"
   should_load "/modules"
   should_load "/manifest"
+  should_load "/manifests"
 
   should_load "/login"
   should_load "/register"

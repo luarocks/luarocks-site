@@ -11,7 +11,7 @@ import
 
 import truncate_tables from require "lapis.spec.db"
 
-import request, request_as from require "spec.helpers"
+import request, request_as, should_load from require "spec.helpers"
 
 factory = require "spec.factory"
 
@@ -70,6 +70,20 @@ describe "moonrocks", ->
       commands: {}
       modules: {}
     }, m
+
+  -- doesn't load invalid pages
+  should_load "/manifestfwafe", 404
+  should_load "/manifest/nope", 404
+  should_load "/manifest-4.0", 404
+  should_load "/manifest.wow", 404
+  should_load "/manifest-5.2.wow", 404
+
+  should_load "/dev/manifests", 404
+  should_load "/dev/manifestfwafe", 404
+  should_load "/dev/manifest/nope", 404
+  should_load "/dev/manifest-4.0", 404
+  should_load "/dev/manifest.wow", 404
+  should_load "/dev/manifest-5.2.wow", 404
 
   for v in *{"", "-5.1", "-5.2", "-5.3"}
     should_load_manifest "/manifest#{v}", is_empty_manifest
@@ -280,6 +294,13 @@ describe "moonrocks", ->
 
     before_each ->
       user = factory.Users username: "tester"
+
+    should_load "/manifests/tester/manifests", 404
+    should_load "/manifests/tester/manifestfwafe", 404
+    should_load "/manifests/tester/manifest/nope", 404
+    should_load "/manifests/tester/manifest-4.0", 404
+    should_load "/manifests/tester/manifest.wow", 404
+    should_load "/manifests/tester/manifest-5.2.wow", 404
 
     should_load_manifest "/manifests/tester/manifest", is_empty_manifest
     should_load_manifest "/manifests/tester/manifest-5.1", is_empty_manifest
