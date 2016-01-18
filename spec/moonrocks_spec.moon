@@ -2,7 +2,7 @@
 import use_test_server from require "lapis.spec"
 import truncate_tables from require "lapis.spec.db"
 
-import request, request_as, do_upload_as from require "spec.helpers"
+import request, request_as, do_upload_as, should_load from require "spec.helpers"
 import generate_token from require "lapis.csrf"
 import from_json from require "lapis.util"
 
@@ -17,10 +17,6 @@ import
   from require "models"
 
 factory = require "spec.factory"
-
-should_load = (url, expected_status=200) ->
-  it "should load #{url} with #{expected_status}", ->
-    assert.same expected_status, (request url)
 
 describe "moonrocks", ->
   use_test_server!

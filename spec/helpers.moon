@@ -73,5 +73,11 @@ do_upload_as = (user, url, param_name, filename, file_content, opts) ->
 
   request_as user, url, req_opts
 
+should_load = (url, expected_status=200) ->
+  assert = require "luassert"
+  import it from require "busted"
 
-{ :log_in_user, :request_as, request: _request, :do_upload_as }
+  it "should load #{url} with #{expected_status}", ->
+    assert.same expected_status, (request url)
+
+{ :log_in_user, :request_as, request: _request, :do_upload_as, :should_load }
