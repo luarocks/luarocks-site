@@ -45,7 +45,10 @@ class Module extends require "widgets.page"
         a href: url, v\name_for_display!
 
         if v.development
-          span class: "development_flag", "dev"
+          span title: "Development version", class: "development_flag", "dev"
+
+        if v.archived
+          span title: "Not available in manifest", class: "archive_flag", "Archived"
 
         span class: "sub", title: "#{v.created_at} UTC", time_ago_in_words(v.created_at)
         span class: "sub", @plural v.downloads, "download", "downloads"

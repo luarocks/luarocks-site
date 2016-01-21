@@ -509,7 +509,7 @@ img.avatar {
     }
 }
 
-.development_flag, .new_tag, .user_flag {
+.development_flag, .new_tag, .user_flag, .archive_flag {
     display: inline-block;
     vertical-align: 2px;
     font-weight: bold;
@@ -524,6 +524,11 @@ img.avatar {
     color: white;
     border-radius: 2px;
     padding: 0 4px;
+
+    &.archive_flag {
+        background: rgba(black, 0.1);
+        color: rgba(black, 0.5);
+    }
 }
 
 .graph_container {
