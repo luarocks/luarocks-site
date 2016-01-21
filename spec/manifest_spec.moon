@@ -89,13 +89,11 @@ describe "moonrocks", ->
     should_load_manifest "/manifest#{v}", is_empty_manifest
     should_load_manifest "/dev/manifest#{v}", is_empty_manifest
 
+    should_load_zip_manifest "/manifest#{v}.zip"
+    should_load_zip_manifest "/dev/manifest#{v}.zip"
 
-    if v != ""
-      should_load_zip_manifest "/manifest#{v}.zip"
-      should_load_zip_manifest "/dev/manifest#{v}.zip"
-
-      should_load_json_manifest "/manifest#{v}.json"
-      should_load_json_manifest "/dev/manifest#{v}.json"
+    should_load_json_manifest "/manifest#{v}.json"
+    should_load_json_manifest "/dev/manifest#{v}.json"
 
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
@@ -121,6 +119,7 @@ describe "moonrocks", ->
       should_load_manifest "/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifest-5.2", (m) -> has_module m, mod
 
+      should_load_zip_manifest "/manifest.zip", (m) -> has_module m, mod
       should_load_zip_manifest "/manifest-5.1.zip", (m) -> has_module m, mod
       should_load_zip_manifest "/manifest-5.2.zip", (m) -> has_module m, mod
 
@@ -177,6 +176,7 @@ describe "moonrocks", ->
       should_load_manifest "/dev/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/dev/manifest-5.2", (m) -> has_module m, mod
 
+      should_load_zip_manifest "/dev/manifest.zip", (m) -> has_module m, mod
       should_load_zip_manifest "/dev/manifest-5.1.zip", (m) -> has_module m, mod
       should_load_zip_manifest "/dev/manifest-5.2.zip", (m) -> has_module m, mod
 

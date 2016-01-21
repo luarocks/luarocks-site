@@ -1,7 +1,5 @@
 -- app responsible for rendering manifests
 
-MANIFEST_LUA_VERSIONS = { "5.1", "5.2", "5.3" }
-
 lapis = require "lapis"
 
 import redis_cache from require "helpers.redis_cache"
@@ -30,19 +28,36 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
-with_format = (fn) ->
-  =>
-    if format = (@params.version or '')\match "%.(%a+)$"
-      @format = format
-      @params.version = @params.version\sub 1, -format\len! - 2
-    else
-      @format = "lua"
+status_404 = layout: false, status: 404
 
-    switch @format
-      when "lua", "json", "zip"
-        fn @
-      else
-        layout: false, status: 404
+valid_lua_version = (ver) ->
+  switch ver
+    when "5.1", "5.2", "5.3" true
+    else false
+
+valid_format = (format) ->
+  switch format
+    when "lua", "json", "zip" then true
+    else false
+
+expand_params = (fn) ->
+  =>
+    @format = "lua"
+
+    -- params_rest will contain @params.params without the matched substring
+    params_rest = @params.params\gsub "^(-[%d.]*%d)", (s) ->
+      @version = s\sub 2
+      ""
+    if @version and not valid_lua_version @version
+      return status_404
+
+    params_rest = params_rest\gsub "(%.%a+)$", (s) ->
+      @format = s\sub 2
+      ""
+    if not valid_format(@format) or params_rest != ""
+      return status_404
+
+    fn @
 
 zipable = (fn) ->
   =>
@@ -63,13 +78,7 @@ zipable = (fn) ->
 
     nil
 
-serve_manifest = capture_errors_404 =>
-  if @params.version
-    assert_valid @params, {
-      { "version", one_of: MANIFEST_LUA_VERSIONS }
-    }
-
-    @version = @params.version
+serve_manifest = zipable capture_errors_404 =>
 
   -- find what we are fetching modules from
   thing = if @params.user
@@ -124,16 +133,13 @@ is_stable = (fn) ->
 
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest"]: cached_manifest is_stable serve_manifest
+  "/manifest:params": expand_params cached_manifest is_stable serve_manifest
 
   [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
-
-  "/manifest-:version": with_format zipable cached_manifest is_stable serve_manifest
-
-  "/dev/manifest-:version": with_format zipable cached_manifest is_dev serve_manifest
+  "/dev/manifest:params": expand_params cached_manifest is_dev serve_manifest
 
   [user_manifest: "/manifests/:user/manifest"]: serve_manifest
-
-  "/manifests/:user/manifest-:version": with_format serve_manifest
+  "/manifests/:user/manifest:params": expand_params serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
@@ -160,4 +166,3 @@ class MoonRocksManifest extends lapis.Application
 
     @manifests = @pager\get_page @page
     render: true
-
