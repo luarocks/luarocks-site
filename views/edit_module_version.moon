@@ -21,6 +21,14 @@ class EditModuleVersion extends require "widgets.page"
             module. This version will not be listed in the regular manifest but
             only in a development variant of the manifest."
 
+        div class: "wide_row", ->
+          label ->
+            input type: "checkbox", name: "v[archived]", checked: @version.archived and "checked" or nil
+            span class: "label", "Archived"
+            p "This module's version is no longer listed in any manifests, but
+            the files remain and can be explicitly installed by referencing the
+            rockspec directly"
+
         if @current_user\is_admin!
           div class: "wide_row", ->
             label ->
@@ -28,9 +36,7 @@ class EditModuleVersion extends require "widgets.page"
               p class: "sub", "If your development rockspec changes frequently
               you can serve it directly from your repository instead of the copy
               located on LuaRocks' server."
-
               input type: "text", name: "v[external_rockspec_url]", placeholder: "optional", value: @version.external_rockspec_url
-
 
       div class: "button_row", ->
         button "Save"

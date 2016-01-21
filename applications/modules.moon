@@ -132,6 +132,7 @@ class MoonRocksModules extends lapis.Application
 
       version_update = trim_filter @params.v
       development = not not version_update.development
+      archived = not not version_update.archived
 
       external_rockspec_url = if @current_user\is_admin!
         assert_valid version_update, {
@@ -148,11 +149,11 @@ class MoonRocksModules extends lapis.Application
 
       @version\update {
         :development
+        :archived
         :external_rockspec_url
       }
 
       redirect_to: @url_for("module_version", @)
-
   }
 
   [module_version: "/modules/:user/:module/:version"]: capture_errors_404 =>
