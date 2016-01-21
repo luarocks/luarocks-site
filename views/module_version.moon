@@ -19,6 +19,10 @@ class ModuleVersion extends require "widgets.page"
     p ->
       text "Version #{@version.version_name} of #{@module\name_for_display!}
       was uploaded #{time_ago_in_words @version.created_at}."
+
+      if @version.lua_version
+        text "For #{@version.lua_version}"
+
       if @version.development
         text " This is a development version of the module."
 
