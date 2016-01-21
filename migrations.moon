@@ -227,4 +227,7 @@ import
   [1443382411]: =>
     add_column "users", "last_active_at", time null: true
 
+  [1453406400]: =>
+    add_column "versions", "archived", boolean default: false
+
 }

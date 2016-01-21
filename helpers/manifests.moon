@@ -21,6 +21,7 @@ preload_modules = (mods) ->
   versions = find_all_in_batches Versions, mod_ids, {
     key: "module_id"
     fields: "id, module_id, version_name, lua_version, development"
+    where: { archived: false }
   }
 
   version_ids = [v.id for v in *versions]
