@@ -156,6 +156,16 @@ describe "moonrocks", ->
         assert.same "", body
         assert.truthy headers["Last-Modified"]
 
+    describe "with archived version #ddd", ->
+      before_each ->
+        v_one = factory.Versions module_id: mod.id, version_name: "1.1.1", archived: true
+        v_two = factory.Versions module_id: mod.id, version_name: "1.1.2"
+
+      should_load_manifest "/manifest", (m) ->
+        module_name = next m.repository
+        versions = [k for k in pairs m.repository[module_name]]
+        assert.same {"1.1.2"}, versions
+
     describe "with development version", ->
       local version
 
