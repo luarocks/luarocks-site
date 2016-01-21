@@ -21,7 +21,7 @@ class ModuleVersion extends require "widgets.page"
       was uploaded #{time_ago_in_words @version.created_at}."
 
       if @version.lua_version
-        text "For #{@version.lua_version}"
+        text " For #{@version.lua_version}"
 
       if @version.development
         text " This is a development version of the module."
