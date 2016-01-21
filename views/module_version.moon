@@ -22,6 +22,11 @@ class ModuleVersion extends require "widgets.page"
       if @version.development
         text " This is a development version of the module."
 
+      if @version.archived
+        text " This is an archived version, it's not available in any manifest
+        and can only be installed by referencing the rockspec or rock
+        directly."
+
     h3 "Available Downloads"
     ul class: "rock_list", ->
       li class: "arch", ->

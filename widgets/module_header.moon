@@ -18,6 +18,12 @@ class ModuleHeader extends require "widgets.page_header"
           text " "
           span class: "sub", @version.version_name
 
+          if @version.archived
+            span {
+              title: "Not available in manifest"
+              class: "archive_flag"
+            }, "Archived"
+
       if summary = @module.summary
         p class: "module_summary", summary
 
