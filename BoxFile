@@ -1,4 +1,4 @@
-lpeg 0.10.2-1 # this version is must faster
+lpeg 0.10.2-1 # this version is much faster, but not required
 moonscript
 luabitop
 lapis

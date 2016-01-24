@@ -2,11 +2,7 @@
 
 <http://luarocks.org>
 
-A webpage for hosting and serving Lua modules.
-
-This was formerly called [MoonRocks](http://rocks.moonscript.org), but has
-since taken over as the official LuaRocks website. This naming history
-is apparent in its implementation.
+The official module repository of the [LuaRocks package manager](https://github.com/keplerproject/luarocks) for Lua.
 
 The entire site runs on [OpenResty][1], an Nginx based platform with Lua
 support. The site itself is coded in [MoonScript][2] and uses [Lapis][3] as a
@@ -18,32 +14,20 @@ Files are stored on Google Cloud Storage. PostgreSQL is used as a database.
 
 ## How To Run Locally
 
-This is a bit complicated, tell me if you are doing this and I'll assist you.
+Install the following dependencies:
 
-Install [sassc](https://github.com/hcatlin/sassc). (Optionally you can install
-[SASS](http://sass-lang.com/) but you'll need to modify a Tupfile)
-
-Install [coffeescript](http://coffeescript.org/#installation).
-
-Install [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` binary).
-
-Install PostgreSQL. Create a database called `moonrocks`.
-
-Install [OpenResty][1].
-
-Install Redis.
+* [Tup][4]
+* [sassc](https://github.com/hcatlin/sassc)
+* [coffeescript](http://coffeescript.org/#installation)
+* [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` binary)
+* PostgreSQL
+* [OpenResty][1]
+* Redis
 
 Check out this repository.
 
 Install the dependencies listed in
-<https://github.com/leafo/moonrocks-site/blob/master/BoxFile>.
-
-If you use [MoonBox][6] then you can install all of the files in one go:
-
-```bash
-moonbox install
-source moonbox env enter
-```
+<https://github.com/leafo/moonrocks-site/blob/master/BoxFile> with LuaRocks.
 
 Run these commands to build.
 
@@ -65,6 +49,9 @@ lapis server
 ```
 
 Now `http://localhost:8080` should load.
+
+If you edit any MoonScript or SCSS files you should call `tup upd` to rebuild
+the changes. You can run `tup monitor -a` to watch the filesystem to rebuild.
 
 ### Running tests
 
@@ -114,24 +101,10 @@ make it look something like this: (it must return a table of options)
 }
 ```
 
-### Why Tup?
-
-Tup has a filesystem monitor, it can rebuild any assets or moon files
-automatically as you change them. Better than running individual watch scripts
-for each component.
-
-To use it run:
-
-```bash
-tup monitor -a -f
-```
-
-
   [1]: http://openresty.org/
   [2]: http://moonscript.org/
   [3]: https://github.com/leafo/lapis
   [4]: http://gittup.org/tup/
   [5]: http://www.mailgun.com/
-  [6]: https://github.com/kernelp4nic/moonbox
 
 
