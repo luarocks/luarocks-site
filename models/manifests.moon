@@ -136,11 +136,10 @@ class Manifests extends Model
   purge: =>
     @update_counts!
     if @is_root!
-      import redis_cache from require "helpers.redis_cache"
-      cache = redis_cache("manifest")!
-      -- uhh might want to fix this up
-      cache\delete "/manifest", "/manifest-5.1", "/manifest-5.2", "/manifest-5.3",
-        "/dev/manifest", "/dev/manifest-5.1", "/dev/manifest-5.2", "/dev/manifest-5.3"
+      import get_redis from require "helpers.redis_cache"
+      if redis = get_redis!
+        for key in *redis\keys "manifest:*"
+          redis\del key
 
     true
 
