@@ -21,6 +21,30 @@ class MoonRocksAdmin extends lapis.Application
     unless @current_user and @current_user\is_admin!
       @write not_found
 
+  [cache: "/cache"]: capture_errors_json respond_to {
+    GET: =>
+      import get_redis from require "helpers.redis_cache"
+      redis = assert_error get_redis!, "failed to get redis"
+      @cache_keys = redis\keys "manifest:*"
+      render: true
+
+    POST: =>
+      assert_csrf @
+      assert_valid @params, {
+        {"action", one_of: {"purge"}}
+      }
+
+      switch @params.action
+        when "purge"
+          import get_redis from require "helpers.redis_cache"
+          redis = assert_error get_redis!, "failed to get redis"
+
+          for key in *redis\keys "manifest:*"
+            redis\del key
+
+      redirect_to: @url_for @route_name
+  }
+
   [users: "/users"]: capture_errors_json =>
     import Users from require "models"
     assert_page @
