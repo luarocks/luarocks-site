@@ -17,9 +17,9 @@ Files are stored on Google Cloud Storage. PostgreSQL is used as a database.
 Install the following dependencies:
 
 * [Tup][4]
-* [sassc](https://github.com/hcatlin/sassc)
+* [sassc](https://github.com/sass/sassc)
 * [coffeescript](http://coffeescript.org/#installation)
-* [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` binary)
+* [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` executable)
 * PostgreSQL
 * [OpenResty][1]
 * Redis
