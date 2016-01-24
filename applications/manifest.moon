@@ -2,8 +2,6 @@
 
 lapis = require "lapis"
 
-import redis_cache from require "helpers.redis_cache"
-
 import
   assert_error
   capture_errors
@@ -28,37 +26,6 @@ import cached from require "lapis.cache"
 
 config = require("lapis.config").get!
 
-status_404 = layout: false, status: 404
-
-valid_lua_version = (ver) ->
-  switch ver
-    when "5.1", "5.2", "5.3" true
-    else false
-
-valid_format = (format) ->
-  switch format
-    when "lua", "json", "zip" then true
-    else false
-
-expand_params = (fn) ->
-  =>
-    @format = "lua"
-
-    -- params_rest will contain @params.params without the matched substring
-    params_rest = @params.params\gsub "^(-[%d.]*%d)", (s) ->
-      @version = s\sub 2
-      ""
-    if @version and not valid_lua_version @version
-      return status_404
-
-    params_rest = params_rest\gsub "(%.%a+)$", (s) ->
-      @format = s\sub 2
-      ""
-    if not valid_format(@format) or params_rest != ""
-      return status_404
-
-    fn @
-
 zipable = (fn) ->
   =>
     @write fn @
@@ -67,18 +34,27 @@ zipable = (fn) ->
     return unless (@options.status or 200) == 200
     return unless @req.cmd_mth == "GET"
 
-    @version or= @params.version
-
     fname = "manifest"
     if @version
       fname ..= "-#{@version}"
 
     @options.content_type = "application/zip"
-    @buffer = { zipped_file fname, table.concat @buffer }
-
+    -- set like this so the outer cached call can pick it up
+    @res.content = zipped_file fname, table.concat @buffer
+    @buffer = {}
     nil
 
-serve_manifest = zipable capture_errors_404 =>
+serve_manifest = capture_errors_404 =>
+  if @params.a or @params.b
+    @params.version = "#{@params.a}.#{@params.b}"
+
+  assert_valid @params, {
+    {"format", optional: true, one_of: {"json", "zip"}}
+    {"version", optional: true, one_of: {"5.1", "5.2", "5.3"}}
+  }
+
+  @format = @params.format
+  @version = @params.version
 
   -- find what we are fetching modules from
   thing = if @params.user
@@ -110,9 +86,10 @@ serve_manifest = zipable capture_errors_404 =>
     serve_lua_table @, manifest
 
 cached_manifest = (fn) ->
+  import redis_cache from require "helpers.redis_cache"
   cached {
     dict: redis_cache "manifest"
-    cache_key: (path) -> path\gsub "%.zip$", ""
+    cache_key: (path) -> path
     exptime: 60 * 10
     when: =>
       return false unless @req.cmd_mth == "GET"
@@ -132,14 +109,9 @@ is_stable = (fn) ->
     fn @
 
 class MoonRocksManifest extends lapis.Application
-  [root_manifest: "/manifest"]: cached_manifest is_stable serve_manifest
-  "/manifest:params": expand_params cached_manifest is_stable serve_manifest
-
-  [root_manifest_dev: "/dev/manifest"]: cached_manifest is_dev serve_manifest
-  "/dev/manifest:params": expand_params cached_manifest is_dev serve_manifest
-
-  [user_manifest: "/manifests/:user/manifest"]: serve_manifest
-  "/manifests/:user/manifest:params": expand_params serve_manifest
+  [root_manifest: "/manifest(-:a.:b)(.:format)"]: cached_manifest zipable is_stable serve_manifest
+  [root_manifest_dev: "/dev/manifest(-:a.:b)(.:format)"]: cached_manifest zipable is_dev serve_manifest
+  [user_manifest: "/manifests/:user/manifest(-:a.:b)(.:format)"]: zipable serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
