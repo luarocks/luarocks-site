@@ -1,6 +1,12 @@
 
 ## Changes
 
+**2016/1/23**
+
+* All manifests now support `.json` to render in json
+* User manifests now support `.zip` zipped manifests, along with version suffix, eg. `-5.2`
+* Module versions can now be archived to unlist them from the manifest
+
 **2015/8/19**
 
 * Add new header to all user pages
