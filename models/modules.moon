@@ -81,7 +81,7 @@ class Modules extends Model
     tsquery = query\gsub [==[[?'"!@#$%%^&*%(%)_%-\|+/+.>,<:*]]==], " "
     -- make them all prefix matches
     tsquery = table.concat ["#{word}:*" for word in tsquery\gmatch "[^%s]+"], " & "
-    query = query\gsub "[%?]", ""
+    query = query\gsub("[%?]", "")\lower!
 
     tsquery = db.interpolate_query "to_tsquery('english', ?)", tsquery
     rank = "ts_rank_cd(#{@search_index}, #{tsquery})"
@@ -90,13 +90,27 @@ class Modules extends Model
       ids = table.concat [tonumber id for id in *manifest_ids], ", "
       "and exists(select 1 from manifest_modules where manifest_id in (#{ids}) and module_id = modules.id)"
 
-    @paginated "
-      where (#{@search_index} @@ #{tsquery} or #{@name_search_index} % ?)
-      #{clause or ""}
-      order by (case when #{@name_search_index} % ? then 1000 else #{rank} end) desc
-    ", query, query, {
-      per_page: 50
-    }
+    matches = @select "
+      where lower(name) = ? or (display_name is not null and lower(display_name) = ?)
+      #{clause}
+      order by downloads desc limit 5
+    ", query, query
+
+    exclude = next(matches) and db.interpolate_query "and id not in ?",
+      db.list [m.id for m in *matches]
+
+    fuzzy_matches = @select "
+      where #{@search_index} @@ #{tsquery}
+        #{exclude or ""}
+        #{clause}
+      order by #{rank} desc
+      limit 50
+    "
+
+    for m in *fuzzy_matches
+      table.insert matches, m
+
+    matches
 
   url_key: (name) => @name
 
