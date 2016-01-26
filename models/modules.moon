@@ -78,15 +78,25 @@ class Modules extends Model
     mod
 
   @search: (query, manifest_ids) =>
+    tsquery = query\gsub [==[[?'"!@#$%%^&*%(%)_%-\|+/+.>,<:*]]==], " "
+    -- make them all prefix matches
+    tsquery = table.concat ["#{word}:*" for word in tsquery\gmatch "[^%s]+"], " & "
+    query = query\gsub "[%?]", ""
+
+    tsquery = db.interpolate_query "to_tsquery('english', ?)", tsquery
+    rank = "ts_rank_cd(#{@search_index}, #{tsquery})"
+
     clause = if manifest_ids
       ids = table.concat [tonumber id for id in *manifest_ids], ", "
       "and exists(select 1 from manifest_modules where manifest_id in (#{ids}) and module_id = modules.id)"
 
-    @paginated [[
-      where (to_tsquery('english', ?) @@ ]] .. @search_index .. [[ or ]] .. @name_search_index .. [[ % ?)
-      ]] .. (clause or "") .. [[
-      order by downloads desc
-    ]], query, query, per_page: 50
+    @paginated "
+      where (#{@search_index} @@ #{tsquery} or #{@name_search_index} % ?)
+      #{clause or ""}
+      order by (case when #{@name_search_index} % ? then 1000 else #{rank} end) desc
+    ", query, query, {
+      per_page: 50
+    }
 
   url_key: (name) => @name
 

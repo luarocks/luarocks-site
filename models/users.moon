@@ -79,6 +79,8 @@ class Users extends Model
         user
 
   @search: (query) =>
+    query = query\gsub "[%?]", ""
+
     @paginated [[
       where username % ?
       order by similarity(username, ?) desc
