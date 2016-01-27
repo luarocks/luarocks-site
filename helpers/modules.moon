@@ -2,7 +2,7 @@
 import assert_valid from require "lapis.validate"
 import assert_page from require "helpers.app"
 
-import Users from require "models"
+import Users, Modules from require "models"
 
 paginated_modules = (object_or_pager, opts={}) =>
   assert_page @
