@@ -204,6 +204,7 @@ class MoonRocks extends lapis.Application
         { Manifests\root!.id }
 
       @results = Modules\search query, manifests
+      Modules\preload_relation @results, "user", fields: "id, slug, username"
       @user_results = Users\search(query)\get_page!
     else
       @title = "Search"

@@ -11,6 +11,7 @@ paginated_modules = (object_or_pager, opts={}) =>
     opts = { prepare_results: opts }
 
   opts.prepare_results or= (mods) ->
+    Modules\preload_relation mods, "user", fields: "id, slug, username"
     Users\include_in mods, "user_id", fields: "id, slug, username"
     mods
 
