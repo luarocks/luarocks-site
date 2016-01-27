@@ -91,7 +91,7 @@ class Modules extends Model
       "and exists(select 1 from manifest_modules where manifest_id in (#{ids}) and module_id = modules.id)"
 
     matches = @select "
-      where lower(name) = ? or (display_name is not null and lower(display_name) = ?)
+      where (lower(name) = ? or (display_name is not null and lower(display_name) = ?))
       #{clause}
       order by downloads desc limit 5
     ", query, query
