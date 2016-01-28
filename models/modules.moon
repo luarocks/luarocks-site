@@ -92,7 +92,7 @@ class Modules extends Model
 
     matches = @select "
       where (lower(name) = ? or (display_name is not null and lower(display_name) = ?))
-      #{clause}
+      #{clause or ""}
       order by downloads desc limit 5
     ", query, query
 
@@ -102,7 +102,7 @@ class Modules extends Model
     fuzzy_matches = @select "
       where #{@search_index} @@ #{tsquery}
         #{exclude or ""}
-        #{clause}
+        #{clause or ""}
       order by #{rank} desc
       limit 50
     "
