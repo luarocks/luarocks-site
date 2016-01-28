@@ -54,6 +54,39 @@ describe "moonrocks", ->
     assert.truthy Versions\version_name_is_development "cvs-2"
     assert.falsy Versions\version_name_is_development "0.2-1"
 
+  describe "search", ->
+    should_load "/search"
+
+    it "queries with no modules", ->
+      status = request_as nil, "/search", {
+        get: { q: "hello world" }
+      }
+
+      assert.same 200, status
+
+    it "queries all manifests with no results", ->
+      status = request_as nil, "/search", {
+        get: {
+          q: "hello world"
+          non_root: "yes"
+        }
+      }
+
+      assert.same 200, status
+
+    describe "with results", ->
+      before_each ->
+        mod = factory.Modules name: "leafo"
+        ManifestModules\create root, mod
+        factory.Users username: "leafo"
+
+      it "searches root", ->
+        status = request_as nil, "/search", {
+          get: { q: "leafo" }
+        }
+
+        assert.same 200, status
+
   describe "with user", ->
     local user
 
