@@ -9,6 +9,10 @@ class Search extends require "widgets.page"
     if @user_results and next @user_results
       @render_user_results!
 
+    p ->
+      text "Don't see what you expect? "
+      a href: "https://github.com/leafo/luarocks-site/issues/82", "Give feedback on our issues tracker"
+
   render_search_form: =>
     form action: "", method: "get", class: "form", ->
       div class: "row", ->
