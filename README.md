@@ -33,7 +33,7 @@ Run these commands to build.
 
 ```bash
 tup init
-tup upd
+tup
 ```
 
 Create the schema:
@@ -50,7 +50,7 @@ lapis server
 
 Now `http://localhost:8080` should load.
 
-If you edit any MoonScript or SCSS files you should call `tup upd` to rebuild
+If you edit any MoonScript or SCSS files you should call `tup` to rebuild
 the changes. You can run `tup monitor -a` to watch the filesystem to rebuild.
 
 ### Running tests
