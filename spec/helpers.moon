@@ -45,7 +45,7 @@ do_upload_as = (user, url, param_name, filename, file_content, opts) ->
   import generate_token from require "lapis.csrf"
 
   unless pcall -> require "moonrocks.multipart"
-    pending "Need moonrocks to run upload spec"
+    error "Need moonrocks to run upload spec"
     return false
 
   import File, encode from require "moonrocks.multipart"
