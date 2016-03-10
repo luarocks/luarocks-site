@@ -154,6 +154,13 @@ class MoonRocksUser extends lapis.Application
       render: true
   }
 
+  ["user_settings.import_toolbox": "/settings/import-toolbox"]: ensure_https require_login respond_to {
+    GET: =>
+      @user = @current_user
+      @title = "Import Lua Toolbox - User Settings"
+      render: true
+  }
+
   ["user_settings.reset_password": "/settings/reset-password"]: ensure_https require_login respond_to {
     before: =>
       @user = @current_user
