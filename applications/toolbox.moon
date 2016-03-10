@@ -32,7 +32,8 @@ for m in *modules
 class MoonRocksToolbox extends lapis.Application
   [transfer_endorses: "/toolbox/transfer"]: require_login respond_to {
     GET: =>
-      count = 0
+      @transfer_count = 0
+      @transfer = true
       endorsements = {}
       
       for u in *users
@@ -51,11 +52,8 @@ class MoonRocksToolbox extends lapis.Application
 		      			object_type: 1
 		      			object_id: m.id
 		      		}
-	      			count = count+1
+	      			@transfer_count = @transfer_count+1
 
-
-      --error("hey"..count)
-      --redirect_to: @url_for "user_settings.import_toolbox"
       render: "user_settings.import_toolbox"
   }
 
