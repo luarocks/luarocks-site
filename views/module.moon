@@ -73,6 +73,12 @@ class Module extends require "widgets.page"
         text ", " unless i == 1
         a href: @url_for(mod), mod\name_for_display!
 
+    if next @labels
+      h3 "Labels"
+      for i,l in ipairs @labels
+        text ", " unless i == 1
+        a href: "/label/modules/#{l.name}", l.name
+
     can_edit = @module\allowed_to_edit @current_user
     if next @manifests
       h3 "Manifests"
