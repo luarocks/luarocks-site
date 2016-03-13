@@ -113,7 +113,7 @@ class Module extends require "widgets.page"
 
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
       raw " &middot; "
-      a href: "#", "Add Label"
+      a href: @url_for("add_label", @), "Add Label"
       raw " &middot; "
       a href: @url_for("edit_module", @), "Edit"
       raw " &middot; "
