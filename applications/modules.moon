@@ -266,7 +266,7 @@ class MoonRocksModules extends lapis.Application
       @title = "Add Label to Module"
 
       already_in = { l.id, true for l in *@module\get_labels! }
-      @labels = for l in *Labels\select!
+      @labels = for l in *Labels\select "order by name"
         continue if already_in[l.id]
         l
 
