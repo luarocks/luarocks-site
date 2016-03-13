@@ -38,6 +38,13 @@ class Index extends require "widgets.page"
 
         @render_modules @popular_modules
 
+    if next @labels
+      h2 ->
+        text "View Modules by Labels"
+      for i,l in ipairs @labels
+        text ", " unless i == 1
+        a href: "/label/modules/#{l.name}", l.name
+
     h2 ->
       text "Daily Module Downloads"
       span class: "header_sub", ->
