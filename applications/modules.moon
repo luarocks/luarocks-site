@@ -234,3 +234,26 @@ class MoonRocksModules extends lapis.Application
     }
 
     render: true
+
+  [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
+    before: =>
+      load_module @
+      assert_editable @, @module
+      @label = Labels\find @params.label_id
+      return unless @label
+
+      assert_error LabelsModules\find({
+        label_id: @label.id
+        module_id: @module.id
+      }), "Module does not have this label"
+
+    GET: =>
+      @title = "Remove Label" 
+      render: true
+
+    POST: =>
+      assert_csrf @
+
+      LabelsModules\remove @label, @module
+      redirect_to: @url_for("module", @)
+  }

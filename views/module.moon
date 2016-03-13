@@ -73,13 +73,19 @@ class Module extends require "widgets.page"
         text ", " unless i == 1
         a href: @url_for(mod), mod\name_for_display!
 
+    can_edit = @module\allowed_to_edit @current_user
     if next @labels
       h3 "Labels"
       for i,l in ipairs @labels
-        text ", " unless i == 1
-        a href: "/label/modules/#{l.name}", l.name
+        div class: "label_row", ->
+          a href: "/label/modules/#{l.name}", l.name
+          if can_edit
+            span class: "sub", ->
+              text " ("
+              a href: "/label/remove/#{@user.slug}/#{@module.name}/#{l.id}", "remove"
+              text ")"
 
-    can_edit = @module\allowed_to_edit @current_user
+    
     if next @manifests
       h3 "Manifests"
       for m in *@manifests
@@ -106,6 +112,8 @@ class Module extends require "widgets.page"
           text "Module Owner: "
 
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
+      raw " &middot; "
+      a href: "#", "Add Label"
       raw " &middot; "
       a href: @url_for("edit_module", @), "Edit"
       raw " &middot; "
