@@ -131,6 +131,14 @@ class Modules extends Model
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
+  get_labels: =>
+    labels = {}
+    import LabelsModules from require "models"
+    lm = LabelsModules\select "where module_id = ?", @id
+    for l in *lm
+      table.insert(labels,l\get_label!)
+    return labels
+
   get_manifests: =>
     unless @manifests
       import Manifests from require "models"

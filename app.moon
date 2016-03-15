@@ -26,6 +26,7 @@ import
   Users
   Versions
   DownloadsDaily
+  Labels
   from require "models"
 
 import
@@ -61,6 +62,7 @@ class MoonRocks extends lapis.Application
   @include "applications.modules"
   @include "applications.github"
   @include "applications.admin"
+  @include "applications.toolbox"
 
   @before_filter =>
     @current_user = Users\read_session @
@@ -89,6 +91,8 @@ class MoonRocks extends lapis.Application
 
     @popular_modules = Modules\select "order by downloads desc limit 5"
     Users\include_in @popular_modules, "user_id"
+
+    @labels = Labels\select "order by name"
 
     @downloads_daily = DownloadsDaily\fetch true, 30
     render: true

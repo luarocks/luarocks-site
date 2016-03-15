@@ -8,6 +8,7 @@ class UserSettings extends require "widgets.page"
       @render_nav_tab "user_settings.reset_password", "Reset password"
       @render_nav_tab "user_settings.api_keys", "API keys"
       @render_nav_tab "user_settings.link_github", "GitHub link"
+      @render_nav_tab "user_settings.import_toolbox", "Lua Toolbox"
 
     @render_errors!
     @settings_content!
