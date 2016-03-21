@@ -66,6 +66,7 @@ build_manifest = (modules, filter_version=nil, development=nil) ->
 
       if filter_version and version.lua_version
         dep = parse_dep version.lua_version
+        continue unless dep
         continue unless match_constraints filter_version, dep.constraints
 
       arches = { {arch: "rockspec"} }
