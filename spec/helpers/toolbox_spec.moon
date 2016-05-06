@@ -3,7 +3,7 @@ import truncate_tables from require "lapis.spec.db"
 
 factory = require "spec.factory"
 
-import Modules, Labels from require "models"
+import Modules, ModuleLabels from require "models"
 
 toolbox = require "helpers.toolbox"
 
@@ -19,11 +19,11 @@ describe "helpers.toolbox", ->
   use_test_server!
 
   setup ->
-    truncate_tables Labels
+    truncate_tables ModuleLabels
 
   it "imports labels", ->
     toolbox\create_labels_from_dump!
-    count = Labels\count!
+    count = ModuleLabels\count!
     assert.equal count, #labels
 
   it "applies labels", ->

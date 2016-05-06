@@ -29,6 +29,10 @@ import
   verify_return_to
   from require "helpers.app"
 
+import
+  transfer_endorsements
+  from require "helpers.toolbox"
+
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"
 
@@ -158,6 +162,12 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       @user = @current_user
       @title = "Import Lua Toolbox - User Settings"
+      render: true
+
+    POST: =>
+      assert_csrf @
+      @transfer = true
+      @transfer_count = transfer_endorsements @
       render: true
   }
 

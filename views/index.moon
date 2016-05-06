@@ -43,7 +43,7 @@ class Index extends require "widgets.page"
         text "View Modules by Labels"
       for i,l in ipairs @labels
         text ", " unless i == 1
-        a href: "/label/modules/#{l.name}", l.name
+        a href: @url_for("modules_label",label: l.name), l.name
 
     h2 ->
       text "Daily Module Downloads"

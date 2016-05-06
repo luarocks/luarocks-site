@@ -7,14 +7,15 @@ class LabelsModules extends Model
   @timestamp: true
 
   @relations: {
-  	{"label", belongs_to: "Labels"}
-  	{"module", belongs_to: "Modules"}
-	}
+    {"label", belongs_to: "ModuleLabels"}
+    {"module", belongs_to: "Modules"}
+  }
+
+  @primary_key: {"label_id", "module_id"}
 
   @create: (opts={}) =>
-
-		f = safe_insert @, opts
-		true
+    f = safe_insert @, opts
+    true
 
   @remove: (label, module) =>
     assert module.id and label.id, "Missing module/label"
@@ -24,5 +25,3 @@ class LabelsModules extends Model
       module_id: module.id
     }
     res
-
-

@@ -78,11 +78,13 @@ class Module extends require "widgets.page"
       h3 "Labels"
       for i,l in ipairs @labels
         div class: "label_row", ->
-          a href: "/label/modules/#{l.name}", l.name
+          a href: @url_for("modules_label", label: l.name), l.name
           if can_edit
             span class: "sub", ->
               text " ("
-              a href: "/label/remove/#{@user.slug}/#{@module.name}/#{l.id}", "remove"
+              a href: 
+                @url_for("remove_label",user: @user.slug, module: @module.name, label_id: l.id),
+                "remove"
               text ")"
 
     

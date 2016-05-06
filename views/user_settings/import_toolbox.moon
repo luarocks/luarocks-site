@@ -21,10 +21,12 @@ class UserSettingsImportToolbox extends require "widgets.user_settings_page"
 
       else
          p ->
-          test "No endorsements were imported."
+          text "No endorsements were imported."
     else
-      p ->
-        a href: @url_for("transfer_endorses", account), "Transfer endorsements"
+      form method: "POST", class: "form", ->
+        @csrf_input!
+        div class: "button_row", ->
+          input type: "submit", value: "Transfer endorsements"
 
 
     

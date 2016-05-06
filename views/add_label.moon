@@ -4,7 +4,7 @@ class AddLabel extends require "widgets.page"
     
     @render_modules { @module }
 
-    a href: @url_for("module", @), ->
+    a href: @url_for(@module), ->
       raw "&laquo; Return to module"
 
     h3 "Add"
@@ -15,8 +15,8 @@ class AddLabel extends require "widgets.page"
 
   add_form: =>
     @render_errors!
-    form action: @req.cmd_url, method: "POST", class: "form", ->
-      input type: "hidden", name: "csrf_token", value: @csrf_token
+    form method: "POST", class: "form", ->
+      @csrf_input!
       div class: "row", ->
         label "Labels"
         element "select", name: "label_id", ->

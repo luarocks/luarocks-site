@@ -25,7 +25,7 @@ import
   Rocks
   Dependencies
   Modules
-  Labels
+  ModuleLabels
   LabelsModules
   from require "models"
 
@@ -216,22 +216,20 @@ class MoonRocksModules extends lapis.Application
     redirect_to: @url_for @module
 
   [modules_label: "/label/modules/:label"]: capture_errors_404 =>
-    label = assert_error Labels\find(name: @params.label), "Invalid label"
-    return unless label
+    label = assert_error ModuleLabels\find(name: @params.label), "Invalid label"
 
     @title = "All modules in #{label.name}"
 
     lmod = LabelsModules\select "where label_id = ?", label.id
-    query_ids = {0}
-    for lm in *lmod
-      table.insert(query_ids,lm.module_id)
 
-    query_ids = table.concat(query_ids,",")
+    if next lmod
+      query_ids = table.concat [lm.module_id for lm in *lmod], ","
+      modules = Modules\paginated "where id in (#{query_ids})"
 
-    paginated_modules @, (Modules\paginated "where id in (#{query_ids})"), {
-      per_page: 50
-      fields: "id, name, display_name, user_id, downloads, summary"
-    }
+      paginated_modules @, (modules), {
+        per_page: 50
+        fields: "id, name, display_name, user_id, downloads, summary"
+      }
 
     render: true
 
@@ -239,7 +237,7 @@ class MoonRocksModules extends lapis.Application
     before: =>
       load_module @
       assert_editable @, @module
-      @label = Labels\find @params.label_id
+      @label = ModuleLabels\find @params.label_id
       return unless @label
 
       assert_error LabelsModules\find({
@@ -255,7 +253,7 @@ class MoonRocksModules extends lapis.Application
       assert_csrf @
 
       LabelsModules\remove @label, @module
-      redirect_to: @url_for("module", @)
+      redirect_to: @url_for(@module)
   }
 
   [add_label: "/label/add/:user/:module"]: capture_errors_404 require_login respond_to {
@@ -266,7 +264,7 @@ class MoonRocksModules extends lapis.Application
       @title = "Add Label to Module"
 
       already_in = { l.id, true for l in *@module\get_labels! }
-      @labels = for l in *Labels\select "order by name"
+      @labels = for l in *ModuleLabels\select "order by name"
         continue if already_in[l.id]
         l
 
@@ -280,7 +278,7 @@ class MoonRocksModules extends lapis.Application
         { "label_id", is_integer: true }
       }
 
-      label = assert_error Labels\find(id: @params.label_id), "Invalid label id"
+      label = assert_error ModuleLabels\find(id: @params.label_id), "Invalid label id"
 
       assert_error LabelsModules\create label_id: label.id, module_id: @module.id
       redirect_to: @url_for("module", @)

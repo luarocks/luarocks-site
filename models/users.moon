@@ -182,6 +182,15 @@ class Users extends Model
       object_id: object.id
     }
 
+  endorses: (object) =>
+    return unless object
+    import Endorsements from require "models"
+    Endorsements\find {
+      source_user_id: @id
+      --object_type: Endorsements\object_type_for_object object
+      object_id: object.id
+    }
+
   get_unseen_notifications_count: =>
     return @unseen_notification_count if @unseen_notification_count
 

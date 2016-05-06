@@ -1,8 +1,8 @@
 
-db = require "lapis.db"
+db = require "lapis.db" 
 import Model from require "lapis.db.model"
 
-import concat from table
+import concat from table 
 import safe_insert from require "helpers.models"
 
 -- Generated schema dump: (do not edit)
@@ -135,9 +135,7 @@ class Modules extends Model
     labels = {}
     import LabelsModules from require "models"
     lm = LabelsModules\select "where module_id = ?", @id
-    for l in *lm
-      table.insert(labels,l\get_label!)
-    return labels
+    [l\get_label! for l in *lm]
 
   get_manifests: =>
     unless @manifests

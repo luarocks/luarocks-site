@@ -52,6 +52,12 @@ class ModuleHeader extends require "widgets.page_header"
             h3 "Homepage"
             a class: "external_url", rel: "nofollow", href: url, @truncate url_title, 30
 
+        if url = @module\format_homepage_url!
+          url_title = url\gsub "https?://", ""
+          div class: "column", ->
+            h3 "Github"
+            a class: "external_url", rel: "nofollow", href: url, @truncate url_title, 30
+
         if @version
           div class: "column", ->
             h3 "Version downloads"
@@ -60,6 +66,29 @@ class ModuleHeader extends require "widgets.page_header"
           div class: "column", ->
             h3 "Downloads"
             text @format_number @module.downloads
+
+  endorse_area: =>
+    div class: "endorse_area", ->
+      form {
+        action: @url_for(@module_endorsing and "unendorse_module" or"endorse_module", module_id: @module.id)
+        method: "post"
+      }, ->
+        @csrf_input
+        if @current_user
+          if @module_endorsing
+            button "Stop Endorsing"
+          else
+            button "Endorse"
+        else
+          a {
+            class:"button"
+            href: login_and_return_url(@, nil, "endorse_module")
+            "Endorse"
+          }
+
+        --if @module.followers_count > 0
+          --span class: "followers_count", @format_number @module.followers_count
+
 
   follow_area: =>
     div class: "follow_area", ->
