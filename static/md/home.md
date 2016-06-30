@@ -9,7 +9,7 @@ Installing LuaRocks in a Unix system:
     $ ./configure; sudo make bootstrap
     $ sudo luarocks install luasocket
     $ lua
-    Lua 5.3.2 Copyright (C) 1994-2015 Lua.org, PUC-Rio
+    Lua 5.3.3 Copyright (C) 1994-2016 Lua.org, PUC-Rio
     > require "socket"
 
 
