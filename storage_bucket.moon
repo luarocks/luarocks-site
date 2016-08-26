@@ -4,9 +4,8 @@ config = require("lapis.config").get!
 
 local bucket
 
-unless config._name == "test"
-  pcall ->
-    bucket = require "secret.storage_bucket"
+pcall ->
+  bucket = require "secret.storage_bucket"
 
 unless bucket
   import MockStorage from require "cloud_storage.mock"
