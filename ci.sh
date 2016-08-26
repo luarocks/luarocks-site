@@ -7,6 +7,7 @@ set -o xtrace
 luarocks-5.1 remove --force lapis
 luarocks-5.1 install https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
 luarocks-5.1 install https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
+luarocks-5.1 install moonrocks
 eval $(luarocks-5.1 path)
 
 # prepare secrets
