@@ -27,7 +27,8 @@ make init_schema
 make migrate
 make test_db
 
+mkdir logs
 touch logs/notice.log
 tail -f logs/notice.log &
 
-./busted -o utfTerminal
+LAPIS_NOTICE_LOG=logs/notice.log ./busted -o utfTerminal
