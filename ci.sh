@@ -27,4 +27,7 @@ make init_schema
 make migrate
 make test_db
 
+touch logs/notice.log
+tail -f logs/notice.log &
+
 ./busted -o utfTerminal
