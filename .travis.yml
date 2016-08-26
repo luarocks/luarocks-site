@@ -1,0 +1,13 @@
+language: c
+sudo: required
+
+services:
+  - docker
+
+install:
+  - docker build -t luarocks-test .
+
+script:
+  - docker run luarocks-test
+
+
