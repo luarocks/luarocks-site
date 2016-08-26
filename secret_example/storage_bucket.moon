@@ -8,4 +8,6 @@ oauth_stub = {
   sign_string: (str) => "test-signature"
 }
 
-CloudStorage(oauth_stub, "ACCOUNT")\bucket config.bucket_name
+storage = CloudStorage(oauth_stub, "ACCOUNT")
+storage._put = => 200, "ok"
+storage\bucket config.bucket_name
