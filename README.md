@@ -2,6 +2,8 @@
 
 <http://luarocks.org>
 
+[![Build Status](https://travis-ci.org/leafo/luarocks-site.svg?branch=master)](https://travis-ci.org/leafo/luarocks-site)
+
 The official module repository of the [LuaRocks package manager](https://github.com/keplerproject/luarocks) for Lua.
 
 The entire site runs on [OpenResty][1], an Nginx based platform with Lua
