@@ -143,7 +143,7 @@ html_builer = {
     ["."]: { "ngx", "jit" }
 
     ["spec/"]: {
-      "it", "describe", "before_each", "setup", "teardown", "pending"
+      "it", "describe", "before_each", "after_each", "setup", "teardown", "pending"
     }
 
     ["views/"]: html_builer
