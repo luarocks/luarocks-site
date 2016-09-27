@@ -1,47 +1,40 @@
-import encode_query_string, parse_query_string from require "lapis.util"
-
-db = require "lapis.db"
-
-import
-  modules
-  labels
-  users
-  from require "secret.toolbox"
-
 import
   Modules
-  Labels
-  ModuleLabels
+  ApprovedLabels
   Followings
   from require "models"
 
-_labels = {l.id,l.name for l in *labels}
-_modules = {m.id,m.name for m in *modules}
+class ToolboxImport
+  new: (@modules, @labels, @users)=>
+    import modules, labels, users from require "secret.toolbox"
 
-class Toolbox
-  create_labels_from_dump: =>
-    for l in *labels
-      Labels\create name: l.name
+    @modules or= modules
+    @labels or= labels
+    @users or= users
+
+    @labels_by_id = {l.id, l.name for l in *@labels}
+    @modules_by_id = {m.id, m.name for m in *@modules}
+
+  create_approved_labels: =>
+    for l in *@labels
+      ApprovedLabels\create name: l.name
 
   apply_labels_to_modules: =>
-    for m in *modules
-      mod = Modules\find name: m.name
-      if mod
-        for l in *m.labels
-          label = Labels\find name: _labels[tonumber l]
-          if label
-            ModuleLabels\create module_id: mod.id, label_id: label.id
+    for m in *@modules
+      for mod in *Modules\select "where name = ?", m.name
+        mod\set_labels [@labels_by_id[tonumber l] for l in *m.labels]
 
   transfer_endorsements: =>
+    error "not yet"
     transfer_count = 0
     endorsements = {}
 
-    for u in *users
+    for u in *@users
       if u.email == @current_user.email
         endorsements = u.endorsements
 
     for e in *endorsements
-      name = _modules[tonumber e]
+      name = @modules_by_id[tonumber e]
       if name
         m = Modules\find name: name
         if m
@@ -55,3 +48,6 @@ class Toolbox
             transfer_count += 1
 
     return transfer_count
+
+
+{:ToolboxImport}

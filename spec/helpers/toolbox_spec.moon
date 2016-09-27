@@ -3,27 +3,40 @@ import truncate_tables from require "lapis.spec.db"
 
 factory = require "spec.factory"
 
-import Modules, Labels from require "models"
+import Modules, Users, ApprovedLabels from require "models"
+import ToolboxImport from require "helpers.toolbox"
 
-toolbox = require "helpers.toolbox"
+modules = {
+}
 
-import use_test_server from require "lapis.spec"
+labels = {
+  {
+    id: 1
+    name: "my cool label"
+  }
+  {
+    id: 2
+    name: "my uncool label"
+  }
+}
 
-import
-  modules
-  labels
-  from require "secret.toolbox"
 
 describe "helpers.toolbox", ->
-  use_test_server!
+  use_test_env!
 
   setup ->
-    truncate_tables Labels
+    truncate_tables Modules, Users, ApprovedLabels
 
   it "imports labels", ->
-    toolbox\create_labels_from_dump!
-    count = Labels\count!
+    toolbox = ToolboxImport modules, labels
+    toolbox\create_approved_labels!
+
+    count = ApprovedLabels\count!
     assert.equal count, #labels
+    assert.same {
+      "my-cool-label"
+      "my-uncool-label"
+    }, [l.name for l in *ApprovedLabels\select "order by name"]
 
   it "applies labels", ->
     assert.has.no.errors toolbox\apply_labels_to_modules
