@@ -74,7 +74,7 @@ class Module extends require "widgets.page"
         a href: @url_for(mod), mod\name_for_display!
 
     can_edit = @module\allowed_to_edit @current_user
-    if next @labels
+    if @module.labels and next @module.labels
       h3 "Labels"
       for i,l in ipairs @labels
         div class: "label_row", ->

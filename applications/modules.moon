@@ -24,7 +24,6 @@ import
   Rocks
   Dependencies
   Modules
-  Labels
   ModuleLabels
   from require "models"
 
@@ -71,7 +70,6 @@ class MoonRocksModules extends lapis.Application
     @versions = @module\get_versions!
     @manifests = @module\get_manifests!
     @depended_on = @module\find_depended_on!
-    @labels = @module\get_labels!
 
     @module_following = @current_user and @current_user\follows @module
 
@@ -247,11 +245,13 @@ class MoonRocksModules extends lapis.Application
       load_module @
       assert_editable @, @module
 
+      import ApprovedLabels from require "models"
+
       @title = "Add Label to Module"
 
-      already_in = { l.id, true for l in *@module\get_labels! }
-      @labels = for l in *Labels\select "order by name"
-        continue if already_in[l.id]
+      already_in = { l, true for l in *@module.labels or {} }
+      @labels = for l in *ApprovedLabels\select "order by name"
+        continue if already_in[l.name]
         l
 
     GET: =>
