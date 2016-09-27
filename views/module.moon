@@ -73,34 +73,9 @@ class Module extends require "widgets.page"
         text ", " unless i == 1
         a href: @url_for(mod), mod\name_for_display!
 
-    can_edit = @module\allowed_to_edit @current_user
-    if @module.labels and next @module.labels
-      h3 "Labels"
-      for i,l in ipairs @labels
-        div class: "label_row", ->
-          a href: @url_for("label", label: l.name), l.name
-          if can_edit
-            span class: "sub", ->
-              text " ("
-              a href: @url_for("remove_label",user: @user.slug, module: @module.name, label_id: l.id), "remove"
-              text ")"
 
-    
-    if next @manifests
-      h3 "Manifests"
-      for m in *@manifests
-        @manifest = m
-        div class: "manifest_row", ->
-          a href: @url_for("manifest", @), ->
-            code m.name
-
-          if can_edit
-            span class: "sub", ->
-              text " ("
-              a href: @url_for("remove_from_manifest", @), "remove"
-              text ")"
-
-        @manifest = nil
+    @render_labels!
+    @render_manifests!
 
   admin_panel: =>
     return unless @module\allowed_to_edit @current_user
@@ -124,4 +99,41 @@ class Module extends require "widgets.page"
         a href: @url_for("copy_module", @), "Copy module to other user"
 
 
+  render_labels: =>
+    return unless @module.labels and next @module.labels
+    can_edit = @module\allowed_to_edit @current_user
 
+    h3 "Labels"
+    for label in *@module.labels
+      div class: "label_row", ->
+        a href: @url_for("label", label: label), label
+        if can_edit
+          span class: "sub", ->
+            text " ("
+            a href: @url_for("remove_label", {
+              user: @user.slug
+              module: @module.name
+              :label
+            }), "remove"
+
+            text ")"
+
+
+  render_manifests: =>
+    return unless next @manifests
+    can_edit = @module\allowed_to_edit @current_user
+
+    h3 "Manifests"
+    for m in *@manifests
+      @manifest = m
+      div class: "manifest_row", ->
+        a href: @url_for("manifest", @), ->
+          code m.name
+
+        if can_edit
+          span class: "sub", ->
+            text " ("
+            a href: @url_for("remove_from_manifest", @), "remove"
+            text ")"
+
+      @manifest = nil
