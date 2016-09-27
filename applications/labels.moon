@@ -78,21 +78,18 @@ class MoonRocksLabels extends lapis.Application
       redirect_to: @url_for @module
   }
 
-  [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
+  [remove_label: "/label/remove/:user/:module/:label"]: capture_errors_404 require_login respond_to {
     before: =>
       load_module @
       assert_editable @, @module
 
       assert_valid @params, {
-        {"label_id", is_integer: true}
+        {"label", exists: true}
       }
 
-      @label = assert_error Labels\find(@params.label_id), "invalid label"
-
-      assert_error ModuleLabels\find({
-        label_id: @label.id
-        module_id: @module.id
-      }), "Module does not have this label"
+      labels = {l, true for l in *@module.labels or {}}
+      assert_error labels[@params.label], "module doesn't have label"
+      @label = @params.label
 
     GET: =>
       @title = "Remove Label"
@@ -100,9 +97,10 @@ class MoonRocksLabels extends lapis.Application
 
     POST: =>
       assert_csrf @
+      labels = [l for l in *@module.labels or {} when l != @params.label]
+      @module\set_labels labels
 
-      ModuleLabels\remove @label, @module
-      redirect_to: @url_for(@module)
+      redirect_to: @url_for @module
   }
 
 
