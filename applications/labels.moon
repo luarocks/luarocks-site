@@ -72,10 +72,10 @@ class MoonRocksLabels extends lapis.Application
         { "label", exists: true }
       }
 
-      label = assert_error Labels\find(id: @params.label_id), "Invalid label id"
-
-      assert_error ModuleLabels\create label_id: label.id, module_id: @module.id
-      redirect_to: @url_for("module", @)
+      labels = @module.labels or {}
+      table.insert labels, @params.label
+      @module\set_labels labels
+      redirect_to: @url_for @module
   }
 
   [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
