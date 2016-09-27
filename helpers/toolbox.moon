@@ -10,8 +10,8 @@ import
 
 import
   Modules
+  Labels
   ModuleLabels
-  LabelsModules
   Followings
   from require "models"
 
@@ -22,16 +22,16 @@ _modules = {m.id,m.name for m in *modules}
 class Toolbox
   create_labels_from_dump: =>
     for l in *labels
-      ModuleLabels\create name: l.name
+      Labels\create name: l.name
 
   apply_labels_to_modules: =>
     for m in *modules
       mod = Modules\find name: m.name
-      if mod 
+      if mod
         for l in *m.labels
-          label = ModuleLabels\find name: _labels[tonumber l]
-          if label 
-            LabelsModules\create module_id: mod.id, label_id: label.id
+          label = Labels\find name: _labels[tonumber l]
+          if label
+            ModuleLabels\create module_id: mod.id, label_id: label.id
 
   transfer_endorsements: =>
     transfer_count = 0

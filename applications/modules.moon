@@ -25,8 +25,8 @@ import
   Rocks
   Dependencies
   Modules
+  Labels
   ModuleLabels
-  LabelsModules
   from require "models"
 
 delete_module = capture_errors_404 respond_to {
@@ -216,11 +216,11 @@ class MoonRocksModules extends lapis.Application
     redirect_to: @url_for @module
 
   [modules_label: "/label/modules/:label"]: capture_errors_404 =>
-    label = assert_error ModuleLabels\find(name: @params.label), "Invalid label"
+    label = assert_error Labels\find(name: @params.label), "Invalid label"
 
     @title = "All modules in #{label.name}"
 
-    lmod = LabelsModules\select "where label_id = ?", label.id
+    lmod = ModuleLabels\select "where label_id = ?", label.id
 
     if next lmod
       query_ids = table.concat [lm.module_id for lm in *lmod], ","
@@ -237,22 +237,26 @@ class MoonRocksModules extends lapis.Application
     before: =>
       load_module @
       assert_editable @, @module
-      @label = ModuleLabels\find @params.label_id
-      return unless @label
 
-      assert_error LabelsModules\find({
+      assert_valid @params, {
+        {"label_id", is_integer: true}
+      }
+
+      @label = assert_error Labels\find(@params.label_id), "invalid label"
+
+      assert_error ModuleLabels\find({
         label_id: @label.id
         module_id: @module.id
       }), "Module does not have this label"
 
     GET: =>
-      @title = "Remove Label" 
+      @title = "Remove Label"
       render: true
 
     POST: =>
       assert_csrf @
 
-      LabelsModules\remove @label, @module
+      ModuleLabels\remove @label, @module
       redirect_to: @url_for(@module)
   }
 
@@ -264,7 +268,7 @@ class MoonRocksModules extends lapis.Application
       @title = "Add Label to Module"
 
       already_in = { l.id, true for l in *@module\get_labels! }
-      @labels = for l in *ModuleLabels\select "order by name"
+      @labels = for l in *Labels\select "order by name"
         continue if already_in[l.id]
         l
 
@@ -278,8 +282,8 @@ class MoonRocksModules extends lapis.Application
         { "label_id", is_integer: true }
       }
 
-      label = assert_error ModuleLabels\find(id: @params.label_id), "Invalid label id"
+      label = assert_error Labels\find(id: @params.label_id), "Invalid label id"
 
-      assert_error LabelsModules\create label_id: label.id, module_id: @module.id
+      assert_error ModuleLabels\create label_id: label.id, module_id: @module.id
       redirect_to: @url_for("module", @)
   }

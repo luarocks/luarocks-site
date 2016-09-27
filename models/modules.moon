@@ -133,8 +133,8 @@ class Modules extends Model
 
   get_labels: =>
     labels = {}
-    import LabelsModules from require "models"
-    lm = LabelsModules\select "where module_id = ?", @id
+    import ModuleLabels from require "models"
+    lm = ModuleLabels\select "where module_id = ?", @id
     [l\get_label! for l in *lm]
 
   get_manifests: =>
