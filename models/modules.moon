@@ -136,6 +136,7 @@ class Modules extends Model
     seen = {}
     labels = for label in *labels
       label = slugify label
+      continue if label == "" or label == "-"
       continue if seen[label]
       seen[label] = true
       label

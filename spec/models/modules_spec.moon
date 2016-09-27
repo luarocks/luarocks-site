@@ -98,3 +98,14 @@ describe "models.modules", ->
 
       mod\set_labels {"hello", "HELLO", "hello"}
       assert.same {"hello"}, mod.labels
+
+    it "removes labels", ->
+      mod = factory.Modules!
+      mod\set_labels {"one"}
+      mod\set_labels {}
+      assert.nil mod.labels
+
+    it "strips invalid labels", ->
+      mod = factory.Modules!
+      mod\set_labels {"one", "- -", "   ", "two"}
+      assert.same {"one", "two"}, mod.labels
