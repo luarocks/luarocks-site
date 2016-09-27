@@ -24,7 +24,6 @@ import
   Rocks
   Dependencies
   Modules
-  ModuleLabels
   from require "models"
 
 delete_module = capture_errors_404 respond_to {
@@ -213,59 +212,3 @@ class MoonRocksModules extends lapis.Application
     redirect_to: @url_for @module
 
 
-  [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
-    before: =>
-      load_module @
-      assert_editable @, @module
-
-      assert_valid @params, {
-        {"label_id", is_integer: true}
-      }
-
-      @label = assert_error Labels\find(@params.label_id), "invalid label"
-
-      assert_error ModuleLabels\find({
-        label_id: @label.id
-        module_id: @module.id
-      }), "Module does not have this label"
-
-    GET: =>
-      @title = "Remove Label"
-      render: true
-
-    POST: =>
-      assert_csrf @
-
-      ModuleLabels\remove @label, @module
-      redirect_to: @url_for(@module)
-  }
-
-  [add_label: "/label/add/:user/:module"]: capture_errors_404 require_login respond_to {
-    before: =>
-      load_module @
-      assert_editable @, @module
-
-      import ApprovedLabels from require "models"
-
-      @title = "Add Label to Module"
-
-      already_in = { l, true for l in *@module.labels or {} }
-      @labels = for l in *ApprovedLabels\select "order by name"
-        continue if already_in[l.name]
-        l
-
-    GET: =>
-      render: true
-
-    POST: capture_errors =>
-      assert_csrf @
-
-      assert_valid @params, {
-        { "label_id", is_integer: true }
-      }
-
-      label = assert_error Labels\find(id: @params.label_id), "Invalid label id"
-
-      assert_error ModuleLabels\create label_id: label.id, module_id: @module.id
-      redirect_to: @url_for("module", @)
-  }
