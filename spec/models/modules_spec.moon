@@ -89,3 +89,12 @@ describe "models.modules", ->
 
       other_user\refresh!
       assert.same 1, other_user.modules_count
+  
+  describe "labels", ->
+    it "sets labels to something", ->
+      mod = factory.Modules!
+      mod\set_labels {"food", "World Zone"}
+      assert.same {"food", "world-zone"}, mod.labels
+
+      mod\set_labels {"hello", "HELLO", "hello"}
+      assert.same {"hello"}, mod.labels

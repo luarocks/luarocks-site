@@ -1,5 +1,5 @@
 
 import Model from require "lapis.db.model"
 
-class Labels extends Model
+class ApprovedLabels extends Model
   @timestamp: true

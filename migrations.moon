@@ -231,7 +231,7 @@ import
     add_column "versions", "archived", boolean default: false
 
   [1462567085]: =>
-    create_table "labels", {
+    create_table "approved_labels", {
       {"id", serial}
       {"name", varchar}
 
@@ -241,18 +241,8 @@ import
       "PRIMARY KEY (id)"
     }
 
-    create_index "labels", "name"
+    create_index "approved_labels", "name"
 
-    create_table "module_labels", {
-      {"label_id", foreign_key}
-      {"module_id", foreign_key}
-
-      {"created_at", time}
-      {"updated_at", time}
-
-      "PRIMARY KEY (label_id, module_id)"
-    }
-
-    create_index "module_labels", "module_id"
-
+    add_column "modules", "labels", varchar array: true, null: true
+    db.query "create index on modules using gin(labels) where modules is not null"
 }

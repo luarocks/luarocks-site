@@ -131,11 +131,16 @@ class Modules extends Model
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
 
-  get_labels: =>
-    labels = {}
-    import ModuleLabels from require "models"
-    lm = ModuleLabels\select "where module_id = ?", @id
-    [l\get_label! for l in *lm]
+  set_labels: (labels) =>
+    import slugify from require "lapis.util"
+    seen = {}
+    labels = for label in *labels
+      label = slugify label
+      continue if seen[label]
+      seen[label] = true
+      label
+
+    @update labels: next(labels) and db.array(labels) or db.NULL
 
   get_manifests: =>
     unless @manifests
