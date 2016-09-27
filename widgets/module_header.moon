@@ -73,7 +73,7 @@ class ModuleHeader extends require "widgets.page_header"
         action: @url_for(@module_endorsing and "unendorse_module" or"endorse_module", module_id: @module.id)
         method: "post"
       }, ->
-        @csrf_input
+        @csrf_input!
         if @current_user
           if @module_endorsing
             button "Stop Endorsing"
@@ -96,7 +96,7 @@ class ModuleHeader extends require "widgets.page_header"
         action: @url_for(@module_following and "unfollow_module" or"follow_module", module_id: @module.id)
         method: "post"
       }, ->
-        @csrf_input
+        @csrf_input!
         if @current_user
           if @module_following
             button "Unfollow"

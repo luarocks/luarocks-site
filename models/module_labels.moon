@@ -5,13 +5,12 @@ import safe_insert from require "helpers.models"
 
 class ModuleLabels extends Model
   @timestamp: true
+  @primary_key: {"label_id", "module_id"}
 
   @relations: {
     {"label", belongs_to: "Labels"}
     {"module", belongs_to: "Modules"}
   }
-
-  @primary_key: {"label_id", "module_id"}
 
   @create: safe_insert
 

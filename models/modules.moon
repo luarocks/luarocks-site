@@ -1,8 +1,8 @@
 
-db = require "lapis.db" 
+db = require "lapis.db"
 import Model from require "lapis.db.model"
 
-import concat from table 
+import concat from table
 import safe_insert from require "helpers.models"
 
 -- Generated schema dump: (do not edit)
