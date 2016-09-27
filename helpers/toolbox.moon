@@ -6,7 +6,7 @@ import
   modules
   labels
   users
-  from require "secrets.toolbox"
+  from require "secret.toolbox"
 
 import
   Modules
@@ -14,7 +14,6 @@ import
   ModuleLabels
   Followings
   from require "models"
-
 
 _labels = {l.id,l.name for l in *labels}
 _modules = {m.id,m.name for m in *modules}
@@ -42,17 +41,17 @@ class Toolbox
         endorsements = u.endorsements
 
     for e in *endorsements
-        name = _modules[tonumber e]
-        if name
-          m = Modules\find name: name
-          if m
-            follow = Followings\find source_user_id: @current_user.id, object_id: m.id
-            if not follow
-              Followings\create {
-                source_user_id: @current_user.id
-                object_type: Followings.object_types.module
-                object_id: m.id
-              }
-              transfer_count += 1
+      name = _modules[tonumber e]
+      if name
+        m = Modules\find name: name
+        if m
+          follow = Followings\find source_user_id: @current_user.id, object_id: m.id
+          if not follow
+            Followings\create {
+              source_user_id: @current_user.id
+              object_type: Followings.object_types.module
+              object_id: m.id
+            }
+            transfer_count += 1
 
     return transfer_count

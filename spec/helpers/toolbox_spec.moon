@@ -12,8 +12,7 @@ import use_test_server from require "lapis.spec"
 import
   modules
   labels
-  from require "secrets.toolbox"
-
+  from require "secret.toolbox"
 
 describe "helpers.toolbox", ->
   use_test_server!
