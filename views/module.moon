@@ -74,6 +74,20 @@ class Module extends require "widgets.page"
         a href: @url_for(mod), mod\name_for_display!
 
     can_edit = @module\allowed_to_edit @current_user
+    if next @labels
+      h3 "Labels"
+      for i,l in ipairs @labels
+        div class: "label_row", ->
+          a href: @url_for("modules_label", label: l.name), l.name
+          if can_edit
+            span class: "sub", ->
+              text " ("
+              a href: 
+                @url_for("remove_label",user: @user.slug, module: @module.name, label_id: l.id),
+                "remove"
+              text ")"
+
+    
     if next @manifests
       h3 "Manifests"
       for m in *@manifests
@@ -100,6 +114,8 @@ class Module extends require "widgets.page"
           text "Module Owner: "
 
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
+      raw " &middot; "
+      a href: @url_for("add_label", @), "Add Label"
       raw " &middot; "
       a href: @url_for("edit_module", @), "Edit"
       raw " &middot; "

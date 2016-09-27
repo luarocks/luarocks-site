@@ -230,4 +230,36 @@ import
   [1453406400]: =>
     add_column "versions", "archived", boolean default: false
 
+  [1457699498]: =>
+    create_table "labels_modules", {
+      {"label_id", foreign_key}
+      {"module_id", foreign_key}
+      {"created_at", time}
+      {"updated_at", time}
+      "PRIMARY KEY (label_id, module_id)"
+    }
+
+    create_index "labels_modules", "module_id"
+
+  [1462567085]: =>
+    create_table "module_labels", {
+      {"id", serial}
+      {"name", varchar}
+      {"created_at", time}
+      {"updated_at", time}
+      "PRIMARY KEY (id)"
+    }
+
+    create_table "labels_modules", {
+      {"label_id", foreign_key}
+      {"module_id", foreign_key}
+      {"created_at", time}
+      {"updated_at", time}
+      "PRIMARY KEY (label_id, module_id)"
+    }
+
+    create_index "labels_modules", "module_id"
+
+
+
 }

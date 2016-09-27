@@ -1,8 +1,8 @@
 
-db = require "lapis.db"
+db = require "lapis.db" 
 import Model from require "lapis.db.model"
 
-import concat from table
+import concat from table 
 import safe_insert from require "helpers.models"
 
 -- Generated schema dump: (do not edit)
@@ -130,6 +130,12 @@ class Modules extends Model
 
   allowed_to_edit: (user) =>
     user and (user.id == @user_id or user\is_admin!)
+
+  get_labels: =>
+    labels = {}
+    import LabelsModules from require "models"
+    lm = LabelsModules\select "where module_id = ?", @id
+    [l\get_label! for l in *lm]
 
   get_manifests: =>
     unless @manifests

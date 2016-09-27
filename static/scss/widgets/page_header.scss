@@ -45,6 +45,32 @@ h1 {
     }
 }
 
+.endorse_area {
+    float: right;
+    margin-top: 15px;
+    white-space: nowrap;
+
+    button {
+        &:not(:last-child) {
+            border-radius: 3px 0 0 3px;
+        }
+    }
+
+    .endorse_count {
+        @include border_box;
+        border: 1px solid $border_color;
+        border-left: 0;
+        display: inline-block;
+        vertical-align: top;
+        padding: 0 10px;
+        height: $button_height;
+        line-height: $button_height - 2px;
+        color: $sub_color;
+        background: mix($back_color, white, 50%);
+        border-radius: 0 3px 3px 0;
+    }
+}
+
 .nav_buttons {
     margin: 15px 0 0 0;
 }
