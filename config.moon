@@ -14,7 +14,6 @@ config { "development", "test", "production", "staging" }, ->
   postgres {
     backend: "pgmoon"
     user: "postgres"
-    password: "1234"
     database: "moonrocks"
   }
 
