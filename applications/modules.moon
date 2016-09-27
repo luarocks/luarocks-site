@@ -18,7 +18,6 @@ import
   from require "helpers.app"
 
 import load_module from require "helpers.loaders"
-import paginated_modules from require "helpers.modules"
 
 import
   Versions
@@ -215,30 +214,6 @@ class MoonRocksModules extends lapis.Application
     unfollowed = FollowingsFlow(@)\unfollow_object @module
     redirect_to: @url_for @module
 
-  [modules_label: "/labels/:label"]: capture_errors_404 =>
-    trim_filter @params
-    assert_valid @params, {
-      {"label", type: "string", exists: true}
-    }
-
-    import ApprovedLabels from require "models"
-    @approved_label = ApprovedLabels\find name: @params.label
-
-    @title = "Modules labeled '#{@params.label}'"
-
-    pager = Modules\paginated "
-      where ? && labels and labels is not null
-    ", db.array {
-      @params.label
-    }
-
-    paginated_modules @, pager, {
-      per_page: 50
-      fields: "id, name, display_name, user_id, downloads, summary"
-    }
-
-    status = unless next @modules then 404
-    render: true, :status
 
   [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
     before: =>
