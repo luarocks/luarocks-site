@@ -41,7 +41,11 @@ class Manifests extends Model
     Model.create @, { :name, :is_open, :display_name, :description }
 
   @root: =>
-    (assert Manifests\find(name: "root"), "Missing root manifest")
+    root = Manifests\find name: "root"
+    unless root
+      root = @create "root", true, "The global manifest"
+
+    root
 
   allowed_to_add: (user) =>
     return false unless user
