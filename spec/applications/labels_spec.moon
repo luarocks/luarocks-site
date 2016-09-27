@@ -2,6 +2,8 @@ import use_test_server from require "lapis.spec"
 import request_as from require "spec.helpers"
 import truncate_tables from require "lapis.spec.db"
 
+db = require "lapis.db"
+
 factory = require "spec.factory"
 
 import
@@ -14,11 +16,24 @@ import
 describe "applications.labels", ->
   use_test_server!
 
+  before_each ->
+    truncate_tables Users, Modules, ApprovedLabels
+
+  it "shows empty label page", ->
+    status = request_as nil, "/labels/calzone"
+    assert.same 404, status
+
+  it "shows labels page", ->
+    mod = factory.Modules!
+    mod\set_labels { "calzone" }
+
+    status = request_as nil, "/labels/calzone"
+    assert.same 200, status
+
   describe "edit labels", ->
     local user, mod
 
     before_each ->
-      truncate_tables Users, Modules, ApprovedLabels
       user = factory.Users!
       mod = factory.Modules user_id: user.id
 
