@@ -215,23 +215,30 @@ class MoonRocksModules extends lapis.Application
     unfollowed = FollowingsFlow(@)\unfollow_object @module
     redirect_to: @url_for @module
 
-  [modules_label: "/label/modules/:label"]: capture_errors_404 =>
-    label = assert_error Labels\find(name: @params.label), "Invalid label"
+  [modules_label: "/labels/:label"]: capture_errors_404 =>
+    trim_filter @params
+    assert_valid @params, {
+      {"label", type: "string", exists: true}
+    }
 
-    @title = "All modules in #{label.name}"
+    import ApprovedLabels from require "models"
+    @approved_label = ApprovedLabels\find name: @params.label
 
-    lmod = ModuleLabels\select "where label_id = ?", label.id
+    @title = "Modules labeled '#{@params.label}'"
 
-    if next lmod
-      query_ids = table.concat [lm.module_id for lm in *lmod], ","
-      modules = Modules\paginated "where id in (#{query_ids})"
+    pager = Modules\paginated "
+      where ? && labels and labels is not null
+    ", db.array {
+      @params.label
+    }
 
-      paginated_modules @, (modules), {
-        per_page: 50
-        fields: "id, name, display_name, user_id, downloads, summary"
-      }
+    paginated_modules @, pager, {
+      per_page: 50
+      fields: "id, name, display_name, user_id, downloads, summary"
+    }
 
-    render: true
+    status = unless next @modules then 404
+    render: true, :status
 
   [remove_label: "/label/remove/:user/:module/:label_id"]: capture_errors_404 require_login respond_to {
     before: =>

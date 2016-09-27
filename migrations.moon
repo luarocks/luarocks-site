@@ -243,6 +243,6 @@ import
 
     create_index "approved_labels", "name"
 
-    add_column "modules", "labels", varchar array: true, null: true
+    add_column "modules", "labels", text array: true, null: true
     db.query "create index on modules using gin(labels) where modules is not null"
 }
