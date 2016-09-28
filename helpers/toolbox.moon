@@ -4,6 +4,8 @@ import
   Followings
   from require "models"
 
+db = require "lapis.db"
+
 class ToolboxImport
   new: (@modules, @labels, @users)=>
     import modules, labels, users from require "secret.toolbox"
@@ -21,8 +23,19 @@ class ToolboxImport
 
   apply_labels_to_modules: =>
     for m in *@modules
-      for mod in *Modules\select "where name = ?", m.name
-        mod\set_labels [@labels_by_id[tonumber l] for l in *m.labels]
+      labels = [@labels_by_id[tonumber l] for l in *m.labels]
+      continue unless next labels
+
+      found = Modules\select "where name = ?", m.name
+
+      unless next found
+        url = m.url and m.url\gsub "^%w+", ""
+        url = nil if url == ""
+        if url
+          found = Modules\select "where homepage like '%' || ?", url
+
+      for mod in *found
+        mod\set_labels labels
 
   transfer_endorsements: =>
     error "not yet"
