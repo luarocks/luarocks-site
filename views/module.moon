@@ -73,7 +73,6 @@ class Module extends require "widgets.page"
         text ", " unless i == 1
         a href: @url_for(mod), mod\name_for_display!
 
-
     @render_labels!
     @render_manifests!
 

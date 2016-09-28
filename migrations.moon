@@ -245,4 +245,8 @@ import
 
     add_column "modules", "labels", text array: true, null: true
     db.query "create index on modules using gin(labels) where modules is not null"
+
+  [1475034338]: =>
+    drop_index "approved_labels", "name"
+    create_index "approved_labels", "name", unique: true
 }
