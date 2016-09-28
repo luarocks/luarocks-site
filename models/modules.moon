@@ -112,6 +112,20 @@ class Modules extends Model
 
     matches
 
+  @preload_follows: (modules, user, key="current_user_following") =>
+    return nil unless user
+    import Followings from require "models"
+
+    Followings\include_in modules, "object_id", {
+      as: key
+      flip: true
+      where: {
+        object_type: Followings.object_types.module
+        source_user_id: user.id
+      }
+    }
+    true
+
   url_key: (name) => @name
 
   url_params: =>
