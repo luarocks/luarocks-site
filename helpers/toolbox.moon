@@ -71,30 +71,4 @@ class ToolboxImport
 
     out
 
-  transfer_endorsements: =>
-    error "not yet"
-    transfer_count = 0
-    endorsements = {}
-
-    for u in *@users
-      if u.email == @current_user.email
-        endorsements = u.endorsements
-
-    for e in *endorsements
-      name = @modules_by_id[tonumber e]
-      if name
-        m = Modules\find name: name
-        if m
-          follow = Followings\find source_user_id: @current_user.id, object_id: m.id
-          if not follow
-            Followings\create {
-              source_user_id: @current_user.id
-              object_type: Followings.object_types.module
-              object_id: m.id
-            }
-            transfer_count += 1
-
-    return transfer_count
-
-
 {:ToolboxImport}
