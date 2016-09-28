@@ -159,16 +159,31 @@ class MoonRocksUser extends lapis.Application
   }
 
   ["user_settings.import_toolbox": "/settings/import-toolbox"]: ensure_https require_login respond_to {
-    GET: =>
+    before: =>
       @user = @current_user
+
+      import ToolboxImport from require "helpers.toolbox"
+      import Modules from require "models"
+      @to_import = ToolboxImport!\modules_endorsed_by_user @user
+
+      if @to_import
+        Modules\preload_relation @to_import, "user"
+        Modules\preload_follows @to_import, @user
+        @already_following = [m for m in *@to_import when m.current_user_following]
+        @to_import = [m for m in *@to_import when not m.current_user_following]
+
+    GET: =>
       @title = "Import Lua Toolbox - User Settings"
       render: true
 
     POST: =>
       assert_csrf @
-      @transfer = true
-      @transfer_count = transfer_endorsements @
-      render: true
+      assert_error @to_import and next(@to_import), "missing modules to follow"
+
+      for m in *@to_import
+        @flow("followings")\follow_object m
+
+      redirect_to: @url_for("user_settings.import_toolbox")
   }
 
   ["user_settings.reset_password": "/settings/reset-password"]: ensure_https require_login respond_to {
