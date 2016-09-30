@@ -10,6 +10,16 @@
     }
 }
 
+.announce {
+    font-size: 14px;
+    margin: 20px 0;
+    color: $sub_color;
+
+    .new_tag {
+        margin: 0 10px 0 0;
+    }
+}
+
 .header_sub {
     font-size: $small_font_size;
     margin-left: 5px;
