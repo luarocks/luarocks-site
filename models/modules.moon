@@ -330,15 +330,6 @@ class Modules extends Model
     for m in *@get_manifests fields: "id"
       m\purge!
 
-  endorse: (user) =>
-    import Endorsements from require "models"
-    Endorsements\endorse user, @
-
-  endorsement: (user) =>
-    return unless user
-    import Endorsements from require "models"
-    Endorsements\find user_id: user.id, module_id: @id
-
   update_has_dev_version: =>
     @update has_dev_version: db.raw [[exists(
       select 1 from versions where module_id = modules.id

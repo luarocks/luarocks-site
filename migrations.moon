@@ -249,4 +249,9 @@ import
   [1475034338]: =>
     drop_index "approved_labels", "name"
     create_index "approved_labels", "name", unique: true
+
+  [1475269875]: =>
+    drop_column "modules", "endorsements_count"
+
+
 }
