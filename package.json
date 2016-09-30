@@ -1,0 +1,23 @@
+{
+  "name": "luarocks-site",
+  "version": "1.0.0",
+  "description": "<http://luarocks.org>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leafo/luarocks-site.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leafo/luarocks-site/issues"
+  },
+  "homepage": "https://github.com/leafo/luarocks-site#readme",
+  "dependencies": {
+    "d3": "^4.2.6",
+    "jquery": "^3.1.1"
+  }
+}
