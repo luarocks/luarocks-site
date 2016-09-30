@@ -165,6 +165,20 @@ class Modules extends Model
       seen[label] = true
       label
 
+
+    -- don't do anything if they're the same
+    existing = { l, true for l in *@labels or {} }
+    same = true
+    for l in *labels
+      if existing[l]
+        existing[l] = nil
+      else
+        same = false
+        break
+
+    same = false if next existing
+    return nil, "unchanged" if same
+
     @update labels: next(labels) and db.array(labels) or db.NULL
 
   get_manifests: =>
