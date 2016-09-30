@@ -95,6 +95,8 @@ class MoonRocksModules extends lapis.Application
       assert_editable @, @module
 
       @title = "Edit #{@module\name_for_display!}"
+      import ApprovedLabels from require "models"
+      @suggested_labels = ApprovedLabels\select "order by name asc"
 
     GET: =>
       render: true
@@ -102,11 +104,20 @@ class MoonRocksModules extends lapis.Application
     POST: =>
       changes = @params.m
 
+      assert_valid @params, {
+        {"labels", type: "string", optional: true}
+      }
+
+      labels = Modules\parse_labels changes.labels or ""
+
       trim_filter changes, {
         "license", "description", "display_name", "homepage", "summary"
       }, db.NULL
 
+
       @module\update changes
+      @module\set_labels labels or {}
+
       redirect_to: @url_for("module", @)
   }
 
