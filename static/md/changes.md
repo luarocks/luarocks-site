@@ -1,6 +1,18 @@
 
 ## Changes
 
+
+**2016/9/30**
+
+* You can now browse and classify modules with labels
+* All lables are listed on the homepage, a module's labels are listed on its page
+* Module editors can provide labels on the edit page
+* Labels have been automatically imported from Lua Toolbox
+* Add a method to convert Lua Toolbox endorsements to follows
+
+Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
+<https://github.com/leafo/luarocks-site/pull/86>
+
 **2016/1/23**
 
 * All manifests now support `.json` to render in json
