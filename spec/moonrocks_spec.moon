@@ -1,20 +1,9 @@
 
 import use_test_server from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
 
 import request, request_as, do_upload_as, should_load from require "spec.helpers"
 import generate_token from require "lapis.csrf"
 import from_json from require "lapis.util"
-
-import
-  Manifests
-  ManifestModules
-  Users
-  Modules
-  Versions
-  Rocks
-  Dependencies
-  from require "models"
 
 factory = require "spec.factory"
 
@@ -23,8 +12,17 @@ describe "moonrocks", ->
 
   local root
 
+  import
+    Manifests
+    ManifestModules
+    Users
+    Modules
+    Versions
+    Rocks
+    Dependencies
+    from require "spec.models"
+
   before_each ->
-    truncate_tables Manifests, Users, Modules, Versions, Rocks, ManifestModules, Dependencies
     root = Manifests\create "root", true
 
   should_load "/"

@@ -5,20 +5,14 @@ import generate_token from require "lapis.csrf"
 
 import use_test_server from require "lapis.spec"
 
-import truncate_tables from require "lapis.spec.db"
 import request from require "spec.helpers"
-
-import
-  Users, UserData
-  from require "models"
 
 factory = require "spec.factory"
 
 describe "application.user", ->
   use_test_server!
 
-  before_each ->
-    truncate_tables Users, UserData
+  import Users, UserData from require "spec.models"
 
   it "makes user data object", ->
     user = factory.Users!

@@ -1,25 +1,20 @@
 import use_test_server from require "lapis.spec"
 import request_as from require "spec.helpers"
-import truncate_tables from require "lapis.spec.db"
 
 db = require "lapis.db"
 
 factory = require "spec.factory"
 
-import
-  Users
-  Modules
-  ApprovedLabels
-  Manifests
-  ManifestModules
-  from require "models"
-
-
 describe "applications.labels", ->
   use_test_server!
 
-  before_each ->
-    truncate_tables Users, Modules, ApprovedLabels, Manifests, ManifestModules
+  import
+    Users
+    Modules
+    ApprovedLabels
+    Manifests
+    ManifestModules
+    from require "spec.models"
 
   it "shows empty label page", ->
     status = request_as nil, "/labels/calzone"
