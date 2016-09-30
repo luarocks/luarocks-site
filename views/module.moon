@@ -87,8 +87,6 @@ class Module extends require "widgets.page"
 
       a href: @url_for("add_to_manifest", @), "Add To Manifest"
       raw " &middot; "
-      a href: @url_for("add_label", @), "Add Label"
-      raw " &middot; "
       a href: @url_for("edit_module", @), "Edit"
       raw " &middot; "
       a href: @url_for("delete_module", @), "Delete"
@@ -100,23 +98,11 @@ class Module extends require "widgets.page"
 
   render_labels: =>
     return unless @module.labels and next @module.labels
-    can_edit = @module\allowed_to_edit @current_user
 
     h3 "Labels"
     for label in *@module.labels
       div class: "label_row", ->
         a href: @url_for("label", label: label), label
-        if can_edit
-          span class: "sub", ->
-            text " ("
-            a href: @url_for("remove_label", {
-              user: @user.slug
-              module: @module.name
-              :label
-            }), "remove"
-
-            text ")"
-
 
   render_manifests: =>
     return unless next @manifests

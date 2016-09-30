@@ -23,28 +23,40 @@ import
 
 class MoonRocksLabels extends lapis.Application
   [label: "/labels/:label"]: capture_errors_404 =>
-    import ApprovedLabels, Modules from require "models"
+    import Manifests, ApprovedLabels, Modules from require "models"
 
     trim_filter @params
     assert_valid @params, {
       {"label", type: "string", exists: true}
     }
 
+    @show_non_root = not not @params.non_root
+
     @approved_label = ApprovedLabels\find name: @params.label
 
-    @title = "Modules labeled '#{@params.label}'"
+    @title = if @show_non_root
+      "All modules labeled '#{@params.label}'"
+    else
+      "Modules labeled '#{@params.label}'"
 
-    pager = Modules\paginated "
-      where ? && labels and labels is not null
-    ", db.array {
-      @params.label
+    clause = {
+      db.interpolate_query "? && labels", db.array { @params.label }
+      "labels is not null"
     }
 
-    paginated_modules @, pager, {
+    unless @show_non_root
+      manifests = { Manifests\root!.id }
+      table.insert clause,
+        db.interpolate_query "exists(
+          select 1 from manifest_modules where module_id = modules.id and manifest_id in ?
+        )", db.list manifests
+
+    pager = Modules\paginated "where #{table.concat clause, " and "}", {
       per_page: 50
       fields: "id, name, display_name, user_id, downloads, summary"
     }
 
+    paginated_modules @, pager
     status = unless next @modules then 404
     render: true, :status
 
