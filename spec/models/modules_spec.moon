@@ -109,3 +109,14 @@ describe "models.modules", ->
       mod = factory.Modules!
       mod\set_labels {"one", "- -", "   ", "two"}
       assert.same {"one", "two"}, mod.labels
+
+  describe "parse labels", ->
+    it "parses labels", ->
+      assert.same {"hello-world", "yeah", "okay-zone"}, Modules\parse_labels "hello world, yeah, okay_zone"
+
+    it "parses empty labels", ->
+      assert.same {}, Modules\parse_labels ""
+
+    it "strips bad labels", ->
+      assert.same {"good"}, Modules\parse_labels ", #$!@$!@$!@, 3*()$, ------, ,,,good,, thisonei so ogin to be relaly long so"
+
