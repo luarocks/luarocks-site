@@ -319,15 +319,12 @@ hr {
     }
 
     input[type="text"], input[type="password"], input[type="email"], textarea {
-        border: 1px solid darken($border_color, 5%);
-        box-shadow: 0 0 4px rgba(0,0,0,0.2);
-        border-radius: 2px;
-        padding: 4px;
+        @include input_style;
+    }
 
-        &:focus {
-            border-color: darken($border_color, 15%);
-            outline: none;
-        }
+    .selectize-input {
+        width: 300px;
+        @include input_style;
     }
 
     .button_row {

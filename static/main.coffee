@@ -1,5 +1,37 @@
 window.M ||= {}
 
+M.slugify = (str) ->
+  str.replace(/\s+/g, "-")
+    .replace(/[^\w_.-]/g, "")
+    .replace(/^[_.-]+/, "")
+    .replace(/[_.-]+$/, "")
+    .toLowerCase()
+
+class M.EditModule
+  constructor: (el, @opts) ->
+    @el = $ el
+
+    input = @el.find(".labels_input")
+
+    items = input.data("json_value" ) || []
+    options = @opts.suggested_labels.concat(items).map (x) => { slug: x }
+
+    input.selectize {
+      items
+      options
+      delimiter: ','
+      plugins: ['remove_button']
+
+      persist: false
+
+      valueField: 'slug'
+      labelField: 'slug'
+
+      searchField: ['slug']
+      closeAfterSelect: true
+      create: (tag) -> { slug: M.slugify(tag) }
+    }
+
 class M.Index
   constructor: (el, downloads_daily) ->
     @el = $ el
@@ -30,8 +62,6 @@ class M.Stats
       no_dots: true
       days_per_unit: 7
     }
-
-
 
 
 class M.Grapher

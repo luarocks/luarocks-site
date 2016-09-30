@@ -72,3 +72,17 @@ $button_color: $link_color;
     -ms-#{$prop}: $args;
     #{$prop}: $args;
 }
+
+
+@mixin input_style {
+    border: 1px solid darken($border_color, 5%);
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    border-radius: 2px;
+    padding: 4px;
+    @include border_box;
+
+    &:focus {
+        border-color: darken($border_color, 15%);
+        outline: none;
+    }
+}

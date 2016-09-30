@@ -1,7 +1,7 @@
 .gitignore
 
 !join = |> ^ join %o^ cat %f > %o |>
-: scss/*.css scss/pages/*.css scss/widgets/*.css |> !join |> style.css
+: scss/*.css scss/pages/*.css scss/widgets/*.css lib/*.css |> !join |> style.css
 
 : lib/*.js |> !join |> lib.js
 
