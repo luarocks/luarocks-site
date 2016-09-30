@@ -18,6 +18,7 @@
   "homepage": "https://github.com/leafo/luarocks-site#readme",
   "dependencies": {
     "d3": "^4.2.6",
-    "jquery": "^3.1.1"
+    "jquery": "^3.1.1",
+    "selectize": "^0.12.3"
   }
 }

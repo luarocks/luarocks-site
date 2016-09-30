@@ -32,8 +32,7 @@ class Stats extends require "widgets.page"
     div id: "cumulative_users", class: "graph_container"
 
     @content_for "js_init", ->
-      script type: "text/javascript", src: "/static/lib/jquery-2.1.1.min.js"
-      script type: "text/javascript", src: "/static/lib/d3.min.js"
+      script type: "text/javascript", src: "/static/lib.js"
       script type: "text/javascript", src: "/static/main.js"
 
       script type: "text/javascript", ->

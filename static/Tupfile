@@ -3,4 +3,6 @@
 !join = |> ^ join %o^ cat %f > %o |>
 : scss/*.css scss/pages/*.css scss/widgets/*.css |> !join |> style.css
 
+: lib/*.js |> !join |> lib.js
+
 : foreach *.coffee |> coffee -c %f |> %B.js

@@ -8,3 +8,4 @@ moonrocks/
 static/storage
 .moonbox
 secret/
+node_modules/

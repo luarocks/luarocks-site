@@ -57,8 +57,7 @@ class Index extends require "widgets.page"
     @raw_ssi "home.html"
 
     @content_for "js_init", ->
-      script type: "text/javascript", src: "/static/lib/jquery-2.1.1.min.js"
-      script type: "text/javascript", src: "/static/lib/d3.min.js"
+      script type: "text/javascript", src: "/static/lib.js"
       script type: "text/javascript", src: "/static/main.js"
 
       script type: "text/javascript", ->

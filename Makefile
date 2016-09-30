@@ -1,5 +1,5 @@
 
-.PHONY: test test_db lint schema routes
+.PHONY: test test_db lint schema routes vendor_js
 
 test:
 	busted
@@ -43,4 +43,10 @@ restore_checkpoint::
 	createdb -U postgres moonrocks
 	pg_restore -U postgres -d moonrocks $$(find dev_backup | grep \.dump | sort -V | tail -n 1)
 
+vendor_js:
+	npm install
+	cp node_modules/d3/build/d3.min.js static/lib
+	cp node_modules/jquery/dist/jquery.min.js static/lib
+	cp node_modules/selectize/dist/js/standalone/selectize.min.js static/lib
+	cp node_modules/selectize/dist/css/selectize.css static/lib
 
