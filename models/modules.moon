@@ -129,11 +129,19 @@ class Modules extends Model
   @parse_labels: (label_str) =>
     import trim, slugify from require "lapis.util"
 
+    allow = 10
+
+    seen = {}
     return for l in label_str\gmatch "[^,]+"
       l = slugify trim l
       continue if l == "" or l == "-"
       continue if #l == 1
       continue if #l > 20
+      continue if seen[l]
+      seen[l] = true
+
+      allow -= 1
+      break if allow == 0
       l
 
   url_key: (name) => @name
@@ -157,11 +165,13 @@ class Modules extends Model
 
   set_labels: (labels) =>
     import slugify from require "lapis.util"
+
     seen = {}
     labels = for label in *labels
       label = slugify label
       continue if label == "" or label == "-"
       continue if seen[label]
+
       seen[label] = true
       label
 

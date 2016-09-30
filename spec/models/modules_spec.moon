@@ -120,3 +120,16 @@ describe "models.modules", ->
     it "strips bad labels", ->
       assert.same {"good"}, Modules\parse_labels ", #$!@$!@$!@, 3*()$, ------, ,,,good,, thisonei so ogin to be relaly long so"
 
+    it "only accepts so many labels", ->
+      assert.same {
+        "aa"
+        "bb"
+        "cc"
+        "dd"
+        "ee"
+        "ff"
+        "gg"
+        "hh"
+        "ii"
+      }, Modules\parse_labels "aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn,oo,pp"
+
