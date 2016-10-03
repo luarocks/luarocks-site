@@ -1,31 +1,19 @@
 import request, request_as, do_upload_as from require "spec.helpers"
-import truncate_tables from require "lapis.spec.db"
 import generate_token from require "lapis.csrf"
 
 factory = require "spec.factory"
 
 import use_test_server from require "lapis.spec"
 
-import
-  Users
-  ApiKeys
-
-  Manifests
-  ManifestModules
-  Modules
-  Versions
-  Rocks
-  from require "models"
-
 describe "application.api", ->
   use_test_server!
 
   local root, user
 
-  before_each ->
-    truncate_tables Users, ApiKeys, Manifests, ManifestModules, Modules,
-      Versions, Rocks
+  import Users, ApiKeys, Manifests, ManifestModules,
+    Modules, Versions, Rocks from require "spec.models"
 
+  before_each ->
     root = Manifests\create "root", true
     user = Users\create "leafo", "leafo", "leafo@example.com"
 

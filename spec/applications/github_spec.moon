@@ -1,9 +1,6 @@
 import use_test_server from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
 import get_current_server from require "lapis.spec.server"
 import request_as from require "spec.helpers"
-
-import GithubAccounts, Users, UserData from require "models"
 
 factory = require "spec.factory"
 
@@ -12,8 +9,9 @@ describe "applications.github", ->
 
   local current_user, csrf_token
 
+  import Users, UserData, GithubAccounts from require "spec.models"
+
   before_each ->
-    truncate_tables Users, UserData, GithubAccounts
     current_user = factory.Users!
 
     assert(get_current_server!, "server not loaded")\exec [[
