@@ -31,18 +31,18 @@ import parse_query_string, encode_query_string from require "lapis.util"
     host, path = url\match "^https?://([^/]*)(.*)$"
 
     headers = for k,v in pairs opts.headers or {}
-      "'--header=#{k}:#{v}'"
+      "--custom-header '#{k}' '#{v}'"
 
     if host
-      table.insert headers, "--header=Host:#{host}:#{server.app_port}"
+      table.insert headers, "--custom-header 'Host' '#{host}:#{server.app_port}'"
     else
       path = url
 
     full_url = "http://127.0.0.1:#{server.app_port}#{path}"
 
-    headers = table.concat headers
+    headers = table.concat headers, " "
 
-    cmd = "CutyCapt #{headers} '--min-width=1024' '--url=#{full_url}' '--out=#{screenshot_path(spec_name)}'"
+    cmd = "wkhtmltoimage -q #{headers} '#{full_url}' '#{screenshot_path(spec_name)}'"
     assert os.execute cmd
 
   handler
