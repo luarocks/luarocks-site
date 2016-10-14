@@ -217,11 +217,30 @@ class MoonRocksUser extends lapis.Application
   }
 
   ["user_settings.api_keys": "/settings/api-keys"]: ensure_https require_login respond_to {
-    GET: =>
+    before: =>
       @user = @current_user
       @title = "Api Keys - User Settings"
       @api_keys = @user\get_api_keys!
+
+    GET: =>
       render: true
+
+    POST: capture_errors =>
+      assert_csrf @
+      trim_filter @params
+      assert_valid @params, {
+        {"api_key", exists: true, type: "string"}
+        {"comment", optional: true, max_length: 255}
+      }
+
+      key = ApiKeys\find @current_user.id, assert @params.api_key
+      assert_error key and key.user_id == @current_user.id, "invalid key"
+
+      key\update {
+        comment: @params.comment or db.NULL
+      }
+
+      redirect_to: @url_for "user_settings.api_keys"
   }
 
   ["user_settings.profile": "/settings/profile"]: ensure_https require_login respond_to {

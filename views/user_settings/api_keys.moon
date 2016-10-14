@@ -17,12 +17,24 @@ class UserSettingsApiKeys extends require "widgets.user_settings_page"
       element "table", class: "table", ->
         thead ->
           tr ->
+            td ""
             td "Key"
             td "Created At"
             td ""
 
         for key in *@api_keys
           tr ->
+            td ->
+              form method: "post", class: "form", ->
+                @csrf_input!
+                input type: "hidden", name: "api_key", value: key.key
+                input {
+                  type: "text"
+                  name: "comment"
+                  placeholder: "Comment"
+                  value: key.comment
+                }
+
             td -> code key.key
             td key.created_at
             td ->
