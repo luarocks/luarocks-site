@@ -6,6 +6,7 @@ import generate_token from require "lapis.csrf"
 import use_test_server from require "lapis.spec"
 
 import request from require "spec.helpers"
+import request_as from require "spec.helpers"
 
 factory = require "spec.factory"
 
@@ -54,4 +55,40 @@ describe "application.user", ->
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same user.id, session.user.id
 
+    describe "api keys", ->
+      it "gets api keys with no api keys", ->
+        status, body, headers = request_as user, "/settings/api-keys"
+        assert.same 200, status
 
+      it "gets api keys with no api keys", ->
+        factory.ApiKeys user_id: user.id
+        status, body, headers = request_as user, "/settings/api-keys"
+        assert.same 200, status
+
+      it "sets comment", ->
+        key = factory.ApiKeys user_id: user.id
+        status, body, headers = request_as user, "/settings/api-keys", {
+          post: {
+            api_key: key.key
+            comment: " Helllo world "
+          }
+        }
+
+        assert.same 302, status
+        key\refresh!
+        assert.same "Helllo world", key.comment
+
+      it "sets doesn't set comment on other users key", ->
+        key = factory.ApiKeys!
+        key\update comment: "okay"
+
+        status, body, headers = request_as user, "/settings/api-keys", {
+          post: {
+            api_key: key.key
+            comment: "hacked"
+          }
+        }
+
+        assert.same 200, status
+        key\refresh!
+        assert.same "okay", key.comment
