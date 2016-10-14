@@ -253,5 +253,8 @@ import
   [1475269875]: =>
     drop_column "modules", "endorsements_count"
 
+  [1476481149]: =>
+    add_column "api_keys", "comment", text null: true
+
 
 }
