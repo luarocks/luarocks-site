@@ -1,6 +1,6 @@
 # LuaRocks.org
 
-<http://luarocks.org>
+<https://luarocks.org>
 
 [![Build Status](https://travis-ci.org/leafo/luarocks-site.svg?branch=master)](https://travis-ci.org/leafo/luarocks-site)
 
@@ -106,7 +106,7 @@ make it look something like this: (it must return a table of options)
   [1]: http://openresty.org/
   [2]: http://moonscript.org/
   [3]: https://github.com/leafo/lapis
-  [4]: http://gittup.org/tup/
+  [4]: https://gittup.org/tup/
   [5]: http://www.mailgun.com/
 
 
