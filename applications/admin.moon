@@ -98,6 +98,7 @@ class MoonRocksAdmin extends lapis.Application
     GET: =>
       import ApprovedLabels from require "models"
       @approved_labels = ApprovedLabels\select!
+      @uncreated_labels = ApprovedLabels\find_uncreated!
       render: true
 
     POST: capture_errors_json =>

@@ -1,4 +1,5 @@
 
+db = require "lapis.db"
 import Model from require "lapis.db.model"
 import slugify from require "lapis.util"
 
@@ -21,6 +22,16 @@ class ApprovedLabels extends Model
     opts.name = slugify opts.name
     assert opts.name != ""
     super opts
+
+  @find_uncreated: =>
+    import Modules from require "models"
+    db.query "
+      select * from (
+        select unnest(labels) as label, count(*) from #{db.escape_identifier Modules\table_name!} group by label order by count(*)
+      ) foo
+      where not exists(select 1 from approved_labels where name = label)
+      order by count desc;
+    "
 
   url_params: (req, ...) =>
     "label", { label: @name }, ...
