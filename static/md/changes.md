@@ -1,6 +1,10 @@
 
 ## Changes
 
+**2016/10/28**
+
+* Api keys can have comment added to them
+* New admin panel for managing approved labels
 
 **2016/9/30**
 
