@@ -53,11 +53,47 @@ CREATE TABLE api_keys (
     source character varying(255),
     actions integer DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    comment text
 );
 
 
 ALTER TABLE api_keys OWNER TO postgres;
+
+--
+-- Name: approved_labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE approved_labels (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE approved_labels OWNER TO postgres;
+
+--
+-- Name: approved_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE approved_labels_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE approved_labels_id_seq OWNER TO postgres;
+
+--
+-- Name: approved_labels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE approved_labels_id_seq OWNED BY approved_labels.id;
+
 
 --
 -- Name: dependencies; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -342,9 +378,9 @@ CREATE TABLE modules (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     display_name character varying(255),
-    endorsements_count integer DEFAULT 0 NOT NULL,
     has_dev_version boolean DEFAULT false NOT NULL,
-    followers_count integer DEFAULT 0 NOT NULL
+    followers_count integer DEFAULT 0 NOT NULL,
+    labels text[]
 );
 
 
@@ -544,7 +580,8 @@ CREATE TABLE versions (
     development boolean DEFAULT false NOT NULL,
     source_url text,
     revision integer DEFAULT 1 NOT NULL,
-    external_rockspec_url text
+    external_rockspec_url text,
+    archived boolean DEFAULT false NOT NULL
 );
 
 
@@ -569,6 +606,13 @@ ALTER TABLE versions_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE versions_id_seq OWNED BY versions.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY approved_labels ALTER COLUMN id SET DEFAULT nextval('approved_labels_id_seq'::regclass);
 
 
 --
@@ -640,6 +684,14 @@ ALTER TABLE ONLY versions ALTER COLUMN id SET DEFAULT nextval('versions_id_seq':
 
 ALTER TABLE ONLY api_keys
     ADD CONSTRAINT api_keys_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: approved_labels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY approved_labels
+    ADD CONSTRAINT approved_labels_pkey PRIMARY KEY (id);
 
 
 --
@@ -802,6 +854,13 @@ CREATE INDEX api_keys_user_id_idx ON api_keys USING btree (user_id);
 
 
 --
+-- Name: approved_labels_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE UNIQUE INDEX approved_labels_name_idx ON approved_labels USING btree (name);
+
+
+--
 -- Name: dependencies_dependency_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -862,6 +921,13 @@ CREATE INDEX module_search_idx ON modules USING gin (to_tsvector('english'::regc
 --
 
 CREATE INDEX modules_downloads_idx ON modules USING btree (downloads);
+
+
+--
+-- Name: modules_labels_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX modules_labels_idx ON modules USING gin (labels) WHERE (modules.* IS NOT NULL);
 
 
 --
@@ -1044,6 +1110,11 @@ COPY lapis_migrations (name) FROM stdin;
 1439949273
 1443373251
 1443382411
+1453406400
+1462567085
+1475034338
+1475269875
+1476481149
 \.
 
 
