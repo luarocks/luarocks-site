@@ -20,14 +20,15 @@ import safe_insert from require "helpers.models"
 --   created_at timestamp without time zone NOT NULL,
 --   updated_at timestamp without time zone NOT NULL,
 --   display_name character varying(255),
---   endorsements_count integer DEFAULT 0 NOT NULL,
 --   has_dev_version boolean DEFAULT false NOT NULL,
---   followers_count integer DEFAULT 0 NOT NULL
+--   followers_count integer DEFAULT 0 NOT NULL,
+--   labels text[]
 -- );
 -- ALTER TABLE ONLY modules
 --   ADD CONSTRAINT modules_pkey PRIMARY KEY (id);
 -- CREATE INDEX module_search_idx ON modules USING gin (to_tsvector('english'::regconfig, (((((COALESCE(display_name, name))::text || ' '::text) || (COALESCE(summary, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text))));
 -- CREATE INDEX modules_downloads_idx ON modules USING btree (downloads);
+-- CREATE INDEX modules_labels_idx ON modules USING gin (labels) WHERE (modules.* IS NOT NULL);
 -- CREATE INDEX modules_name_idx ON modules USING btree (name);
 -- CREATE INDEX modules_name_search_idx ON modules USING gin ((COALESCE(display_name, name)) gin_trgm_ops);
 -- CREATE INDEX modules_user_id_idx ON modules USING btree (user_id);

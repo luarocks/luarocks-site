@@ -50,3 +50,5 @@ vendor_js:
 	cp node_modules/selectize/dist/js/standalone/selectize.min.js static/lib
 	cp node_modules/selectize/dist/css/selectize.css static/lib
 
+annotate_models:
+	lapis annotate $$(find models -type f | grep -v /shapes/ | grep moon$$)
