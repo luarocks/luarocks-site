@@ -50,14 +50,14 @@ this:
 LuaRocks will download a manifest from each of the manifest servers it has been
 configured to look at. A manifest is a list of modules that a server has
 available. You can see the LuaRocks root manifest by going to:
-<http://luarocks.org/manifest>. It will then try to find the module
+<https://luarocks.org/manifest>. It will then try to find the module
 you searched for that best matches your platform and the version you want (the
 most recent by default).
 
 After finding the right match, it will ask the server with that module for
 either a `.rock` or `.rockspec` which is needed to install locally. For
 example, if our search was using LuaRocks.org, it might find this `.rockspec` if
-no rocks were available: <http://luarocks.org/enet-1.0-0.rockspec>
+no rocks were available: <https://luarocks.org/enet-1.0-0.rockspec>
 
 After downloading the right file, LuaRocks will then perform the installation
 and the module is ready for use.
@@ -66,8 +66,8 @@ and the module is ready for use.
 
 This site is written in [MoonScript][3] using the [Lapis framework][4]. You can find the source on [GitHub][2].
 
-  [1]: http://luarocks.org/
-  [2]: http://github.com/leafo/moonrocks-site
+  [1]: https://luarocks.org/
+  [2]: https://github.com/leafo/moonrocks-site
   [3]: http://moonscript.org
   [4]: http://leafo.net/lapis/
 
