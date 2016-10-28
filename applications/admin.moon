@@ -12,6 +12,7 @@ import
 
 import assert_csrf, assert_page from require "helpers.app"
 import assert_valid from require "lapis.validate"
+import trim_filter from require "lapis.util"
 
 class MoonRocksAdmin extends lapis.Application
   @path: "/admin"
@@ -92,3 +93,35 @@ class MoonRocksAdmin extends lapis.Application
       user\write_session @
       redirect_to: @url_for "index"
   }
+
+  [labels: "/labels"]: respond_to {
+    GET: =>
+      import ApprovedLabels from require "models"
+      @approved_labels = ApprovedLabels\select!
+      render: true
+
+    POST: capture_errors_json =>
+      assert_csrf @
+
+      assert_valid @params, {
+        {"label", type: "table"}
+      }
+
+      trim_filter @params.label
+
+      assert_valid @params.label, {
+        {"name", exists: true}
+      }
+
+      import ApprovedLabels from require "models"
+      label = ApprovedLabels\create {
+        name: @params.label.name
+      }
+
+      json: {
+        success: true
+        id: label.id
+      }
+
+  }
+
