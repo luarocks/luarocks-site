@@ -11,6 +11,13 @@ class AdminUsers extends require "widgets.page"
         a href: @url_for(label), label.name
       }
       "created_at"
+      {"delete", (t) ->
+        form method: "post", class: "form", ->
+          @csrf_input!
+          input type: "hidden", name: "label[name]", value: t.name
+          input type: "hidden", name: "action", value: "delete"
+          button "Delete"
+      }
     }
 
     h2 "Used labels that aren't approved"
@@ -18,12 +25,10 @@ class AdminUsers extends require "widgets.page"
       "label"
       "count"
       {"create", (t) ->
-
         form method: "post", class: "form", ->
           @csrf_input!
           input type: "hidden", name: "label[name]", value: t.label
           button "Create"
-
       }
     }
 

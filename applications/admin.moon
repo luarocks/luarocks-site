@@ -106,6 +106,7 @@ class MoonRocksAdmin extends lapis.Application
 
       assert_valid @params, {
         {"label", type: "table"}
+        {"action", optional: true, one_of: {"delete"}}
       }
 
       trim_filter @params.label
@@ -115,13 +116,25 @@ class MoonRocksAdmin extends lapis.Application
       }
 
       import ApprovedLabels from require "models"
-      label = ApprovedLabels\create {
-        name: @params.label.name
-      }
+
+      label = switch @params.action
+        when "delete"
+          al = ApprovedLabels\find {
+            name: @params.label.name
+          }
+
+          if al
+            al\delete!
+            al
+
+        else -- create by default
+          ApprovedLabels\create {
+            name: @params.label.name
+          }
 
       json: {
-        success: true
-        id: label.id
+        success: label and true or false
+        id: label and label.id
       }
 
   }
