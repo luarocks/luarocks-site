@@ -7,7 +7,9 @@ class AdminUsers extends require "widgets.page"
     h2 "Labels"
 
     @column_table @approved_labels, {
-      "name"
+      {"name", (label) ->
+        a href: @url_for(label), label.name
+      }
       "created_at"
     }
 

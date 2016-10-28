@@ -21,3 +21,6 @@ class ApprovedLabels extends Model
     opts.name = slugify opts.name
     assert opts.name != ""
     super opts
+
+  url_params: (req, ...) =>
+    "label", { label: @name }, ...
