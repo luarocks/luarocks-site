@@ -63,3 +63,21 @@ class TableHelpers
 
       extra_fields! if extra_fields
 
+
+  column_table: (objects, fields) =>
+    assert fields, "missing fields"
+
+    element "table", class: "table", ->
+      thead ->
+        tr ->
+          for field in *fields
+            if type(field) == "table"
+              {field, enum} = field
+
+            td field
+
+      for object in *objects
+        tr ->
+          for field in *fields
+            _, val, opts = @_format_table_value object, field
+            td opts, val
