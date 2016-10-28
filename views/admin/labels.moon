@@ -13,6 +13,20 @@ class AdminUsers extends require "widgets.page"
       "created_at"
     }
 
+    h2 "Used labels that aren't approved"
+    @column_table @uncreated_labels, {
+      "label"
+      "count"
+      {"create", (t) ->
+
+        form method: "post", class: "form", ->
+          @csrf_input!
+          input type: "hidden", name: "label[name]", value: t.label
+          button "Create"
+
+      }
+    }
+
     h2 "Add new approved label"
     fieldset ->
       legend "Label"
@@ -23,7 +37,7 @@ class AdminUsers extends require "widgets.page"
 
         div class: "row", ->
           label ->
-            div class: "label", "Username or email"
+            div class: "label", "Label name"
           input type: "text", name: "label[name]"
 
         div class: "button_row", ->
