@@ -13,7 +13,7 @@ Installing LuaRocks in a Unix system:
     > require "socket"
 
 
-On Windows? [Installation instructions for Windows](https://github.com/keplerproject/luarocks/wiki/Installation-instructions-for-Windows).
+On Windows? [Installation instructions for Windows](https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows).
 
 ## Contributing Modules
 
