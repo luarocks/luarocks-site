@@ -2,7 +2,7 @@
 
 <https://luarocks.org>
 
-[![Build Status](https://travis-ci.org/leafo/luarocks-site.svg?branch=master)](https://travis-ci.org/leafo/luarocks-site)
+[![Build Status](https://travis-ci.org/luarocks/luarocks-site.svg?branch=master)](https://travis-ci.org/luarocks/luarocks-site)
 
 The official module repository of the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
 
@@ -29,7 +29,7 @@ Install the following dependencies:
 Check out this repository.
 
 Install the dependencies listed in
-<https://github.com/leafo/moonrocks-site/blob/master/BoxFile> with LuaRocks.
+<https://github.com/luarocks/luarocks-site/blob/master/BoxFile> with LuaRocks.
 
 Run these commands to build.
 
