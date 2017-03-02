@@ -16,8 +16,8 @@ class Index extends require "widgets.page"
   inner_content: =>
     div class: "announce", ->
       div class: "new_tag", "New"
-      text "Lua Toolbox is now merged, modules have labels "
-      a href: "https://github.com/leafo/luarocks-site/releases/tag/v2016.9.30", "Learn more"
+      text "LuaRocks is taking part in Google Summer of Code 2017! "
+      a href: "https://luarocks.org/#gsoc-2017", "Learn more"
 
     div class: "home_columns", ->
       div class: "column", ->
