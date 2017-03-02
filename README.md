@@ -106,7 +106,7 @@ make it look something like this: (it must return a table of options)
   [1]: http://openresty.org/
   [2]: http://moonscript.org/
   [3]: https://github.com/leafo/lapis
-  [4]: https://gittup.org/tup/
+  [4]: http://gittup.org/tup/
   [5]: http://www.mailgun.com/
 
 
