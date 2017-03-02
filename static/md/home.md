@@ -9,7 +9,7 @@ list](https://lists.sourceforge.net/lists/listinfo/luarocks-developers) and
 say hi at our [Gitter group](http://gitter.im/luarocks/luarocks). Check out
 our [ideas list](http://luarocks.github.io/luarocks/gsoc/ideas2017.html) (or
 share your own ideas!). Once you find a project you are interested in, you
-should contact the mentor for that project by email, and this
+should contact the mentor for that project by email, and fill and send them this
 [questionnaire](http://luarocks.github.io/luarocks/gsoc/apply2017.html). If
 your application looks appropriate, the mentor may ask you to perform some
 small task related to the project to assess your abilities, and discuss with
