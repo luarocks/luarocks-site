@@ -20,7 +20,7 @@ parse_manifest = (text) ->
 
   manif
 
-update_manifest_on_disk = (server, dest) ->
+update_manifest_on_disk = (server, dest, force=false) ->
   print "Copying #{server} to #{dest}"
   os.execute "mkdir -p '#{dest}'"
 
@@ -55,10 +55,11 @@ update_manifest_on_disk = (server, dest) ->
           url = "#{server}/#{fname}"
           fname = "#{dest}/#{fname}"
 
-          -- skip if already exists
-          if f = io.open fname, "r"
-            f\close!
-            continue
+          unless force
+            -- skip if already exists
+            if f = io.open fname, "r"
+              f\close!
+              continue
 
           io.stdout\write "Downloading #{fname}..."
 
