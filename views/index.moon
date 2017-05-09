@@ -14,8 +14,6 @@ class Index extends require "widgets.page"
         @inner_content!
 
   inner_content: =>
-    div class: "announce", ->
-      div class: "new_tag", "New"
 
     div class: "home_columns", ->
       div class: "column", ->
