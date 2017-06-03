@@ -24,6 +24,7 @@ class Followings extends Model
     {"source_user", belongs_to: "Users"}
     {"object", polymorphic_belongs_to: {
       [1]: {"module", "Modules"}
+      [2]: {"user", "Users"}
     }}
   }
 
