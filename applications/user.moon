@@ -353,4 +353,18 @@ class MoonRocksUser extends lapis.Application
     @title = "Notifications"
     render: true
 
+    [follow_user: "/modules/:username/follow"]: require_login =>
+      @followed_user = Users\find username: @params.username
 
+      FollowingsFlow = require "flows.followings"
+      FollowingsFlow(@)\follow_object @followed_user
+
+      redirect_to: @url_for @followed_user
+
+    [unfollow_user: "/modules/:username/unfollow"]: require_login =>
+      @unfollowed_user = Users\find username: @params.username
+
+      FollowingsFlow = require "flows.followings"
+      FollowingsFlow(@)\follow_object @unfollowed_user
+
+      redirect_to: @url_for @unfollowed_user
