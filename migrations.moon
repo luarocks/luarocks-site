@@ -256,5 +256,6 @@ import
   [1476481149]: =>
     add_column "api_keys", "comment", text null: true
 
-
+  [1496539644]: =>
+    add_column "users", "followers_count", integer
 }
