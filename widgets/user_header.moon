@@ -9,6 +9,27 @@ class UserHeader extends require "widgets.page_header"
 
   inner_content: =>
     div class: "page_header_inner", ->
+      div class: "follow_area", ->
+        form {
+          action: @url_for(@user_following and "unfollow_user" or"follow_user", username: @user.username)
+          method: "post"
+        }, ->
+          @csrf_input!
+          if @current_user
+            if @user_following
+              button "Unfollow"
+            else
+              button "Follow"
+          else
+            a {
+              class:"button"
+              href: login_and_return_url(@, nil, "follow_user")
+              "Follow"
+            }
+
+          if @user.followers_count > 0
+            span class: "followers_count", @format_number @user.followers_count
+
       div class: "social_links", ->
         data = @user\get_data!
         if github = data\github_handle!
