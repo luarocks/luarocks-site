@@ -55,6 +55,51 @@ describe "application.user", ->
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same user.id, session.user.id
 
+      it "should follow a user", ->
+        current_user = factory.Users!
+        followed_user = factory.Users!
+
+        status, res = request_as user, "/modules/#{followed_user.username}/follow"
+
+        assert.same 302, status
+
+        followings = Followings\select!
+
+        assert.same 1, #followings
+        following = unpack followings
+
+        assert.same current_user.id, following.source_user_id
+        assert.same Followings.object_types.user, following.object_type
+        assert.same followed.id, following.object_id
+
+        current_user\refresh!
+        followed_user\refresh!
+
+        assert.same 1, current_user.following_count
+        assert.same 1, followed_user.followers_count
+
+      it "should unfollow a user", ->
+        current_user = factory.Users!
+        followed_user = factory.Users!
+
+        -- Follows
+        status, res = request_as user, "/modules/#{followed_user.username}/follow"
+
+        assert.same 302, status
+
+        -- Unfollow
+        status, res = request_as user, "/modules/#{followed_user.username}/follow"
+
+        followings = Followings\select!
+
+        assert.same 0, #followings
+
+        current_user\refresh!
+        followed_user\refresh!
+
+        assert.same 0, current_user.following_count
+        assert.same 0, followed_user.followers_count
+
     describe "api keys", ->
       it "gets api keys with no api keys", ->
         status, body, headers = request_as user, "/settings/api-keys"
