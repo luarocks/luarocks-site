@@ -1,5 +1,6 @@
 import time_ago_in_words from require "lapis.util"
-
+import login_and_return_url from require "helpers.app"
+  
 class UserHeader extends require "widgets.page_header"
   @needs: {
     "user"
