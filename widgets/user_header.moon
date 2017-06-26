@@ -12,9 +12,9 @@ class UserHeader extends require "widgets.page_header"
     div class: "page_header_inner", ->
       div class: "follow_area", ->
         form {
-          action: @url_for(@user_following and "unfollow_user" or"follow_user", username: @user.username)
+          action: @url_for(@user_following and "unfollow_user" or"follow_user", slug: @user.username)
           method: "post"
-        }, ->
+              }, ->
           @csrf_input!
           if @current_user
             if @user_following

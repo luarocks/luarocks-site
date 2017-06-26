@@ -13,7 +13,7 @@ factory = require "spec.factory"
 describe "application.user", ->
   use_test_server!
 
-  import Followings from require "models"
+  import Followings from require "spec.models"
   import Users, UserData from require "spec.models"
 
   it "makes user data object", ->
@@ -86,7 +86,6 @@ describe "application.user", ->
       
     before_each ->
       user = Users\create "leafo", "pword", "leafo@example.com"
-      followed_user = Users\create "leafo2", "pwordw", "leafo2@example.com"
         
     it "should log in a user", ->
       status, body, headers = request "/login", {
