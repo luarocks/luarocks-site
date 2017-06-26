@@ -36,53 +36,9 @@ describe "application.user", ->
     assert.same headers.location, 'http://127.0.0.1/'
     user = unpack Users\select!
     assert.truthy user
-  
-  it "should follow a user", ->
-    user = factory.Users!
-    followed_user = factory.Users!
-    status, res = request_as user, "/modules/#{followed_user.username}/follow"
-    assert.same 302, status
-
-    followings = Followings\select!
-
-    assert.same 1, #followings
-    following = unpack followings
-
-    assert.same user.id, following.source_user_id
-    assert.same Followings.object_types.user, following.object_type
-    assert.same followed_user.id, following.object_id
-
-    user\refresh!
-    followed_user\refresh!
-
-    assert.same 1, user.following_count
-    assert.same 1, followed_user.followers_count
-
-  it "should unfollow a user", ->
-    user = factory.Users!
-    followed_user = factory.Users!
-
-    -- Follows
-    status, res = request_as user, "/modules/#{followed_user.username}/follow"
-
-    assert.same 302, status
-
-    -- Unfollow
-    status, res = request_as user, "/modules/#{followed_user.username}/follow"
-
-    followings = Followings\select!
-
-    assert.same 2, #followings
-
-    user\refresh!
-    followed_user\refresh!
-
-    assert.same 1, user.following_count
-    assert.same 1, followed_user.followers_count
 
   describe "with user", ->
     local user
-    local followed_user
       
     before_each ->
       user = Users\create "leafo", "pword", "leafo@example.com"
@@ -100,6 +56,40 @@ describe "application.user", ->
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same user.id, session.user.id
 
+    it "should follow a user", ->
+      status, res = request_as user, "/users/#{user.username}/follow"
+      assert.same 302, status
+
+      followings = Followings\select!
+
+      assert.same 1, #followings
+      following = unpack followings
+
+      assert.same user.id, following.source_user_id
+      assert.same Followings.object_types.user, following.object_type
+      assert.same user.id, following.object_id
+
+      user\refresh!
+
+      assert.same 1, user.following_count
+
+    it "should unfollow a user", ->
+      -- Follows
+      status, res = request_as user, "/users/#{user.username}/follow"
+      assert.same 302, status
+
+      -- Unfollow
+      status, res = request_as user, "/users/#{user.username}/unfollow"
+      assert.same 302, status
+        
+      followings = Followings\select!
+
+      assert.same 0, #followings
+
+      user\refresh!
+
+      assert.same 0, user.following_count
+        
     describe "api keys", ->
       it "gets api keys with no api keys", ->
         status, body, headers = request_as user, "/settings/api-keys"
