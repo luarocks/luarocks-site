@@ -359,6 +359,9 @@ class MoonRocksUser extends lapis.Application
     followed_user = assert_error Users\find(slug: @params.slug),
       "Invalid User"
 
+    assert_error @current_user.id != followed_user.id,
+      "You can't follow yourself"
+
     @flow("followings")\follow_object followed_user
 
     redirect_to: @url_for followed_user
