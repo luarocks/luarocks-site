@@ -57,7 +57,8 @@ describe "application.user", ->
       assert.same user.id, session.user.id
 
     it "should follow a user", ->
-      status, res = request_as user, "/users/#{user.username}/follow"
+      other_user = factory.Users!
+      status, res = request_as user, "/users/#{other_user.username}/follow"
       assert.same 302, status
 
       followings = Followings\select!
@@ -67,19 +68,20 @@ describe "application.user", ->
 
       assert.same user.id, following.source_user_id
       assert.same Followings.object_types.user, following.object_type
-      assert.same user.id, following.object_id
+      assert.same other_user.id, following.object_id
 
       user\refresh!
 
       assert.same 1, user.following_count
 
     it "should unfollow a user", ->
-      -- Follows
-      status, res = request_as user, "/users/#{user.username}/follow"
-      assert.same 302, status
+      other_user = factory.Users!
+      follow = factory.Followings {
+        source_user_id: user.id
+        object: other_user
+      }
 
-      -- Unfollow
-      status, res = request_as user, "/users/#{user.username}/unfollow"
+      status, res = request_as user, "/users/#{other_user.username}/unfollow"
       assert.same 302, status
         
       followings = Followings\select!
