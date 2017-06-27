@@ -365,7 +365,7 @@ class MoonRocksUser extends lapis.Application
 
   [unfollow_user: "/users/:slug/unfollow"]: require_login capture_errors_404 =>
     unfollowed_user = assert_error Users\find(slug: @params.slug),
-      "Invalid module"
+      "Invalid User"
 
     @flow("followings")\unfollow_object unfollowed_user
 
