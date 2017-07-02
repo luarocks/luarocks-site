@@ -16,9 +16,10 @@ import
 import assert_valid from require "lapis.validate"
 
 import GithubAccounts from require "models"
+import Users from require "models"
 
 class MoonrocksGithub extends lapis.Application
-  [github_auth: "/github/auth"]: require_login capture_errors {
+  [github_auth: "/github/auth"]: capture_errors {
     on_error: =>
       render: "errors"
 
@@ -37,18 +38,46 @@ class MoonrocksGithub extends lapis.Application
         access_token: access.access_token
       }
 
-      if account = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
-        account\update data
+      if @current_user
+        -- There is an User that has been logged in.
+        -- If the GitHub account isn't linked to another user, links to the @current_user
+        -- Otherwise, links the GitHub account to @current_user
+
+        if account = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
+          account\update data
+        else
+          GithubAccounts\create data
+
+        data = @current_user\get_data!
+
+        unless data.github
+          data\update github: user.login
+
+        redirect_to: @url_for "user_settings.link_github"
       else
-        GithubAccounts\create data
+        -- There isn't an User logged in
+        -- See whether the GitHub account is linked to an existing account
+        -- If so, log in with the existing account
+        -- Otherwise, create a new account with data fetched from GitHub
 
-      data = @current_user\get_data!
-      unless data.github
-        data\update github: user.login
+        if account = GithubAccounts\find github_user_id: user.id
+          -- Log in user
+          assert_error Users\login @params.username, @params.password
+        else
+          -- User objects need an username and a password
+          -- In case of a conflict with the GitHub account username, should we use a random username creator ?
+          -- For a password, what should be the best idea ?
+          username = ""
+          password = ""
 
-      redirect_to: @url_for "user_settings.link_github"
+          luarocks_user = User\create username, password, user.email
+
+          data.user_id = luarocks_user.id
+
+          assert_error GithubAccounts\create data
+
+          redirect_to: @url_for luarocks_user
   }
-
 
   [github_remove: "/github/remove/:github_user_id"]: require_login capture_errors_json respond_to {
     before: =>
@@ -121,7 +150,3 @@ class MoonrocksGithub extends lapis.Application
       redirect_to: @url_for("github_claim_modules")
 
   }
-
-
-
-
