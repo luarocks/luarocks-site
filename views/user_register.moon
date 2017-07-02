@@ -30,3 +30,11 @@ class UserRegister extends require "widgets.page"
 
       div ->
         input type: "submit"
+
+    github = require "helpers.github"
+
+    hr!
+
+    a href: github\login_url(@csrf_token), ->
+      button ->
+        text "Sign In With GitHub"
