@@ -205,3 +205,17 @@ class Users extends Model
         last_active_at: db.raw"date_trunc('second', now() at time zone 'utc')"
       }, timestamp: false
 
+  @generate_username: (username) =>
+    if username == nil
+      username = "username"
+
+    unless Users\find(username: username)
+      username
+    else
+      for i = 1, 100
+        new_username = "#{username}-#{i}"
+
+        if not Users\find(username: new_username)
+          return new_username
+
+      return nil
