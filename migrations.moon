@@ -258,4 +258,7 @@ import
 
   [1496539644]: =>
     add_column "users", "followers_count", integer
+
+  [1499055289]: =>
+    db.query "alter table users alter column encrypted_password drop not null"
 }

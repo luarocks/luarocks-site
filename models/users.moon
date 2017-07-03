@@ -43,7 +43,10 @@ class Users extends Model
   }
 
   @create: (username, password, email) =>
-    encrypted_password = bcrypt.digest password, bcrypt.salt 5
+    encrypted_password = nil
+
+    if password
+      encrypted_password = bcrypt.digest password, bcrypt.salt 5
 
     stripped = strip_non_ascii username
     return nil, "username must be ascii only" unless stripped == username
@@ -91,7 +94,10 @@ class Users extends Model
     @write_session r if r
 
   check_password: (pass) =>
-    bcrypt.verify pass, @encrypted_password
+    if pass
+      bcrypt.verify pass, @encrypted_password
+    else
+      true
 
   generate_password_reset: =>
     @get_data!
@@ -110,7 +116,10 @@ class Users extends Model
     }
 
   salt: =>
-    @encrypted_password\sub 1, 29
+    if @encrypted_password
+      @encrypted_password\sub 1, 29
+    else
+      nil
 
   find_modules: (...) =>
     import Modules from require "models"
