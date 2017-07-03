@@ -32,7 +32,7 @@ class MoonrocksGithub extends lapis.Application
       user = assert_error github\user access.access_token
 
       data = {
-        user_id: @current_user.id
+        user_id: nil
         github_user_id: user.id
         github_login: user.login
         access_token: access.access_token
@@ -42,6 +42,8 @@ class MoonrocksGithub extends lapis.Application
         -- There is an User that has been logged in.
         -- If the GitHub account isn't linked to another user, links to the @current_user
         -- Otherwise, links the GitHub account to @current_user
+
+        data.user_id = @current_user.id
 
         if account = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
           account\update data
@@ -62,19 +64,27 @@ class MoonrocksGithub extends lapis.Application
 
         if account = GithubAccounts\find github_user_id: user.id
           -- Log in user
-          assert_error Users\login @params.username, @params.password
+          luarocks_user = Users\find account.user_id
+
+          assert_error Users\login luarocks_user.username, luarocks_user.password
+          luarocks_user\write_session @
+
+          redirect_to: @url_for luarocks_user
         else
           -- User objects need an username and a password
           -- In case of a conflict with the GitHub account username, should we use a random username creator ?
           -- For a password, what should be the best idea ?
-          username = ""
-          password = ""
 
-          luarocks_user = User\create username, password, user.email
+          username = Users\generate_username(user.login)
+
+          luarocks_user = Users\create(username, nil, user.email)
 
           data.user_id = luarocks_user.id
 
           assert_error GithubAccounts\create data
+          assert_error Users\login(luarocks_user.username, luarocks_user.password)
+
+          luarocks_user\write_session @
 
           redirect_to: @url_for luarocks_user
   }
