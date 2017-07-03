@@ -3,15 +3,10 @@ import truncate_tables from require "lapis.spec.db"
 
 factory = require "spec.factory"
 
-import
-  Users
-  from require "models"
-
 describe "models.users", ->
   use_test_env!
-
-  before_each ->
-    truncate_tables Users
+ 
+  import Users from require "spec.models"
 
   it "should test the username generator", ->
     user = factory.Users!
