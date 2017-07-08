@@ -1,6 +1,6 @@
 
 import Model from require "lapis.db.model"
-import generate_key from require "helpers.models"
+import generate_key, generate_uuid from require "helpers.models"
 import slugify from require "lapis.util"
 
 date = require "date"
@@ -217,14 +217,8 @@ class Users extends Model
   @generate_username: (username) =>
     if username == nil
       username = "username"
+      uuid = generate_uuid()
 
-    unless Users\find(username: username)
-      username
-    else
-      for i = 1, 100
-        new_username = "#{username}-#{i}"
+      new_username = "#{username}-#{uuid}"
 
-        if not Users\find(username: new_username)
-          return new_username
-
-      return nil
+    return new_username
