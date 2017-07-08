@@ -119,7 +119,7 @@ class Users extends Model
     if @encrypted_password
       @encrypted_password\sub 1, 29
     else
-      nil
+      "nopassword"
 
   find_modules: (...) =>
     import Modules from require "models"
