@@ -94,10 +94,7 @@ class Users extends Model
     @write_session r if r
 
   check_password: (pass) =>
-    if pass
       bcrypt.verify pass, @encrypted_password
-    else
-      true
 
   generate_password_reset: =>
     @get_data!
