@@ -66,15 +66,10 @@ class MoonrocksGithub extends lapis.Application
           -- Log in user
           luarocks_user = Users\find account.user_id
 
-          assert_error Users\login luarocks_user.username, luarocks_user.password
           luarocks_user\write_session @
 
           redirect_to: @url_for luarocks_user
         else
-          -- User objects need an username and a password
-          -- In case of a conflict with the GitHub account username, should we use a random username creator ?
-          -- For a password, what should be the best idea ?
-
           username = Users\generate_username(user.login)
 
           luarocks_user = Users\create(username, nil, user.email)
@@ -82,7 +77,6 @@ class MoonrocksGithub extends lapis.Application
           data.user_id = luarocks_user.id
 
           assert_error GithubAccounts\create data
-          assert_error Users\login(luarocks_user.username, luarocks_user.password)
 
           luarocks_user\write_session @
 
