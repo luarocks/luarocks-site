@@ -12,7 +12,7 @@ class GitHub
   login_url: (state) =>
     params = encode_query_string {
       client_id: @client_id
-      scope: "user"
+      scope: "user:email"
       :state
     }
 
