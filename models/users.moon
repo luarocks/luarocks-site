@@ -42,7 +42,7 @@ class Users extends Model
     {"modules", has_many: "Modules"}
   }
 
-  @create: (username, password, email) =>
+  @create: (username, password, email, display_name) =>
     encrypted_password = nil
 
     if password
@@ -63,7 +63,7 @@ class Users extends Model
       return nil, "Email already taken"
 
     Model.create @, {
-      :username, :encrypted_password, :email, :slug
+      :username, :encrypted_password, :email, :slug, :display_name
     }
 
   @login: (username, password) =>
