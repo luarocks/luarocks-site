@@ -261,4 +261,8 @@ import
 
   [1499055289]: =>
     db.query "alter table users alter column encrypted_password drop not null"
+
+  [1500093078]: =>
+    add_column "users", "display_name", varchar null: true
+
 }
