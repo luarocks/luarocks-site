@@ -215,8 +215,9 @@ class Users extends Model
   @generate_username: (username) =>
     if username == nil
       username = "username"
-      uuid = generate_uuid()
 
-      new_username = "#{username}-#{uuid}"
+    uuid = generate_uuid()
+
+    new_username = "#{username}-#{uuid}"
 
     return new_username
