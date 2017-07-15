@@ -145,7 +145,7 @@ class Users extends Model
     GithubAccounts\select "where user_id = ? order by updated_at desc", @id
 
   name_for_display: =>
-    @username
+    @display_name or @username
 
   delete: =>
     return unless super!
