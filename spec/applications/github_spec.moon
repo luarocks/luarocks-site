@@ -1,6 +1,6 @@
 import use_test_server from require "lapis.spec"
 import get_current_server from require "lapis.spec.server"
-import request_as from require "spec.helpers"
+import request, request_as from require "spec.helpers"
 
 factory = require "spec.factory"
 
@@ -23,7 +23,8 @@ describe "applications.github", ->
       github.user = function()
         return {
           id = 777,
-          login = "test-account"
+          login = "test-account",
+          email = "test@test.com"
         }
       end
     ]]
@@ -64,3 +65,28 @@ describe "applications.github", ->
     data\refresh!
     assert.same "leafo", data.github
 
+
+  it "register account using github", ->
+    import generate_token from require "lapis.csrf"
+    import get_session from require "lapis.session"
+    import parse_cookie_string from require "lapis.util"
+
+    status, body, headers = request "/github/auth", {
+      post: {
+        state: generate_token!
+      }
+    }
+
+    assert.same 302, status
+
+    assert.same 1, GithubAccounts\count!
+    account = unpack GithubAccounts\select!
+
+    assert.same 777, account.github_user_id
+    assert.same "fake-token", account.access_token
+    assert.same "test-account", account.github_login
+
+    assert.truthy headers.set_cookie
+    session = get_session cookies: parse_cookie_string(headers.set_cookie)
+
+    assert.is_not_nil session.user.id
