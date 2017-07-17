@@ -42,7 +42,7 @@ class Users extends Model
     {"modules", has_many: "Modules"}
   }
 
-  @create: (username, password, email) =>
+  @create: (username, password, email, display_name) =>
     encrypted_password = nil
 
     if password
@@ -63,7 +63,7 @@ class Users extends Model
       return nil, "Email already taken"
 
     Model.create @, {
-      :username, :encrypted_password, :email, :slug
+      :username, :encrypted_password, :email, :slug, :display_name
     }
 
   @login: (username, password) =>
@@ -94,7 +94,8 @@ class Users extends Model
     @write_session r if r
 
   check_password: (pass) =>
-      bcrypt.verify pass, @encrypted_password
+    return false unless @encrypted_password
+    bcrypt.verify pass, @encrypted_password
 
   generate_password_reset: =>
     @get_data!
@@ -214,8 +215,9 @@ class Users extends Model
   @generate_username: (username) =>
     if username == nil
       username = "username"
-      uuid = generate_uuid()
 
-      new_username = "#{username}-#{uuid}"
+    uuid = generate_uuid()
+
+    new_username = "#{username}-#{uuid}"
 
     return new_username

@@ -72,7 +72,7 @@ class MoonrocksGithub extends lapis.Application
         else
           username = Users\generate_username(user.login)
 
-          luarocks_user = Users\create(username, nil, user.email)
+          luarocks_user = Users\create(username, nil, user.email, user.login)
 
           data.user_id = luarocks_user.id
 
