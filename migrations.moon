@@ -256,5 +256,23 @@ import
   [1476481149]: =>
     add_column "api_keys", "comment", text null: true
 
+  [1496539644]: =>
+    add_column "users", "followers_count", integer
 
+  [1499055289]: =>
+    db.query "alter table users alter column encrypted_password drop not null"
+
+  [1500093078]: =>
+    add_column "users", "display_name", varchar null: true
+
+  [1500307302]: =>
+    add_column "followings", "is_starring", boolean default: false
+
+  [1500308531]: =>
+    add_column "users", "starrings_count", integer default: 0
+    add_column "modules", "starrers_count", integer default: 0
+
+  [1500318771]: =>
+    db.query "alter table followings drop constraint followings_pkey"
+    db.query "alter table followings add primary key(source_user_id, object_type, object_id, is_starring)"
 }
