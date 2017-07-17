@@ -180,6 +180,17 @@ class Users extends Model
       source_user_id: @id
       object_type: Followings\object_type_for_object object
       object_id: object.id
+      is_starring: false
+    }
+
+  stars: (object) =>
+    return unless object
+    import Followings from require "models"
+    Followings\find {
+      source_user_id: @id
+      object_type: Followings\object_type_for_object object
+      object_id: object.id
+      is_starring: true
     }
 
   get_unseen_notifications_count: =>
