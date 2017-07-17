@@ -40,24 +40,33 @@ class Followings extends Model
       opts.object_type = @object_types\for_db opts.object_type
 
     f = safe_insert @, opts
-    f\increment 1 if f
+    f\increment(1, opts.is_starring) if f
     f
 
-  delete: =>
+  delete: (is_starring) =>
     if super!
-      @increment -1
+      @increment -1, is_starring
       true
 
-  increment: (amount=1) =>
+  increment: (amount=1, is_starring) =>
     amount = assert tonumber amount
     import Users from require "models"
 
-    Users\load(id: @source_user_id)\update {
-      following_count: db.raw "following_count + #{amount}"
-    }, timestamp: false
-
     cls = @@model_for_object_type @object_type
-    cls\load(id: @object_id)\update {
-      followers_count: db.raw "followers_count + #{amount}"
-    }, timestamp: false
 
+    if is_starring
+      Users\load(id: @source_user_id)\update {
+        starrings_count: db.raw "starrings_count + #{amount}"
+      }, timestamp: false
+
+      cls\load(id: @object_id)\update {
+        starrers_count: db.raw "starrers_count + #{amount}"
+      }, timestamp: false
+    else
+      Users\load(id: @source_user_id)\update {
+        following_count: db.raw "following_count + #{amount}"
+      }, timestamp: false
+
+      cls\load(id: @object_id)\update {
+        followers_count: db.raw "followers_count + #{amount}"
+      }, timestamp: false
