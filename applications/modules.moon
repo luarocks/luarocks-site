@@ -71,6 +71,7 @@ class MoonRocksModules extends lapis.Application
     @depended_on = @module\find_depended_on!
 
     @module_following = @current_user and @current_user\follows @module
+    @module_starring = @current_user and @current_user\stars @module
 
     Versions\sort_versions @versions
 
@@ -198,7 +199,7 @@ class MoonRocksModules extends lapis.Application
   }
 
 
-  [follow_module: "/module/:module_id/follow"]: require_login capture_errors_404 =>
+  [follow_module: "/module/:module_id/follow/:kind"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
     }
@@ -207,10 +208,10 @@ class MoonRocksModules extends lapis.Application
       "invalid module"
 
     FollowingsFlow = require "flows.followings"
-    FollowingsFlow(@)\follow_object @module
+    FollowingsFlow(@)\follow_object @module, @params.kind
     redirect_to: @url_for @module
 
-  [unfollow_module: "/module/:module_id/unfollow"]: require_login capture_errors_404 =>
+  [unfollow_module: "/module/:module_id/unfollow/:kind"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
     }
@@ -219,7 +220,5 @@ class MoonRocksModules extends lapis.Application
       "invalid module"
 
     FollowingsFlow = require "flows.followings"
-    unfollowed = FollowingsFlow(@)\unfollow_object @module
+    unfollowed = FollowingsFlow(@)\unfollow_object @module, @params.kind
     redirect_to: @url_for @module
-
-
