@@ -262,6 +262,9 @@ import
   [1499055289]: =>
     db.query "alter table users alter column encrypted_password drop not null"
 
+  [1499794884]: =>
+    db.query [[create extension if not exists "uuid-ossp"]]
+
   [1500093078]: =>
     add_column "users", "display_name", varchar null: true
 
