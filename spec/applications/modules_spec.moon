@@ -81,8 +81,8 @@ describe "applications.modules", ->
 
     current_user\refresh!
     mod\refresh!
-    assert.same 0, current_user.starrings_count
-    assert.same 0, mod.starrers_count
+    assert.same 1, current_user.starrings_count
+    assert.same 1, mod.starrers_count
 
   it "unstars module", ->
     following = factory.Followings!
