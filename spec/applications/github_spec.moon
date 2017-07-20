@@ -64,6 +64,26 @@ describe "applications.github", ->
     data\refresh!
     assert.same "leafo", data.github
 
+  it "adds a second account to user", ->
+    GithubAccounts\create {
+      github_user_id: 333
+      github_login: "hello-world"
+      access_token: "12345"
+      user_id: current_user.id
+    }
+
+    request_as current_user, "/github/auth", {
+      post: {
+        state: csrf_token
+      }
+    }
+
+    assert.same 2, GithubAccounts\count!
+    assert.same {
+      [333]: true
+      [777]: true
+    }, {a.github_user_id, true for a in *current_user\get_github_accounts!}
+
   describe "register and login", ->
     import get_session from require "lapis.session"
     import parse_cookie_string from require "lapis.util"
