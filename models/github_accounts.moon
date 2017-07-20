@@ -18,6 +18,10 @@ class GithubAccounts extends Model
   @primary_key: {"user_id", "github_user_id"}
   @timestamp: true
 
+  @relations: {
+    {"user", belongs_to: "Users"}
+  }
+
   orgs: =>
     github = require "helpers.github"
     github\orgs @github_login, @access_token
