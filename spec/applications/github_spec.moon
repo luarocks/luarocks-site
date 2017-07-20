@@ -50,7 +50,7 @@ describe "applications.github", ->
 
     assert.same "test-account", current_user\get_data!.github
 
-  it "doesn't override user set github account", ->
+  it "doesn't override user's github account when adding new account", ->
     data = current_user\get_data!
     data\update github: "leafo"
 
@@ -93,13 +93,12 @@ describe "applications.github", ->
 
     it "logs in existing user with github account", ->
       import generate_token from require "lapis.csrf"
-      user = factory.Users!
 
       GithubAccounts\create {
         github_user_id: 777
         github_login: "hello-world"
         access_token: "12345"
-        user_id: user.id
+        user_id: current_user.id
       }
 
       status, body, headers = request "/github/auth", {
@@ -114,7 +113,7 @@ describe "applications.github", ->
 
       assert.truthy headers.set_cookie
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
-      assert.same user.id, session.user.id
+      assert.same current_user.id, session.user.id
 
 
 
