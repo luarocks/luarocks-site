@@ -64,7 +64,7 @@ class UserHeader extends require "widgets.page_header"
   render_follow_area: =>
     div class: "follow_area", ->
       form {
-        action: @url_for(@user_following and "unfollow_user" or"follow_user", slug: @user.username)
+        action: @url_for(@user_following and "unfollow_user" or"follow_user", slug: @user.slug)
         method: "post"
             }, ->
         @csrf_input!

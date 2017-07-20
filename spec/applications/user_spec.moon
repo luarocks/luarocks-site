@@ -58,7 +58,7 @@ describe "application.user", ->
 
     it "should follow a user", ->
       other_user = factory.Users!
-      status, res = request_as user, "/users/#{other_user.username}/follow"
+      status, res = request_as user, "/users/#{other_user.slug}/follow"
       assert.same 302, status
 
       followings = Followings\select!
@@ -81,7 +81,7 @@ describe "application.user", ->
         object: other_user
       }
 
-      status, res = request_as user, "/users/#{other_user.username}/unfollow"
+      status, res = request_as user, "/users/#{other_user.slug}/unfollow"
       assert.same 302, status
         
       followings = Followings\select!

@@ -17,7 +17,7 @@ user = Users\find slug: assert user_slug, "missing user slug"
 assert user, "could not find user '#{user_slug}'"
 
 take_module = (module_name) ->
-  print "Giving #{module_name} to #{user.username}"
+  print "Giving #{module_name} to #{user\name_for_display!}"
 
   mod = Modules\find {
       name: assert module_name, "missing module name"
