@@ -38,7 +38,7 @@ class Manifests extends Model
     if @check_unique_constraint "name", name
       return nil, "manifest name already taken"
 
-    Model.create @, { :name, :is_open, :display_name, :description }
+    super { :name, :is_open, :display_name, :description }
 
   @root: =>
     root = Manifests\find name: "root"

@@ -24,7 +24,7 @@ class ManifestAdmins extends Model
   }
 
   @create: (manifest, user, is_owner=false) =>
-    Model.create @, {
+    super {
       manifest_id: manifest.id
       user_id: user.id
       :is_owner
