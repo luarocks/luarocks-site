@@ -40,6 +40,7 @@ class Users extends Model
   @relations: {
     {"api_keys", has_many: "ApiKeys"}
     {"modules", has_many: "Modules"}
+    {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
   }
 
   @create: (username, password, email, display_name) =>
