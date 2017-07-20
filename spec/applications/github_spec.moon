@@ -111,6 +111,24 @@ describe "applications.github", ->
 
       assert.is_not_nil session.user.id
 
+      new_user = account\get_user!
+      assert.same "test-account", new_user.username
+
+    it "handles username conflict when registering new account", ->
+      factory.Users username: "test-account"
+
+      import generate_token from require "lapis.csrf"
+
+      status, body, headers = request "/github/auth", {
+        post: {
+          state: generate_token!
+        }
+      }
+
+      account = unpack GithubAccounts\select!
+      user = account\get_user!
+      assert.not.same "test-account", user.username
+
     it "logs in existing user with github account", ->
       import generate_token from require "lapis.csrf"
 
