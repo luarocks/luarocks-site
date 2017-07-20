@@ -1,5 +1,6 @@
 
 lapis = require "lapis"
+db = require "lapis.db"
 
 import
   assert_csrf
@@ -74,6 +75,12 @@ class MoonrocksGithub extends lapis.Application
 
         username = Users\generate_username(github_user.login)
         user = Users\create(username, nil, github_user.email, github_user.login)
+
+        -- try to claim the username
+        db.update Users\table_name!, {
+          username: github_user.login
+          slug: github_user.login
+        }, "id = ? and not exists(select 1 from users where username = ?)", user.id, github_user.login
 
         account_data.user_id = user.id
         assert_error GithubAccounts\create account_data
