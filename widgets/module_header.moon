@@ -69,7 +69,7 @@ class ModuleHeader extends require "widgets.page_header"
         "follow_module"
 
       form {
-        action: @url_for(starring_url, module_id: @module.id, kind: "star")
+        action: @url_for(starring_url, module_id: @module.id, kind: "bookmark")
         method: "post"
       }, ->
         @csrf_input!
@@ -85,8 +85,8 @@ class ModuleHeader extends require "widgets.page_header"
             "Star"
           }
 
-        if @module.starrers_count > 0
-          span class: "followers_count", @format_number @module.starrers_count
+        if @module.stars_count > 0
+          span class: "followers_count", @format_number @module.stars_count
 
     span
       
@@ -97,7 +97,7 @@ class ModuleHeader extends require "widgets.page_header"
         "follow_module"
 
       form {
-        action: @url_for(follow_url, module_id: @module.id, kind: "follow")
+        action: @url_for(follow_url, module_id: @module.id, kind: "subscription")
         method: "post"
       }, ->
         @csrf_input!

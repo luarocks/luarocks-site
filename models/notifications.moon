@@ -34,14 +34,14 @@ class Notifications extends Model
   }
 
   @types: enum {
-    follow: 1
-    star: 2
+    subscription: 1
+    bookmark: 2
   }
 
   @valid_types_for_object_type: {
     module: enum {
-      "follow": 1
-      "star": 2
+      "subscription": 1
+      "bookmark": 2
     }
   }
 
