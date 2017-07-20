@@ -62,6 +62,7 @@ class MoonrocksGithub extends lapis.Application
       }
 
       assert_error @account, "invalid account"
+      assert_error @account\can_be_deleted!, "Your GitHub account is required for authentication. Add a password to your LuaRocks account to remove it."
 
     GET: =>
       render: true

@@ -216,3 +216,16 @@ class Users extends Model
         last_active_at: db.raw"date_trunc('second', now() at time zone 'utc')"
       }, timestamp: false
 
+  has_password: =>
+    not not @encrypted_password
+
+  @generate_username: (username) =>
+    if username == nil
+      username = "username"
+
+    uuid = generate_uuid()
+
+    new_username = "#{username}-#{uuid}"
+
+    return new_username
+

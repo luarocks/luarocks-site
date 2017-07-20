@@ -61,3 +61,7 @@ class GithubAccounts extends Model
 
     Modules\find_all [key for key in pairs module_id_set]
 
+  -- only if the user account has password
+  can_be_deleted: =>
+    @get_user!\has_password!
+
