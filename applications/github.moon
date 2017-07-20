@@ -40,7 +40,27 @@ class MoonrocksGithub extends lapis.Application
       if account = GithubAccounts\find user_id: @current_user.id, github_user_id: user.id
         account\update data
       else
-        GithubAccounts\create data
+        -- There isn't an User logged in
+        -- See whether the GitHub account is linked to an existing account
+        -- If so, log in with the existing account
+        -- Otherwise, create a new account with data fetched from GitHub
+
+        if account = GithubAccounts\find github_user_id: user.id
+          -- Log in user
+          luarocks_user = Users\find account.user_id
+
+          luarocks_user\write_session @
+
+          redirect_to: @url_for luarocks_user
+        else
+          assert_error user.email, "Your account does not have a public email, can't continue"
+
+          username = Users\generate_username(user.login)
+
+          luarocks_user = Users\create(username, nil, user.email, user.login)
+
+          data.user_id = luarocks_user.id
+
 
       data = @current_user\get_data!
       unless data.github
