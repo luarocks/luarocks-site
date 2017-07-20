@@ -217,7 +217,4 @@ class Users extends Model
       username = "username"
 
     uuid = generate_uuid()
-
-    new_username = "#{username}-#{uuid}"
-
-    return new_username
+    "#{username}-#{uuid\gsub("-", "")\sub 1, 10}"
