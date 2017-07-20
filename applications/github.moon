@@ -113,7 +113,7 @@ class MoonrocksGithub extends lapis.Application
     before: =>
       import Users, LinkedModules from require "models"
 
-      accounts = @current_user\find_github_accounts!
+      accounts = @current_user\get_github_accounts!
 
       modules = {}
       for account in *accounts

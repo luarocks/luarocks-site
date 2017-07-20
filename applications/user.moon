@@ -156,7 +156,7 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       @user = @current_user
       @title = "Link GitHub - User Settings"
-      @github_accounts = @user\find_github_accounts!
+      @github_accounts = @user\get_github_accounts!
       render: true
   }
 
