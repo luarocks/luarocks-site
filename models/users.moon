@@ -63,7 +63,7 @@ class Users extends Model
     if @check_unique_constraint "email", email
       return nil, "Email already taken"
 
-    Model.create @, {
+    super {
       :username, :encrypted_password, :email, :slug, :display_name
     }
 

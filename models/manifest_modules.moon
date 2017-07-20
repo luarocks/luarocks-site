@@ -26,7 +26,7 @@ class ManifestModules extends Model
     if @check_unique_constraint manifest_id: manifest.id, module_name: mod.name
       return nil, "Manifest already has a module named `#{mod.name}`"
 
-    res = Model.create @, {
+    res = super {
       manifest_id: manifest.id
       module_id: mod.id
       module_name: mod.name

@@ -81,7 +81,7 @@ class Versions extends Model
     if @check_unique_constraint module_id: mod.id, version_name: version_name
       return nil, "This version is already uploaded"
 
-    version = Model.create @, {
+    version = super {
       module_id: mod.id
       display_version_name: if version_name != spec.version then spec.version
       rockspec_fname: rockspec_key\match "/([^/]*)$"

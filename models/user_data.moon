@@ -19,9 +19,7 @@ class UserData extends Model
   @primary_key: "user_id"
 
   @create: (user_id) =>
-    Model.create @, {
-      :user_id
-    }
+    super { :user_id }
 
   github_handle: =>
     return unless @github
