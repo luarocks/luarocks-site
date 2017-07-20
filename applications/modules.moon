@@ -24,7 +24,7 @@ import
   Rocks
   Dependencies
   Modules
-  from require "models"
+  Followings  from require "models"
 
 delete_module = capture_errors_404 respond_to {
   before: =>
@@ -202,23 +202,25 @@ class MoonRocksModules extends lapis.Application
   [follow_module: "/module/:module_id/follow/:kind"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
+      {"kind", one_of: {"subscription", "bookmark"} }
     }
 
     @module = assert_error Modules\find(@params.module_id),
-      "invalid module"
+       "invalid module"
 
     FollowingsFlow = require "flows.followings"
-    FollowingsFlow(@)\follow_object @module, @params.kind
+    FollowingsFlow(@)\follow_object @module, Followings.kind\for_db(@params.kind)
     redirect_to: @url_for @module
 
   [unfollow_module: "/module/:module_id/unfollow/:kind"]: require_login capture_errors_404 =>
     assert_valid @params, {
       {"module_id", is_integer: true}
+      {"kind", one_of: {"subscription", "bookmark"} }
     }
 
     @module = assert_error Modules\find(@params.module_id),
       "invalid module"
 
     FollowingsFlow = require "flows.followings"
-    unfollowed = FollowingsFlow(@)\unfollow_object @module, @params.kind
+    unfollowed = FollowingsFlow(@)\unfollow_object @module, Followings.kind\for_db(@params.kind)
     redirect_to: @url_for @module

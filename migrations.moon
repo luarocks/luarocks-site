@@ -272,13 +272,13 @@ import
     db.query [[create extension if not exists "uuid-ossp"]]
 
   [1500307302]: =>
-    add_column "followings", "is_starring", boolean default: false
+    add_column "followings", "kind", enum
 
   [1500308531]: =>
-    add_column "users", "starrings_count", integer default: 0
-    add_column "modules", "starrers_count", integer default: 0
+    add_column "users", "stared_count", integer default: 0
+    add_column "modules", "stars_count", integer default: 0
 
   [1500318771]: =>
     db.query "alter table followings drop constraint followings_pkey"
-    db.query "alter table followings add primary key(source_user_id, object_type, object_id, is_starring)"
+    db.query "alter table followings add primary key(source_user_id, object_type, object_id, kind)"
 }

@@ -17,7 +17,7 @@ describe "applications.modules", ->
   it "follows module", ->
     current_user = factory.Users!
     mod = factory.Modules!
-    status, res = request_as current_user, "/module/#{mod.id}/follow/follow"
+    status, res = request_as current_user, "/module/#{mod.id}/follow/subscription"
     assert.same 302, status
 
     followings = Followings\select!
@@ -39,7 +39,7 @@ describe "applications.modules", ->
     mod = following\get_object!
     current_user = following\get_source_user!
 
-    status, res = request_as current_user, "/module/#{mod.id}/unfollow/follow"
+    status, res = request_as current_user, "/module/#{mod.id}/unfollow/subscription"
     assert.same 302, status
 
     followings = Followings\select!
@@ -53,12 +53,12 @@ describe "applications.modules", ->
   it "does/undoes notification for follow", ->
     current_user = factory.Users!
     mod = factory.Modules!
-    status, res = request_as current_user, "/module/#{mod.id}/follow/follow"
+    status, res = request_as current_user, "/module/#{mod.id}/follow/subscription"
 
     assert.same 1, Notifications\count!
     assert.same 1, NotificationObjects\count!
 
-    status, res = request_as current_user, "/module/#{mod.id}/unfollow/follow"
+    status, res = request_as current_user, "/module/#{mod.id}/unfollow/subscription"
 
     assert.same 0, Notifications\count!
     assert.same 0, NotificationObjects\count!
@@ -67,7 +67,7 @@ describe "applications.modules", ->
   it "stars module", ->
     current_user = factory.Users!
     mod = factory.Modules!
-    status, res = request_as current_user, "/module/#{mod.id}/follow/star"
+    status, res = request_as current_user, "/module/#{mod.id}/follow/bookmark"
     assert.same 302, status
 
     followings = Followings\select!
@@ -89,7 +89,7 @@ describe "applications.modules", ->
     mod = following\get_object!
     current_user = following\get_source_user!
 
-    status, res = request_as current_user, "/module/#{mod.id}/unfollow/star"
+    status, res = request_as current_user, "/module/#{mod.id}/unfollow/bookmark"
     assert.same 302, status
 
     followings = Followings\select!
@@ -103,12 +103,12 @@ describe "applications.modules", ->
   it "does/undoes notification for starring", ->
     current_user = factory.Users!
     mod = factory.Modules!
-    status, res = request_as current_user, "/module/#{mod.id}/follow/star"
+    status, res = request_as current_user, "/module/#{mod.id}/follow/bookmark"
 
     assert.same 1, Notifications\count!
     assert.same 1, NotificationObjects\count!
 
-    status, res = request_as current_user, "/module/#{mod.id}/unfollow/star"
+    status, res = request_as current_user, "/module/#{mod.id}/unfollow/bookmark"
 
     assert.same 0, Notifications\count!
     assert.same 0, NotificationObjects\count!
