@@ -2,9 +2,6 @@ import use_test_server from require "lapis.spec"
 import get_current_server from require "lapis.spec.server"
 import request_as from require "spec.helpers"
 
-import get_session from require "lapis.session"
-import parse_cookie_string from require "lapis.util"
-
 factory = require "spec.factory"
 
 describe "applications.github", ->
@@ -67,54 +64,57 @@ describe "applications.github", ->
     data\refresh!
     assert.same "leafo", data.github
 
+  describe "register and login", ->
+    import get_session from require "lapis.session"
+    import parse_cookie_string from require "lapis.util"
 
-  it "register account using github", ->
-    import generate_token from require "lapis.csrf"
+    it "register account using github", ->
+      import generate_token from require "lapis.csrf"
 
-    status, body, headers = request "/github/auth", {
-      post: {
-        state: generate_token!
+      status, body, headers = request "/github/auth", {
+        post: {
+          state: generate_token!
+        }
       }
-    }
 
-    assert.same 302, status
+      assert.same 302, status
 
-    assert.same 1, GithubAccounts\count!
-    account = unpack GithubAccounts\select!
+      assert.same 1, GithubAccounts\count!
+      account = unpack GithubAccounts\select!
 
-    assert.same 777, account.github_user_id
-    assert.same "fake-token", account.access_token
-    assert.same "test-account", account.github_login
+      assert.same 777, account.github_user_id
+      assert.same "fake-token", account.access_token
+      assert.same "test-account", account.github_login
 
-    assert.truthy headers.set_cookie
-    session = get_session cookies: parse_cookie_string(headers.set_cookie)
+      assert.truthy headers.set_cookie
+      session = get_session cookies: parse_cookie_string(headers.set_cookie)
 
-    assert.is_not_nil session.user.id
+      assert.is_not_nil session.user.id
 
-  it "logs in existing user with github account", ->
-    import generate_token from require "lapis.csrf"
-    user = factory.Users!
+    it "logs in existing user with github account", ->
+      import generate_token from require "lapis.csrf"
+      user = factory.Users!
 
-    GithubAccounts\create {
-      github_user_id: 777
-      github_login: "hello-world"
-      access_token: "12345"
-      user_id: user.id
-    }
-
-    status, body, headers = request "/github/auth", {
-      post: {
-        state: generate_token!
-        code: "xxxx"
+      GithubAccounts\create {
+        github_user_id: 777
+        github_login: "hello-world"
+        access_token: "12345"
+        user_id: user.id
       }
-    }
 
-    assert.same 302, status
-    assert.same 1, GithubAccounts\count!
+      status, body, headers = request "/github/auth", {
+        post: {
+          state: generate_token!
+          code: "xxxx"
+        }
+      }
 
-    assert.truthy headers.set_cookie
-    session = get_session cookies: parse_cookie_string(headers.set_cookie)
-    assert.same user.id, session.user.id
+      assert.same 302, status
+      assert.same 1, GithubAccounts\count!
+
+      assert.truthy headers.set_cookie
+      session = get_session cookies: parse_cookie_string(headers.set_cookie)
+      assert.same user.id, session.user.id
 
 
 
