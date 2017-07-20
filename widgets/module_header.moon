@@ -39,7 +39,7 @@ class ModuleHeader extends require "widgets.page_header"
           h3 "Uploader"
           user_url = @url_for "user_profile", user: @user.slug
           a href: user_url, -> img class: "avatar", src: @user\gravatar(20)
-          a href: user_url, @user.username
+          a href: user_url, @user\name_for_display!
 
         if license = @module\short_license!
           div class: "column", ->

@@ -56,7 +56,9 @@ class MoonRocksUser extends lapis.Application
   [user_profile: "/modules/:user"]: capture_errors_404 =>
     @user = assert_error Users\find(slug: @params.user), "invalid user"
 
-    @title = "#{@user.username}'s Modules"
+    @title = "#{@user\name_for_display!}'s Modules"
+    @user_following = @current_user and @current_user\follows @user
+
     paginated_modules @, @user, (mods) ->
       for mod in *mods
         mod.user = @user

@@ -57,4 +57,24 @@ class UserHeader extends require "widgets.page_header"
             }
 
 
+  render_follow_area: =>
+    div class: "follow_area", ->
+      form {
+        action: @url_for(@user_following and "unfollow_user" or"follow_user", slug: @user.slug)
+        method: "post"
+            }, ->
+        @csrf_input!
+        if @current_user
+          if @user_following
+            button "Unfollow"
+          else
+            button "Follow"
+        else
+          a {
+            class:"button"
+            href: login_and_return_url(@, nil, "follow_user")
+            "Follow"
+          }
 
+        if @user.followers_count > 0
+          span class: "followers_count", @format_number @user.followers_count

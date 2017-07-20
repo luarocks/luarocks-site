@@ -16,7 +16,7 @@ class ModuleList extends require "widgets.base"
 
           span class: "author", ->
             text " by "
-            a href: @url_for("user_profile", user: user.slug), user.username
+            a href: @url_for("user_profile", user: user.slug), user\name_for_display!
             text ""
 
           span class: "downloads", ->

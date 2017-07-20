@@ -102,7 +102,7 @@ class Layout extends Widget
       raw " &middot; "
 
       if @current_user
-        a href: @url_for("user_profile", user: @current_user), class: "login", -> b @current_user.username
+        a href: @url_for("user_profile", user: @current_user), class: "login", -> b @current_user\name_for_display!
         raw " &middot; "
         a href: @url_for"upload_rockspec", "Upload"
         raw " &middot; "

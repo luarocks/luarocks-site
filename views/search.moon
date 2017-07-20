@@ -40,6 +40,6 @@ class Search extends require "widgets.page"
     div class: "user_list", ->
       for user in *@user_results
         div class: "user_row", ->
-          a href: @url_for("user_profile", user: user), user.username
+          a href: @url_for("user_profile", user: user), user\name_for_display!
 
 
