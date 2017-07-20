@@ -70,6 +70,8 @@ class MoonrocksGithub extends lapis.Application
 
           redirect_to: @url_for luarocks_user
         else
+          assert_error user.email, "Your account does not have a public email, can't continue"
+
           username = Users\generate_username(user.login)
 
           luarocks_user = Users\create(username, nil, user.email, user.login)
