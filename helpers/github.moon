@@ -68,8 +68,22 @@ class GitHub
 
     json.decode res
 
+  primary_email: () =>
+    emails = @_api_request "GET", "/user/emails", { :access_token }
+
+    for email in emails
+      if email.primary
+        return email.email
+
+    nil
+
   user: (access_token) =>
-    @_api_request "GET", "/user", { :access_token }
+    user_data = @_api_request "GET", "/user", { :access_token }
+
+    unless user_data.email
+      user_data.email = primary_email!
+
+    user_data
 
   orgs: (user) =>
     @_api_request "GET", "/users/#{user}/orgs"
