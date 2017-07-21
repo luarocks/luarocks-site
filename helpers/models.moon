@@ -149,5 +149,8 @@ upsert = (model, insert, update, cond) ->
   res._upsert_type = nil
   upsert_type, model\load res
 
+generate_uuid = () =>
+  res = unpack db.query "select uuid_generate_v4()"
+  return res.uuid_generate_v4
 
-{ :increment_counter, :generate_key, :get_all_pages, :find_all_in_batches, :safe_insert, :upsert }
+{ :generate_uuid, :increment_counter, :generate_key, :get_all_pages, :find_all_in_batches, :safe_insert, :upsert }

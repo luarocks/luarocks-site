@@ -1,5 +1,6 @@
 import time_ago_in_words from require "lapis.util"
-
+import login_and_return_url from require "helpers.app"
+  
 class UserHeader extends require "widgets.page_header"
   @needs: {
     "user"
@@ -9,6 +10,9 @@ class UserHeader extends require "widgets.page_header"
 
   inner_content: =>
     div class: "page_header_inner", ->
+      if not @current_user or @current_user.id != @user.id
+        @render_follow_area!
+
       div class: "social_links", ->
         data = @user\get_data!
         if github = data\github_handle!

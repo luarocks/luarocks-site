@@ -17,9 +17,10 @@ import
 import assert_valid from require "lapis.validate"
 
 import GithubAccounts from require "models"
+import Users from require "models"
 
 class MoonrocksGithub extends lapis.Application
-  [github_auth: "/github/auth"]: require_login capture_errors {
+  [github_auth: "/github/auth"]: capture_errors {
     on_error: =>
       render: "errors"
 
@@ -87,7 +88,6 @@ class MoonrocksGithub extends lapis.Application
         user\write_session @
         redirect_to: @url_for "index"
   }
-
 
   [github_remove: "/github/remove/:github_user_id"]: require_login capture_errors_json respond_to {
     before: =>
@@ -161,7 +161,3 @@ class MoonrocksGithub extends lapis.Application
       redirect_to: @url_for("github_claim_modules")
 
   }
-
-
-
-

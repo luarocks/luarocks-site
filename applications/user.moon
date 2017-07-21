@@ -355,4 +355,21 @@ class MoonRocksUser extends lapis.Application
     @title = "Notifications"
     render: true
 
+  [follow_user: "/users/:slug/follow"]: require_login capture_errors_404 =>
+    followed_user = assert_error Users\find(slug: @params.slug),
+      "Invalid User"
 
+    assert_error @current_user.id != followed_user.id,
+      "You can't follow yourself"
+
+    @flow("followings")\follow_object followed_user
+
+    redirect_to: @url_for followed_user
+
+  [unfollow_user: "/users/:slug/unfollow"]: require_login capture_errors_404 =>
+    unfollowed_user = assert_error Users\find(slug: @params.slug),
+      "Invalid User"
+
+    @flow("followings")\unfollow_object unfollowed_user
+
+    redirect_to: @url_for unfollowed_user

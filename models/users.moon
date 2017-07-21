@@ -1,6 +1,6 @@
 
 import Model from require "lapis.db.model"
-import generate_key from require "helpers.models"
+import generate_key, generate_uuid from require "helpers.models"
 import slugify from require "lapis.util"
 
 date = require "date"
@@ -43,8 +43,11 @@ class Users extends Model
     {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
   }
 
-  @create: (username, password, email) =>
-    encrypted_password = bcrypt.digest password, bcrypt.salt 5
+  @create: (username, password, email, display_name) =>
+    encrypted_password = nil
+
+    if password
+      encrypted_password = bcrypt.digest password, bcrypt.salt 5
 
     stripped = strip_non_ascii username
     return nil, "username must be ascii only" unless stripped == username
@@ -92,6 +95,7 @@ class Users extends Model
     @write_session r if r
 
   check_password: (pass) =>
+    return false unless @encrypted_password
     bcrypt.verify pass, @encrypted_password
 
   generate_password_reset: =>
@@ -111,7 +115,10 @@ class Users extends Model
     }
 
   salt: =>
-    @encrypted_password\sub 1, 29
+    if @encrypted_password
+      @encrypted_password\sub 1, 29
+    else
+      "nopassword"
 
   find_modules: (...) =>
     import Modules from require "models"
@@ -135,7 +142,7 @@ class Users extends Model
     url
 
   name_for_display: =>
-    @username
+    @display_name or @username
 
   delete: =>
     return unless super!
@@ -223,4 +230,3 @@ class Users extends Model
 
     uuid = generate_uuid()
     "#{username}-#{uuid\gsub("-", "")\sub 1, 10}"
-

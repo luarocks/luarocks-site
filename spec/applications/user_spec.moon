@@ -13,6 +13,7 @@ factory = require "spec.factory"
 describe "application.user", ->
   use_test_server!
 
+  import Followings from require "spec.models"
   import Users, UserData from require "spec.models"
 
   it "makes user data object", ->
@@ -38,10 +39,10 @@ describe "application.user", ->
 
   describe "with user", ->
     local user
-
+      
     before_each ->
       user = Users\create "leafo", "pword", "leafo@example.com"
-
+        
     it "should log in a user", ->
       status, body, headers = request "/login", {
         post: {
@@ -67,18 +68,20 @@ describe "application.user", ->
 
       assert.same user.id, following.source_user_id
       assert.same Followings.object_types.user, following.object_type
-      assert.same user.id, following.object_id
+      assert.same other_user.id, following.object_id
 
       user\refresh!
 
       assert.same 1, user.following_count
 
     it "should unfollow a user", ->
-      -- Follows
-      status, res = request_as user, "/users/#{user.username}/follow"
-      assert.same 302, status
+      other_user = factory.Users!
+      follow = factory.Followings {
+        source_user_id: user.id
+        object: other_user
+      }
 
-      s   tatus, res = request_as user, "/users/#{other_user.slug}/unfollow"
+      status, res = request_as user, "/users/#{other_user.slug}/unfollow"
       assert.same 302, status
         
       followings = Followings\select!

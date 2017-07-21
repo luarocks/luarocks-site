@@ -1,6 +1,6 @@
 import use_test_server from require "lapis.spec"
 import get_current_server from require "lapis.spec.server"
-import request_as from require "spec.helpers"
+import request, request_as from require "spec.helpers"
 
 factory = require "spec.factory"
 
@@ -23,7 +23,8 @@ describe "applications.github", ->
       github.user = function()
         return {
           id = 777,
-          login = "test-account"
+          login = "test-account",
+          email = "test@test.com"
         }
       end
     ]]
@@ -152,7 +153,3 @@ describe "applications.github", ->
       assert.truthy headers.set_cookie
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same current_user.id, session.user.id
-
-
-
-

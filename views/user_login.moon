@@ -25,3 +25,10 @@ class UserLogin extends require "widgets.page"
         raw " &middot; "
         a href: @url_for"user_forgot_password", "Forgot Password"
 
+    github = require "helpers.github"
+
+    hr!
+
+    a href: github\login_url(@csrf_token), ->
+      button ->
+        text "Login With GitHub"
