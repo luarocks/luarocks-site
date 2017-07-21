@@ -20,7 +20,7 @@ class Followings extends Model
   @primary_key: {"source_user_id", "object_type", "object_id"}
   @timestamp: true
 
-  @kind: enum {
+  @kinds: enum {
     subscription: 1
     bookmark: 2
   }
@@ -61,15 +61,15 @@ class Followings extends Model
 
     cls = @@model_for_object_type @object_type
 
-    user_column, module_column = if self.kind == 2
+    user_column, module_column = if self.kind == @@kinds.bookmark
       "stared_count", "stars_count"
     else
       "following_count", "followers_count"
 
     Users\load(id: @source_user_id)\update {
-      [user_column]: db.raw "#{user_column} + #{amount}"
+      [user_column]: db.raw "#{db.escape_identifier(user_column)} + #{amount}"
     }, timestamp: false
 
     cls\load(id: @object_id)\update {
-      [module_column]: db.raw "#{module_column} + #{amount}"
+      [module_column]: db.raw "#{db.escape_identifier(module_column)} + #{amount}"
     }, timestamp: false
