@@ -16,14 +16,14 @@ class FollowingsFlow extends Flow
     f = Followings\create {
       source_user_id: @current_user.id
       :object
-      kind: kind
+      :kind
     }
 
     if f and object.get_user
       target_user = object\get_user!
       unless target_user.id == @current_user.id
         Notifications\notify_for target_user, object,
-          Followings.kind\to_name(kind), @current_user
+          kind, @current_user
 
     f
 
@@ -32,7 +32,7 @@ class FollowingsFlow extends Flow
       source_user_id: @current_user.id
       object_type: Followings\object_type_for_object object
       object_id: object.id
-      kind: kind
+      :kind
     }
 
     return unless following
@@ -40,7 +40,7 @@ class FollowingsFlow extends Flow
     if object.get_user
       Notifications\undo_notify object\get_user!,
         object,
-        Followings.kind\to_name(kind),
+        kind,
         @current_user
 
     following\delete!
