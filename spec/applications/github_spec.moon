@@ -20,6 +20,14 @@ describe "applications.github", ->
         return { access_token = "fake-token" }
       end
 
+      github._api_request = function()
+        erro("making api request from test")
+      end
+
+      github.primary_email = function()
+        return "test@leafo.net"
+      end
+
       github.user = function()
         return {
           id = 777,

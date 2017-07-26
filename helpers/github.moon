@@ -69,7 +69,7 @@ class GitHub
     json.decode res
 
   primary_email: (access_token) =>
-    emails = @_api_request "GET", "/user/emails", { :access_token }
+    emails = assert @_api_request "GET", "/user/emails", { :access_token }
 
     for email in emails
       if email.primary
