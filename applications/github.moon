@@ -71,10 +71,11 @@ class MoonrocksGithub extends lapis.Application
           user\write_session @
           return redirect_to: @url_for "index"
 
-        assert_error github_user.email, "Your account does not have a public email, can't continue"
+        email = github\primary_email access.access_token
+        assert_error email, "Unable to access your email address, can't continue"
 
         username = Users\generate_username(github_user.login)
-        user = Users\create(username, nil, github_user.email, github_user.login)
+        user = Users\create(username, nil, email, github_user.login)
 
         -- try to claim the username
         db.update Users\table_name!, {
