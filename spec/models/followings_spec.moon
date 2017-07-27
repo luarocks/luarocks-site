@@ -16,5 +16,6 @@ describe "models.followings", ->
       source_user_id: factory.Users!.id
       object_type: "module"
       object_id: factory.Modules!.id
+      kind: Followings.kinds\for_db("subscription")
     }
 
