@@ -1,7 +1,7 @@
 
 import Flow from require "lapis.flow"
 
-import Followings, Notifications from require "models"
+import Events, Followings, Notifications, Users from require "models"
 
 import assert_error from require "lapis.application"
 
@@ -11,7 +11,7 @@ class FollowingsFlow extends Flow
   new: (...) =>
     super ...
     assert_error @current_user, "must be logged in"
-  
+
   follow_object: (object) =>
     f = Followings\create {
       source_user_id: @current_user.id
@@ -24,6 +24,8 @@ class FollowingsFlow extends Flow
         Notifications\notify_for target_user, object,
           "follow", @current_user
 
+    Events\create(Users\find(@current_user.id), object, Events.event_types.subscription)
+
     f
 
   unfollow_object: (object) =>
@@ -31,6 +33,13 @@ class FollowingsFlow extends Flow
       source_user_id: @current_user.id
       object_type: Followings\object_type_for_object object
       object_id: object.id
+    }
+
+    event = Events\find {
+      source_object_id: @current_user.id
+      source_object_type: Events\object_type_for_object @current_user
+      object_object_id: object.id
+      object_object_type: Events\object_type_for_object object
     }
 
     return unless following
@@ -41,5 +50,5 @@ class FollowingsFlow extends Flow
         "follow",
         @current_user
 
+    event\delete!
     following\delete!
-
