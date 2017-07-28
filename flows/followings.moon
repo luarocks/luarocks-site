@@ -24,7 +24,7 @@ class FollowingsFlow extends Flow
         Notifications\notify_for target_user, object,
           "follow", @current_user
 
-    Events\create(Users\find(@current_user.id), object, Events.event_types.subscription)
+    Events\create(@current_user, object, Events.event_types.subscription)
 
     f
 
@@ -40,6 +40,7 @@ class FollowingsFlow extends Flow
       source_object_type: Events\object_type_for_object @current_user
       object_object_id: object.id
       object_object_type: Events\object_type_for_object object
+      event_type: Events.event_types.subscription
     }
 
     return unless following
@@ -50,5 +51,6 @@ class FollowingsFlow extends Flow
         "follow",
         @current_user
 
-    event\delete!
+    event\delete! if event
+
     following\delete!

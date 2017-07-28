@@ -49,7 +49,7 @@ describe "applications.modules", ->
     events = Events\select!
 
     assert.same 0, #followings
-    assert.smae 0, #events
+    assert.same 0, #events
 
     current_user\refresh!
     mod\refresh!
