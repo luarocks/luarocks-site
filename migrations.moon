@@ -267,4 +267,22 @@ import
 
   [1499794884]: =>
     db.query [[create extension if not exists "uuid-ossp"]]
+
+  [1501182931]: =>
+    create_table "events", {
+      {"id", serial}
+      {"event_type", enum}
+      {"source_object_id", enum}
+      {"source_object_type", foreign_key}
+      {"object_object_id", enum}
+      {"object_object_type", foreign_key}
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (id)"
+    }
+    create_table "timeline_events", {
+      {"user_id", foreign_key}
+      {"event_id", foreign_key}
+    }
 }
