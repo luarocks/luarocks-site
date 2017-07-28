@@ -6,7 +6,7 @@ import request_as from require "spec.helpers"
 factory = require "spec.factory"
 
 
-import Modules, Versions, Followings, Users, Notifications, NotificationObjects from require "models"
+import Modules, Versions, Events, Followings, Users, Notifications, NotificationObjects from require "models"
 
 describe "applications.modules", ->
   use_test_server!
@@ -21,8 +21,11 @@ describe "applications.modules", ->
     assert.same 302, status
 
     followings = Followings\select!
+    events = Events\select!
 
     assert.same 1, #followings
+    assert.same 1, #events
+
     following = unpack followings
 
     assert.same current_user.id, following.source_user_id
@@ -43,7 +46,10 @@ describe "applications.modules", ->
     assert.same 302, status
 
     followings = Followings\select!
+    events = Events\select!
+
     assert.same 0, #followings
+    assert.smae 0, #events
 
     current_user\refresh!
     mod\refresh!
@@ -62,5 +68,3 @@ describe "applications.modules", ->
 
     assert.same 0, Notifications\count!
     assert.same 0, NotificationObjects\count!
-
-
