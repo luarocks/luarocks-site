@@ -63,8 +63,41 @@ class ModuleHeader extends require "widgets.page_header"
 
   follow_area: =>
     div class: "follow_area", ->
+      starring_url = if @module_starring
+        "unfollow_module"
+      else
+        "follow_module"
+
       form {
-        action: @url_for(@module_following and "unfollow_module" or"follow_module", module_id: @module.id)
+        action: @url_for(starring_url, module_id: @module.id, kind: "bookmark")
+        method: "post"
+      }, ->
+        @csrf_input!
+        if @current_user
+          if @module_starring
+            button "Unstar"
+          else
+            button "Star"
+        else
+          a {
+            class:"button"
+            href: login_and_return_url(@, nil, "follow_module")
+            "Star"
+          }
+
+        if @module.stars_count > 0
+          span class: "followers_count", @format_number @module.stars_count
+
+    span
+      
+    div class: "follow_area", ->
+      follow_url = if @module_following
+        "unfollow_module"
+      else
+        "follow_module"
+
+      form {
+        action: @url_for(follow_url, module_id: @module.id, kind: "subscription")
         method: "post"
       }, ->
         @csrf_input!
@@ -82,5 +115,3 @@ class ModuleHeader extends require "widgets.page_header"
 
         if @module.followers_count > 0
           span class: "followers_count", @format_number @module.followers_count
-
-

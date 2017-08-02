@@ -153,7 +153,8 @@ class Users extends Model
       ApiKeys
       GithubAccounts
       ManifestAdmins
-      LinkedModules from require "models"
+      LinkedModules
+      Followings from require "models"
 
     -- delete modules
     for m in *Modules\select "where user_id = ?", @id
@@ -184,6 +185,17 @@ class Users extends Model
       source_user_id: @id
       object_type: Followings\object_type_for_object object
       object_id: object.id
+      kind: Followings.kinds\for_db("subscription")
+    }
+
+  stars: (object) =>
+    return unless object
+    import Followings from require "models"
+    Followings\find {
+      source_user_id: @id
+      object_type: Followings\object_type_for_object object
+      object_id: object.id
+      kind: Followings.kinds\for_db("bookmark")
     }
 
   get_unseen_notifications_count: =>

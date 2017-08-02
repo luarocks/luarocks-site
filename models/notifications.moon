@@ -34,11 +34,15 @@ class Notifications extends Model
   }
 
   @types: enum {
-    follow: 1
+    subscription: 1
+    bookmark: 2
   }
 
   @valid_types_for_object_type: {
-    module: enum { "follow" }
+    module: enum {
+      "subscription": 1
+      "bookmark": 2
+    }
   }
 
   preloaders = {

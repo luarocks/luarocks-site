@@ -161,6 +161,3 @@ describe "applications.github", ->
       assert.truthy headers.set_cookie
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same current_user.id, session.user.id
-
-
-
