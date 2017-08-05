@@ -31,9 +31,9 @@ class Events extends Model
     opts = {
       :event_type
       source_object_id: source.id
-      source_object_type: @object_type_for_object source
+      source_object_type: @@object_type_for_object source
       object_object_id: object.id
-      object_object_type: @object_type_for_object object
+      object_object_type: @@object_type_for_object object
     }
 
     event = safe_insert @, opts
@@ -46,10 +46,10 @@ class Events extends Model
   event_description: () =>
     switch @event_type
       when @@event_types.subscription
-        ""
+        "subs"
       when @@event_types.bookmark
-        ""
+        "book"
       when @@event_types.update
-        ""
+        "update"
       else
         ""

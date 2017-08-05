@@ -218,3 +218,7 @@ class Users extends Model
 
     uuid = generate_uuid()
     "#{username}-#{uuid\gsub("-", "")\sub 1, 10}"
+
+  timeline: () =>
+    import TimelineEvents from require "models"
+    TimelineEvents\user_timeline @

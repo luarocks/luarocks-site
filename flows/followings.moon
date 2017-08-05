@@ -1,7 +1,7 @@
 
 import Flow from require "lapis.flow"
 
-import Events, Followings, Notifications, Users from require "models"
+import Events, Followings, Notifications, TimelineEvents, Users from require "models"
 
 import assert_error from require "lapis.application"
 
@@ -24,7 +24,8 @@ class FollowingsFlow extends Flow
         Notifications\notify_for target_user, object,
           "follow", @current_user
 
-    Events\create(@current_user, object, Events.event_types.subscription)
+    event = Events\create(@current_user, object, Events.event_types.subscription)
+    TimelineEvents\create(@current_user, event)
 
     f
 
@@ -51,6 +52,8 @@ class FollowingsFlow extends Flow
         "follow",
         @current_user
 
-    event\delete! if event
+    if event
+      TimelineEvent\delete(@current_user, event)
+      event\delete!
 
     following\delete!
