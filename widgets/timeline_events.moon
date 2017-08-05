@@ -9,7 +9,7 @@ class TimelineEvents extends require "widgets.base"
     ul ->
       for event in *@current_user\timeline!
         row_event = Events\find(event.event_id)
-        user = Users\find(event.user_id)
+        user = Users\find(row_event.source_user_id)
 
 
         message = switch row_event.event_type

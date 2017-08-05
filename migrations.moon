@@ -272,8 +272,7 @@ import
     create_table "events", {
       {"id", serial}
       {"event_type", enum}
-      {"source_object_id", enum}
-      {"source_object_type", foreign_key}
+      {"source_user_id", enum}
       {"object_object_id", enum}
       {"object_object_type", foreign_key}
       {"created_at", time}
