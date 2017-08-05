@@ -25,7 +25,7 @@ class FollowingsFlow extends Flow
           "follow", @current_user
 
     event = Events\create(@current_user, object, Events.event_types.subscription)
-    TimelineEvents\create(@current_user, event)
+    TimelineEvents\deliver(@current_user, event)
 
     f
 

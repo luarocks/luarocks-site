@@ -42,14 +42,3 @@ class Events extends Model
 
   delete: () =>
     db.delete @@table_name!, { id: @id }
-
-  event_description: () =>
-    switch @event_type
-      when @@event_types.subscription
-        "subs"
-      when @@event_types.bookmark
-        "book"
-      when @@event_types.update
-        "update"
-      else
-        ""

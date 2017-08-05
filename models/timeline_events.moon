@@ -1,6 +1,6 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
-import Events from require "models"
+import Events, Followings, Users from require "models"
 
 class TimelineEvents extends Model
   @primary_key: { "user_id", "event_id" }
@@ -16,14 +16,14 @@ class TimelineEvents extends Model
 
   @deliver: (user, event) =>
     switch event.event_type
-      when Events.event_types.subscription
-        @@create(user, event)
-      when Events.event_types.bookmark
-        @@create(@current_user, event)
       when Events.event_types.update
-        ""
+        followers = Followings\select "where object_id = ?", event.object_object_id
+
+        for users in *followers
+          follower_user = Users\find users.source_user_id
+          @@create(follower_user, event)
       else
-        ""
+        @@create(user, event)
 
   @user_timeline: (user) =>
     @@select "where user_id = ?", user.id
