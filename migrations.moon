@@ -284,5 +284,7 @@ import
     create_table "timeline_events", {
       {"user_id", foreign_key}
       {"event_id", foreign_key}
+
+      "PRIMARY KEY (user_id, event_id)"
     }
 }
