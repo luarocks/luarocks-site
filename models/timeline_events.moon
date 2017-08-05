@@ -25,5 +25,8 @@ class TimelineEvents extends Model
       else
         @@create(user, event)
 
+        if Events\model_for_object_type(event.object_object_type) == Users
+          @@create(Users\find(event.object_object_id), event)
+
   @user_timeline: (user) =>
     @@select "where user_id = ?", user.id
