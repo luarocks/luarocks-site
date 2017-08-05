@@ -53,7 +53,7 @@ class FollowingsFlow extends Flow
         @current_user
 
     if event
-      TimelineEvent\delete(@current_user, event)
+      TimelineEvents\delete(@current_user, event)
       event\delete!
 
     following\delete!
