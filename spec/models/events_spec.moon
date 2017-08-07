@@ -18,7 +18,7 @@ describe "models.events", ->
     event = Events\create(user, followed_user, Events.event_types.subscription)
     user_timeline = user\timeline!
 
-    assert.same user.id, event.source_object_id
+    assert.same user.id, event.source_user_id
     assert.same followed_user.id, event.object_object_id
     assert.same event.event_type, Events.event_types.subscription
 
@@ -31,7 +31,7 @@ describe "models.events", ->
     event = Events\create(user, module, Events.event_types.subscription)
     user_timeline = user\timeline!
 
-    assert.same user.id, event.source_object_id
+    assert.same user.id, event.source_user_id
     assert.same module.id, event.object_object_id
     assert.same event.event_type, Events.event_types.subscription
 
@@ -44,7 +44,7 @@ describe "models.events", ->
     event = Events\create(user, module, Events.event_types.bookmark)
     user_timeline = user\timeline!
 
-    assert.same user.id, event.source_object_id
+    assert.same user.id, event.source_user_id
     assert.same module.id, event.object_object_id
     assert.same event.event_type, Events.event_types.bookmark
 

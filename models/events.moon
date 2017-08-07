@@ -20,14 +20,14 @@ class Events extends Model
     }}
   }
 
-  @create: (source_user_id, object, event_type) =>
-    assert source_user_id, "missing event's source_user_id"
+  @create: (user, object, event_type) =>
+    assert user, "missing event's user"
     assert object, "missing event's object"
     assert event_type, "missing event_type, events must have a type"
 
     opts = {
       :event_type
-      source_user_id: source_user_id
+      source_user_id: user.id
       object_object_id: object.id
       object_object_type: @@object_type_for_object object
     }
