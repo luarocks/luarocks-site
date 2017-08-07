@@ -13,25 +13,21 @@ class Events extends Model
   }
 
   @relations: {
-    {"source", polymorphic_belongs_to: {
-      [1]: {"module", "Modules"}
-      [2]: {"user", "Users"}
-    }}
+    {"source_user", belongs_to: "Users"}
     {"object", polymorphic_belongs_to: {
       [1]: {"module", "Modules"}
       [2]: {"user", "Users"}
     }}
   }
 
-  @create: (source, object, event_type) =>
-    assert source, "missing event's source"
+  @create: (source_user_id, object, event_type) =>
+    assert source_user_id, "missing event's source_user_id"
     assert object, "missing event's object"
     assert event_type, "missing event_type, events must have a type"
 
     opts = {
       :event_type
-      source_object_id: source.id
-      source_object_type: @@object_type_for_object source
+      source_user_id: source_user_id
       object_object_id: object.id
       object_object_type: @@object_type_for_object object
     }
