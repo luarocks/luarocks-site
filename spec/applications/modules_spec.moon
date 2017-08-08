@@ -35,7 +35,7 @@ describe "applications.modules", ->
     assert.same 1, mod.followers_count
 
   it "unfollows module", ->
-    following = factory.Followings!
+    following = factory.Followings type: "subscription"
     mod = following\get_object!
     current_user = following\get_source_user!
 
@@ -85,7 +85,7 @@ describe "applications.modules", ->
     assert.same 1, mod.stars_count
 
   it "unstars module", ->
-    following = factory.Followings!
+    following = factory.Followings type: "bookmark"
     mod = following\get_object!
     current_user = following\get_source_user!
 
@@ -93,7 +93,7 @@ describe "applications.modules", ->
     assert.same 302, status
 
     followings = Followings\select!
-    assert.same 1, #followings
+    assert.same 0, #followings
 
     current_user\refresh!
     mod\refresh!
