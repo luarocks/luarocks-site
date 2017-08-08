@@ -22,7 +22,8 @@ import safe_insert from require "helpers.models"
 --   display_name character varying(255),
 --   has_dev_version boolean DEFAULT false NOT NULL,
 --   followers_count integer DEFAULT 0 NOT NULL,
---   labels text[]
+--   labels text[],
+--   stars_count integer DEFAULT 0 NOT NULL
 -- );
 -- ALTER TABLE ONLY modules
 --   ADD CONSTRAINT modules_pkey PRIMARY KEY (id);

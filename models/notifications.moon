@@ -34,11 +34,15 @@ class Notifications extends Model
   }
 
   @types: enum {
-    follow: 1
+    subscription: 1
+    bookmark: 2
   }
 
   @valid_types_for_object_type: {
-    module: enum { "follow" }
+    module: enum {
+      "subscription": 1
+      "bookmark": 2
+    }
   }
 
   preloaders = {
@@ -156,7 +160,7 @@ class Notifications extends Model
 
   prefix: =>
     switch @type
-      when @@types.follow
+      when @@types.subscription, @@types.bookmark
         switch @object_type
           when @@object_types.module
             "Your module"
@@ -165,11 +169,16 @@ class Notifications extends Model
 
   suffix: =>
     switch @type
-      when @@types.follow
+      when @@types.subscription
         if @count > 1
           "got a #{@count} new followers"
         else
           "got a new follower"
+      when @@types.bookmark
+        if @count > 1
+          "got a #{@count} new stars"
+        else
+          "got a new star"
 
   object_title: =>
     object = @get_object!

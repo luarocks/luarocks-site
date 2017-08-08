@@ -71,7 +71,7 @@ class GitHub
   primary_email: (access_token) =>
     emails = assert @_api_request "GET", "/user/emails", { :access_token }
 
-    for email in emails
+    for email in *emails
       if email.primary
         return email.email
 

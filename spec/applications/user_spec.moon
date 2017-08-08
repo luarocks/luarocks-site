@@ -79,6 +79,7 @@ describe "application.user", ->
       follow = factory.Followings {
         source_user_id: user.id
         object: other_user
+        type: "subscription"
       }
 
       status, res = request_as user, "/users/#{other_user.slug}/unfollow"

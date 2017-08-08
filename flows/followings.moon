@@ -12,28 +12,31 @@ class FollowingsFlow extends Flow
     super ...
     assert_error @current_user, "must be logged in"
 
-  follow_object: (object) =>
+    follow_object: (object, type) =>
+
     f = Followings\create {
       source_user_id: @current_user.id
       :object
+      :type
     }
 
     if f and object.get_user
       target_user = object\get_user!
       unless target_user.id == @current_user.id
         Notifications\notify_for target_user, object,
-          "follow", @current_user
+          type, @current_user
 
     event = Events\create(@current_user, object, Events.event_types.subscription)
     TimelineEvents\deliver(@current_user, event)
 
     f
 
-  unfollow_object: (object) =>
+  unfollow_object: (object, type) =>
     following = Followings\find {
       source_user_id: @current_user.id
       object_type: Followings\object_type_for_object object
       object_id: object.id
+      type: Followings.types\for_db type
     }
 
     event = Events\find {
@@ -48,11 +51,7 @@ class FollowingsFlow extends Flow
     if object.get_user
       Notifications\undo_notify object\get_user!,
         object,
-        "follow",
+        type,
         @current_user
-
-    if event
-      TimelineEvents\delete(@current_user, event)
-      event\delete!
 
     following\delete!

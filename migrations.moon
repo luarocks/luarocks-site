@@ -262,28 +262,20 @@ import
   [1499055289]: =>
     db.query "alter table users alter column encrypted_password drop not null"
 
-  [1500093078]: =>
-    add_column "users", "display_name", varchar null: true
-
   [1499794884]: =>
     db.query [[create extension if not exists "uuid-ossp"]]
 
-  [1501182931]: =>
-    create_table "events", {
-      {"id", serial}
-      {"event_type", enum}
-      {"source_user_id", enum}
-      {"object_object_id", enum}
-      {"object_object_type", foreign_key}
-      {"created_at", time}
-      {"updated_at", time}
+  [1500093078]: =>
+    add_column "users", "display_name", varchar null: true
 
-      "PRIMARY KEY (id)"
-    }
-    create_table "timeline_events", {
-      {"user_id", foreign_key}
-      {"event_id", foreign_key}
+  [1500307302]: =>
+    add_column "followings", "type", enum default: 1
 
-      "PRIMARY KEY (user_id, event_id)"
-    }
+  [1500308531]: =>
+    add_column "users", "stared_count", integer default: 0
+    add_column "modules", "stars_count", integer default: 0
+
+  [1500318771]: =>
+    db.query "alter table followings drop constraint followings_pkey"
+    db.query "alter table followings add primary key(source_user_id, object_type, object_id, type)"
 }
