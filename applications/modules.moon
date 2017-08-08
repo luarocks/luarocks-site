@@ -208,8 +208,7 @@ class MoonRocksModules extends lapis.Application
     @module = assert_error Modules\find(@params.module_id),
        "invalid module"
 
-    FollowingsFlow = require "flows.followings"
-    FollowingsFlow(@)\follow_object @module, @params.type
+    @flow("followings")\follow_object @module, @params.type
     redirect_to: @url_for @module
 
   [unfollow_module: "/module/:module_id/unfollow/:type"]: require_login capture_errors_404 =>
@@ -221,6 +220,5 @@ class MoonRocksModules extends lapis.Application
     @module = assert_error Modules\find(@params.module_id),
       "invalid module"
 
-    FollowingsFlow = require "flows.followings"
-    unfollowed = FollowingsFlow(@)\unfollow_object @module, @params.type
+    @flow("followings")\unfollow_object @module, @params.type
     redirect_to: @url_for @module
