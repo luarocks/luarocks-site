@@ -268,9 +268,6 @@ import
   [1500093078]: =>
     add_column "users", "display_name", varchar null: true
 
-  [1499794884]: =>
-    db.query [[create extension if not exists "uuid-ossp"]]
-
   [1500307302]: =>
     add_column "followings", "type", enum default: 1
 

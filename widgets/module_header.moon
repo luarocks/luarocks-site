@@ -87,8 +87,6 @@ class ModuleHeader extends require "widgets.page_header"
 
         if @module.stars_count > 0
           span class: "followers_count", @format_number @module.stars_count
-
-    span
       
     div class: "follow_area", ->
       follow_url = if @module_following

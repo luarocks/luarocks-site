@@ -24,7 +24,8 @@ import
   Rocks
   Dependencies
   Modules
-  Followings  from require "models"
+  Followings
+  from require "models"
 
 delete_module = capture_errors_404 respond_to {
   before: =>
@@ -206,7 +207,7 @@ class MoonRocksModules extends lapis.Application
     }
 
     @module = assert_error Modules\find(@params.module_id),
-       "invalid module"
+      "invalid module"
 
     @flow("followings")\follow_object @module, @params.type
     redirect_to: @url_for @module

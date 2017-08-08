@@ -154,7 +154,8 @@ class Users extends Model
       GithubAccounts
       ManifestAdmins
       LinkedModules
-      Followings from require "models"
+      Followings
+      from require "models"
 
     -- delete modules
     for m in *Modules\select "where user_id = ?", @id

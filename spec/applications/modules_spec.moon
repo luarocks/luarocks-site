@@ -27,6 +27,7 @@ describe "applications.modules", ->
 
     assert.same current_user.id, following.source_user_id
     assert.same Followings.object_types.module, following.object_type
+    assert.same Followings.types.subscription, following.type
     assert.same mod.id, following.object_id
 
     current_user\refresh!
@@ -77,6 +78,7 @@ describe "applications.modules", ->
 
     assert.same current_user.id, following.source_user_id
     assert.same Followings.object_types.module, following.object_type
+    assert.same Followings.types.bookmark, following.type
     assert.same mod.id, following.object_id
 
     current_user\refresh!
