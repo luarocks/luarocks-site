@@ -185,7 +185,7 @@ class Users extends Model
       source_user_id: @id
       object_type: Followings\object_type_for_object object
       object_id: object.id
-      kind: Followings.kinds\for_db("subscription")
+      type: Followings.types\for_db "subscription"
     }
 
   stars: (object) =>
@@ -195,7 +195,7 @@ class Users extends Model
       source_user_id: @id
       object_type: Followings\object_type_for_object object
       object_id: object.id
-      kind: Followings.kinds\for_db("bookmark")
+      type: Followings.types\for_db "bookmark"
     }
 
   get_unseen_notifications_count: =>

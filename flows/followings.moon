@@ -12,27 +12,27 @@ class FollowingsFlow extends Flow
     super ...
     assert_error @current_user, "must be logged in"
 
-  follow_object: (object, kind) =>
+  follow_object: (object, type) =>
     f = Followings\create {
       source_user_id: @current_user.id
       :object
-      :kind
+      :type
     }
 
     if f and object.get_user
       target_user = object\get_user!
       unless target_user.id == @current_user.id
         Notifications\notify_for target_user, object,
-          kind, @current_user
+          type, @current_user
 
     f
 
-  unfollow_object: (object, kind) =>
+  unfollow_object: (object, type) =>
     following = Followings\find {
       source_user_id: @current_user.id
       object_type: Followings\object_type_for_object object
       object_id: object.id
-      :kind
+      type: Followings.types\for_db type
     }
 
     return unless following
@@ -40,7 +40,7 @@ class FollowingsFlow extends Flow
     if object.get_user
       Notifications\undo_notify object\get_user!,
         object,
-        kind,
+        type,
         @current_user
 
     following\delete!

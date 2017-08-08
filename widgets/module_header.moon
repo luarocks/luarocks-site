@@ -69,7 +69,7 @@ class ModuleHeader extends require "widgets.page_header"
         "follow_module"
 
       form {
-        action: @url_for(starring_url, module_id: @module.id, kind: "bookmark")
+        action: @url_for(starring_url, module_id: @module.id, type: "bookmark")
         method: "post"
       }, ->
         @csrf_input!
@@ -97,7 +97,7 @@ class ModuleHeader extends require "widgets.page_header"
         "follow_module"
 
       form {
-        action: @url_for(follow_url, module_id: @module.id, kind: "subscription")
+        action: @url_for(follow_url, module_id: @module.id, type: "subscription")
         method: "post"
       }, ->
         @csrf_input!

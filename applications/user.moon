@@ -184,7 +184,7 @@ class MoonRocksUser extends lapis.Application
       assert_error @to_import and next(@to_import), "missing modules to follow"
 
       for m in *@to_import
-        @flow("followings")\follow_object m
+        @flow("followings")\follow_object m, "subscription"
 
       redirect_to: @url_for("user_settings.import_toolbox")
   }
@@ -363,7 +363,7 @@ class MoonRocksUser extends lapis.Application
     assert_error @current_user.id != followed_user.id,
       "You can't follow yourself"
 
-    @flow("followings")\follow_object(followed_user, Followings.kinds\for_db("subscription"))
+    @flow("followings")\follow_object followed_user, "subscription"
 
     redirect_to: @url_for followed_user
 
@@ -371,6 +371,6 @@ class MoonRocksUser extends lapis.Application
     unfollowed_user = assert_error Users\find(slug: @params.slug),
       "Invalid User"
 
-    @flow("followings")\unfollow_object(unfollowed_user, Followings.kinds\for_db("subscription"))
+    @flow("followings")\unfollow_object unfollowed_user, "subscription"
 
     redirect_to: @url_for unfollowed_user

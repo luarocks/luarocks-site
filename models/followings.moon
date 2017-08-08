@@ -20,7 +20,7 @@ class Followings extends Model
   @primary_key: {"source_user_id", "object_type", "object_id"}
   @timestamp: true
 
-  @kinds: enum {
+  @types: enum {
     subscription: 1
     bookmark: 2
   }
@@ -35,6 +35,7 @@ class Followings extends Model
 
   @create: (opts={}) =>
     assert opts.source_user_id, "missing source user id"
+    opts.type = @types\for_db opts.type
 
     if object = opts.object
       opts.object = nil
@@ -43,8 +44,6 @@ class Followings extends Model
     else
       assert opts.object_id, "missing object id"
       opts.object_type = @object_types\for_db opts.object_type
-
-    self.kind = opts.kind
 
     f = safe_insert @, opts
     f\increment(1) if f
@@ -55,13 +54,16 @@ class Followings extends Model
       @increment -1
       true
 
+  is_bookmark: => @type == @@types.bookmark
+  is_subscription: => @type == @@types.subscription
+
   increment: (amount=1) =>
     amount = assert tonumber amount
     import Users from require "models"
 
     cls = @@model_for_object_type @object_type
 
-    user_column, module_column = if self.kind == @@kinds.bookmark
+    user_column, module_column = if @is_bookmark!
       "stared_count", "stars_count"
     else
       "following_count", "followers_count"

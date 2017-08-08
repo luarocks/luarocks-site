@@ -92,7 +92,6 @@ ApiKeys = (opts={}) ->
 Followings = (opts={}) ->
   opts.object or= Modules!
   opts.source_user_id or= Users!.id
-  opts.kind or= 1
   models.Followings\create opts
 
 { :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests,
