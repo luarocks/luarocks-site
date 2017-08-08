@@ -10,7 +10,8 @@ import generate_key from require "helpers.models"
 --   source character varying(255),
 --   actions integer DEFAULT 0 NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
---   updated_at timestamp without time zone NOT NULL
+--   updated_at timestamp without time zone NOT NULL,
+--   comment text
 -- );
 -- ALTER TABLE ONLY api_keys
 --   ADD CONSTRAINT api_keys_pkey PRIMARY KEY (key);

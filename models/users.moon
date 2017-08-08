@@ -16,7 +16,7 @@ import strip_non_ascii from require "helpers.strings"
 -- CREATE TABLE users (
 --   id integer NOT NULL,
 --   username character varying(255) NOT NULL,
---   encrypted_password character varying(255) NOT NULL,
+--   encrypted_password character varying(255),
 --   email character varying(255) NOT NULL,
 --   slug character varying(255) NOT NULL,
 --   flags integer DEFAULT 0 NOT NULL,
@@ -24,7 +24,10 @@ import strip_non_ascii from require "helpers.strings"
 --   updated_at timestamp without time zone NOT NULL,
 --   following_count integer DEFAULT 0 NOT NULL,
 --   modules_count integer DEFAULT 0 NOT NULL,
---   last_active_at timestamp without time zone
+--   last_active_at timestamp without time zone,
+--   followers_count integer DEFAULT 0 NOT NULL,
+--   display_name character varying(255),
+--   stared_count integer DEFAULT 0 NOT NULL
 -- );
 -- ALTER TABLE ONLY users
 --   ADD CONSTRAINT users_pkey PRIMARY KEY (id);

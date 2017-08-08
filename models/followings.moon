@@ -10,10 +10,11 @@ import safe_insert from require "helpers.models"
 --   object_type smallint NOT NULL,
 --   object_id integer NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
---   updated_at timestamp without time zone NOT NULL
+--   updated_at timestamp without time zone NOT NULL,
+--   type smallint DEFAULT 1 NOT NULL
 -- );
 -- ALTER TABLE ONLY followings
---   ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id);
+--   ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id, type);
 -- CREATE INDEX followings_object_type_object_id_idx ON followings USING btree (object_type, object_id);
 --
 class Followings extends Model
