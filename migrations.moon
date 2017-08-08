@@ -272,7 +272,7 @@ import
     db.query [[create extension if not exists "uuid-ossp"]]
 
   [1500307302]: =>
-    add_column "followings", "kind", enum
+    add_column "followings", "kind", enum default: 1
 
   [1500308531]: =>
     add_column "users", "stared_count", integer default: 0
