@@ -278,4 +278,23 @@ import
   [1500318771]: =>
     db.query "alter table followings drop constraint followings_pkey"
     db.query "alter table followings add primary key(source_user_id, object_type, object_id, type)"
+
+  [1501182931]: =>
+    create_table "events", {
+      {"id", serial}
+      {"event_type", enum}
+      {"source_user_id", foreign_key}
+      {"object_object_id", foreign_key}
+      {"object_object_type", enum}
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (id)"
+    }
+    create_table "timeline_events", {
+      {"user_id", foreign_key}
+      {"event_id", foreign_key}
+
+      "PRIMARY KEY (user_id, event_id)"
+    }
 }
