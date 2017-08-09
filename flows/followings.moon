@@ -12,7 +12,7 @@ class FollowingsFlow extends Flow
     super ...
     assert_error @current_user, "must be logged in"
 
-    follow_object: (object, type) =>
+  follow_object: (object, type) =>
 
     f = Followings\create {
       source_user_id: @current_user.id
@@ -26,7 +26,12 @@ class FollowingsFlow extends Flow
         Notifications\notify_for target_user, object,
           type, @current_user
 
-    event = Events\create(@current_user, object, Events.event_types.subscription)
+    event = Events\create({
+      user: @current_user
+      object: object
+      event_type: Events.event_types.subscription
+    })
+
     TimelineEvents\deliver(@current_user, event)
 
     f

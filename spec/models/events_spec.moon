@@ -15,7 +15,12 @@ describe "models.events", ->
     user = factory.Users!
     followed_user = factory.Users!
 
-    event = Events\create(user, followed_user, Events.event_types.subscription)
+    event = Events\create({
+      user: user
+      object: followed_user
+      event_type: Events.event_types.subscription
+    })
+
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
@@ -28,7 +33,12 @@ describe "models.events", ->
     user = factory.Users!
     module = factory.Modules!
 
-    event = Events\create(user, module, Events.event_types.subscription)
+    event = Events\create({
+      user: user
+      object: module
+      event_type: Events.event_types.subscription
+    }
+      )
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
@@ -41,7 +51,12 @@ describe "models.events", ->
     user = factory.Users!
     module = factory.Modules!
 
-    event = Events\create(user, module, Events.event_types.bookmark)
+    event = Events\create({
+      user: user
+      object: module
+      event_type: Events.event_types.bookmark
+    })
+
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
@@ -54,10 +69,15 @@ describe "models.events", ->
     user = factory.Users!
     module = factory.Modules!
 
-    event = Events\create(user, module, Events.event_types.bookmark)
+    event = Events\create({
+      user: user
+      object: module
+      event_type: Events.event_types.bookmark
+    })
+
     event_id = event.id
 
     event\delete!
 
-    assert.same nil, Events\find user.id, event_id
+    assert.same Events\find(event_id), nil
     assert.same 0, #user\timeline!
