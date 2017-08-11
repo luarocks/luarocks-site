@@ -7,10 +7,14 @@ class TimelineEvents extends require "widgets.base"
 
   inner_content: =>
     ul ->
-      for event in *@current_user\timeline!
-        row_event = Events\find(event.event_id)
-        user = Users\find(row_event.source_user_id)
+      import preload from require "lapis.db.model"
+      timeline = @current_user\timeline!
+      preload timeline, event:  "object"
+      preload timeline, "user"
 
+      for event in *timeline
+        row_event = event.event
+        user = event.user
 
         message = switch row_event.event_type
           when Events.event_types.subscription
@@ -28,16 +32,14 @@ class TimelineEvents extends require "widgets.base"
 
             switch Events\model_for_object_type(row_event.object_object_type)
               when Modules
-                mod = Modules\find row_event.object_object_id
                 a {
                   class: "title",
-                  href: @url_for("module", user: user.slug, module: mod.name)
+                  href: @url_for("module", user: user.slug, module: row_event.object.name)
                 }, mod\name_for_display!
               when Users
-                usr = Users\find row_event.object_object_id
                 a {
                   class: "title",
-                  href: @url_for("user_profile", user: usr.slug)
+                  href: @url_for("user_profile", user: row_event.object.slug)
                 }, usr\name_for_display!
               else
                 ""

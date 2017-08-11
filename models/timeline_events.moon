@@ -5,6 +5,11 @@ import Model from require "lapis.db.model"
 class TimelineEvents extends Model
   @primary_key: { "user_id", "event_id" }
 
+  @relations: {
+    {"user", belongs_to: "Users"}
+    {"event", belongs_to: "Events"}
+  }
+
   @create: (opts={}) =>
     assert opts.user_id, "user id not specified"
     assert opts.event_id, "event id not specified"
