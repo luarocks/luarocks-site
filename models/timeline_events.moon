@@ -29,8 +29,10 @@ class TimelineEvents extends Model
       when Events.event_types.update
         followers = Followings\select "where object_id = ? and object_type = ?", event.object_object_id, event.object_object_type
 
+        Followings\preload_relation followers, "source_user"
+
         for users in *followers
-          follower_user = Users\find users.source_user_id
+          follower_user =  users.source_user
           @@create({
             user_id: follower_user.id
             event_id: event
@@ -48,4 +50,8 @@ class TimelineEvents extends Model
           })
 
   @user_timeline: (user) =>
-    @@select "where user_id = ?", user.id
+    import preload from require "lapis.db.model"
+    timeline = @@select "where user_id = ? limit 50", user.id
+    preload timeline, "user"
+    preload timeline, event: "object"
+    return timeline
