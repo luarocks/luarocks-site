@@ -24,7 +24,7 @@ describe "models.events", ->
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
-    assert.same followed_user.id, event.object_object_id
+    assert.same followed_user.id, event.object_id
     assert.same event.event_type, Events.event_types.subscription
 
     assert.same, #user_timeline, 1
@@ -42,7 +42,7 @@ describe "models.events", ->
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
-    assert.same module.id, event.object_object_id
+    assert.same module.id, event.object_id
     assert.same event.event_type, Events.event_types.subscription
 
     assert.same, #user_timeline, 1
@@ -60,7 +60,7 @@ describe "models.events", ->
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
-    assert.same module.id, event.object_object_id
+    assert.same module.id, event.object_id
     assert.same event.event_type, Events.event_types.bookmark
 
     assert.same, #user_timeline, 1

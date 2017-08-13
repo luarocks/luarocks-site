@@ -28,8 +28,8 @@ class Events extends Model
     event_opts = {
       event_type: opts.event_type
       source_user_id: opts.user.id
-      object_object_id: opts.object.id
-      object_object_type: @@object_type_for_object opts.object
+      object_id: opts.object.id
+      object_type: @@object_type_for_object opts.object
     }
 
     event = safe_insert @, event_opts

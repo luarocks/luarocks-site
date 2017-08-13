@@ -46,8 +46,8 @@ class FollowingsFlow extends Flow
 
     event = Events\find {
       source_user_id: @current_user.id
-      object_object_id: object.id
-      object_object_type: Events\object_type_for_object object
+      object_id: object.id
+      object_type: Events\object_type_for_object object
       event_type: Events.event_types.subscription
     }
 

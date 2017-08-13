@@ -27,7 +27,7 @@ class TimelineEvents extends Model
 
     switch event.event_type
       when Events.event_types.update
-        followers = Followings\select "where object_id = ? and object_type = ?", event.object_object_id, event.object_object_type
+        followers = Followings\select "where object_id = ? and object_type = ?", event.object_id, event.object_type
 
         Followings\preload_relation followers, "source_user"
 
@@ -43,9 +43,9 @@ class TimelineEvents extends Model
           event_id: event.id
         })
 
-        if Events\model_for_object_type(event.object_object_type) == Users
+        if Events\model_for_object_type(event.object_type) == Users
           @@create({
-            user_id: Users\find(event.object_object_id).id
+            user_id: Users\find(event.object_id).id
             event_id: event.id
           })
 

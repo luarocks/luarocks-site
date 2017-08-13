@@ -284,8 +284,8 @@ import
       {"id", serial}
       {"event_type", enum}
       {"source_user_id", foreign_key}
-      {"object_object_id", foreign_key}
-      {"object_object_type", enum}
+      {"object_id", foreign_key}
+      {"object_type", enum}
       {"created_at", time}
       {"updated_at", time}
 

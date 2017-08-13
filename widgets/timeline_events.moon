@@ -27,13 +27,13 @@ class TimelineEvents extends require "widgets.base"
             a href: @url_for("user_profile", user: user.slug), user\name_for_display!
             text message
 
-            switch Events\model_for_object_type(row_event.object_object_type)
+            switch Events\model_for_object_type(row_event.object_type)
               when Modules
                 module = row_event.object
                 a {
                   class: "title",
                   href: @url_for("module", user: user.slug, module: module.name)
-                }, mod\name_for_display!
+                }, module\name_for_display!
               when Users
                 usr = row_event.object
                 a {
