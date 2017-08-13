@@ -6,14 +6,14 @@ import request_as from require "spec.helpers"
 factory = require "spec.factory"
 
 
-import Modules, Versions, Events, Followings, Users, Notifications, NotificationObjects from require "spec.models"
+
 
 describe "applications.modules", ->
+  import Modules, Versions, Events, Followings, Users, Notifications, NotificationObjects from require "spec.models"
   use_test_server!
 
   before_each ->
-    truncate_tables Events, Modules, Versions, Followings, Users, Notifications, NotificationObjects
-
+  
   it "follows module", ->
     current_user = factory.Users!
     mod = factory.Modules!

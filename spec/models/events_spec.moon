@@ -2,13 +2,9 @@ import use_test_env from require "lapis.spec"
 
 factory = require "spec.factory"
 
-import
-  Modules
-  Users from require "spec.models"
-
-import Events, TimelineEvents from require "models"
-
 describe "models.events", ->
+  import Events, Modules, Users, TimelineEvents from require "spec.models"
+
   use_test_env!
 
   it "creates an event of user following user", ->
@@ -37,8 +33,8 @@ describe "models.events", ->
       user: user
       object: module
       event_type: Events.event_types.subscription
-    }
-      )
+    })
+
     user_timeline = user\timeline!
 
     assert.same user.id, event.source_user_id
