@@ -37,4 +37,7 @@ class Events extends Model
     return event
 
   delete: () =>
+    import TimelineEvents from require "models"
+
     db.delete @@table_name!, { id: @id }
+    db.delete TimelineEvents\table_name!, { event_id: @id}

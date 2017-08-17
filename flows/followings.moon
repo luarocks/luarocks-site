@@ -26,14 +26,6 @@ class FollowingsFlow extends Flow
         Notifications\notify_for target_user, object,
           type, @current_user
 
-    event = Events\create({
-      user: @current_user
-      object: object
-      event_type: Events.event_types.subscription
-    })
-
-    TimelineEvents\deliver(@current_user, event)
-
     f
 
   unfollow_object: (object, type) =>
@@ -42,13 +34,6 @@ class FollowingsFlow extends Flow
       object_type: Followings\object_type_for_object object
       object_id: object.id
       type: Followings.types\for_db type
-    }
-
-    event = Events\find {
-      source_user_id: @current_user.id
-      object_id: object.id
-      object_type: Events\object_type_for_object object
-      event_type: Events.event_types.subscription
     }
 
     return unless following

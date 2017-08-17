@@ -210,6 +210,8 @@ class MoonRocksModules extends lapis.Application
       "invalid module"
 
     @flow("followings")\follow_object @module, @params.type
+    @flow("events")\create_event_and_deliver @module, @params.type
+
     redirect_to: @url_for @module
 
   [unfollow_module: "/module/:module_id/unfollow/:type"]: require_login capture_errors_404 =>
@@ -222,4 +224,6 @@ class MoonRocksModules extends lapis.Application
       "invalid module"
 
     @flow("followings")\unfollow_object @module, @params.type
+    @flow("events")\remove_from_timeline @module, @params.type
+
     redirect_to: @url_for @module
