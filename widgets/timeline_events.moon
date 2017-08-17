@@ -34,6 +34,8 @@ class TimelineEvents extends require "widgets.base"
                   class: "title",
                   href: @url_for("module", user: user.slug, module: module.name)
                 }, module\name_for_display!
+
+                text " module"
               when Users
                 usr = row_event.object
                 a {

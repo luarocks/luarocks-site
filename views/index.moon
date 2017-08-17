@@ -1,7 +1,5 @@
 import to_json from require "lapis.util"
 
-TimelineEvents = require "widgets.timeline_events"
-
 class Index extends require "widgets.page"
   content: =>
     div class: @@css_classes!, ->
@@ -16,11 +14,6 @@ class Index extends require "widgets.page"
         @inner_content!
 
   inner_content: =>
-    if @current_user
-      h2 ->
-        text "Timeline"
-      widget TimelineEvents!
-
     div class: "home_columns", ->
       div class: "column", ->
         h2 ->
