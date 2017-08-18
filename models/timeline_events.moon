@@ -19,8 +19,8 @@ class TimelineEvents extends Model
       event_id: opts.event_id
     }
 
-  @delete: (user, event) =>
-    db.delete @table_name!, { user_id: user.id, event_id: event.id }
+  @delete: (user_id, event_id) =>
+    db.delete @table_name!, { user_id: user_id, event_id: event_id }
 
   @user_timeline: (user) =>
     import preload from require "lapis.db.model"
