@@ -1,4 +1,5 @@
 import Events, Modules, Users from require "models"
+import time_ago_in_words from require "lapis.util"
 
 class TimelineEvents extends require "widgets.base"
   @needs: {
@@ -32,7 +33,7 @@ class TimelineEvents extends require "widgets.base"
                 module = row_event.object
                 a {
                   class: "title",
-                  href: @url_for("module", user: user.slug, module: module.name)
+                  href: @url_for("module", user: Users\find(module.user_id).slug, module: module.name)
                 }, module\name_for_display!
 
                 text " module"
@@ -44,3 +45,4 @@ class TimelineEvents extends require "widgets.base"
                 }, usr\name_for_display!
               else
                 ""
+            text " ", time_ago_in_words(row_event.created_at)
