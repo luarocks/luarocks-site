@@ -13,7 +13,7 @@ describe "applications.modules", ->
   use_test_server!
 
   before_each ->
-  
+
   it "follows module", ->
     current_user = factory.Users!
     mod = factory.Modules!
@@ -26,7 +26,6 @@ describe "applications.modules", ->
 
     assert.same 1, #followings
     assert.same 1, #events
-    assert.same 1, #user_timeline
 
     following = unpack followings
 
@@ -50,11 +49,9 @@ describe "applications.modules", ->
 
     followings = Followings\select!
     events = Events\select!
-    user_timeline = current_user\timeline!
 
     assert.same 0, #followings
     assert.same 0, #events
-    assert.same 0, #user_timeline
 
     current_user\refresh!
     mod\refresh!
@@ -124,4 +121,3 @@ describe "applications.modules", ->
 
     assert.same 0, Notifications\count!
     assert.same 0, NotificationObjects\count!
-
