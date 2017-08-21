@@ -18,7 +18,7 @@ import safe_insert from require "helpers.models"
 -- CREATE INDEX followings_object_type_object_id_idx ON followings USING btree (object_type, object_id);
 --
 class Followings extends Model
-  @primary_key: {"source_user_id", "object_type", "object_id"}
+  @primary_key: {"source_user_id", "object_type", "object_id", "type"}
   @timestamp: true
 
   @types: enum {
