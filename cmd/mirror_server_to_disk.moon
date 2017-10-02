@@ -63,7 +63,7 @@ download_manifest = (name) ->
         os.execute "mv '#{tmp_fname}' #{fname}"
         print "done"
 
-for m in *{ "manifest", "manifest-5.1", "manifest-5.2"}
+for m in *{ "manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3"}
   download_manifest m
 
 for fname in pairs existing_files
