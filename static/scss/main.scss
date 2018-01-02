@@ -227,7 +227,16 @@ hr {
     margin-bottom: 40px;
     margin-top: 40px;
 
+    span {
+        display: block;
+        color: rgb(180, 180, 180);
+        font-size: 0.7em;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
     img {
+        margin-top: 5px;
         opacity: 0.8;
         -webkit-filter: grayscale(100%);
         @include transition(all 0.2s ease);
