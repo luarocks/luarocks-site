@@ -85,7 +85,8 @@ class Layout extends Widget
           a href: @url_for"about", "About"
 
         div class: "sub_footer", ->
-          a href: "https://github.com/mashape/kong", ->
+          span "supported by"
+          a href: "https://github.com/Kong/kong", ->
             img width: "117", height: "47", alt: "Sponsored by Kong", src: "/static/kong.svg"
 
       @content_for "js_init"
