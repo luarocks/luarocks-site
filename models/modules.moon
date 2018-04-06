@@ -289,8 +289,7 @@ class Modules extends Model
         params.rockspec_key = "#{user.id}/#{version.rockspec_fname}"
 
         rockspec_text = bucket\get_file version.rockspec_key
-        bucket\put_file_string rockspec_text, {
-          key: params.rockspec_key
+        bucket\put_file_string params.rockspec_key, rockspec_text, {
           mimetype: "text/x-rockspec"
         }
 
@@ -309,8 +308,7 @@ class Modules extends Model
           params.rock_key = "#{user.id}/#{rock.rock_fname}"
 
           rock_bin = bucket\get_file rock.rock_key
-          bucket\put_file_string rock_bin, {
-            key: params.rock_key
+          bucket\put_file_string params.rock_key, rock_bin, {
             mimetype: "application/x-rock"
           }
 

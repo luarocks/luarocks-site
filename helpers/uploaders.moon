@@ -92,8 +92,8 @@ do_rockspec_upload = (user, rockspec_text) ->
     return nil, err unless mod
 
   key = "#{user.id}/#{filename_for_rockspec spec}"
-  out = bucket\put_file_string rockspec_text, {
-    :key, mimetype: "text/x-rockspec"
+  out = bucket\put_file_string key, rockspec_text, {
+    mimetype: "text/x-rockspec"
   }
 
   unless out == 200
@@ -149,8 +149,8 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
     yield_error "Rock doesn't match version #{version.version_name}"
 
   key = "#{user.id}/#{filename}"
-  out = bucket\put_file_string rock_content, {
-    :key, mimetype: "application/x-rock"
+  out = bucket\put_file_string key, rock_content, {
+    mimetype: "application/x-rock"
   }
 
   unless out == 200
