@@ -19,6 +19,7 @@ _request = (url, opts, ...) ->
     token_param = type(opts.csrf) == "string" and opts.csrf or "csrf_token"
     opts.post[token_param] = generate_token r
 
+
     opts.headers or= {}
     config = require("lapis.config").get "test"
 
@@ -50,27 +51,23 @@ log_in_user = (user) ->
   stub = { session: {} }
 
   user\write_session stub
-  val = escape encode_session stub.session
-
-  {
-    "Cookie": "#{config.session_name}=#{val}; Path=/"
-  }
+  config.session_name, encode_session stub.session
 
 -- make a request as logged in as a user
 request_as = (user, url, opts={}) ->
   opts.headers or= {}
 
   if user
-    for k, v in pairs log_in_user user
-      opts.headers[k] = v
+    k, v = log_in_user user
+    add_cookie opts.headers, k,v
 
-  if opts.post and opts.post.csrf_token == nil
-    opts.csrf or= true
+  if opts.csrf == nil
+    if opts.post and opts.post.csrf_token == nil
+      opts.csrf or= true
 
   _request url, opts
 
 do_upload_as = (user, url, param_name, filename, file_content, opts) ->
-  import generate_token from require "lapis.csrf"
 
   unless pcall -> require "moonrocks.multipart"
     error "Need moonrocks to run upload spec"
@@ -81,17 +78,28 @@ do_upload_as = (user, url, param_name, filename, file_content, opts) ->
   f = with File filename, "application/octet-stream"
     .content = -> file_content
 
+  r = { cookies: {} }
+  csrf_token = generate_token r
+
   data, boundary = encode {
-    csrf_token: user and generate_token nil, user.id
+    csrf_token: csrf_token
     [param_name]: f
   }
 
-  req_opts = {
-    method: "POST"
-    headers: {
-      "Content-type": "multipart/form-data; boundary=#{boundary}"
-    }
+  headers = {
+    "Content-type": "multipart/form-data; boundary=#{boundary}"
+  }
 
+  add_cookie(
+    headers
+    assert next(r.cookies), "missing csrf cookie"
+    r.cookies[next(r.cookies)]
+  )
+
+  req_opts = {
+    csrf: false
+    method: "POST"
+    :headers
     :data
   }
 
@@ -108,4 +116,4 @@ should_load = (url, expected_status=200) ->
   it "should load #{url} with #{expected_status}", ->
     assert.same expected_status, (request url)
 
-{ :log_in_user, :request_as, request: _request, :do_upload_as, :should_load }
+{ :request_as, request: _request, :do_upload_as, :should_load }
