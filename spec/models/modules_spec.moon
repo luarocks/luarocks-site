@@ -49,7 +49,7 @@ describe "models.modules", ->
       package.loaded.storage_bucket = {
         get_file: (...) =>
           table.insert get_log, {...}
-          "xxx"
+          "file-contents"
 
         put_file_string: (...) =>
           table.insert put_log, {...}
@@ -80,8 +80,7 @@ describe "models.modules", ->
       }, get_log
 
       expected_puts = for v in *new_versions
-        {"xxx", {
-          key: v.rockspec_key
+        {v.rockspec_key, "file-contents", {
           mimetype: "text/x-rockspec"
         }}
 
