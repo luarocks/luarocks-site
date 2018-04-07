@@ -1,7 +1,6 @@
 
 import get_session from require "lapis.session"
 import parse_cookie_string from require "lapis.util"
-import generate_token from require "lapis.csrf"
 
 import use_test_server from require "lapis.spec"
 
@@ -23,12 +22,12 @@ describe "application.user", ->
 
   it "should register a user", ->
     status, body, headers = request "/register", {
+      csrf: true
       post: {
         username: "leafo"
         password: "pword"
         password_repeat: "pword"
         email: "leafo@example.com"
-        csrf_token: generate_token!
       }
     }
 
@@ -45,10 +44,10 @@ describe "application.user", ->
         
     it "should log in a user", ->
       status, body, headers = request "/login", {
+        csrf: true
         post: {
           username: "leafo"
           password: "pword"
-          csrf_token: generate_token!
         }
       }
 

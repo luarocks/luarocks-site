@@ -2,7 +2,6 @@
 import use_test_server from require "lapis.spec"
 
 import request, request_as, do_upload_as, should_load from require "spec.helpers"
-import generate_token from require "lapis.csrf"
 import from_json from require "lapis.util"
 
 factory = require "spec.factory"

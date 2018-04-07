@@ -7,7 +7,7 @@ factory = require "spec.factory"
 describe "applications.github", ->
   use_test_server!
 
-  local current_user, csrf_token
+  local current_user
 
   import Users, UserData, GithubAccounts from require "spec.models"
 
@@ -37,13 +37,10 @@ describe "applications.github", ->
       end
     ]]
 
-    import generate_token from require "lapis.csrf"
-    csrf_token = generate_token nil, current_user.id
-
   it "links github account", ->
     status = request_as current_user, "/github/auth", {
+      csrf: "state"
       post: {
-        state: csrf_token
         hello: "world"
       }
     }
@@ -64,8 +61,8 @@ describe "applications.github", ->
     data\update github: "leafo"
 
     status = request_as current_user, "/github/auth", {
+      csrf: "state"
       post: {
-        state: csrf_token
         hello: "world"
       }
     }
@@ -81,13 +78,13 @@ describe "applications.github", ->
       user_id: current_user.id
     }
 
-    request_as current_user, "/github/auth", {
-      post: {
-        state: csrf_token
-      }
+    status, body = request_as current_user, "/github/auth", {
+      csrf: "state"
+      post: { }
     }
 
     assert.same 2, GithubAccounts\count!
+
     assert.same {
       [333]: true
       [777]: true
@@ -98,12 +95,9 @@ describe "applications.github", ->
     import parse_cookie_string from require "lapis.util"
 
     it "register account using github", ->
-      import generate_token from require "lapis.csrf"
-
       status, body, headers = request "/github/auth", {
-        post: {
-          state: generate_token!
-        }
+        csrf: "state"
+        post: { }
       }
 
       assert.same 302, status
@@ -126,12 +120,9 @@ describe "applications.github", ->
     it "handles username conflict when registering new account", ->
       factory.Users username: "test-account"
 
-      import generate_token from require "lapis.csrf"
-
       status, body, headers = request "/github/auth", {
-        post: {
-          state: generate_token!
-        }
+        csrf: "state"
+        post: { }
       }
 
       account = unpack GithubAccounts\select!
@@ -139,8 +130,6 @@ describe "applications.github", ->
       assert.not.same "test-account", user.username
 
     it "logs in existing user with github account", ->
-      import generate_token from require "lapis.csrf"
-
       GithubAccounts\create {
         github_user_id: 777
         github_login: "hello-world"
@@ -149,8 +138,8 @@ describe "applications.github", ->
       }
 
       status, body, headers = request "/github/auth", {
+        csrf: "state"
         post: {
-          state: generate_token!
           code: "xxxx"
         }
       }

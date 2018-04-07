@@ -1,5 +1,4 @@
 import request, request_as, do_upload_as from require "spec.helpers"
-import generate_token from require "lapis.csrf"
 
 factory = require "spec.factory"
 

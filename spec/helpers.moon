@@ -1,6 +1,35 @@
 import request from require "lapis.spec.server"
+import generate_token from require "lapis.csrf"
+
+add_cookie = (headers, name, val) ->
+  import escape from require "lapis.util"
+  assign = "#{escape name}=#{escape val}"
+
+  if old = headers.Cookie
+    headers.Cookie = "#{old}; #{assign}"
+  else
+    headers.Cookie = assign
 
 _request = (url, opts, ...) ->
+  if opts and opts.csrf
+    opts.post or= {}
+
+    r = { cookies: {} }
+
+    token_param = type(opts.csrf) == "string" and opts.csrf or "csrf_token"
+    opts.post[token_param] = generate_token r
+
+    opts.headers or= {}
+    config = require("lapis.config").get "test"
+
+    add_cookie(
+      opts.headers
+      assert next(r.cookies), "missing csrf cookie"
+      r.cookies[next(r.cookies)]
+    )
+
+    opts.csrf = nil
+
   out = { request url, opts, ... }
   opts or= {}
 
@@ -36,8 +65,7 @@ request_as = (user, url, opts={}) ->
       opts.headers[k] = v
 
   if opts.post and opts.post.csrf_token == nil
-    import generate_token from require "lapis.csrf"
-    opts.post.csrf_token = generate_token nil, user.id
+    opts.csrf or= true
 
   _request url, opts
 

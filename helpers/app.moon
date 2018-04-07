@@ -6,11 +6,8 @@ import yield_error from require "lapis.application"
 import build_url from require "lapis.util"
 import assert_valid from require "lapis.validate"
 
-generate_csrf = =>
-  csrf.generate_token @, @current_user and @current_user.id
-
-assert_csrf = =>
-  csrf.assert_token @, @current_user and @current_user.id
+generate_csrf = => csrf.generate_token @
+assert_csrf = => csrf.assert_token @
 
 assert_editable = (thing) =>
   unless thing\allowed_to_edit @current_user
