@@ -14,7 +14,6 @@ class Index extends require "widgets.page"
         @inner_content!
 
   inner_content: =>
-
     div class: "home_columns", ->
       div class: "column", ->
         h2 ->
@@ -63,4 +62,3 @@ class Index extends require "widgets.page"
 
       script type: "text/javascript", ->
         raw "new M.Index(#{@widget_selector!}, #{to_json @downloads_daily});"
-

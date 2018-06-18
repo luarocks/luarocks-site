@@ -364,6 +364,7 @@ class MoonRocksUser extends lapis.Application
       "You can't follow yourself"
 
     @flow("followings")\follow_object followed_user, "subscription"
+    @flow("events")\create_event_and_deliver followed_user, "subscription"
 
     redirect_to: @url_for followed_user
 
@@ -372,5 +373,6 @@ class MoonRocksUser extends lapis.Application
       "Invalid User"
 
     @flow("followings")\unfollow_object unfollowed_user, "subscription"
+    @flow("events")\remove_from_timeline unfollowed_user, "subscription"
 
     redirect_to: @url_for unfollowed_user

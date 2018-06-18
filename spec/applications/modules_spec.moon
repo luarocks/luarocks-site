@@ -6,13 +6,13 @@ import request_as from require "spec.helpers"
 factory = require "spec.factory"
 
 
-import Modules, Versions, Followings, Users, Notifications, NotificationObjects from require "models"
+
 
 describe "applications.modules", ->
+  import Modules, Versions, Events, Followings, Users, Notifications, NotificationObjects from require "spec.models"
   use_test_server!
 
   before_each ->
-    truncate_tables Modules, Versions, Followings, Users, Notifications, NotificationObjects
 
   it "follows module", ->
     current_user = factory.Users!
@@ -21,8 +21,12 @@ describe "applications.modules", ->
     assert.same 302, status
 
     followings = Followings\select!
+    events = Events\select!
+    user_timeline = current_user\timeline!
 
     assert.same 1, #followings
+    assert.same 1, #events
+
     following = unpack followings
 
     assert.same current_user.id, following.source_user_id
@@ -44,7 +48,10 @@ describe "applications.modules", ->
     assert.same 302, status
 
     followings = Followings\select!
+    events = Events\select!
+
     assert.same 0, #followings
+    assert.same 0, #events
 
     current_user\refresh!
     mod\refresh!
@@ -114,4 +121,3 @@ describe "applications.modules", ->
 
     assert.same 0, Notifications\count!
     assert.same 0, NotificationObjects\count!
-

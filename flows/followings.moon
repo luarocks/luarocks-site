@@ -1,7 +1,7 @@
 
 import Flow from require "lapis.flow"
 
-import Followings, Notifications from require "models"
+import Events, Followings, Notifications, TimelineEvents, Users from require "models"
 
 import assert_error from require "lapis.application"
 
@@ -13,6 +13,7 @@ class FollowingsFlow extends Flow
     assert_error @current_user, "must be logged in"
 
   follow_object: (object, type) =>
+
     f = Followings\create {
       source_user_id: @current_user.id
       :object

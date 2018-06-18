@@ -345,3 +345,6 @@ class MoonRocks extends lapis.Application
     @top_depended = [t for t in *@top_depended when t.manifest_module]
 
     render: true
+
+  [timeline: "/timeline"]: require_login capture_errors_404 =>
+    render: true
