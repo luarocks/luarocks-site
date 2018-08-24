@@ -2,7 +2,7 @@ $lua_blue: #00257A; // color of lua logo
 $back_color: lighten($lua_blue, 73%);
 $header_color: lighten(desaturate($lua_blue, 60%), 5%);
 $button_color: #637393;
-$site_width: 800px;
+$site_width: 960px;
 $link_color: #008FEE;
 $button_height: 35px;
 $red_button_color: #EE004F;
@@ -31,21 +31,9 @@ $button_color: $link_color;
     user-select: none;
 }
 
-@mixin grid_width($size, $divisions: 8, $gutter: 10px) {
-    width: #{floor($size * (($site_width - (($divisions - 1) * $gutter)) / $divisions) + ($size - 1) * $gutter)};
-}
-
-@mixin grid_cell($size, $divisions: 8, $gutter: 10px) {
-    display: inline-block;
-    vertical-align: top;
-    font-size: $base_font_size;
-
-    @include grid_width($size, $divisions, $gutter);
-    margin-right: $gutter;
-
-    &:last-child, &.last {
-        margin-right: 0;
-    }
+@mixin site_width {
+    max-width: $site_width;
+    min-width: 800px;
 }
 
 @mixin single_line {
@@ -56,13 +44,9 @@ $button_color: $link_color;
 
 @mixin border_box {
     box-sizing: border-box;
-    -moz-box-sizing: border-box;
 }
 
 @mixin transition($args...) {
-    -webkit-transition: $args;
-    -moz-transition: $args;
-    -ms-transition: $args;
     transition: $args;
 }
 

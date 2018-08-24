@@ -17,8 +17,8 @@ class Index extends require "widgets.page"
 
     div class: "home_columns", ->
       div class: "column", ->
-        h2 ->
-          text "Recent Modules"
+        div class: "split_header", ->
+          h2 "Recent Modules"
           text " "
           span class: "header_sub", ->
             text "("
@@ -29,9 +29,10 @@ class Index extends require "widgets.page"
 
         @render_modules @recent_modules
 
-      div class: "column last", ->
-        h2 ->
-          text "Most Downloaded"
+      div class: "column", ->
+        div class: "split_header", ->
+          h2 "Most Downloaded"
+          text " "
           span class: "header_sub", ->
             text "("
             a href: @url_for("popular_this_week"), "This week"
@@ -46,8 +47,9 @@ class Index extends require "widgets.page"
         text ", " unless i == 1
         a href: @url_for("label",label: l.name), l.name
 
-    h2 ->
-      text "Daily Module Downloads"
+    div class: "split_header", ->
+      h2 "Daily Module Downloads"
+      text " "
       span class: "header_sub", ->
         text "("
         a href: @url_for("stats"), "More graphs & stats"

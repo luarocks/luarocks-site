@@ -99,41 +99,37 @@ hr {
     color: white;
 
     .header_inner {
-        width: $site_width;
+        @include site_width;
         margin: 0 auto;
-    }
+        height: 100%;
+        display: flex;
+        align-items: center;
 
-    h1 {
-        display: inline-block;
-        vertical-align: middle;
+        > * {
+            margin: 0 15px;
+            &:last-child {
+                margin-right: 0;
+            }
 
-        letter-spacing: 0.025em;
-        margin: 0;
-        font-size: 22px;
-        font-weight: normal;
-
-        a {
-            color: desaturate(lighten($header_color, 70%), 50%);
-            &:hover {
-                text-decoration: none;
+            &:first-child {
+                margin-left: 0;
             }
         }
     }
 
     .header_search {
-        display: inline-block;
-        margin-left: 15px;
-        vertical-align: middle;
-        margin-top: 10px;
+        flex: 1;
+        max-width: 400px;
 
         input[type=text] {
             border: 0;
-            width: 200px;
             font-size: 14px;
             padding: 8px 10px;
             border-radius: 4px;
             background: $back_color;
             color: #666;
+            width: 100%;
+            box-sizing: border-box;
 
             &:focus {
                 outline: none;
@@ -144,46 +140,53 @@ hr {
     }
 
     .user_panel {
-        float: right;
         font-size: $small_font_size;
-        margin-top: 18px;
-        line-height: normal;
+        flex: 1;
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        align-content: center;
+
+        > * {
+            margin-left: 12px;
+            &:first-child {
+                margin-left: 0;
+            }
+        }
 
         .unread_notifications {
             background: white;
-            display: inline-block;
-            vertical-align: 0px;
             height: 22px;
             line-height: 22px;
             color: $link_color;
             padding: 0 8px;
 
-            margin-right: 10px;
             border-radius: 18px;
+            &:hover {
+                color: $link_color;
+            }
+        }
+
+        a {
+            color: lighten($link_color, 30%);
+            text-decoration: none;
+            font-weight: bold;
+
+            &:hover {
+                color: lighten($link_color, 50%);
+            }
         }
     }
 
     .text_logo {
         width: 150px;
-        display: inline-block;
         vertical-align: top;
-        margin-top: 13px;
     }
 
     .icon_logo {
-        display: inline-block;
-        vertical-align: top;
         width: 45px;
         height: 45px;
-        margin-top: 4px;
-    }
-
-    a {
-        color: lighten($link_color, 30%);
-        text-decoration: none;
-        &:hover {
-            text-decoration: underline;
-        }
+        margin-top: 2px;
     }
 }
 
@@ -194,14 +197,10 @@ hr {
 .content {
     background: $back_color;
     border-bottom: 1px solid $light_border_color;
-
-    h2, h3, h4 {
-        font-weight: normal;
-    }
 }
 
 .main_column {
-    width: $site_width;
+    @include site_width;
     margin: 0 auto;
     padding-bottom: 40px;
 }

@@ -47,7 +47,6 @@ class Layout extends Widget
         div class: "content", ->
           div class: "header", ->
             div class: "header_inner", ->
-              @user_panel!
               a href: @url_for"index", ->
                 if @current_user
                   img class: "icon_logo", alt: "LuaRocks", src: "/static/header_luarocks_icon.svg"
@@ -56,6 +55,8 @@ class Layout extends Widget
 
               form class: "header_search", action: @url_for("search"), method: "GET", ->
                 input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q
+
+              @user_panel!
 
           @content_for "inner"
 
@@ -93,27 +94,27 @@ class Layout extends Widget
 
   user_panel: =>
     div class: "user_panel", ->
-      if @current_user and @current_user\get_unseen_notifications_count! > 0
+      if @current_user and true -- @current_user\get_unseen_notifications_count! > 0
         a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
           @current_user\get_unseen_notifications_count!
 
       a href: "https://github.com/luarocks/luarocks/wiki/Download", "Install"
-      raw " &middot; "
+      text " "
       a href: "https://github.com/luarocks/luarocks/wiki/Documentation", "Docs"
-      raw " &middot; "
+      text " "
 
       if @current_user
         a href: @url_for("user_profile", user: @current_user), class: "login", -> b @current_user\name_for_display!
-        raw " &middot; "
+        text " "
         a href: @url_for"upload_rockspec", "Upload"
-        raw " &middot; "
+        text " "
         a href: @url_for"user_settings.profile", "Settings"
-        raw " &middot; "
+        text " "
         a href: @url_for"user_logout", "Log Out"
       else
         login_params = { return_to: @params.return_to, intent: @params.intent }
         a href: @url_for("user_login", nil, login_params), "Log In"
-        raw " &middot; "
+        text " "
         a href: @url_for("user_register", nil, login_params), "Register"
 
 

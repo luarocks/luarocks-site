@@ -1,11 +1,41 @@
 .home_columns {
-    font-size: 0;
+    display: flex;
+    > * {
+        width: 50%;
+        margin-right: 5px;
+        margin-left: 5px;
 
-    .column {
-        @include grid_cell(4);
+        &:last-child {
+            margin-right: 0;
+        }
 
-        h2 {
-            margin-top: 0;
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    .split_header {
+        margin: 0 0 20px 0;
+    }
+}
+
+
+
+.split_header {
+    display: flex;
+    align-items: center;
+    margin: 40px 0 20px 0;
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    > * {
+        margin-right: 10px;
+
+        &:last-child {
+            margin-right: 0;
         }
     }
 }
