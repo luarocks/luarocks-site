@@ -22,7 +22,7 @@ class Base extends Widget
     @_css_classes
 
   content: =>
-    div class: @@css_classes!, ->
+    element @enclosing_element_type or "div", class: @@css_classes!, ->
       @inner_content!
 
   widget_selector:  =>

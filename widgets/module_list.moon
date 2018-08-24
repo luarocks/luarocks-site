@@ -3,11 +3,13 @@ class ModuleList extends require "widgets.base"
     "modules"
   }
 
+  enclosing_element_type: "ul"
+
   inner_content: =>
     for mod in *@modules
       user = mod\get_user!
 
-      div class: "module_row", ->
+      li class: "module_row", ->
         div class: "main", ->
           a {
             class: "title",
@@ -22,7 +24,7 @@ class ModuleList extends require "widgets.base"
           span class: "downloads", ->
             raw " &mdash; "
             text " downloads: "
-            span class: "value", @format_number mod.downloads
+            span title: @format_number(mod.downloads), class: "value", @format_big_number mod.downloads
 
         div class: "summary", ->
           text mod.summary
