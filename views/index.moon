@@ -14,8 +14,7 @@ class Index extends require "widgets.page"
         @inner_content!
 
   inner_content: =>
-
-    div class: "home_columns", ->
+    section class: "home_columns", ->
       div class: "column", ->
         div class: "split_header", ->
           h2 "Recent Modules"
@@ -41,23 +40,26 @@ class Index extends require "widgets.page"
         @render_modules @popular_modules
 
     if next @labels
-      h2 ->
-        text "View Modules by Labels"
-      for i,l in ipairs @labels
-        text ", " unless i == 1
-        a href: @url_for("label",label: l.name), l.name
+      section ->
+        h2 ->
+          text "View Modules by Labels"
+        for i,l in ipairs @labels
+          text ", " unless i == 1
+          a href: @url_for("label",label: l.name), l.name
 
-    div class: "split_header", ->
-      h2 "Daily Module Downloads"
-      text " "
-      span class: "header_sub", ->
-        text "("
-        a href: @url_for("stats"), "More graphs & stats"
-        text ")"
+    section ->
+      div class: "split_header", ->
+        h2 "Daily Module Downloads"
+        text " "
+        span class: "header_sub", ->
+          text "("
+          a href: @url_for("stats"), "More graphs & stats"
+          text ")"
 
-    div id: "downloads_graph", class: "graph_container"
+      div id: "downloads_graph", class: "graph_container"
 
-    @raw_ssi "home.html"
+    section ->
+      @raw_ssi "home.html"
 
     @content_for "js_init", ->
       script type: "text/javascript", src: "/static/lib.js"

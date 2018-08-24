@@ -15,12 +15,12 @@ class ManifestRecentVersions extends require "widgets.page"
 
     @render_pager @pager
 
-    div class: "version_list", ->
+    li class: "version_list", ->
       for version in *@versions
         mod = version\get_module!
         user = mod\get_user!
 
-        div class: "version_row", ->
+        ul class: "version_row", ->
           a href: @url_for(mod), mod\name_for_display!
           text " "
           span class: "version_name", version.version_name

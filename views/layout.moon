@@ -45,19 +45,7 @@ class Layout extends Widget
 
       body ->
         div class: "content", ->
-          div class: "header", ->
-            div class: "header_inner", ->
-              a href: @url_for"index", ->
-                if @current_user
-                  img class: "icon_logo", alt: "LuaRocks", src: "/static/header_luarocks_icon.svg"
-                else
-                  img class: "text_logo", alt: "LuaRocks", src: "/static/header_luarocks_name.svg"
-
-              form class: "header_search", action: @url_for("search"), method: "GET", ->
-                input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q
-
-              @user_panel!
-
+          @render_header!
           @content_for "inner"
 
         div class: "footer", ->
@@ -92,9 +80,9 @@ class Layout extends Widget
 
       @content_for "js_init"
 
-  user_panel: =>
-    div class: "user_panel", ->
-      if @current_user and true -- @current_user\get_unseen_notifications_count! > 0
+  render_user_panel: =>
+    nav class: "user_panel", ->
+      if @current_user and @current_user\get_unseen_notifications_count! > 0
         a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
           @current_user\get_unseen_notifications_count!
 
@@ -117,4 +105,18 @@ class Layout extends Widget
         text " "
         a href: @url_for("user_register", nil, login_params), "Register"
 
+
+  render_header: =>
+    header class: "header", ->
+      div class: "header_inner", ->
+        a href: @url_for"index", ->
+          if @current_user
+            img class: "icon_logo", alt: "LuaRocks", src: "/static/header_luarocks_icon.svg"
+          else
+            img class: "text_logo", alt: "LuaRocks", src: "/static/header_luarocks_name.svg"
+
+        form class: "header_search", action: @url_for("search"), method: "GET", ->
+          input type: "text", name: "q", placeholder: "Search modules or uploaders...", value: @params.q
+
+        @render_user_panel!
 
