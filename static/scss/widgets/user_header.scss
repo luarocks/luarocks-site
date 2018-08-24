@@ -2,13 +2,11 @@
 img.avatar {
     width: 60px;
     height: 60px;
-    vertical-align: top;
-    margin-right: 15px;
 }
 
 .user_flag {
-    vertical-align: 10px;
-    margin-left: 15px;
+    margin-left: 0;
+    margin-top: 10px;
 }
 
 h1 {
@@ -21,9 +19,7 @@ h1 {
 }
 
 .social_links {
-    float: right;
     font-size: 24px;
-    margin-top: 14px;
 
     a {
         text-decoration: none;

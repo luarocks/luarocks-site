@@ -4,6 +4,41 @@
     border-bottom: 1px solid $light_border_color;
     padding-top: 15px;
 
+
+> * {
+    &:not(.metadata_columns) {
+        @include site_width;
+    }
+
+    margin: 10px auto;
+
+    &:first-child {
+        margin-top: 0;
+    }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.page_header_inner {
+    display: flex;
+    align-items: center;
+    > * {
+        margin-right: 10px;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    .right_tools {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+}
+
 h1, p {
     margin: 0;
 }
@@ -12,7 +47,6 @@ h1 {
     margin-bottom: 5px;
     font-size: 42px;
     font-weight: normal;
-    margin-right: 167px;
 
     .sub {
         color: $sub_color;
@@ -20,11 +54,6 @@ h1 {
 }
 
 .follow_area {
-    float: right;
-    margin-top: 15px;
-    margin-right: 20px;
-    white-space: nowrap;
-
     button {
         &:not(:last-child) {
             border-radius: 3px 0 0 3px;
@@ -50,15 +79,15 @@ h1 {
     margin: 15px 0 0 0;
 }
 
-.page_header_inner {
-    width: $site_width;
-    margin: 0 auto;
-}
-
 .metadata_columns {
     margin-top: 25px;
     border-top: 1px solid $light_border_color;
     white-space: nowrap;
+
+    .metadata_columns_inner {
+        @include site_width;
+        margin: 0 auto;
+    }
 
     .column {
         @include border_box;

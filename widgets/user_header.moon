@@ -10,32 +10,33 @@ class UserHeader extends require "widgets.page_header"
 
   inner_content: =>
     div class: "page_header_inner", ->
-      if not @current_user or @current_user.id != @user.id
-        @render_follow_area!
-
-      div class: "social_links", ->
-        data = @user\get_data!
-        if github = data\github_handle!
-          a href: "https://github.com/#{github}", title: github, ->
-            span class: "icon-github"
-
-        if twitter = data\twitter_handle!
-          a href: "https://twitter.com/#{twitter}", title: twitter, ->
-            span class: "icon-twitter"
+      a href: @url_for(@user), ->
+        img class: "avatar", src: @user\gravatar(60)
 
       h1 ->
-        a href: @url_for(@user), ->
-          img class: "avatar", src: @user\gravatar(60)
-
         span class: "username", @user\name_for_display!
 
-        if @user\is_admin!
-          div class: "user_flag", "Admin"
+      if @user\is_admin!
+        div class: "user_flag", "Admin"
+
+      div class: "right_tools", ->
+        if not @current_user or @current_user.id != @user.id
+          @render_follow_area!
+
+        div class: "social_links", ->
+          data = @user\get_data!
+          if github = data\github_handle!
+            a href: "https://github.com/#{github}", title: github, ->
+              span class: "icon-github"
+
+          if twitter = data\twitter_handle!
+            a href: "https://twitter.com/#{twitter}", title: twitter, ->
+              span class: "icon-twitter"
 
     div class: "metadata_columns", ->
       module_count = @pager\total_items!
 
-      div class: "page_header_inner", ->
+      div class: "metadata_columns_inner", ->
         div class: "column", ->
           h3 "Modules"
           text @format_number module_count
