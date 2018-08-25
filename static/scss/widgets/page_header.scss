@@ -21,13 +21,22 @@
     }
 }
 
+.admin_tools {
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+
 .page_header_inner {
     display: flex;
     align-items: center;
+
     > * {
         margin-right: 10px;
         &:last-child {
             margin-right: 0;
+            &:first-child {
+                flex: 1
+            }
         }
     }
 
@@ -54,6 +63,15 @@ h1 {
 }
 
 .follow_area {
+    display: flex;
+
+    > * {
+        margin-right: 10px;
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
     button {
         &:not(:last-child) {
             border-radius: 3px 0 0 3px;

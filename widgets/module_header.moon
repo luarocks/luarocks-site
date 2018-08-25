@@ -10,8 +10,6 @@ class ModuleHeader extends require "widgets.page_header"
 
   inner_content: =>
     div class: "page_header_inner", ->
-      @follow_area!
-
       h1 ->
         text @module\name_for_display!
         if @version
@@ -24,6 +22,11 @@ class ModuleHeader extends require "widgets.page_header"
               class: "archive_flag"
             }, "Archived"
 
+
+      div class: "right_tools", ->
+        @follow_area!
+
+    div class: "page_header_inner", ->
       if summary = @module.summary
         p class: "module_summary", summary
 
@@ -31,10 +34,10 @@ class ModuleHeader extends require "widgets.page_header"
         div class: "nav_buttons", ->
           a class: "round_button", href: @url_for(@module), "← Return to module"
 
-      @admin_panel!
+    @admin_panel!
 
     div class: "metadata_columns", ->
-      div class: "page_header_inner", ->
+      div class: "metadata_columns_inner", ->
         div class: "column", ->
           h3 "Uploader"
           user_url = @url_for "user_profile", user: @user.slug
@@ -61,55 +64,61 @@ class ModuleHeader extends require "widgets.page_header"
             h3 "Downloads"
             text @format_number @module.downloads
 
+
+  render_star_form: =>
+    starring_url = if @module_starring
+      "unfollow_module"
+    else
+      "follow_module"
+
+    form {
+      action: @url_for(starring_url, module_id: @module.id, type: "bookmark")
+      method: "post"
+    }, ->
+      @csrf_input!
+      if @current_user
+        if @module_starring
+          button "Unstar"
+        else
+          button "Star"
+      else
+        a {
+          class:"button"
+          href: login_and_return_url(@, nil, "follow_module")
+          "Star"
+        }
+
+      if @module.stars_count > 0
+        span class: "followers_count", @format_number @module.stars_count
+
+  render_follow_form: =>
+    follow_url = if @module_following
+      "unfollow_module"
+    else
+      "follow_module"
+
+    form {
+      action: @url_for(follow_url, module_id: @module.id, type: "subscription")
+      method: "post"
+    }, ->
+      @csrf_input!
+      if @current_user
+        if @module_following
+          button "Unfollow"
+        else
+          button "Follow"
+      else
+        a {
+          class:"button"
+          href: login_and_return_url(@, nil, "follow_module")
+          "Follow"
+        }
+
+      if @module.followers_count > 0
+        span class: "followers_count", @format_number @module.followers_count
+
   follow_area: =>
     div class: "follow_area", ->
-      starring_url = if @module_starring
-        "unfollow_module"
-      else
-        "follow_module"
+      @render_follow_form!
+      @render_star_form!
 
-      form {
-        action: @url_for(starring_url, module_id: @module.id, type: "bookmark")
-        method: "post"
-      }, ->
-        @csrf_input!
-        if @current_user
-          if @module_starring
-            button "Unstar"
-          else
-            button "Star"
-        else
-          a {
-            class:"button"
-            href: login_and_return_url(@, nil, "follow_module")
-            "Star"
-          }
-
-        if @module.stars_count > 0
-          span class: "followers_count", @format_number @module.stars_count
-      
-    div class: "follow_area", ->
-      follow_url = if @module_following
-        "unfollow_module"
-      else
-        "follow_module"
-
-      form {
-        action: @url_for(follow_url, module_id: @module.id, type: "subscription")
-        method: "post"
-      }, ->
-        @csrf_input!
-        if @current_user
-          if @module_following
-            button "Unfollow"
-          else
-            button "Follow"
-        else
-          a {
-            class:"button"
-            href: login_and_return_url(@, nil, "follow_module")
-            "Follow"
-          }
-
-        if @module.followers_count > 0
-          span class: "followers_count", @format_number @module.followers_count
