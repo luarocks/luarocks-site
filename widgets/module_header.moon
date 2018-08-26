@@ -30,7 +30,8 @@ class ModuleHeader extends require "widgets.page_header"
       if summary = @module.summary
         p class: "module_summary", summary
 
-      if @version
+    if @version
+      div class: "page_header_inner", ->
         div class: "nav_buttons", ->
           a class: "round_button", href: @url_for(@module), "← Return to module"
 

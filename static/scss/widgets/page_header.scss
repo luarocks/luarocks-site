@@ -10,7 +10,7 @@
         @include site_width;
     }
 
-    margin: 10px auto;
+    margin: 15px auto;
 
     &:first-child {
         margin-top: 0;
@@ -53,12 +53,12 @@ h1, p {
 }
 
 h1 {
-    margin-bottom: 5px;
-    font-size: 42px;
-    font-weight: normal;
+    font-size: 32px;
 
     .sub {
         color: $sub_color;
+        font-size: 18px;
+        font-weight: normal;
     }
 }
 
@@ -91,10 +91,6 @@ h1 {
         background: mix($back_color, white, 50%);
         border-radius: 0 3px 3px 0;
     }
-}
-
-.nav_buttons {
-    margin: 15px 0 0 0;
 }
 
 .metadata_columns {
