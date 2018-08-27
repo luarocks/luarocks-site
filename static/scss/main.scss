@@ -499,7 +499,7 @@ img.avatar {
         @include transition(all 0.2s ease);
         color: $body_color;
         text-decoration: none;
-        border-bottom: 1px solid rgba($link_color, 0);
+        border-bottom: 4px solid rgba($link_color, 0);
         margin-right: 40px;
 
         &.has_sub {
@@ -508,7 +508,7 @@ img.avatar {
 
         &.active, &:hover {
             color: $link_color;
-            border-bottom: 1px solid rgba($link_color, 1);
+            border-bottom: 4px solid rgba($link_color, 1);
         }
     }
 }

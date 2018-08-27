@@ -1,9 +1,19 @@
 ManifestHeader = require "widgets.manifest_header"
 
 class Manifest extends require "widgets.page"
-  inner_content: =>
-    widget ManifestHeader page_name: @development_only and "development_only" or "all", show_count: true
+  content: =>
+    div class: @@css_classes!, ->
+      @header!
+      div class: "main_column", ->
+        @inner_content!
 
+  header: =>
+    widget ManifestHeader {
+      page_name: @development_only and "development_only" or "all"
+      show_count: true
+    }
+
+  inner_content: =>
     if @development_only
       p ->
         text "This page lists modules in the manifest that contain

@@ -1,14 +1,15 @@
 
-class ManifestHeader extends require "widgets.base"
+class ManifestHeader extends require "widgets.page_header"
   page_name: "all"
 
   inner_content: =>
-    h2 ->
-      text @manifest\name_for_display!
-      text " Manifest"
-      if @show_count
-        text " "
-        span class: "header_count", "(#{@pager\total_items!})"
+    div class: "page_header_inner", ->
+      h1 ->
+        text @manifest\name_for_display!
+        text " Manifest"
+        if @show_count
+          text " "
+          span class: "sub", "(#{@pager\total_items!})"
 
     div class: "page_tabs", ->
       @render_tab "all", "All modules", @url_for @manifest
