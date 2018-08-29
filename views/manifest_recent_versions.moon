@@ -7,9 +7,10 @@ class ManifestRecentVersions extends require "widgets.page"
     "versions"
   }
 
-  inner_content: =>
+  header_content: =>
     widget ManifestHeader page_name: "recent_versions"
 
+  inner_content: =>
     unless next @versions
       p class: "empty_message", "There don't appear to be any rockspecs uploaded"
 

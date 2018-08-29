@@ -1,9 +1,10 @@
 ManifestHeader = require "widgets.manifest_header"
 
 class ManifestMaintainers extends require "widgets.page"
-  inner_content: =>
+  header_content: =>
     widget ManifestHeader page_name: "maintainers"
 
+  inner_content: =>
     unless next @admins
       p class: "empty_message", "There don't appear to be any maintainers"
 

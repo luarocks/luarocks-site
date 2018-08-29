@@ -8,7 +8,10 @@ class Page extends require "widgets.base"
     Page.__parent.css_classes @
 
   content: =>
-    div class: "main_column", ->
-      div class: @@css_classes!, ->
+    main class: @@css_classes!, ->
+      if @header_content
+        @header_content!
+
+      div class: "main_column", ->
         @inner_content!
 
