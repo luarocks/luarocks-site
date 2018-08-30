@@ -2,13 +2,7 @@
 Header = require "widgets.user_header"
 
 class UserProfile extends require "widgets.page"
-  content: =>
-    div class: @@css_classes!, ->
-      @header!
-      div class: "main_column", ->
-        @inner_content!
-
-  header: =>
+  header_content: =>
     widget Header!
 
   inner_content: =>

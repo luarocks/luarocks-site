@@ -5,24 +5,17 @@ Header = require "widgets.module_header"
 import basic_format from require "helpers.html"
 
 class Module extends require "widgets.page"
-  content: =>
-    div class: @@css_classes!, ->
-      @header!
-
-      if root = @module\in_root_manifest!
-        div class: "installer", ->
-          if @dev_only!
-            @term_snippet "luarocks install --server=#{root\source_url @, true} #{@module.name}"
-          else
-            @term_snippet "luarocks install #{@module.name}"
-
-      div class: "main_column", ->
-        @inner_content!
-
-  header: =>
+  header_content: =>
     widget Header {
       admin_panel: @\admin_panel
     }
+
+    if root = @module\in_root_manifest!
+      div class: "installer", ->
+        if @dev_only!
+          @term_snippet "luarocks install --server=#{root\source_url @, true} #{@module.name}"
+        else
+          @term_snippet "luarocks install #{@module.name}"
 
   dev_only: =>
     return false unless next @versions
