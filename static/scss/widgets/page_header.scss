@@ -86,6 +86,16 @@ h1 {
         }
     }
 
+    // for logged in and logged out
+    .button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 20px;
+        .svgicon {
+            margin-right: 6px;
+        }
+    }
+
     .followers_count {
         @include border_box;
         border: 1px solid $border_color;

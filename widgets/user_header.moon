@@ -69,17 +69,21 @@ class UserHeader extends require "widgets.page_header"
         method: "post"
             }, ->
         @csrf_input!
+
+        inner = if @user_following
+          -> text "Unfollow"
+        else
+          ->
+            @icon "user_plus", 18
+            text " Follow"
+
         if @current_user
-          if @user_following
-            button "Unfollow"
-          else
-            button "Follow"
+          button inner
         else
           a {
             class:"button"
             href: login_and_return_url(@, nil, "follow_user")
-            "Follow"
-          }
+          }, inner
 
         if @user.followers_count > 0
           span class: "followers_count", @format_number @user.followers_count

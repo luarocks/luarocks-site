@@ -77,17 +77,21 @@ class ModuleHeader extends require "widgets.page_header"
       method: "post"
     }, ->
       @csrf_input!
+
+      inside = if @module_starring
+        -> text "Unstar"
+      else
+        ->
+          @icon "star", 18
+          text " Star"
+
       if @current_user
-        if @module_starring
-          button "Unstar"
-        else
-          button "Star"
+        button inside
       else
         a {
           class:"button"
           href: login_and_return_url(@, nil, "follow_module")
-          "Star"
-        }
+        }, inside
 
       if @module.stars_count > 0
         span class: "followers_count", @format_number @module.stars_count
@@ -103,17 +107,25 @@ class ModuleHeader extends require "widgets.page_header"
       method: "post"
     }, ->
       @csrf_input!
+
+
+      inside = if @module_following
+        -> text "Unfollow"
+      else
+        ->
+          @icon "user_plus", 18
+          text " Follow"
+
       if @current_user
         if @module_following
-          button "Unfollow"
+          button inside
         else
-          button "Follow"
+          button inside
       else
         a {
           class:"button"
           href: login_and_return_url(@, nil, "follow_module")
-          "Follow"
-        }
+        }, inside
 
       if @module.followers_count > 0
         span class: "followers_count", @format_number @module.followers_count
