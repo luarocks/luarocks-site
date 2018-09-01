@@ -1,6 +1,17 @@
 
 ## Changes
 
+**2018/8/31**
+
+* Restyle headers on all pages, make site a little wider
+
+**2017/8/18**
+
+* Contributions from [Jeferson Siqueira](https://github.com/aajjbb) for Google Summer of Code 2017
+  * Add support for staring modules
+  * Add ability to follow users
+  * Add ability to log in with GitHub
+
 **2016/10/28**
 
 * Api keys can have comment added to them
