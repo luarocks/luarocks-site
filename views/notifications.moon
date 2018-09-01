@@ -2,15 +2,21 @@ models = require "models"
 
 import time_ago_in_words from require "lapis.util"
 
+PageHeader = require "widgets.page_header"
+
 class Notifications extends require "widgets.page"
   @needs: {
     "seen_notifications"
     "unseen_notifications"
   }
 
-  inner_content: =>
-    h2 "Notifications"
+  header_content: =>
+    widget PageHeader {
+      inner_content: ->
+        h1 "Notifications"
+    }
 
+  inner_content: =>
     if next @unseen_notifications
       div class: "unseen_notifications", ->
         @render_notifications @unseen_notifications, true
