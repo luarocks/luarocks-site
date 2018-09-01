@@ -1,6 +1,8 @@
 
 ## Changes
 
+For a more detailed list of changes see: <https://github.com/luarocks/luarocks-site/commits/master>
+
 **2018/8/31**
 
 * Restyle headers on all pages, make site a little wider

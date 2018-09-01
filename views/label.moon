@@ -1,10 +1,16 @@
-class Label extends require "widgets.page"
-  inner_content: =>
-    h2 ->
-      text @title
-      text " "
-      span class: "header_count", "(#{@pager and @pager\total_items! or 0})"
+PageHeader = require "widgets.page_header"
 
+class Label extends require "widgets.page"
+  header_content: =>
+    widget PageHeader {
+      inner_content: ->
+        h1 ->
+          text @title
+          text " "
+          span class: "sub", "(#{@pager and @pager\total_items! or 0})"
+    }
+
+  inner_content: =>
     if @show_non_root
       p ->
         text "Showing all modules. "
