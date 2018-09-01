@@ -67,7 +67,7 @@ and the module is ready for use.
 This site is written in [MoonScript][3] using the [Lapis framework][4]. You can find the source on [GitHub][2].
 
   [1]: https://luarocks.org/
-  [2]: https://github.com/leafo/moonrocks-site
+  [2]: https://github.com/luarocks/luarocks-site
   [3]: http://moonscript.org
   [4]: http://leafo.net/lapis/
 
