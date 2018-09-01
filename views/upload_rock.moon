@@ -1,15 +1,20 @@
+PageHeader = require "widgets.page_header"
 
 class UploadRock extends require "widgets.page"
   @needs: {
     "version"
   }
 
-  inner_content: =>
-    h2 ->
-      text "Upload Rock For "
-      a href: @url_for(@version),
-        "#{@module\name_for_display!} #{@version.version_name}"
+  header_content: =>
+    widget PageHeader {
+      inner_content: ->
+        h1 ->
+          text "Upload Rock For "
+          a href: @url_for(@version),
+            "#{@module\name_for_display!} #{@version.version_name}"
+    }
 
+  inner_content: =>
     @render_errors!
 
     if @version.development

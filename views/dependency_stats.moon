@@ -6,9 +6,10 @@ class DependencyStats extends require "widgets.page"
     "top_depended"
   }
 
-  inner_content: =>
+  header_content: =>
     widget Header page_name: "dependencies"
 
+  inner_content: =>
     h3 "Top depended upon modules"
 
     element "table", class: "table", ->

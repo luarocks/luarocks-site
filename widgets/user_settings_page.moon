@@ -1,15 +1,21 @@
+PageHeader = require "widgets.page_header"
 
 class UserSettings extends require "widgets.page"
+  header_content: =>
+    widget PageHeader {
+      inner_content: ->
+        div class: "page_header_inner" , ->
+          h1 "Account settings"
+
+        div class: "page_tabs", ->
+          @render_nav_tab "user_settings.profile", "Profile"
+          @render_nav_tab "user_settings.reset_password", "Reset password"
+          @render_nav_tab "user_settings.api_keys", "API keys"
+          @render_nav_tab "user_settings.link_github", "GitHub link"
+          @render_nav_tab "user_settings.import_toolbox", "Lua Toolbox"
+    }
+
   inner_content: =>
-    h2 "Account settings"
-
-    div class: "page_tabs", ->
-      @render_nav_tab "user_settings.profile", "Profile"
-      @render_nav_tab "user_settings.reset_password", "Reset password"
-      @render_nav_tab "user_settings.api_keys", "API keys"
-      @render_nav_tab "user_settings.link_github", "GitHub link"
-      @render_nav_tab "user_settings.import_toolbox", "Lua Toolbox"
-
     @render_errors!
     @settings_content!
 

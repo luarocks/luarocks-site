@@ -7,6 +7,9 @@ class PopularThisWeek extends require "widgets.page"
     "top_new_versions"
   }
 
+  header_content: =>
+    widget Header page_name: "this_week"
+
   render_tuples: (tuples) =>
     element "table", class: "table", ->
       thead ->
@@ -36,7 +39,6 @@ class PopularThisWeek extends require "widgets.page"
             a class: "author sub", href: @url_for(user), user\name_for_display!
 
   inner_content: =>
-    widget Header page_name: "this_week"
 
     h3 "Top Lua modules this week"
     p "Top downloaded versions in the past #{@days} days."

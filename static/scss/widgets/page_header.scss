@@ -34,9 +34,19 @@
     box-sizing: border-box;
 }
 
+.page_header_inner, > h1 {
+    &:last-child {
+        margin-bottom: 20px;
+    }
+}
+
 .page_header_inner {
     display: flex;
     align-items: center;
+
+    h1, p {
+        margin: 0;
+    }
 
     > * {
         margin-right: 10px;
@@ -54,10 +64,6 @@
         align-items: center;
         justify-content: flex-end;
     }
-}
-
-h1, p {
-    margin: 0;
 }
 
 h1 {
@@ -87,7 +93,7 @@ h1 {
     }
 
     // for logged in and logged out
-    .button {
+    button, .button {
         display: inline-flex;
         align-items: center;
         padding: 0 20px;

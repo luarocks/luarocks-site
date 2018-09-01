@@ -8,6 +8,9 @@ class Stats extends require "widgets.page"
     "cumulative_modules"
   }
 
+  header_content: =>
+    widget Header page_name: "this_week"
+
   js_init: =>
     data = {
       graphs: {
@@ -20,8 +23,6 @@ class Stats extends require "widgets.page"
     "M.Stats(#{@widget_selector!}, #{to_json data});"
 
   inner_content: =>
-    widget Header page_name: "global"
-
     h3 "Cumulative modules"
     div id: "cumulative_modules", class: "graph_container"
 

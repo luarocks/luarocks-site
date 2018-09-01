@@ -1,8 +1,8 @@
-class ManifestHeader extends require "widgets.base"
+class ManifestHeader extends require "widgets.page_header"
   page_name: "global"
 
   inner_content: =>
-    h2 "LuaRocks.org stats"
+    h1 "LuaRocks.org stats"
 
     div class: "page_tabs", ->
       @render_tab "global", "Global stats", @url_for "stats"

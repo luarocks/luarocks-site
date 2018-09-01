@@ -1,6 +1,13 @@
+PageHeader = require "widgets.page_header"
+
 class UploadRockspec extends require "widgets.page"
+  header_content: =>
+    widget PageHeader {
+      inner_content: ->
+        h1 "Upload Rockspec"
+    }
+
   inner_content: =>
-    h2 "Upload Rockspec"
     @render_errors!
 
     p "Upload a rockspec to create a new module. If the module already exists,
