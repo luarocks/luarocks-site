@@ -22,8 +22,6 @@ import get_all_pages from require "helpers.models"
 import capture_errors_404, assert_page from require "helpers.app"
 import zipped_file from require "helpers.zip"
 
-import cached from require "lapis.cache"
-
 config = require("lapis.config").get!
 
 zipable = (fn) ->
@@ -39,7 +37,6 @@ zipable = (fn) ->
       fname ..= "-#{@version}"
 
     @options.content_type = "application/zip"
-    -- set like this so the outer cached call can pick it up
     @res.content = zipped_file fname, table.concat @buffer
     @buffer = {}
     nil
@@ -67,8 +64,14 @@ serve_manifest = capture_errors_404 =>
     @res\add_header "Last-Modified", date(thing.updated_at)\fmt "${http}"
 
     -- on HEAD just return last modified
-    if @req.cmd_mth == "HEAD"
+    if @req.method == "HEAD"
       return { layout: false }
+
+  if @req.method != "GET"
+    return {
+      layout: false
+      status: 405
+    }, "Incorrect method"
 
   -- get the modules
   pager = thing\find_modules {
@@ -85,19 +88,6 @@ serve_manifest = capture_errors_404 =>
   else
     serve_lua_table @, manifest
 
-cached_manifest = (fn) ->
-  import redis_cache from require "helpers.redis_cache"
-  cached {
-    dict: redis_cache "manifest"
-    cache_key: (path) -> path
-    exptime: 60 * 10
-    when: =>
-      return false unless @req.cmd_mth == "GET"
-      config._name == "production"
-
-    fn
-  }
-
 is_dev = (fn) ->
   =>
     @development = true
@@ -109,8 +99,8 @@ is_stable = (fn) ->
     fn @
 
 class MoonRocksManifest extends lapis.Application
-  [root_manifest: "/manifest(-:a.:b)(.:format)"]: cached_manifest zipable is_stable serve_manifest
-  [root_manifest_dev: "/dev/manifest(-:a.:b)(.:format)"]: cached_manifest zipable is_dev serve_manifest
+  [root_manifest: "/manifest(-:a.:b)(.:format)"]: zipable is_stable serve_manifest
+  [root_manifest_dev: "/dev/manifest(-:a.:b)(.:format)"]: zipable is_dev serve_manifest
   [user_manifest: "/manifests/:user/manifest(-:a.:b)(.:format)"]: zipable serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
