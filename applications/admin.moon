@@ -24,24 +24,28 @@ class MoonRocksAdmin extends lapis.Application
 
   [cache: "/cache"]: capture_errors_json respond_to {
     GET: =>
-      import get_redis from require "helpers.redis_cache"
-      redis = assert_error get_redis!, "failed to get redis"
-      @cache_keys = redis\keys "manifest:*"
+      import get_keys from require "helpers.pagecache"
+      @cache_keys = get_keys!
       render: true
 
     POST: =>
       assert_csrf @
       assert_valid @params, {
-        {"action", one_of: {"purge"}}
+        {"action", one_of: {"purge_all", "purge"}}
       }
 
-      switch @params.action
-        when "purge"
-          import get_redis from require "helpers.redis_cache"
-          redis = assert_error get_redis!, "failed to get redis"
+      import get_keys, purge_keys from require "helpers.pagecache"
 
-          for key in *redis\keys "manifest:*"
-            redis\del key
+      switch @params.action
+        when "purge_all"
+          purge_keys [key for {key} in *get_keys!]
+
+        when "purge"
+          assert_valid @params, {
+            {"key", exists: true, type: "string"}
+          }
+
+          purge_keys { @params.key }
 
       redirect_to: @url_for @route_name
   }

@@ -1,4 +1,13 @@
 
+get_keys = ->
+  dict = ngx.shared.pagecache_versions
+  return nil, "no dictionary" unless dict
+
+  keys = dict\get_keys!
+
+  return for key in *keys
+    {key, dict\get key}
+
 version_for_path = (path) ->
   dict = ngx.shared.pagecache_versions
   return nil, "no dictionary" unless dict
@@ -27,4 +36,4 @@ purge_keys = (keys) ->
   true
 
 
-{:purge_keys, :version_for_path}
+{:purge_keys, :version_for_path, :get_keys}
