@@ -31,12 +31,17 @@ class MoonRocksAdmin extends lapis.Application
     POST: =>
       assert_csrf @
       assert_valid @params, {
-        {"action", one_of: {"purge_all", "purge"}}
+        {"action", one_of: {"purge_all", "purge_root", "purge"}}
       }
 
       import get_keys, purge_keys from require "helpers.pagecache"
 
       switch @params.action
+        when "purge_root"
+          import Manifests from require "models"
+          removed = Manifests\root!\purge!
+          return json: { :removed }
+
         when "purge_all"
           purge_keys [key for {key} in *get_keys!]
 

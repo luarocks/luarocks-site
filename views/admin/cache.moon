@@ -6,6 +6,8 @@ class AdminCache extends require "widgets.page"
     form method: "post", class: "form", ->
       @csrf_input!
       button class: "button", name: "action", value: "purge_all", "Purge all"
+      text " "
+      button class: "button", name: "action", value: "purge_root", "Purge root manifest"
 
     h3 "Keys"
     @column_table @cache_keys, {

@@ -140,10 +140,8 @@ class Manifests extends Model
   purge: =>
     @update_counts!
     if @is_root!
-      import get_redis from require "helpers.redis_cache"
-      if redis = get_redis!
-        for key in *redis\keys "manifest:*"
-          redis\del key
+      import purge_pattern from require "helpers.pagecache"
+      purge_pattern "^pc:/manifest"
 
     true
 
