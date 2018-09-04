@@ -1,0 +1,7 @@
+{
+  "PrivateKeyPath": "secret/d9c7dbb3c5d0fe8062baa3c1310924ef10544d8b-privatekey.pem",
+  "ClientEmail": "958230321503@developer.gserviceaccount.com",
+  "Bucket": "moonrocks",
+  "ExtractPrefix": "extracted"
+}
+

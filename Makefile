@@ -52,3 +52,7 @@ vendor_js:
 
 annotate_models:
 	lapis annotate $$(find models -type f | grep -v /shapes/ | grep moon$$)
+
+zipserver-dev::
+	zipserver -config configs/zipserver-dev.json
+
