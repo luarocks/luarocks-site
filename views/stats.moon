@@ -9,7 +9,7 @@ class Stats extends require "widgets.page"
   }
 
   header_content: =>
-    widget Header page_name: "this_week"
+    widget Header page_name: "global"
 
   js_init: =>
     data = {
