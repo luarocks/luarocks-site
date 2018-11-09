@@ -21,7 +21,7 @@ class UserLogin extends require "widgets.page"
         input type: "password", name: "password", id: "password_field"
 
       div class: "button_row", ->
-        input type: "submit"
+        input type: "submit", value: "Login"
         raw " &middot; "
         a href: @url_for"user_forgot_password", "Forgot Password"
 
