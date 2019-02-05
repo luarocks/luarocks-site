@@ -165,6 +165,9 @@ class MoonRocks extends lapis.Application
 
   [manifest: "/m/:manifest"]: capture_errors_404 =>
     load_manifest @, "name"
+    if user = @manifest\get_mirror_user!
+      return redirect_to: @url_for(user), status: 301
+
     @title = "#{@manifest.name} Manifest"
     paginated_modules @, @manifest
     render: true

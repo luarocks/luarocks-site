@@ -48,7 +48,7 @@ class Manifests extends Model
     root
 
   @relations: {
-    {"mirror_user_id", belongs_to: "Users"}
+    {"mirror_user", belongs_to: "Users"}
     {"admins", has_many: "ManifestAdmins"}
   }
 
