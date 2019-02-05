@@ -135,6 +135,15 @@ class Manifests extends Model
       versions_count: db.raw "(select count(*) from versions where versions.module_id in (select module_id from manifest_modules where manifest_id = manifests.id))"
     }
 
+  delete: =>
+    assert not @is_root!, "can't delete root manifest"
+    import ManifestModules, ManifestAdmins from require "models"
+
+    if super!
+      db.delete ManifestModules, manifest_id: @id
+      db.delete ManifestAdmins, manifest_id: @id
+      true
+
   -- purge any caches for this manifest
   -- updates the counts, and the updated_at field of manifest
   purge: =>
