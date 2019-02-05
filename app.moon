@@ -46,6 +46,7 @@ import
   from require "helpers.app"
 
 import concat, insert from table
+import preload from require "lapis.db.model"
 
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"
@@ -178,7 +179,13 @@ class MoonRocks extends lapis.Application
   [manifest_maintainers: "/m/:manifest/maintainers"]: capture_errors_404 =>
     load_manifest @, "name"
     @title = "#{@manifest.name} Manifest Maintainers"
-    @pager = @manifest\find_admins!
+
+    @pager = @manifest\get_admins_paginated {
+      per_page: 20
+      prepare_results: (mas) ->
+        preload mas, "user"
+        mas
+    }
     @admins = @pager\get_page!
     render: true
 

@@ -22,6 +22,8 @@ import get_all_pages from require "helpers.models"
 import capture_errors_404, assert_page from require "helpers.app"
 import zipped_file from require "helpers.zip"
 
+import preload from require "lapis.db.model"
+
 config = require("lapis.config").get!
 
 zipable = (fn) ->
@@ -114,17 +116,12 @@ class MoonRocksManifest extends lapis.Application
 
     @pager = Manifests\paginated [[
       order by id asc
-    ]], prepare_results: (manifests) ->
-      ManifestAdmins\include_in manifests, "manifest_id", flip: true, many: true
-      mas = {}
-
-      for m in *manifests
-        if admins = m.manifest_admins
-          for a in *admins
-            table.insert mas, a
-
-      Users\include_in mas, "user_id"
-      manifests
+    ]], {
+      per_page: 50
+      prepare_results: (manifests) ->
+        preload manifests, admins: "user"
+        manifests
+    }
 
     @manifests = @pager\get_page @page
     render: true
