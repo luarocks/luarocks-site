@@ -56,8 +56,8 @@ serve_manifest = capture_errors_404 =>
   @version = @params.version
 
   -- find what we are fetching modules from
-  thing = if @params.user
-    assert_error Users\find(slug: @params.user), "invalid user"
+  thing = if @params.manifest
+    assert_error Manifests\find_by_name @params.manifest
   else
     Manifests\root!
 
@@ -103,10 +103,11 @@ is_stable = (fn) ->
 class MoonRocksManifest extends lapis.Application
   [root_manifest: "/manifest(-:a.:b)(.:format)"]: zipable is_stable serve_manifest
   [root_manifest_dev: "/dev/manifest(-:a.:b)(.:format)"]: zipable is_dev serve_manifest
-  [user_manifest: "/manifests/:user/manifest(-:a.:b)(.:format)"]: zipable serve_manifest
+  [user_manifest: "/manifests/:manifest/manifest(-:a.:b)(.:format)"]: zipable serve_manifest
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
-  "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
+  "/manifests/:manifest": =>
+    redirect_to: @url_for("user_manifest", manifest: @params.manifest)
 
   [manifests: "/manifests"]: capture_errors_404 =>
     @title = "All manifests"

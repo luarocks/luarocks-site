@@ -47,6 +47,25 @@ class Manifests extends Model
 
     root
 
+  -- finds either user or manifest for name
+  @find_by_name: (name) =>
+    unless type(name) == "string"
+      return nil, "invalid name, expecting string"
+
+    if username = name\match "^@(.*)$"
+      import Users from require "models"
+      u = Users\find slug: username
+      unless u
+        return nil, "invalid username"
+      u
+    else
+      m = @find name: name
+      unless m
+        return nil, "invalid manifest name"
+
+      u = m\get_mirror_user!
+      u or m
+
   @relations: {
     {"mirror_user", belongs_to: "Users"}
     {"admins", has_many: "ManifestAdmins"}

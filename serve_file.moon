@@ -19,44 +19,46 @@ should_increment = ->
 is_rockspec = ->
   (uri\match "%.rockspec$")
 
-object = if uri\match "^/manifests"
+
+target, file = if uri\match "^/manifests"
   slug = ngx.var[1]
-  file = ngx.var[2]
-  user = assert Users\find(:slug)
-
-  if is_rockspec!
-    unpack Versions\select [[
-      INNER JOIN modules
-        ON (modules.id = module_id and modules.user_id = ?)
-      WHERE rockspec_fname = ?
-    ]], user.id, file
-  else
-    unpack Rocks\select [[
-      INNER JOIN versions
-        ON (versions.id = version_id)
-      INNER JOIN modules
-        ON (modules.id = versions.module_id and modules.user_id = ?)
-      WHERE rock_fname = ?
-    ]], user.id, file
+  thing = assert Manifests\find_by_name slug
+  thing, ngx.var[2]
 else
-  file = ngx.var[1]
-  manifest = Manifests\root!
+  Manifests\root!, ngx.var[1]
 
-  -- TODO: do this with less complex query
-  if is_rockspec!
-    unpack Versions\select [[
-      INNER JOIN manifest_modules
-        ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
-      WHERE rockspec_fname = ?
-    ]], manifest.id, file
-  else
-    unpack Rocks\select [[
-      INNER JOIN versions
-        ON (versions.id = rocks.version_id)
-      INNER JOIN manifest_modules
-        ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
-      WHERE rock_fname = ?
-    ]], manifest.id, file
+object = switch target.__class
+  when Manifests
+    -- TODO: do this with less complex query
+    if is_rockspec!
+      unpack Versions\select [[
+        INNER JOIN manifest_modules
+          ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
+        WHERE rockspec_fname = ?
+      ]], target.id, file
+    else
+      unpack Rocks\select [[
+        INNER JOIN versions
+          ON (versions.id = rocks.version_id)
+        INNER JOIN manifest_modules
+          ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
+        WHERE rock_fname = ?
+      ]], target.id, file
+  when Users
+    if is_rockspec!
+      unpack Versions\select [[
+        INNER JOIN modules
+          ON (modules.id = module_id and modules.user_id = ?)
+        WHERE rockspec_fname = ?
+      ]], target.id, file
+    else
+      unpack Rocks\select [[
+        INNER JOIN versions
+          ON (versions.id = version_id)
+        INNER JOIN modules
+          ON (modules.id = versions.module_id and modules.user_id = ?)
+        WHERE rock_fname = ?
+      ]], target.id, file
 
 assert object
 
