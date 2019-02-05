@@ -278,4 +278,15 @@ import
   [1500318771]: =>
     db.query "alter table followings drop constraint followings_pkey"
     db.query "alter table followings add primary key(source_user_id, object_type, object_id, type)"
+
+  [1549337489]: =>
+    assert not (unpack db.query("select 1 from users where username = 'root'")),
+      "You have a user named root, fix that before you run this migration"
+
+    add_column "manifests", "mirror_user_id", foreign_key null: true
+    db.query "update manifests set name = name || '-legacy' where name in (select username from users)"
+    db.query "insert into manifests (name, mirror_user_id, is_open, created_at, updated_at)
+      select username, id, false, created_at, date_trunc('second', now() at time zone 'utc') from users where exists(select 1 from modules where modules.user_id = users.id)"
 }
+
+
