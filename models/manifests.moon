@@ -53,6 +53,8 @@ class Manifests extends Model
   }
 
   allowed_to_add: (user) =>
+    return false if @mirror_user_id
+
     return false unless user
     return true if @is_open or user\is_admin!
 

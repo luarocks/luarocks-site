@@ -115,6 +115,7 @@ class MoonRocksManifest extends lapis.Application
     assert_page @
 
     @pager = Manifests\paginated [[
+      where mirror_user_id is null
       order by id asc
     ]], {
       per_page: 50
