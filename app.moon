@@ -5,8 +5,6 @@ with require "cloud_storage.http"
 db = require "lapis.db"
 lapis = require "lapis.init"
 
-math.randomseed os.time!
-
 import
   assert_error
   capture_errors
