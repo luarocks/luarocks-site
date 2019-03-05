@@ -278,4 +278,10 @@ import
   [1500318771]: =>
     db.query "alter table followings drop constraint followings_pkey"
     db.query "alter table followings add primary key(source_user_id, object_type, object_id, type)"
+
+  [1551765161]: =>
+    db.query "update user_data set password_reset_token = null"
+
 }
+
+
