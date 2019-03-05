@@ -13,18 +13,22 @@ increment_counter = (keys, amount=1) =>
   db.update @@table_name!, update, @_primary_cond!
 
 generate_key = do
-  import random from math
-  random_char = ->
-    switch random 1,3
-      when 1
-        random 65, 90
-      when 2
-        random 97, 122
-      when 3
-        random 48, 57
+  rand = require "openssl.rand"
+
+  alphabet = {}
+  for i=65,90 -- A through Z
+    table.insert alphabet, i
+
+  for i=97,122 -- a through z
+    table.insert alphabet, i
+
+  for i=48,57 -- 0 through 9
+    table.insert alphabet, i
+
+  alphabet_len = #alphabet
 
   (length) ->
-    string.char unpack [ random_char! for i=1,length ]
+    string.char unpack [ alphabet[1 + rand.uniform alphabet_len] for i=1,length ]
 
 get_all_pages = (pager) ->
   i = 1
