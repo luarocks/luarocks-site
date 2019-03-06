@@ -282,6 +282,22 @@ import
   [1551765161]: =>
     db.query "update user_data set password_reset_token = null"
 
+  [1551905631]: =>
+    create_table "user_server_logs", {
+      {"id", serial}
+      {"user_id", foreign_key null: true}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      {"log_date", time}
+      {"log", text}
+      {"data", "json"}
+
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "user_server_logs", "user_id", "log_date"
 }
 
 
