@@ -66,9 +66,14 @@ logging features. Additionally, due to how our server logs were configured, we
 don't have historical IP address logs. We're addressing all of these issues to
 ensure we have proper logging going forward.
 
-If we assume the worst then we must question the integrity of all packages on
-the site. We're asking all account holders to use the new [Security Audit panel](/settings/security-audit)
-from their account to review their packages. Things to look for are:
+**LuaRocks packages currently don't have signing and verification.** If we assume
+the worst then we must question the integrity of all packages on the site.
+(Package verification is now a high priority and will be added in the near
+future.)
+
+We're asking all account holders to use the new [Security Audit
+panel](/settings/security-audit) from their account to review their packages.
+Things to look for are:
 
 * Changes to rockspecs you didn't make
 * Updated rock files
