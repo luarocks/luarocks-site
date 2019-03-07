@@ -249,6 +249,7 @@ class MoonRocksModules extends lapis.Application
         version = @versions[idx]
         prev = responses[idx + 1] or { body: "" }
         version.rockspec_diff = assert diff.diff_main prev.body, response.body
+        diff.diff_cleanupSemantic version.rockspec_diff
 
       render: true
 
