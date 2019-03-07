@@ -33,6 +33,7 @@ api_request = (fn) ->
   capture_errors_json =>
     @key = assert_error ApiKeys\find(key: @params.key), "Invalid key"
     assert_error not @key.revoked, "Invalid key"
+    @key\update_last_used_at!
     @current_user = Users\find id: @key.user_id
     fn @
 
@@ -92,6 +93,7 @@ class MoonRocksApi extends lapis.Application
 
   "/api/1/:key/upload": api_request =>
     module, version, is_new = handle_rockspec_upload @
+    @key\increment_actions!
 
     manifest_modules = ManifestModules\select "where module_id = ?", module.id
     Manifests\include_in manifest_modules, "manifest_id"
@@ -108,6 +110,8 @@ class MoonRocksApi extends lapis.Application
     @version = assert_error Versions\find(id: @params.version_id), "invalid version"
     @module = Modules\find id: @version.module_id
     rock = handle_rock_upload @
+    @key\increment_actions!
+
     module_url = @build_url @url_for "module", user: @current_user, module: @module
     json: { :rock, :module_url }
 

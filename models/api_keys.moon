@@ -30,6 +30,20 @@ class ApiKeys extends Model
     key = generate_key 40
     @create { :user_id, :key, :source }
 
+  update_last_used_at: =>
+    date = require "date"
+    now = db.raw "date_trunc('second', now() at time zone 'utc')"
+
+    if @last_used_at
+      age = date.diff(date(true), date(@last_used_at))\spanminutes!
+      if age < 5
+        return
+
+    @update last_used_at: now
+
+  increment_actions: (amount=1) =>
+    @update { actions: db.raw "actions + 1" }, timestamp: false
+
   url_key: => @key
 
   revoke: =>
