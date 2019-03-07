@@ -4,6 +4,8 @@ factory = require "spec.factory"
 
 import use_test_server from require "lapis.spec"
 
+import types from require "tableshape"
+
 describe "application.api", ->
   use_test_server!
 
@@ -23,6 +25,12 @@ describe "application.api", ->
     assert.same 302, status
     assert.same 1, #ApiKeys\select!
 
+    types.assert(types.shape {
+      key: types.string
+      user_id: user.id
+      revoked: false
+      last_used_at: types.nil
+    }, open: true) ApiKeys\select![1]
 
   it "should get tool version", ->
     status, res = request_as nil, "/api/tool_version", {
@@ -50,6 +58,22 @@ describe "application.api", ->
     it "should get key status", ->
       res = api_request "/status"
       assert.same user.id, res.user_id
+
+      assert.nil key.last_used_at
+
+      key\refresh!
+
+      -- last used at updated
+      types.assert(types.shape {
+        last_used_at: types.string
+      }, open: true) ApiKeys\select![1]
+
+    it "blocks revoked key", ->
+      key\revoke!
+      res = api_request "/status"
+      assert.same {
+        errors: {"Invalid key"}
+      }, res
 
     it "should check nonexistent rockspec", ->
       res = api_request "/check_rockspec", {
@@ -87,6 +111,15 @@ describe "application.api", ->
       assert.same 1, #res.manifests
       root\refresh!
       assert.same 1, root.modules_count
+
+      key\refresh!
+
+      -- last used at updated
+      types.assert(types.shape {
+        last_used_at: types.string
+        actions: 1
+      }, open: true) ApiKeys\select![1]
+
 
     it "should upload rock", ->
       mod = factory.Modules user_id: user.id
