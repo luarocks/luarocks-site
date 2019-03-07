@@ -29,13 +29,32 @@ import
   require_login
   from require "helpers.app"
 
+INVALID_KEY = {
+  status: 401
+  json: { errors: {"Invalid key"} }
+}
+
 api_request = (fn) ->
-  capture_errors_json =>
-    @key = assert_error ApiKeys\find(key: @params.key), "Invalid key"
-    assert_error not @key.revoked, "Invalid key"
-    @key\update_last_used_at!
-    @current_user = Users\find id: @key.user_id
-    fn @
+  capture_errors {
+    on_error: =>
+      {
+        status: 400
+        json: { errors: @errors }
+      }
+
+    =>
+      @key = ApiKeys\find(key: @params.key)
+
+      unless key
+        return INVALID_KEY
+
+      if @key.revoked
+        return INVALID_KEY
+
+      @key\update_last_used_at!
+      @current_user = Users\find id: @key.user_id
+      fn @
+  }
 
 class MoonRocksApi extends lapis.Application
   [new_api_key: "/api_keys/new"]: require_login respond_to {
@@ -107,7 +126,14 @@ class MoonRocksApi extends lapis.Application
       {"version_id", is_integer: true}
     }
 
-    @version = assert_error Versions\find(id: @params.version_id), "invalid version"
+    @version = Versions\find(id: @params.version_id), "invalid version"
+
+    unless @version
+      return {
+        status: 404
+        json: { errors: {"Invalid version"} }
+      }
+
     @module = Modules\find id: @version.module_id
     rock = handle_rock_upload @
     @key\increment_actions!
