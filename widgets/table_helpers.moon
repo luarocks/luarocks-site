@@ -71,10 +71,12 @@ class TableHelpers
       thead ->
         tr ->
           for field in *fields
+            local label
             if type(field) == "table"
+              label = field.label
               {field, enum} = field
 
-            td field
+            td label or field
 
       for object in *objects
         tr ->

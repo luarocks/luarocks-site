@@ -269,6 +269,25 @@ class MoonRocksUser extends lapis.Application
 
   }
 
+  ["user_settings.security_audit": "/settings/security-audit"]: ensure_https require_login respond_to {
+    before: =>
+      @user = @current_user
+      @title = "Security Audit"
+
+    GET: =>
+      import UserServerLogs from require "models"
+      @server_logs = UserServerLogs\select "where user_id = ? order by log_date asc", @current_user.id
+
+      if @params.download
+        ngx.header["Content-Type"] = "text/plain"
+        for log in *@server_logs
+          ngx.say log.log
+
+        return layout: false
+
+      render: true
+  }
+
   -- old settings url goes to api keys page since that's where tool points to
   "/settings": ensure_https require_login =>
     redirect_to: @url_for "user_settings.api_keys"

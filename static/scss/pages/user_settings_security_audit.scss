@@ -1,0 +1,11 @@
+
+.main_column {
+    max-width: 1600px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    margin: 0;
+
+    > p {
+        max-width: $site_width;
+    }
+}
