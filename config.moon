@@ -7,6 +7,7 @@ config { "development", "test", "production", "staging" }, ->
 
   redis_host "127.0.0.1"
   redis_port 6379
+  log_format "combined"
 
   tool_version "1.0.0"
   pcall -> include require "secret.init"
@@ -38,6 +39,7 @@ config "test", ->
 config { "production", "staging" }, ->
   num_workers 2
   code_cache "on"
+  log_format "combined_forwarded"
 
   enable_https true
 
