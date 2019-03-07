@@ -59,7 +59,7 @@ class AuditModule extends require "widgets.page"
     if #lines > 5
       text lines[1] .. "\n"
       text lines[2] .. "\n"
-      div class: "truncated", title: "Truncated", "…truncated…\n"
+      div class: "truncated", title: "Unchanged lines hidden from diff", "…truncated…\n"
       text lines[#lines-1] .. "\n"
       text lines[#lines]
     else

@@ -240,7 +240,7 @@ class MoonRocksModules extends lapis.Application
 
       diff = require "helpers.diff_match_patch"
 
-      responses =  if next captures
+      responses = if next captures
         { ngx.location.capture_multi captures }
       else
         { }

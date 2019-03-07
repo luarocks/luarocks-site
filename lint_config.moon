@@ -1,4 +1,7 @@
 html_builer = {
+  "svg"
+  "main"
+  "summary"
   "text"
   "raw"
   "widget"

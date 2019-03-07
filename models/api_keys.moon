@@ -3,6 +3,8 @@ db = require "lapis.db"
 import Model from require "lapis.db.model"
 import generate_key from require "helpers.models"
 
+date = require "date"
+
 -- Generated schema dump: (do not edit)
 --
 -- CREATE TABLE api_keys (
@@ -31,15 +33,13 @@ class ApiKeys extends Model
     @create { :user_id, :key, :source }
 
   update_last_used_at: =>
-    date = require "date"
-    now = db.raw "date_trunc('second', now() at time zone 'utc')"
+    span = if @last_active_at
+      date.diff(date(true), date(@last_active_at))\spanminutes!
 
-    if @last_used_at
-      age = date.diff(date(true), date(@last_used_at))\spanminutes!
-      if age < 5
-        return
-
-    @update last_used_at: now
+    if not span or span > 15
+      @update {
+        last_used_at: db.raw"date_trunc('second', now() at time zone 'utc')"
+      }, timestamp: false
 
   increment_actions: (amount=1) =>
     @update { actions: db.raw "actions + 1" }, timestamp: false

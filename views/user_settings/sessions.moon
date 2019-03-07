@@ -16,8 +16,8 @@ class UserSettingsSessions extends require "widgets.user_settings_page"
     h2 "Sessions"
     p ->
       text "This page tracks website sessions for your account. You can disable
-      a session to force a log out on for any programs using that session.
-      Session logging was added March 2019, so legacy sessions are not
+      a session to force a log out for any programs using that session.
+      Session logging was added March 2019, legacy sessions are not
       available. "
       em "Last Active"
       text " times are updated every 15 minutes."

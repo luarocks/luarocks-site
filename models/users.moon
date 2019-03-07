@@ -89,8 +89,8 @@ class Users extends Model
     return unless user and user\salt! == user_session.key
 
     session = UserSessions\find {
-      user_id: user.id
-      id: user_session.sid
+      user_id: assert user.id
+      id: assert user_session.sid
       revoked: false
     }
 

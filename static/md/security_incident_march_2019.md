@@ -18,6 +18,9 @@ account settings as soon as you have time:
 In addition to the audit, we're releasing a series of security related updates
 to give people better control over their account.
 
+***Note:** If you were previously logged in, all sessions have been invalidated
+to transition to a new session management system. Please log in again.*
+
 ## Description of issue
 
 A `generate_key` function was being used to generate a random string of text
@@ -87,6 +90,7 @@ Here's what we've already done:
   * You can view/download all server logs we have associated to your account
   * You can review diffs for all rockspecs on your account
 * Added "Account sessions" panel so you can manage which browsers have active sessions to your account
+  * All sessions are managed, all accounts have been logged out to support the new system.
 
 Here's what we're working on now:
 

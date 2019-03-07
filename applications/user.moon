@@ -322,7 +322,10 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       import UserSessions from require "models"
 
-      pager = UserSessions\paginated "where user_id = ? order by coalesce(last_active_at, created_at) desc", @current_user.id, {
+      pager = UserSessions\paginated "
+        where user_id = ?
+        order by coalesce(last_active_at, created_at) desc
+      ", @current_user.id, {
         per_page: 20
       }
 
