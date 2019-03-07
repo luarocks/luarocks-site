@@ -8,7 +8,7 @@ Company).
 
 **We did an initial audit of our logs and database and have not found any
 evidence of anyone attempting to exploit this issue**, but we're continuing to
-do an indepth search along with providing some tools to account owners to check
+do an in-depth search along with providing some tools to account owners to check
 their own accounts.
 
 **If you have an account, please go to the Security Audit page from your
@@ -61,7 +61,7 @@ Here's a breakdown of how someone may have exploited the issue:
   * Minimal metadata about packages could be updated, like the homepage, description, or title
 
 We've been using our server logs and database changes to look for signs of
-tampering. Sadly, LuaRocks.org is very simple website and lacks many security
+tampering. Sadly, LuaRocks.org is a very simple website and lacks many security
 logging features. Additionally, due to how our server logs were configured, we
 don't have historical IP address logs. We're addressing all of these issues to
 ensure we have proper logging going forward.
@@ -99,9 +99,9 @@ Here's what we've already done:
 
 Here's what we're working on now:
 
-* **Implementing package singing and verifying to verify integrity of package files**
+* **Implementing package signing and integrity verification of package files**
   * This will enable us to verify that files have come directly from package maintainers, preventing any future issues concerning tampering
-* Added two factor authentication to accounts on LuaRocks.org
+* Adding two factor authentication to accounts on LuaRocks.org
 * Adding general purpose account activity log that tracks all changes to any data associated with an account
 * Investigating building rock files server-side, and rebuilding all existing rocks where we can
 
