@@ -180,12 +180,19 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
   unless out == 200
     return nil, "Failed to upload rock"
 
-  if Rocks\create version, rock_info.arch, key
+  rock = Rocks\create version, rock_info.arch, key
+
+  if rock
     mod\purge_manifests!
   else
-    Rocks\find(version_id: version.id, arch: rock_info.arch)\increment_revision!
+    rock = Rocks\find {
+      version_id: version.id
+      arch: rock_info.arch
+    }
 
-  true
+    rock\increment_revision!
+
+  rock
 
 handle_rock_upload = =>
   assert @module, "need module"

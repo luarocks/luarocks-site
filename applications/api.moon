@@ -63,7 +63,19 @@ class MoonRocksApi extends lapis.Application
 
       =>
         assert_csrf @
-        ApiKeys\generate @current_user.id
+        key = ApiKeys\generate @current_user.id
+
+        import UserActivityLogs from require "models"
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @current_user.id
+          action: "account.create_api_key"
+          source: "web"
+          data: {
+            key: key.key
+          }
+        }
+
         redirect_to: @url_for "user_settings.api_keys"
     }
   }
@@ -82,6 +94,18 @@ class MoonRocksApi extends lapis.Application
       POST: =>
         assert_csrf @
         @key\revoke!
+
+        import UserActivityLogs from require "models"
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @current_user.id
+          action: "account.revoke_api_key"
+          source: "web"
+          data: {
+            key: @key.key
+          }
+        }
+
         redirect_to: @url_for "user_settings.api_keys"
     }
   }
@@ -112,6 +136,21 @@ class MoonRocksApi extends lapis.Application
 
   "/api/1/:key/upload": api_request =>
     module, version, is_new = handle_rockspec_upload @
+
+    import UserActivityLogs from require "models"
+
+    UserActivityLogs\create_from_request @, {
+      user_id: @current_user.id
+      action: if is_new then "module.create" else "module.add_version"
+      source: "api"
+      object_type: "module"
+      object_id: module.id
+      data: {
+        version_id: version.id
+        version_name: version.version_name
+      }
+    }
+
     @key\increment_actions!
 
     manifest_modules = ManifestModules\select "where module_id = ?", module.id
@@ -135,7 +174,23 @@ class MoonRocksApi extends lapis.Application
       }
 
     @module = Modules\find id: @version.module_id
-    rock = handle_rock_upload @
+    rock = assert_error handle_rock_upload @
+
+    import UserActivityLogs from require "models"
+
+    UserActivityLogs\create_from_request @, {
+      user_id: @current_user.id
+      action: "module.version.upload_rock"
+      source: "api"
+      object_type: "version"
+      object_id: @version.id
+      data: {
+        rock_id: rock.id
+        rock_revision: rock.revision
+        rock_arch: rock.arch
+      }
+    }
+
     @key\increment_actions!
 
     module_url = @build_url @url_for "module", user: @current_user, module: @module

@@ -325,6 +325,31 @@ import
     }
 
     create_index "user_sessions", "user_id"
+
+  [1551990095]: =>
+    create_table "user_activity_logs", {
+      {"id", serial}
+      {"user_id", foreign_key}
+
+      {"source", enum}
+      {"action", text}
+      {"data", "json"}
+
+      {"ip", "inet"}
+      {"accept_lang", text null: true}
+      {"user_agent", text null: true}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      {"object_type", enum null: true}
+      {"object_id", foreign_key null: true}
+
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "user_activity_logs", "user_id", "created_at"
+
 }
 
 

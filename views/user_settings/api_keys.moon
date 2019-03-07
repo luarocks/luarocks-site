@@ -32,7 +32,7 @@ class UserSettingsApiKeys extends require "widgets.user_settings_page"
         {"Key", (key) ->
           details ->
             summary ->
-              code key.key\sub(1, 10) .. "..."
+              code key.key\sub(1, 10) .. "…"
 
             input {
               type: "text"

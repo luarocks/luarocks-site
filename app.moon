@@ -122,8 +122,22 @@ class MoonRocks extends lapis.Application
 
       =>
         assert_csrf @
-        mod, version = handle_rockspec_upload @
+        mod, version, is_new = handle_rockspec_upload @
         redirect_to = @url_for "module", user: @current_user, module: mod
+
+        import UserActivityLogs from require "models"
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @current_user.id
+          action: if is_new then "module.create" else "module.add_version"
+          source: "api"
+          object_type: "module"
+          object_id: mod.id
+          data: {
+            version_id: version.id
+            version_name: version.version_name
+          }
+        }
 
         if @params.json
           { json: { success: true, :redirect_to } }
@@ -157,7 +171,23 @@ class MoonRocks extends lapis.Application
 
     POST: capture_errors =>
       assert_csrf @
-      handle_rock_upload @
+      rock = assert_error handle_rock_upload @
+
+      import UserActivityLogs from require "models"
+
+      UserActivityLogs\create_from_request @, {
+        user_id: @current_user.id
+        action: "module.version.upload_rock"
+        source: "web"
+        object_type: "version"
+        object_id: @version.id
+        data: {
+          rock_id: rock.id
+          rock_revision: rock.revision
+          rock_arch: rock.arch
+        }
+      }
+
       redirect_to: @url_for "module_version", @
   }
 

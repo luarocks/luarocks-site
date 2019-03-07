@@ -13,7 +13,6 @@ class UserSettingsSessions extends require "widgets.user_settings_page"
   @include "widgets.table_helpers"
 
   settings_content: =>
-    h2 "Sessions"
     p ->
       text "This page tracks website sessions for your account. You can disable
       a session to force a log out for any programs using that session.

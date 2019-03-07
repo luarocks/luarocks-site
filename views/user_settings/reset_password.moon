@@ -1,9 +1,9 @@
 
 class UserSettingsResetPassword extends require "widgets.user_settings_page"
   settings_content: =>
-    if @params.password_reset
+    if @params.reset_password
       p ->
-        b "Your password has been reset"
+        b "Your password has been changed"
 
     p "Please provide your current password to reset your password."
 

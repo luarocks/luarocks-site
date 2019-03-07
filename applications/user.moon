@@ -38,6 +38,8 @@ import
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"
 
+import preload from require "lapis.db.model"
+
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
@@ -203,6 +205,8 @@ class MoonRocksUser extends lapis.Application
       render: true
 
     POST: capture_errors =>
+      import UserActivityLogs from require "models"
+
       assert_csrf @
 
       assert_valid @params, {
@@ -216,10 +220,30 @@ class MoonRocksUser extends lapis.Application
         { "new_password_repeat", equals: passwords.new_password }
       }
 
-      assert_error @user\check_password(passwords.current_password),
-        "Invalid old password"
+      unless @user\check_password(passwords.current_password)
+        UserActivityLogs\create_from_request @, {
+          user_id: @user.id
+          source: "web"
+          action: "account.update_password_attempt"
+          data: { reason: "incorrect old password"}
+        }
 
+        return yield_error "Incorrect old password"
+
+      old_pword = @user.encrypted_password
       @user\update_password passwords.new_password, @
+
+      UserActivityLogs\create_from_request @, {
+        user_id: @user.id
+        source: "web"
+        action: "account.update_password"
+        data: {
+          encrypted_password: {
+            before: old_pword
+            after: @user.encrypted_password
+          }
+        }
+      }
 
       redirect_to: @url_for "user_settings.reset_password", nil, reset_password: "true"
   }
@@ -270,7 +294,20 @@ class MoonRocksUser extends lapis.Application
       profile = trim_filter @params.profile,
         {"website", "twitter", "github", "profile"}, db.NULL
 
-      @user\get_data!\update profile
+      shapes = require "helpers.shapes"
+      difference = shapes.difference profile, @user\get_data!
+
+      if next difference
+        @user\get_data!\update profile
+        import UserActivityLogs from require "models"
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @user.id
+          source: "web"
+          action: "account.update_profile"
+          data: difference
+        }
+
       redirect_to: @url_for "user_settings.profile"
 
   }
@@ -333,6 +370,25 @@ class MoonRocksUser extends lapis.Application
 
       render: true
   }
+
+  ["user_settings.activity": "/settings/activity"]: ensure_https require_login respond_to {
+    GET: =>
+      import UserActivityLogs from require "models"
+      pager = UserActivityLogs\paginated "
+        where user_id = ?
+        order by created_at desc
+      ", @current_user.id, {
+        per_page: 40
+        prepare_results: (logs) ->
+          preload logs, "object", "user"
+          logs
+      }
+
+      @user_activity_logs = pager\get_page!
+
+      render: true
+  }
+
 
   -- old settings url goes to api keys page since that's where tool points to
   "/settings": ensure_https require_login =>
