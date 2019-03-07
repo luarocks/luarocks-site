@@ -42,7 +42,7 @@ class Users extends Model
 
   @relations: {
     {"api_keys", has_many: "ApiKeys", where: { revoked: false }}
-    {"modules", has_many: "Modules"}
+    {"modules", has_many: "Modules", order: "created_at desc"}
     {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
   }
 

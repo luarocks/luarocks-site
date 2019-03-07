@@ -25,7 +25,10 @@ class TableHelpers
       enum = nil
 
     local style
-    val = object[field]
+    val = if method = field\match "^:(.+)$"
+      object[method] object
+    else
+      object[field]
 
     if enum
       val = "#{enum[val]} (#{val})"

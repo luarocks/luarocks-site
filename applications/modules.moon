@@ -240,7 +240,11 @@ class MoonRocksModules extends lapis.Application
 
       diff = require "helpers.diff_match_patch"
 
-      responses = { ngx.location.capture_multi captures }
+      responses =  if next captures
+        { ngx.location.capture_multi captures }
+      else
+        { }
+
       for idx, response in ipairs responses
         version = @versions[idx]
         prev = responses[idx + 1] or { body: "" }

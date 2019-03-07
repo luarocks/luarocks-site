@@ -18,6 +18,9 @@ class AuditModule extends require "widgets.page"
     h2 "Rockspec Changes"
     p "This page lists diffs across rockspecs sorted in chronological order."
 
+    unless next @versions
+      p "This module has no rockspecs stored that we can diff."
+
     for version in *@versions
       div class: "version", ->
         div class: "version_header", ->
