@@ -1,0 +1,63 @@
+.version {
+    background: white;
+    border: 1px solid $border_color;
+    border-radius: 2px;
+
+    margin-bottom: 20px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    > .version_header {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+
+        > * {
+            margin: 0;
+            &:last-child {
+                margin-left: auto;
+            }
+        }
+    }
+
+    > .rocks {
+        padding: 10px;
+        font-size: 14px;
+        > ul {
+            margin-bottom: 0;
+        }
+    }
+
+    > pre {
+        margin: 0;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 0;
+        overflow-x: auto;
+
+        .added {
+            background: #206d3f;
+            color: rgba(white, 0.8);
+        }
+
+        .removed {
+            background: #6d2035;
+            color: rgba(white, 0.8);
+        }
+
+        .truncated {
+            font-size: 14px;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            padding: 5px;
+            margin: 10px 0;
+            font-family: $font-family;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

@@ -19,6 +19,8 @@ import
 
 import load_module from require "helpers.loaders"
 
+import preload from require "lapis.db.model"
+
 import
   Versions
   Rocks
@@ -223,3 +225,27 @@ class MoonRocksModules extends lapis.Application
 
     @flow("followings")\unfollow_object @module, @params.type
     redirect_to: @url_for @module
+
+  [audit_module: "/audit/modules/:user/:module"]: capture_errors_404 respond_to {
+    before: =>
+      load_module @
+      @title = "Audit #{@module\name_for_display!}"
+
+    GET: =>
+      @versions = [v for v in *@module\get_versions! when not v.external_rockspec_url]
+      preload @versions, "rocks", module: "user"
+
+      captures = for v in *@versions
+        { "/rock-cache/#{v.rockspec_key}" }
+
+      diff = require "helpers.diff_match_patch"
+
+      responses = { ngx.location.capture_multi captures }
+      for idx, response in ipairs responses
+        version = @versions[idx]
+        prev = responses[idx + 1] or { body: "" }
+        version.rockspec_diff = assert diff.diff_main prev.body, response.body
+
+      render: true
+
+  }
