@@ -95,7 +95,7 @@ Here's what we've already done:
 Here's what we're working on now:
 
 * **Implementing package singing and verifying to verify integrity of package files**
-  * this will enable us to verify that files have come directly from package maintainers, prevning any future isuses concerning tampering
+  * This will enable us to verify that files have come directly from package maintainers, preventing any future issues concerning tampering
 * Added two factor authentication to accounts on LuaRocks.org
 * Adding general purpose account activity log that tracks all changes to any data associated with an account
 * Investigating building rock files server-side, and rebuilding all existing rocks where we can
