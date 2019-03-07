@@ -68,7 +68,7 @@ class MoonrocksGithub extends lapis.Application
 
         if existing_account
           user = existing_account\get_user!
-          user\write_session @
+          user\write_session @, type: "login_github"
           return redirect_to: @url_for "index"
 
         email = github\primary_email access.access_token
@@ -86,7 +86,7 @@ class MoonrocksGithub extends lapis.Application
         account_data.user_id = user.id
         assert_error GithubAccounts\create account_data
 
-        user\write_session @
+        user\write_session @, type: "register_github"
         redirect_to: @url_for "index"
   }
 

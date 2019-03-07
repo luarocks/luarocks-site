@@ -80,10 +80,23 @@ class Users extends Model
       nil, "Incorrect username or password"
 
   @read_session: (r) =>
-    if user_session = r.session.user
-      user = @find user_session.id
-      if user and user\salt! == user_session.key
-        user
+    import UserSessions from require "models"
+    user_session = r.session.user
+    return unless user_session
+    return unless user_session.sid
+
+    user = @find user_session.id
+    return unless user and user\salt! == user_session.key
+
+    session = UserSessions\find {
+      user_id: user.id
+      id: user_session.sid
+      revoked: false
+    }
+
+    return nil unless session
+
+    user, session
 
   @search: (query) =>
     query = query\gsub "[%?]", ""
@@ -95,7 +108,10 @@ class Users extends Model
 
   update_password: (pass, r) =>
     @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
-    @write_session r if r
+    if r
+      if r.current_user_session
+        r.current_user_session\revoke!
+      @write_session r, type: "update_password"
 
   check_password: (pass) =>
     return false unless @encrypted_password
@@ -111,11 +127,19 @@ class Users extends Model
   url_params: =>
     "user_profile", user: @slug
 
-  write_session: (r) =>
+  write_session: (r, opts={}) =>
+    import UserSessions from require "models"
+    session = UserSessions\create_from_request r, @, {
+      type: opts.type
+    }
+
     r.session.user = {
       id: @id
+      sid: session.id
       key: @salt!
     }
+
+    session
 
   salt: =>
     if @encrypted_password
@@ -218,9 +242,9 @@ class Users extends Model
 
   update_last_active: =>
     span = if @last_active_at
-      date.diff(date(true), date(@last_active_at))\spandays!
+      date.diff(date(true), date(@last_active_at))\spanminutes!
 
-    if not span or span > 0.5
+    if not span or span > 15
       @update {
         last_active_at: db.raw"date_trunc('second', now() at time zone 'utc')"
       }, timestamp: false

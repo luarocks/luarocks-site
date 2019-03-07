@@ -62,10 +62,12 @@ class MoonRocks extends lapis.Application
   @include "applications.labels"
 
   @before_filter =>
-    @current_user = Users\read_session @
+    @current_user, @current_user_session = Users\read_session @
 
     if @current_user
       @current_user\update_last_active!
+      if @current_user_session
+        @current_user_session\update_last_active!
 
     @csrf_token = generate_csrf @
 

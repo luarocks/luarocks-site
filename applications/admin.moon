@@ -99,7 +99,7 @@ class MoonRocksAdmin extends lapis.Application
       }
 
       user = assert_error Users\find(@params.user_id), "invalid user"
-      user\write_session @
+      user\write_session @, type: "admin"
       redirect_to: @url_for "index"
   }
 

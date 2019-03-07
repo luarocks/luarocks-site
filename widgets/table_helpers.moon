@@ -46,12 +46,7 @@ class TableHelpers
       opts.title = val
       custom_val = -> @render_date val
 
-    if val and field == "ip"
-      custom_val = ->
-        a href: @url_for("admin_ip_address", nil, ip: val), val
-
     label or field, custom_val or tostring(val), opts
-
 
   field_table: (object, fields, extra_fields) =>
     unless fields

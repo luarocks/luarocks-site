@@ -304,6 +304,27 @@ import
     add_column "api_keys", "revoked_at", time null: true
     add_column "api_keys", "last_used_at", time null: true
 
+  [1551935898]: =>
+    create_table "user_sessions", {
+      {"id", serial}
+      {"user_id", serial}
+      {"type", enum}
+      {"revoked", boolean default: false}
+
+      {"ip", "inet not null"}
+      {"accept_lang", text null: true}
+      {"user_agent", text null: true}
+
+      {"last_active_at", time null: true}
+      {"revoked_at", time null: true}
+
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "user_sessions", "user_id"
 }
 
 

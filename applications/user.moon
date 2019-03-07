@@ -8,6 +8,7 @@ import
   capture_errors
   assert_error
   yield_error
+  capture_errors_json
   from require "lapis.application"
 
 import assert_valid from require "lapis.validate"
@@ -84,7 +85,7 @@ class MoonRocksUser extends lapis.Application
       }
 
       user = assert_error Users\login @params.username, @params.password
-      user\write_session @
+      user\write_session @, type: "login_password"
 
       redirect_to: verify_return_to(@params.return_to) or @url_for "index"
   }
@@ -109,13 +110,17 @@ class MoonRocksUser extends lapis.Application
       {:username, :password, :email } = @params
       user = assert_error Users\create username, password, email
 
-      user\write_session @
+      user\write_session @, type: "register"
       redirect_to: verify_return_to(@params.return_to) or @url_for"index"
   }
 
   -- TODO: make this post
   [user_logout: "/logout"]: =>
     @session.user = false
+
+    if @current_user_session
+      @current_user_session\revoke!
+
     redirect_to: "/"
 
   [user_forgot_password: "/user/forgot_password"]: ensure_https respond_to {
@@ -285,6 +290,43 @@ class MoonRocksUser extends lapis.Application
           ngx.say log.log
 
         return layout: false
+
+      render: true
+  }
+
+  ["user_settings.sessions": "/settings/sessions"]: ensure_https require_login respond_to {
+    POST: capture_errors_json =>
+      assert_csrf @
+      assert_valid @params, {
+        {"action", one_of: {"disable_session"}}
+      }
+
+      switch @params.action
+        when "disable_session"
+          assert_valid @params, {
+            {"session_id", exists: true, is_integer: true}
+          }
+
+          import UserSessions from require "models"
+
+          session = UserSessions\find {
+            user_id: assert @current_user.id
+            id: assert @params.session_id
+          }
+
+          if session
+            session\revoke!
+
+          return redirect_to: @url_for "user_settings.sessions"
+
+    GET: =>
+      import UserSessions from require "models"
+
+      pager = UserSessions\paginated "where user_id = ? order by coalesce(last_active_at, created_at) desc", @current_user.id, {
+        per_page: 20
+      }
+
+      @sessions = pager\get_page!
 
       render: true
   }
