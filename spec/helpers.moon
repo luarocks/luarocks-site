@@ -50,7 +50,9 @@ log_in_user = (user) ->
 
   stub = { session: {} }
 
-  user\write_session stub
+  package.loaded["helpers.remote_addr"] = -> "127.0.0.1"
+  user\write_session stub, type: "login_password"
+  package.loaded["helpers.remote_addr"] = nil
   config.session_name, encode_session stub.session
 
 -- make a request as logged in as a user
