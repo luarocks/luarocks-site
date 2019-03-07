@@ -41,7 +41,7 @@ class Users extends Model
   @timestamp: true
 
   @relations: {
-    {"api_keys", has_many: "ApiKeys"}
+    {"api_keys", has_many: "ApiKeys", where: { revoked: false }}
     {"modules", has_many: "Modules"}
     {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
   }

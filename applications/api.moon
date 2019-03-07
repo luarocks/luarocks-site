@@ -32,6 +32,7 @@ import
 api_request = (fn) ->
   capture_errors_json =>
     @key = assert_error ApiKeys\find(key: @params.key), "Invalid key"
+    assert_error not @key.revoked, "Invalid key"
     @current_user = Users\find id: @key.user_id
     fn @
 
@@ -54,12 +55,13 @@ class MoonRocksApi extends lapis.Application
       before: =>
         @key = ApiKeys\find user_id: @current_user.id, key: @params.key
         assert_error @key, "Invalid key"
+        assert_error not @key.revoked, "Invalid key"
 
       GET: => render: true
 
       POST: =>
         assert_csrf @
-        @key\delete!
+        @key\revoke!
         redirect_to: @url_for "user_settings.api_keys"
     }
   }

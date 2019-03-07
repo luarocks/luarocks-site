@@ -1,5 +1,7 @@
 
 class UserSettingsApiKeys extends require "widgets.user_settings_page"
+  @include "widgets.table_helpers"
+
   @needs: {
     "api_keys"
   }
@@ -14,31 +16,37 @@ class UserSettingsApiKeys extends require "widgets.user_settings_page"
     if #@api_keys == 0
       p "You currently don't have any keys."
     else
-      element "table", class: "table", ->
-        thead ->
-          tr ->
-            td ""
-            td "Key"
-            td "Created At"
-            td ""
 
-        for key in *@api_keys
-          tr ->
-            td ->
-              form method: "post", class: "form", ->
-                @csrf_input!
-                input type: "hidden", name: "api_key", value: key.key
-                input {
-                  type: "text"
-                  name: "comment"
-                  placeholder: "Comment"
-                  value: key.comment
-                }
+      @column_table @api_keys, {
+        {"Comment (enter to save)", (key) ->
+          form method: "post", class: "form", ->
+            @csrf_input!
+            input type: "hidden", name: "api_key", value: key.key
+            input {
+              type: "text"
+              name: "comment"
+              placeholder: "Optional"
+              value: key.comment
+            }
+        }
+        {"Key", (key) ->
+          details ->
+            summary ->
+              code key.key\sub(1, 10) .. "..."
 
-            td -> code key.key
-            td key.created_at
-            td ->
-              a href: @url_for("delete_api_key", :key), "Revoke"
+            input {
+              type: "text"
+              class: "rendered_key"
+              readonly: true
+              value: key.key
+              onfocus: "this.select()"
+            }
+        }
+        {"created_at", label: "Created at"}
+        {"", (key) ->
+          a href: @url_for("delete_api_key", :key), "Revoke..."
+        }
+      }
 
     form class: "form", method: "post", action: @url_for"new_api_key", ->
       @csrf_input!

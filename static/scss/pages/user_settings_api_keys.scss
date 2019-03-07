@@ -1,0 +1,20 @@
+
+
+summary {
+    cursor: pointer;
+
+    code {
+        font-size: 16px;
+        cursor: pointer;
+    }
+}
+
+.rendered_key {
+    font-family: monospace;
+    font-size: 14px;
+    padding: 3px;
+    margin-top: 5px;
+    min-width: 380px;
+    border: 1px solid $border_color;
+    border-radius: 2px;
+}

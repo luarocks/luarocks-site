@@ -1,8 +1,15 @@
 class DeleteApiKey extends require "widgets.page"
+  @include "widgets.table_helpers"
+
+
   inner_content: =>
-    h2 "Are you sure you want to revoke this api key?"
+    h2 "Are you sure you want to revoke this API key?"
     pre @key.key
-    div "Created on: #{@key.created_at}"
+
+    @field_table @key, {
+      {"created_at", label: "Created At"}
+      {"last_used_at", label: "Last Used"}
+    }
 
     p "Any tools using this key will no longer have access to LuaRocks.org."
 

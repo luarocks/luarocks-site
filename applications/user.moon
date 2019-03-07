@@ -238,6 +238,7 @@ class MoonRocksUser extends lapis.Application
 
       key = ApiKeys\find @current_user.id, assert @params.api_key
       assert_error key and key.user_id == @current_user.id, "invalid key"
+      assert_error not key.revoked, "invalid key"
 
       key\update {
         comment: @params.comment or db.NULL

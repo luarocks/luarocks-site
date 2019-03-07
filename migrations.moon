@@ -298,6 +298,12 @@ import
     }
 
     create_index "user_server_logs", "user_id", "log_date"
+
+  [1551918146]: =>
+    add_column "api_keys", "revoked", boolean default: false
+    add_column "api_keys", "revoked_at", time null: true
+    add_column "api_keys", "last_used_at", time null: true
+
 }
 
 

@@ -12,10 +12,11 @@ class TableHelpers
       k
 
   _format_table_value: (object, field) =>
-    local enum, custom_val
+    local enum, custom_val, label
     opts = {}
 
     if type(field) == "table"
+      label = field.label
       {field, enum} = field
 
     if type(enum) == "function"
@@ -46,7 +47,7 @@ class TableHelpers
       custom_val = ->
         a href: @url_for("admin_ip_address", nil, ip: val), val
 
-    field, custom_val or tostring(val), opts
+    label or field, custom_val or tostring(val), opts
 
 
   field_table: (object, fields, extra_fields) =>

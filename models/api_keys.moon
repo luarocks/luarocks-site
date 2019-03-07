@@ -1,4 +1,5 @@
 
+db = require "lapis.db"
 import Model from require "lapis.db.model"
 import generate_key from require "helpers.models"
 
@@ -30,3 +31,10 @@ class ApiKeys extends Model
     @create { :user_id, :key, :source }
 
   url_key: => @key
+
+  revoke: =>
+    @update {
+      revoked: true
+      revoked_at: db.raw "date_trunc('second', now() at time zone 'utc')"
+    }
+
