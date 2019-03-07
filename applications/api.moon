@@ -45,7 +45,7 @@ api_request = (fn) ->
     =>
       @key = ApiKeys\find(key: @params.key)
 
-      unless key
+      unless @key
         return INVALID_KEY
 
       if @key.revoked
