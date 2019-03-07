@@ -345,3 +345,6 @@ class MoonRocks extends lapis.Application
     @top_depended = [t for t in *@top_depended when t.manifest_module]
 
     render: true
+
+  ["/security-incident-march-2019"]: =>
+    render: "security_incident_march_2019"

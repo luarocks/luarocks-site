@@ -14,6 +14,13 @@ class Index extends require "widgets.page"
         @inner_content!
 
   inner_content: =>
+    section class: "security_banner", ->
+      strong "Important"
+      text " — "
+      text "March 2019 we were made aware of a security vulnerability, "
+      strong ->
+        a href: "/security-incident-march-2019", "Please Read More"
+
     section class: "home_columns", ->
       div class: "column", ->
         div class: "split_header", ->

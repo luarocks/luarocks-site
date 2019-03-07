@@ -3,27 +3,31 @@ class UserSettingsSecurityAudit extends require "widgets.user_settings_page"
   @include "widgets.table_helpers"
 
   settings_content: =>
-    p "On March 4th, 2019, we were made aware of a vulnerabilility on
-    LuaRocks.org that would theorically allow someone to guess generated API
+    p "On March 4th, 2019, we were made aware of a vulnerability on
+    LuaRocks.org that would theoretically allow someone to guess generated API
     keys and password reset tokens by using knowledge of how we were using the
     random number generator. Based on our own audits we don't have any reason
-    to believe that this vulnerabilility was exploited, but we're making as
+    to believe that this vulnerability was exploited, but we're making as
     much data open as possible to help you identify any suspicious activity. We
     encourage you to check the modules on your account."
     
     p "We're providing this page so you can review all rockspecs and server
-    logs associated with your account. The vulnerabilility has existed since
+    logs associated with your account. The vulnerability has existed since
     LuaRocks.org has had an API so we've provided logs all the way back to the
     beginning."
 
-    p "Because of how our logging was configured, we do not have IP addresses
-    for server log entries. (This has been fixed) We still recommend reviewing
-    the activity and dates to see if you can identify any suspicious activity
-    on your account."
+    p ->
+      text "Because of how our logging was configured, we do not have IP addresses
+      for server log entries (This has been fixed). We still recommend reviewing
+      the activity and dates to see if you can identify any suspicious activity
+      on your account. If you find anything contact "
+      a href: "mailto:leafot@gmail.com", "leafot@gmail.com"
+      text " directly."
 
     p ->
-      text "You can read our full statement here, along with what we're changing to prevent issues like this in the future. "
-      strong "TODO: coming soon"
+      strong ->
+        a href: "/security-incident-march-2019", "Read our full statement here"
+      text ", along with what we're changing to prevent issues like this in the future. "
 
     p "Thanks"
 
