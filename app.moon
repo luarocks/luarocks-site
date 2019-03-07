@@ -130,7 +130,7 @@ class MoonRocks extends lapis.Application
         UserActivityLogs\create_from_request @, {
           user_id: @current_user.id
           action: if is_new then "module.create" else "module.add_version"
-          source: "api"
+          source: "web"
           object_type: "module"
           object_id: mod.id
           data: {
