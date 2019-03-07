@@ -3,6 +3,22 @@
 
 For a more detailed list of changes see: <https://github.com/luarocks/luarocks-site/commits/master>
 
+**2017/3/6**
+
+* Added Security Audit page with account server logs and summary of modules
+  * Logs can be downloaded as plaintext
+* Add module audit page that shows diffs to rockspecs along with dates of rocks
+* Add user sessions model, logging in now requires active session.  **Every existing session has been reset, all accounts must log in again**
+* Add Sessions page for managing existing sessions, and viewing IP, User Agent, Accept Lang, and last used date
+  * sessions can now be disabled from web interface
+* Update API to return non-200 code when handling an error
+* Update design of API key page to not show the full API key by default
+
+**2017/3/4**
+
+* Fixed security vulnerability regarding API keys and password reset tokens
+* Cleared all password reset tokens
+
 **2018/8/31**
 
 * Restyle headers on all pages, make site a little wider
@@ -16,13 +32,13 @@ For a more detailed list of changes see: <https://github.com/luarocks/luarocks-s
 
 **2016/10/28**
 
-* Api keys can have comment added to them
+* API keys can have comment added to them
 * New admin panel for managing approved labels
 
 **2016/9/30**
 
 * You can now browse and classify modules with labels
-* All lables are listed on the homepage, a module's labels are listed on its page
+* All labels are listed on the homepage, a module's labels are listed on its page
 * Module editors can provide labels on the edit page
 * Labels have been automatically imported from Lua Toolbox
 * Add a method to convert Lua Toolbox endorsements to follows
@@ -39,7 +55,7 @@ Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
 **2015/8/19**
 
 * Add new header to all user pages
-* Add github account to profile settings page
+* Add GitHub account to profile settings page
 
 **2015/8/14**
 
@@ -53,7 +69,7 @@ Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
 
 * Add new header to module version page
 * Add warning about uploading rock on dev version
-* Add rockspec url proxying for dev versions
+* Add rockspec URL proxying for dev versions (admin only)
 
 **2015/7/27**
 
@@ -87,7 +103,7 @@ Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
 **2014/7/19**
 
  * Added ability to search by username
- * Fixed a a bug where API would report error when overriding a rock version even though it succeeded
+ * Fixed a bug where API would report error when overriding a rock version even though it succeeded
 
 **2014/6/4**
 
@@ -149,7 +165,7 @@ Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
 
  * Added password reset to login page
  * Added user settings page with ability to update password
- * Added csrf protection everywhere, updated session secret (you have to log in again sorry!)
+ * Added CSRF protection everywhere, updated session secret (you have to log in again sorry!)
 
 **2012/12/5**
 
