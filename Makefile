@@ -1,3 +1,6 @@
+SHELL := /bin/bash
+CURRENT_DB=$(shell luajit -e 'print(require("lapis.config").get().postgres.database)')
+CURRENT_ENVIRONMENT=$(shell luajit -e 'print(require("lapis.config").get()._name)')
 
 .PHONY: test test_db lint schema routes vendor_js
 
@@ -17,9 +20,10 @@ schema.sql::
 	pg_dump -a -t lapis_migrations -U postgres moonrocks >> schema.sql
 
 test_db:
+	test $(CURRENT_ENVIRONMENT) = development
 	-dropdb -U postgres moonrocks_test
 	createdb -U postgres moonrocks_test
-	pg_dump -s -U postgres moonrocks | psql -U postgres moonrocks_test
+	pg_dump -s -U postgres $(CURRENT_DB) | psql -U postgres moonrocks_test
 
 prod_db::
 	-dropdb -U postgres moonrocks_prod
