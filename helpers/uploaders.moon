@@ -15,7 +15,27 @@ import
   Versions
   from require "models"
 
+has_invalid_chars = (str) ->
+  return true unless str and type(str) == "string"
+
+  if str\match "%.%."
+    return true
+
+  if str\match "%/"
+    return true
+
+  if str\match "%\\"
+    return true
+
+  false
+
 filename_for_rockspec = (spec) ->
+  if has_invalid_chars spec.package
+    return nil, "package name has invalid characters"
+
+  if has_invalid_chars spec.version
+    return nil, "version name has invalid characters"
+
   "#{spec.package\lower!}-#{spec.version\lower!}.rockspec"
 
 parse_rock_fname = (module_name, fname) ->
@@ -91,7 +111,11 @@ do_rockspec_upload = (user, rockspec_text) ->
     mod, err = Modules\create spec, user
     return nil, err unless mod
 
-  key = "#{user.id}/#{filename_for_rockspec spec}"
+  key_fname, err = filename_for_rockspec spec
+  unless key_fname
+    return nil, err
+
+  key = "#{user.id}/#{key_fname}"
   out = bucket\put_file_string key, rockspec_text, {
     mimetype: "text/x-rockspec"
   }
