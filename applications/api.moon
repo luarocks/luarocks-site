@@ -126,12 +126,12 @@ class MoonRocksApi extends lapis.Application
       {"version_id", is_integer: true}
     }
 
-    @version = Versions\find(id: @params.version_id), "invalid version"
+    @version = Versions\find(id: @params.version_id)
 
     unless @version
       return {
         status: 404
-        json: { errors: {"Invalid version"} }
+        json: { errors: {"invalid version"} }
       }
 
     @module = Modules\find id: @version.module_id

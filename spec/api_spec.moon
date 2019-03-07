@@ -47,7 +47,7 @@ describe "application.api", ->
     api_request = (path, opts={}) ->
       opts.expect = "json" unless opts.expect != nil
       status, res = request "#{prefix}#{path}", opts
-      assert.same 200, status
+      assert.same opts.status or 200, status
 
       res
 
@@ -55,7 +55,7 @@ describe "application.api", ->
       key = factory.ApiKeys user_id: user.id
       prefix = "/api/1/#{key.key}"
 
-    it "should get key status", ->
+    it "gets key status", ->
       res = api_request "/status"
       assert.same user.id, res.user_id
 
@@ -70,12 +70,15 @@ describe "application.api", ->
 
     it "blocks revoked key", ->
       key\revoke!
-      res = api_request "/status"
+      res = api_request "/status", {
+        status: 401
+      }
+
       assert.same {
         errors: {"Invalid key"}
       }, res
 
-    it "should check nonexistent rockspec", ->
+    it "checks nonexistent rockspec", ->
       res = api_request "/check_rockspec", {
         get: {
           package: "hello"
@@ -85,7 +88,7 @@ describe "application.api", ->
 
       assert.same {}, res
 
-    it "shold upload rockspec", ->
+    it "uploads rockspec", ->
       status, res, headers = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
         "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua"), {
           expect: "json"
@@ -120,6 +123,37 @@ describe "application.api", ->
         actions: 1
       }, open: true) ApiKeys\select![1]
 
+
+    it "fails to upload rock on invalid version", ->
+      fname = "hello-1.0.windows2000.rock"
+      status, res = do_upload_as nil, "#{prefix}/upload_rock/#{239023}",
+        "rock_file", fname, "hello world", {
+          expect: "json"
+        }
+
+      assert.same 404, status
+      assert.same {
+        errors: {"invalid version"}
+      }, res
+
+    it "fails to upload rock for module not owned by user", ->
+      -- someone elses module
+      mod = factory.Modules!
+      version = factory.Versions module_id: mod.id
+
+      fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+
+      status, res = do_upload_as nil, "#{prefix}/upload_rock/#{version.id}",
+        "rock_file", fname, "hello world", {
+          expect: "json"
+        }
+
+      assert.same 400, status
+      assert.same {
+        errors: {"Don't have permission to edit"}
+      }, res
+
+      assert.same 0, Rocks\count!
 
     it "should upload rock", ->
       mod = factory.Modules user_id: user.id
