@@ -4,13 +4,13 @@ set -o pipefail
 set -o xtrace
 
 # setup lua
-luarocks-5.1 remove --force lapis
-luarocks-5.1 install moonscript
-luarocks-5.1 install cloud_storage
-luarocks-5.1 install https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
-luarocks-5.1 install https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
-luarocks-5.1 install moonrocks
-eval $(luarocks-5.1 path)
+luarocks --lua-version=5.1 remove --force lapis
+luarocks --lua-version=5.1 install moonscript
+luarocks --lua-version=5.1 install cloud_storage
+luarocks --lua-version=5.1 install https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
+luarocks --lua-version=5.1 install https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
+luarocks --lua-version=5.1 install moonrocks
+eval $(luarocks --lua-version=5.1 path)
 
 # prepare secrets
 cp -r secret_example secret
