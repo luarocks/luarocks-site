@@ -71,11 +71,11 @@ describe "application.api", ->
     it "blocks revoked key", ->
       key\revoke!
       res = api_request "/status", {
-        status: 401
+        status: 200
       }
 
       assert.same {
-        errors: {"Invalid key"}
+        errors: {"All API keys have been revoked: please read the security message on https://luarocks.org/ and generate a new key"}
       }, res
 
     it "checks nonexistent rockspec", ->

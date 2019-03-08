@@ -49,7 +49,11 @@ api_request = (fn) ->
         return INVALID_KEY
 
       if @key.revoked
-        return INVALID_KEY
+        return {
+          -- TODO: luarocks currently doesn't show error codes when non-200
+          status: 200
+          json: { errors: {"All API keys have been revoked: please read the security message on https://luarocks.org/ and generate a new key"} }
+        }
 
       @key\update_last_used_at!
       @current_user = Users\find id: @key.user_id
