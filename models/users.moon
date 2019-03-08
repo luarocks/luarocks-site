@@ -9,6 +9,9 @@ db = require "lapis.db"
 
 bcrypt = require "bcrypt"
 
+unless bcrypt.salt
+  bcrypt.salt = (v) -> v
+
 import strip_non_ascii from require "helpers.strings"
 
 -- Generated schema dump: (do not edit)
