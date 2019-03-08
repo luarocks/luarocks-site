@@ -8,6 +8,7 @@ config { "development", "test", "production", "staging" }, ->
   redis_host "127.0.0.1"
   redis_port 6379
   log_format "combined"
+  disable_manifest_cache ""
 
   tool_version "1.0.0"
   pcall -> include require "secret.init"
@@ -35,6 +36,7 @@ config { "development", "test" }, ->
 
 config "test", ->
   code_cache "on"
+  disable_manifest_cache "1"
 
 config { "production", "staging" }, ->
   num_workers 2
