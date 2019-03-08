@@ -24,7 +24,7 @@ class UserData extends Model
   github_handle: =>
     return unless @github
     github = @github\match("github.com/([^/]+)") or @github
-    github\match "^([a-zA-Z-]+)$"
+    github\match "^([a-zA-Z0-9_-]+)$"
 
   -- without @
   twitter_handle: =>
