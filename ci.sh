@@ -4,7 +4,6 @@ set -o pipefail
 set -o xtrace
 
 # setup lua
-luarocks --lua-version=5.1 install --local moonscript
 luarocks --lua-version=5.1 install --local cloud_storage
 luarocks --lua-version=5.1 install --local https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
 luarocks --lua-version=5.1 install --local https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
