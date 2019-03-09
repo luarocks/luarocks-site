@@ -2,26 +2,18 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 11.1
+-- Dumped by pg_dump version 11.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
+SET row_security = off;
 
 --
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
@@ -37,34 +29,49 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
 
 
-SET search_path = public, pg_catalog;
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: api_keys; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: api_keys; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE api_keys (
+CREATE TABLE public.api_keys (
     user_id integer NOT NULL,
     key character varying(255) NOT NULL,
     source character varying(255),
     actions integer DEFAULT 0 NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    comment text
+    comment text,
+    revoked boolean DEFAULT false NOT NULL,
+    revoked_at timestamp without time zone,
+    last_used_at timestamp without time zone
 );
 
 
-ALTER TABLE api_keys OWNER TO postgres;
+ALTER TABLE public.api_keys OWNER TO postgres;
 
 --
--- Name: approved_labels; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: approved_labels; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE approved_labels (
+CREATE TABLE public.approved_labels (
     id integer NOT NULL,
     name character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -72,13 +79,13 @@ CREATE TABLE approved_labels (
 );
 
 
-ALTER TABLE approved_labels OWNER TO postgres;
+ALTER TABLE public.approved_labels OWNER TO postgres;
 
 --
 -- Name: approved_labels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE approved_labels_id_seq
+CREATE SEQUENCE public.approved_labels_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -86,46 +93,46 @@ CREATE SEQUENCE approved_labels_id_seq
     CACHE 1;
 
 
-ALTER TABLE approved_labels_id_seq OWNER TO postgres;
+ALTER TABLE public.approved_labels_id_seq OWNER TO postgres;
 
 --
 -- Name: approved_labels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE approved_labels_id_seq OWNED BY approved_labels.id;
+ALTER SEQUENCE public.approved_labels_id_seq OWNED BY public.approved_labels.id;
 
 
 --
--- Name: dependencies; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dependencies; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE dependencies (
+CREATE TABLE public.dependencies (
     version_id integer NOT NULL,
     dependency_name character varying(255) NOT NULL,
     dependency character varying(255) NOT NULL
 );
 
 
-ALTER TABLE dependencies OWNER TO postgres;
+ALTER TABLE public.dependencies OWNER TO postgres;
 
 --
--- Name: downloads_daily; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: downloads_daily; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE downloads_daily (
+CREATE TABLE public.downloads_daily (
     version_id integer NOT NULL,
     date date NOT NULL,
     count integer DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE downloads_daily OWNER TO postgres;
+ALTER TABLE public.downloads_daily OWNER TO postgres;
 
 --
--- Name: exception_requests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_requests; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE exception_requests (
+CREATE TABLE public.exception_requests (
     id integer NOT NULL,
     exception_type_id integer NOT NULL,
     path text NOT NULL,
@@ -140,13 +147,13 @@ CREATE TABLE exception_requests (
 );
 
 
-ALTER TABLE exception_requests OWNER TO postgres;
+ALTER TABLE public.exception_requests OWNER TO postgres;
 
 --
 -- Name: exception_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE exception_requests_id_seq
+CREATE SEQUENCE public.exception_requests_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -154,20 +161,20 @@ CREATE SEQUENCE exception_requests_id_seq
     CACHE 1;
 
 
-ALTER TABLE exception_requests_id_seq OWNER TO postgres;
+ALTER TABLE public.exception_requests_id_seq OWNER TO postgres;
 
 --
 -- Name: exception_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE exception_requests_id_seq OWNED BY exception_requests.id;
+ALTER SEQUENCE public.exception_requests_id_seq OWNED BY public.exception_requests.id;
 
 
 --
--- Name: exception_types; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_types; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE exception_types (
+CREATE TABLE public.exception_types (
     id integer NOT NULL,
     label text NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -176,13 +183,13 @@ CREATE TABLE exception_types (
 );
 
 
-ALTER TABLE exception_types OWNER TO postgres;
+ALTER TABLE public.exception_types OWNER TO postgres;
 
 --
 -- Name: exception_types_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE exception_types_id_seq
+CREATE SEQUENCE public.exception_types_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -190,35 +197,36 @@ CREATE SEQUENCE exception_types_id_seq
     CACHE 1;
 
 
-ALTER TABLE exception_types_id_seq OWNER TO postgres;
+ALTER TABLE public.exception_types_id_seq OWNER TO postgres;
 
 --
 -- Name: exception_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE exception_types_id_seq OWNED BY exception_types.id;
+ALTER SEQUENCE public.exception_types_id_seq OWNED BY public.exception_types.id;
 
 
 --
--- Name: followings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: followings; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE followings (
+CREATE TABLE public.followings (
     source_user_id integer NOT NULL,
     object_type smallint NOT NULL,
     object_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    type smallint DEFAULT 1 NOT NULL
 );
 
 
-ALTER TABLE followings OWNER TO postgres;
+ALTER TABLE public.followings OWNER TO postgres;
 
 --
--- Name: github_accounts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: github_accounts; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE github_accounts (
+CREATE TABLE public.github_accounts (
     user_id integer NOT NULL,
     github_login text NOT NULL,
     github_user_id integer DEFAULT 0 NOT NULL,
@@ -228,24 +236,24 @@ CREATE TABLE github_accounts (
 );
 
 
-ALTER TABLE github_accounts OWNER TO postgres;
+ALTER TABLE public.github_accounts OWNER TO postgres;
 
 --
--- Name: lapis_migrations; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lapis_migrations; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE lapis_migrations (
+CREATE TABLE public.lapis_migrations (
     name character varying(255) NOT NULL
 );
 
 
-ALTER TABLE lapis_migrations OWNER TO postgres;
+ALTER TABLE public.lapis_migrations OWNER TO postgres;
 
 --
--- Name: linked_modules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: linked_modules; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE linked_modules (
+CREATE TABLE public.linked_modules (
     module_id integer NOT NULL,
     user_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -253,13 +261,13 @@ CREATE TABLE linked_modules (
 );
 
 
-ALTER TABLE linked_modules OWNER TO postgres;
+ALTER TABLE public.linked_modules OWNER TO postgres;
 
 --
--- Name: manifest_admins; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_admins; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE manifest_admins (
+CREATE TABLE public.manifest_admins (
     user_id integer NOT NULL,
     manifest_id integer NOT NULL,
     is_owner boolean NOT NULL,
@@ -268,13 +276,13 @@ CREATE TABLE manifest_admins (
 );
 
 
-ALTER TABLE manifest_admins OWNER TO postgres;
+ALTER TABLE public.manifest_admins OWNER TO postgres;
 
 --
--- Name: manifest_backups; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_backups; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE manifest_backups (
+CREATE TABLE public.manifest_backups (
     id integer NOT NULL,
     manifest_id integer NOT NULL,
     development boolean DEFAULT false,
@@ -285,13 +293,13 @@ CREATE TABLE manifest_backups (
 );
 
 
-ALTER TABLE manifest_backups OWNER TO postgres;
+ALTER TABLE public.manifest_backups OWNER TO postgres;
 
 --
 -- Name: manifest_backups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE manifest_backups_id_seq
+CREATE SEQUENCE public.manifest_backups_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -299,33 +307,33 @@ CREATE SEQUENCE manifest_backups_id_seq
     CACHE 1;
 
 
-ALTER TABLE manifest_backups_id_seq OWNER TO postgres;
+ALTER TABLE public.manifest_backups_id_seq OWNER TO postgres;
 
 --
 -- Name: manifest_backups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE manifest_backups_id_seq OWNED BY manifest_backups.id;
+ALTER SEQUENCE public.manifest_backups_id_seq OWNED BY public.manifest_backups.id;
 
 
 --
--- Name: manifest_modules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_modules; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE manifest_modules (
+CREATE TABLE public.manifest_modules (
     manifest_id integer NOT NULL,
     module_id integer NOT NULL,
     module_name character varying(255) NOT NULL
 );
 
 
-ALTER TABLE manifest_modules OWNER TO postgres;
+ALTER TABLE public.manifest_modules OWNER TO postgres;
 
 --
--- Name: manifests; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifests; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE manifests (
+CREATE TABLE public.manifests (
     id integer NOT NULL,
     name character varying(255) NOT NULL,
     is_open boolean NOT NULL,
@@ -338,13 +346,13 @@ CREATE TABLE manifests (
 );
 
 
-ALTER TABLE manifests OWNER TO postgres;
+ALTER TABLE public.manifests OWNER TO postgres;
 
 --
 -- Name: manifests_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE manifests_id_seq
+CREATE SEQUENCE public.manifests_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -352,20 +360,20 @@ CREATE SEQUENCE manifests_id_seq
     CACHE 1;
 
 
-ALTER TABLE manifests_id_seq OWNER TO postgres;
+ALTER TABLE public.manifests_id_seq OWNER TO postgres;
 
 --
 -- Name: manifests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE manifests_id_seq OWNED BY manifests.id;
+ALTER SEQUENCE public.manifests_id_seq OWNED BY public.manifests.id;
 
 
 --
--- Name: modules; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE modules (
+CREATE TABLE public.modules (
     id integer NOT NULL,
     user_id integer NOT NULL,
     name character varying(255) NOT NULL,
@@ -380,17 +388,18 @@ CREATE TABLE modules (
     display_name character varying(255),
     has_dev_version boolean DEFAULT false NOT NULL,
     followers_count integer DEFAULT 0 NOT NULL,
-    labels text[]
+    labels text[],
+    stars_count integer DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE modules OWNER TO postgres;
+ALTER TABLE public.modules OWNER TO postgres;
 
 --
 -- Name: modules_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE modules_id_seq
+CREATE SEQUENCE public.modules_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -398,20 +407,20 @@ CREATE SEQUENCE modules_id_seq
     CACHE 1;
 
 
-ALTER TABLE modules_id_seq OWNER TO postgres;
+ALTER TABLE public.modules_id_seq OWNER TO postgres;
 
 --
 -- Name: modules_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE modules_id_seq OWNED BY modules.id;
+ALTER SEQUENCE public.modules_id_seq OWNED BY public.modules.id;
 
 
 --
--- Name: notification_objects; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: notification_objects; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE notification_objects (
+CREATE TABLE public.notification_objects (
     notification_id integer NOT NULL,
     object_type smallint NOT NULL,
     object_id integer NOT NULL,
@@ -420,13 +429,13 @@ CREATE TABLE notification_objects (
 );
 
 
-ALTER TABLE notification_objects OWNER TO postgres;
+ALTER TABLE public.notification_objects OWNER TO postgres;
 
 --
--- Name: notifications; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: notifications; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE notifications (
+CREATE TABLE public.notifications (
     id integer NOT NULL,
     user_id integer NOT NULL,
     type integer DEFAULT 0 NOT NULL,
@@ -439,13 +448,13 @@ CREATE TABLE notifications (
 );
 
 
-ALTER TABLE notifications OWNER TO postgres;
+ALTER TABLE public.notifications OWNER TO postgres;
 
 --
 -- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE notifications_id_seq
+CREATE SEQUENCE public.notifications_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -453,20 +462,20 @@ CREATE SEQUENCE notifications_id_seq
     CACHE 1;
 
 
-ALTER TABLE notifications_id_seq OWNER TO postgres;
+ALTER TABLE public.notifications_id_seq OWNER TO postgres;
 
 --
 -- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE notifications_id_seq OWNED BY notifications.id;
+ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
 
 
 --
--- Name: rocks; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rocks; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE rocks (
+CREATE TABLE public.rocks (
     id integer NOT NULL,
     version_id integer NOT NULL,
     arch character varying(255) NOT NULL,
@@ -479,13 +488,13 @@ CREATE TABLE rocks (
 );
 
 
-ALTER TABLE rocks OWNER TO postgres;
+ALTER TABLE public.rocks OWNER TO postgres;
 
 --
 -- Name: rocks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE rocks_id_seq
+CREATE SEQUENCE public.rocks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -493,20 +502,64 @@ CREATE SEQUENCE rocks_id_seq
     CACHE 1;
 
 
-ALTER TABLE rocks_id_seq OWNER TO postgres;
+ALTER TABLE public.rocks_id_seq OWNER TO postgres;
 
 --
 -- Name: rocks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE rocks_id_seq OWNED BY rocks.id;
+ALTER SEQUENCE public.rocks_id_seq OWNED BY public.rocks.id;
 
 
 --
--- Name: user_data; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_activity_logs; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE user_data (
+CREATE TABLE public.user_activity_logs (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    source smallint NOT NULL,
+    action text NOT NULL,
+    data json,
+    ip inet,
+    accept_lang text,
+    user_agent text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    object_type smallint,
+    object_id integer
+);
+
+
+ALTER TABLE public.user_activity_logs OWNER TO postgres;
+
+--
+-- Name: user_activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.user_activity_logs_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_activity_logs_id_seq OWNER TO postgres;
+
+--
+-- Name: user_activity_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_activity_logs_id_seq OWNED BY public.user_activity_logs.id;
+
+
+--
+-- Name: user_data; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_data (
     user_id integer NOT NULL,
     email_verified boolean DEFAULT false NOT NULL,
     password_reset_token character varying(255),
@@ -517,34 +570,31 @@ CREATE TABLE user_data (
 );
 
 
-ALTER TABLE user_data OWNER TO postgres;
+ALTER TABLE public.user_data OWNER TO postgres;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_server_logs; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE users (
+CREATE TABLE public.user_server_logs (
     id integer NOT NULL,
-    username character varying(255) NOT NULL,
-    encrypted_password character varying(255) NOT NULL,
-    email character varying(255) NOT NULL,
-    slug character varying(255) NOT NULL,
-    flags integer DEFAULT 0 NOT NULL,
+    user_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    following_count integer DEFAULT 0 NOT NULL,
-    modules_count integer DEFAULT 0 NOT NULL,
-    last_active_at timestamp without time zone
+    log_date timestamp without time zone NOT NULL,
+    log text NOT NULL,
+    data json
 );
 
 
-ALTER TABLE users OWNER TO postgres;
+ALTER TABLE public.user_server_logs OWNER TO postgres;
 
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: user_server_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE users_id_seq
+CREATE SEQUENCE public.user_server_logs_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -552,20 +602,130 @@ CREATE SEQUENCE users_id_seq
     CACHE 1;
 
 
-ALTER TABLE users_id_seq OWNER TO postgres;
+ALTER TABLE public.user_server_logs_id_seq OWNER TO postgres;
+
+--
+-- Name: user_server_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_server_logs_id_seq OWNED BY public.user_server_logs.id;
+
+
+--
+-- Name: user_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_sessions (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    type smallint NOT NULL,
+    revoked boolean DEFAULT false NOT NULL,
+    ip inet NOT NULL,
+    accept_lang text,
+    user_agent text,
+    last_active_at timestamp without time zone,
+    revoked_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.user_sessions OWNER TO postgres;
+
+--
+-- Name: user_sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.user_sessions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_sessions_id_seq OWNER TO postgres;
+
+--
+-- Name: user_sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_sessions_id_seq OWNED BY public.user_sessions.id;
+
+
+--
+-- Name: user_sessions_user_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.user_sessions_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_sessions_user_id_seq OWNER TO postgres;
+
+--
+-- Name: user_sessions_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.user_sessions_user_id_seq OWNED BY public.user_sessions.user_id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    username character varying(255) NOT NULL,
+    encrypted_password character varying(255),
+    email character varying(255) NOT NULL,
+    slug character varying(255) NOT NULL,
+    flags integer DEFAULT 0 NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    following_count integer DEFAULT 0 NOT NULL,
+    modules_count integer DEFAULT 0 NOT NULL,
+    last_active_at timestamp without time zone,
+    followers_count integer DEFAULT 0 NOT NULL,
+    display_name character varying(255),
+    stared_count integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE users_id_seq OWNED BY users.id;
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: versions; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+-- Name: versions; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE versions (
+CREATE TABLE public.versions (
     id integer NOT NULL,
     module_id integer NOT NULL,
     version_name character varying(255) NOT NULL,
@@ -585,13 +745,13 @@ CREATE TABLE versions (
 );
 
 
-ALTER TABLE versions OWNER TO postgres;
+ALTER TABLE public.versions OWNER TO postgres;
 
 --
 -- Name: versions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE versions_id_seq
+CREATE SEQUENCE public.versions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -599,471 +759,534 @@ CREATE SEQUENCE versions_id_seq
     CACHE 1;
 
 
-ALTER TABLE versions_id_seq OWNER TO postgres;
+ALTER TABLE public.versions_id_seq OWNER TO postgres;
 
 --
 -- Name: versions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE versions_id_seq OWNED BY versions.id;
+ALTER SEQUENCE public.versions_id_seq OWNED BY public.versions.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: approved_labels id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY approved_labels ALTER COLUMN id SET DEFAULT nextval('approved_labels_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY exception_requests ALTER COLUMN id SET DEFAULT nextval('exception_requests_id_seq'::regclass);
+ALTER TABLE ONLY public.approved_labels ALTER COLUMN id SET DEFAULT nextval('public.approved_labels_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: exception_requests id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY exception_types ALTER COLUMN id SET DEFAULT nextval('exception_types_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY manifest_backups ALTER COLUMN id SET DEFAULT nextval('manifest_backups_id_seq'::regclass);
+ALTER TABLE ONLY public.exception_requests ALTER COLUMN id SET DEFAULT nextval('public.exception_requests_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: exception_types id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY manifests ALTER COLUMN id SET DEFAULT nextval('manifests_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY modules ALTER COLUMN id SET DEFAULT nextval('modules_id_seq'::regclass);
+ALTER TABLE ONLY public.exception_types ALTER COLUMN id SET DEFAULT nextval('public.exception_types_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: manifest_backups id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY rocks ALTER COLUMN id SET DEFAULT nextval('rocks_id_seq'::regclass);
+ALTER TABLE ONLY public.manifest_backups ALTER COLUMN id SET DEFAULT nextval('public.manifest_backups_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: manifests id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY versions ALTER COLUMN id SET DEFAULT nextval('versions_id_seq'::regclass);
+ALTER TABLE ONLY public.manifests ALTER COLUMN id SET DEFAULT nextval('public.manifests_id_seq'::regclass);
 
 
 --
--- Name: api_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY api_keys
+ALTER TABLE ONLY public.modules ALTER COLUMN id SET DEFAULT nextval('public.modules_id_seq'::regclass);
+
+
+--
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
+
+
+--
+-- Name: rocks id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rocks ALTER COLUMN id SET DEFAULT nextval('public.rocks_id_seq'::regclass);
+
+
+--
+-- Name: user_activity_logs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_activity_logs ALTER COLUMN id SET DEFAULT nextval('public.user_activity_logs_id_seq'::regclass);
+
+
+--
+-- Name: user_server_logs id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_server_logs ALTER COLUMN id SET DEFAULT nextval('public.user_server_logs_id_seq'::regclass);
+
+
+--
+-- Name: user_sessions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions ALTER COLUMN id SET DEFAULT nextval('public.user_sessions_id_seq'::regclass);
+
+
+--
+-- Name: user_sessions user_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions ALTER COLUMN user_id SET DEFAULT nextval('public.user_sessions_user_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: versions id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.versions ALTER COLUMN id SET DEFAULT nextval('public.versions_id_seq'::regclass);
+
+
+--
+-- Name: api_keys api_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.api_keys
     ADD CONSTRAINT api_keys_pkey PRIMARY KEY (key);
 
 
 --
--- Name: approved_labels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: approved_labels approved_labels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY approved_labels
+ALTER TABLE ONLY public.approved_labels
     ADD CONSTRAINT approved_labels_pkey PRIMARY KEY (id);
 
 
 --
--- Name: dependencies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dependencies dependencies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY dependencies
+ALTER TABLE ONLY public.dependencies
     ADD CONSTRAINT dependencies_pkey PRIMARY KEY (version_id, dependency_name);
 
 
 --
--- Name: downloads_daily_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: downloads_daily downloads_daily_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY downloads_daily
+ALTER TABLE ONLY public.downloads_daily
     ADD CONSTRAINT downloads_daily_pkey PRIMARY KEY (version_id, date);
 
 
 --
--- Name: exception_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_requests exception_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY exception_requests
+ALTER TABLE ONLY public.exception_requests
     ADD CONSTRAINT exception_requests_pkey PRIMARY KEY (id);
 
 
 --
--- Name: exception_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_types exception_types_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY exception_types
+ALTER TABLE ONLY public.exception_types
     ADD CONSTRAINT exception_types_pkey PRIMARY KEY (id);
 
 
 --
--- Name: followings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: followings followings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY followings
-    ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id);
+ALTER TABLE ONLY public.followings
+    ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id, type);
 
 
 --
--- Name: github_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: github_accounts github_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY github_accounts
+ALTER TABLE ONLY public.github_accounts
     ADD CONSTRAINT github_accounts_pkey PRIMARY KEY (user_id, github_user_id);
 
 
 --
--- Name: lapis_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: lapis_migrations lapis_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY lapis_migrations
+ALTER TABLE ONLY public.lapis_migrations
     ADD CONSTRAINT lapis_migrations_pkey PRIMARY KEY (name);
 
 
 --
--- Name: linked_modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: linked_modules linked_modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY linked_modules
+ALTER TABLE ONLY public.linked_modules
     ADD CONSTRAINT linked_modules_pkey PRIMARY KEY (module_id, user_id);
 
 
 --
--- Name: manifest_admins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_admins manifest_admins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY manifest_admins
+ALTER TABLE ONLY public.manifest_admins
     ADD CONSTRAINT manifest_admins_pkey PRIMARY KEY (user_id, manifest_id);
 
 
 --
--- Name: manifest_backups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_backups manifest_backups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY manifest_backups
+ALTER TABLE ONLY public.manifest_backups
     ADD CONSTRAINT manifest_backups_pkey PRIMARY KEY (id);
 
 
 --
--- Name: manifest_modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_modules manifest_modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY manifest_modules
+ALTER TABLE ONLY public.manifest_modules
     ADD CONSTRAINT manifest_modules_pkey PRIMARY KEY (manifest_id, module_id);
 
 
 --
--- Name: manifests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifests manifests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY manifests
+ALTER TABLE ONLY public.manifests
     ADD CONSTRAINT manifests_pkey PRIMARY KEY (id);
 
 
 --
--- Name: modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules modules_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY modules
+ALTER TABLE ONLY public.modules
     ADD CONSTRAINT modules_pkey PRIMARY KEY (id);
 
 
 --
--- Name: notification_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: notification_objects notification_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY notification_objects
+ALTER TABLE ONLY public.notification_objects
     ADD CONSTRAINT notification_objects_pkey PRIMARY KEY (notification_id, object_type, object_id);
 
 
 --
--- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY notifications
+ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 
 
 --
--- Name: rocks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: rocks rocks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY rocks
+ALTER TABLE ONLY public.rocks
     ADD CONSTRAINT rocks_pkey PRIMARY KEY (id);
 
 
 --
--- Name: user_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_activity_logs user_activity_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY user_data
+ALTER TABLE ONLY public.user_activity_logs
+    ADD CONSTRAINT user_activity_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_data user_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_data
     ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: user_server_logs user_server_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.user_server_logs
+    ADD CONSTRAINT user_server_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_sessions user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sessions
+    ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
--- Name: versions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+-- Name: versions versions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY versions
+ALTER TABLE ONLY public.versions
     ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
 
 
 --
--- Name: api_keys_user_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: api_keys_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX api_keys_user_id_idx ON api_keys USING btree (user_id);
-
-
---
--- Name: approved_labels_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX approved_labels_name_idx ON approved_labels USING btree (name);
+CREATE INDEX api_keys_user_id_idx ON public.api_keys USING btree (user_id);
 
 
 --
--- Name: dependencies_dependency_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: approved_labels_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX dependencies_dependency_name_idx ON dependencies USING btree (dependency_name);
-
-
---
--- Name: exception_requests_exception_type_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX exception_requests_exception_type_id_idx ON exception_requests USING btree (exception_type_id);
+CREATE UNIQUE INDEX approved_labels_name_idx ON public.approved_labels USING btree (name);
 
 
 --
--- Name: exception_types_label_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: dependencies_dependency_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX exception_types_label_idx ON exception_types USING btree (label);
-
-
---
--- Name: followings_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX followings_object_type_object_id_idx ON followings USING btree (object_type, object_id);
+CREATE INDEX dependencies_dependency_name_idx ON public.dependencies USING btree (dependency_name);
 
 
 --
--- Name: manifest_modules_manifest_id_module_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_requests_exception_type_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX manifest_modules_manifest_id_module_name_idx ON manifest_modules USING btree (manifest_id, module_name);
-
-
---
--- Name: manifest_modules_module_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX manifest_modules_module_id_idx ON manifest_modules USING btree (module_id);
+CREATE INDEX exception_requests_exception_type_id_idx ON public.exception_requests USING btree (exception_type_id);
 
 
 --
--- Name: manifests_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: exception_types_label_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX manifests_name_idx ON manifests USING btree (name);
-
-
---
--- Name: module_search_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX module_search_idx ON modules USING gin (to_tsvector('english'::regconfig, (((((COALESCE(display_name, name))::text || ' '::text) || (COALESCE(summary, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text))));
+CREATE INDEX exception_types_label_idx ON public.exception_types USING btree (label);
 
 
 --
--- Name: modules_downloads_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: followings_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX modules_downloads_idx ON modules USING btree (downloads);
-
-
---
--- Name: modules_labels_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX modules_labels_idx ON modules USING gin (labels) WHERE (modules.* IS NOT NULL);
+CREATE INDEX followings_object_type_object_id_idx ON public.followings USING btree (object_type, object_id);
 
 
 --
--- Name: modules_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_modules_manifest_id_module_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX modules_name_idx ON modules USING btree (name);
-
-
---
--- Name: modules_name_search_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX modules_name_search_idx ON modules USING gin ((COALESCE(display_name, name)) gin_trgm_ops);
+CREATE UNIQUE INDEX manifest_modules_manifest_id_module_name_idx ON public.manifest_modules USING btree (manifest_id, module_name);
 
 
 --
--- Name: modules_user_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifest_modules_module_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX modules_user_id_idx ON modules USING btree (user_id);
-
-
---
--- Name: modules_user_id_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX modules_user_id_name_idx ON modules USING btree (user_id, name);
+CREATE INDEX manifest_modules_module_id_idx ON public.manifest_modules USING btree (module_id);
 
 
 --
--- Name: notifications_user_id_seen_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: manifests_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX notifications_user_id_seen_id_idx ON notifications USING btree (user_id, seen, id);
-
-
---
--- Name: notifications_user_id_type_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX notifications_user_id_type_object_type_object_id_idx ON notifications USING btree (user_id, type, object_type, object_id) WHERE (NOT seen);
+CREATE UNIQUE INDEX manifests_name_idx ON public.manifests USING btree (name);
 
 
 --
--- Name: rocks_rock_fname_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: module_search_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX rocks_rock_fname_idx ON rocks USING btree (rock_fname);
-
-
---
--- Name: rocks_rock_key_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX rocks_rock_key_idx ON rocks USING btree (rock_key);
+CREATE INDEX module_search_idx ON public.modules USING gin (to_tsvector('english'::regconfig, (((((COALESCE(display_name, name))::text || ' '::text) || (COALESCE(summary, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text))));
 
 
 --
--- Name: rocks_version_id_arch_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules_downloads_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX rocks_version_id_arch_idx ON rocks USING btree (version_id, arch);
-
-
---
--- Name: users_flags_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX users_flags_idx ON users USING btree (flags);
+CREATE INDEX modules_downloads_idx ON public.modules USING btree (downloads);
 
 
 --
--- Name: users_lower_email_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules_labels_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX users_lower_email_idx ON users USING btree (lower((email)::text));
-
-
---
--- Name: users_lower_username_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX users_lower_username_idx ON users USING btree (lower((username)::text));
+CREATE INDEX modules_labels_idx ON public.modules USING gin (labels) WHERE (modules.* IS NOT NULL);
 
 
 --
--- Name: users_slug_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX users_slug_idx ON users USING btree (slug);
-
-
---
--- Name: users_username_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE INDEX users_username_idx ON users USING gin (username gin_trgm_ops);
+CREATE INDEX modules_name_idx ON public.modules USING btree (name);
 
 
 --
--- Name: versions_downloads_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules_name_search_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX versions_downloads_idx ON versions USING btree (downloads);
-
-
---
--- Name: versions_module_id_version_name_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX versions_module_id_version_name_idx ON versions USING btree (module_id, version_name);
+CREATE INDEX modules_name_search_idx ON public.modules USING gin (COALESCE(display_name, name) public.gin_trgm_ops);
 
 
 --
--- Name: versions_rockspec_fname_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+-- Name: modules_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX versions_rockspec_fname_idx ON versions USING btree (rockspec_fname);
-
-
---
--- Name: versions_rockspec_key_idx; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE UNIQUE INDEX versions_rockspec_key_idx ON versions USING btree (rockspec_key);
+CREATE INDEX modules_user_id_idx ON public.modules USING btree (user_id);
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: modules_user_id_name_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
+CREATE UNIQUE INDEX modules_user_id_name_idx ON public.modules USING btree (user_id, name);
+
+
+--
+-- Name: notifications_user_id_seen_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX notifications_user_id_seen_id_idx ON public.notifications USING btree (user_id, seen, id);
+
+
+--
+-- Name: notifications_user_id_type_object_type_object_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX notifications_user_id_type_object_type_object_id_idx ON public.notifications USING btree (user_id, type, object_type, object_id) WHERE (NOT seen);
+
+
+--
+-- Name: rocks_rock_fname_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX rocks_rock_fname_idx ON public.rocks USING btree (rock_fname);
+
+
+--
+-- Name: rocks_rock_key_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX rocks_rock_key_idx ON public.rocks USING btree (rock_key);
+
+
+--
+-- Name: rocks_version_id_arch_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX rocks_version_id_arch_idx ON public.rocks USING btree (version_id, arch);
+
+
+--
+-- Name: user_activity_logs_user_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX user_activity_logs_user_id_created_at_idx ON public.user_activity_logs USING btree (user_id, created_at);
+
+
+--
+-- Name: user_server_logs_user_id_log_date_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX user_server_logs_user_id_log_date_idx ON public.user_server_logs USING btree (user_id, log_date);
+
+
+--
+-- Name: user_sessions_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX user_sessions_user_id_idx ON public.user_sessions USING btree (user_id);
+
+
+--
+-- Name: users_flags_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX users_flags_idx ON public.users USING btree (flags);
+
+
+--
+-- Name: users_lower_email_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX users_lower_email_idx ON public.users USING btree (lower((email)::text));
+
+
+--
+-- Name: users_lower_username_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX users_lower_username_idx ON public.users USING btree (lower((username)::text));
+
+
+--
+-- Name: users_slug_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX users_slug_idx ON public.users USING btree (slug);
+
+
+--
+-- Name: users_username_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX users_username_idx ON public.users USING gin (username public.gin_trgm_ops);
+
+
+--
+-- Name: versions_downloads_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX versions_downloads_idx ON public.versions USING btree (downloads);
+
+
+--
+-- Name: versions_module_id_version_name_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX versions_module_id_version_name_idx ON public.versions USING btree (module_id, version_name);
+
+
+--
+-- Name: versions_rockspec_fname_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX versions_rockspec_fname_idx ON public.versions USING btree (rockspec_fname);
+
+
+--
+-- Name: versions_rockspec_key_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX versions_rockspec_key_idx ON public.versions USING btree (rockspec_key);
 
 
 --
@@ -1074,20 +1297,24 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 11.1
+-- Dumped by pg_dump version 11.1
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-
-SET search_path = public, pg_catalog;
+SET row_security = off;
 
 --
 -- Data for Name: lapis_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY lapis_migrations (name) FROM stdin;
+COPY public.lapis_migrations (name) FROM stdin;
 1370275336
 1370277180
 1393557726
@@ -1115,6 +1342,18 @@ COPY lapis_migrations (name) FROM stdin;
 1475034338
 1475269875
 1476481149
+1496539644
+1499055289
+1499794884
+1500093078
+1500307302
+1500308531
+1500318771
+1551765161
+1551905631
+1551918146
+1551935898
+1551990095
 \.
 
 
