@@ -4,13 +4,12 @@ set -o pipefail
 set -o xtrace
 
 # setup lua
-luarocks --lua-version=5.1 remove --force lapis
 luarocks --lua-version=5.1 install --local moonscript
 luarocks --lua-version=5.1 install --local cloud_storage
 luarocks --lua-version=5.1 install --local https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
 luarocks --lua-version=5.1 install --local https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
 luarocks --lua-version=5.1 install --local moonrocks
-luarocks --lua-version=5.1 install --local tableshape
+luarocks --lua-version=5.1 install --local https://raw.githubusercontent.com/leafo/tableshape/master/tableshape-dev-1.rockspec
 eval $(luarocks --lua-version=5.1 path)
 
 # prepare secrets
@@ -32,8 +31,10 @@ make init_schema
 make migrate
 make test_db
 
-mkdir logs
-touch logs/notice.log
-tail -f logs/notice.log &
+# mkdir -p logs
+# touch logs/notice.log
+# tail -f logs/notice.log &
+
+echo 'user root;' >> nginx.conf
 
 LAPIS_NOTICE_LOG=logs/notice.log ./busted -o utfTerminal
