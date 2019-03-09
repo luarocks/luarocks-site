@@ -3,7 +3,13 @@
 
 For a more detailed list of changes see: <https://github.com/luarocks/luarocks-site/commits/master>
 
-**2017/3/6**
+**2019/3/8**
+
+* Added [Account Activity](/settings/activity) page and started tracking various account related events (new module, profile updates, etc.)
+* Revoked all API keys for [security updates](https://luarocks.org/security-incident-march-2019)
+* Added ability to view revoked API keys from API keys page
+
+**2019/3/6**
 
 * Added Security Audit page with account server logs and summary of modules
   * Logs can be downloaded as plaintext
@@ -14,7 +20,7 @@ For a more detailed list of changes see: <https://github.com/luarocks/luarocks-s
 * Update API to return non-200 code when handling an error
 * Update design of API key page to not show the full API key by default
 
-**2017/3/4**
+**2019/3/4**
 
 * Fixed security vulnerability regarding API keys and password reset tokens
 * Cleared all password reset tokens
