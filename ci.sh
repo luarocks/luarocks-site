@@ -10,6 +10,7 @@ luarocks --lua-version=5.1 install --local cloud_storage
 luarocks --lua-version=5.1 install --local https://luarocks.org/manifests/leafo/lapis-dev-1.rockspec
 luarocks --lua-version=5.1 install --local https://raw.githubusercontent.com/moteus/ZipWriter/master/rockspecs/zipwriter-0.1.2-1.rockspec
 luarocks --lua-version=5.1 install --local moonrocks
+luarocks --lua-version=5.1 install --local tableshape
 eval $(luarocks --lua-version=5.1 path)
 
 # prepare secrets
@@ -31,8 +32,8 @@ make init_schema
 make migrate
 make test_db
 
-# mkdir logs
-# touch logs/notice.log
-# tail -f logs/notice.log &
+mkdir logs
+touch logs/notice.log
+tail -f logs/notice.log &
 
 LAPIS_NOTICE_LOG=logs/notice.log ./busted -o utfTerminal
