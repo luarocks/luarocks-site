@@ -252,7 +252,11 @@ class MoonRocksUser extends lapis.Application
     before: =>
       @user = @current_user
       @title = "Api Keys - User Settings"
-      @api_keys = @user\get_api_keys!
+      @api_keys = if @params.revoked
+        @show_revoked = true
+        @user\get_revoked_api_keys!
+      else
+        @user\get_api_keys!
 
     GET: =>
       render: true

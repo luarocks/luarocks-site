@@ -7,6 +7,7 @@ class DeleteApiKey extends require "widgets.page"
     pre @key.key
 
     @field_table @key, {
+      {"comment", label: "Comment"}
       {"created_at", label: "Created At"}
       {"last_used_at", label: "Last Used"}
     }
