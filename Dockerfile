@@ -3,4 +3,5 @@ MAINTAINER leaf corcoran <leafot@gmail.com>
 
 WORKDIR /site/luarocks.org
 ADD . .
-ENTRYPOINT ./ci.sh
+RUN ./ci.sh
+ENTRYPOINT ./entrypoint.sh
