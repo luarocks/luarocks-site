@@ -5,9 +5,7 @@ services:
   - docker
 
 install:
-  - docker build -t luarocks-test .
+  - docker build -f Dockerfile.test -t luarocks-test .
 
 script:
   - docker run luarocks-test
-
-
