@@ -110,6 +110,13 @@ class Users extends Model
       order by similarity(username, ?) desc
     ]], query, query, per_page: 50
 
+  update_username: (name, r) =>
+    @update username: name
+    if r
+      if r.current_user_session
+        r.current_user_session\revoke!
+      @write_session r, type: "update_username"
+
   update_password: (pass, r) =>
     @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
     if r
