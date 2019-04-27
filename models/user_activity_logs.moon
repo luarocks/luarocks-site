@@ -51,6 +51,9 @@ class UserActivityLogs extends Model
 
   summarize: =>
     switch @action
+      when "account.update_username"
+        "updated username from #{@data[1]} to #{@data[2]}"
+
       when "account.update_profile"
         parts = {}
         for k, v in pairs @data
