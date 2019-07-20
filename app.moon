@@ -50,6 +50,7 @@ import paginated_modules from require "helpers.modules"
 
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
+  Request: require "helpers.request"
 
   @enable "exception_tracking"
 

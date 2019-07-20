@@ -32,7 +32,7 @@ describe "application.user", ->
     }
 
     assert.same 302, status
-    assert.same headers.location, 'http://127.0.0.1/'
+    assert.same 'http://localhost:8080/', headers.location
     user = unpack Users\select!
     assert.truthy user
 
