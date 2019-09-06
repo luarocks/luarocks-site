@@ -75,7 +75,7 @@ describe "application.api", ->
       }
 
       assert.same {
-        errors: {"All API keys have been revoked: please read the security message on https://luarocks.org/ and generate a new key"}
+        errors: {"The API key you provided has been revoked. If you didn't revoke it then it may have been automatically revoked. See here: https://luarocks.org/security-incident-march-2019 You can generate a new API key here: https://luarocks.org/settings/api-keys"}
       }, res
 
     it "checks nonexistent rockspec", ->
