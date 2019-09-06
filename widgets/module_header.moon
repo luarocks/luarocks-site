@@ -59,6 +59,10 @@ class ModuleHeader extends require "widgets.page_header"
           div class: "column", ->
             h3 "Version downloads"
             text @format_number @version.downloads
+
+          div class: "column", ->
+            h3 "Revision"
+            code @version.revision
         else
           div class: "column", ->
             h3 "Downloads"
