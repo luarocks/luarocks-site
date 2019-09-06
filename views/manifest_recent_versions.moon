@@ -33,7 +33,7 @@ class ManifestRecentVersions extends require "widgets.page"
           a class: "author", href: @url_for(user), user\name_for_display!
 
           text " "
-          span class: "created_at", time_ago_in_words(version.created_at)
+          span class: "created_at", title: "#{version.created_at} UTC", time_ago_in_words(version.updated_at)
 
           if version.downloads > 0
             raw " &mdash; "
