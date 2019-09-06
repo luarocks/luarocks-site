@@ -70,6 +70,8 @@ class MoonRocksModules extends lapis.Application
     @page_description = @module.summary if @module.summary
 
     @versions = @module\get_versions!
+    preload @versions, module: "user"
+
     @manifests = @module\get_manifests!
     @depended_on = @module\find_depended_on!
 
