@@ -52,7 +52,11 @@ api_request = (fn) ->
         return {
           -- TODO: luarocks currently doesn't show error codes when non-200
           status: 200
-          json: { errors: {"All API keys have been revoked: please read the security message on https://luarocks.org/ and generate a new key"} }
+          json: {
+            errors: {
+              "The API key you provided has been revoked. If you didn't revoke it then it may have been automatically revoked. See here: https://luarocks.org/security-incident-march-2019 You can generate a new API key here: https://luarocks.org/settings/api-keys"
+            }
+          }
         }
 
       @key\update_last_used_at!
