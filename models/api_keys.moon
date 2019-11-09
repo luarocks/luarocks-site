@@ -14,7 +14,10 @@ date = require "date"
 --   actions integer DEFAULT 0 NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
 --   updated_at timestamp without time zone NOT NULL,
---   comment text
+--   comment text,
+--   revoked boolean DEFAULT false NOT NULL,
+--   revoked_at timestamp without time zone,
+--   last_used_at timestamp without time zone
 -- );
 -- ALTER TABLE ONLY api_keys
 --   ADD CONSTRAINT api_keys_pkey PRIMARY KEY (key);

@@ -31,7 +31,7 @@ import safe_insert from require "helpers.models"
 -- CREATE INDEX modules_downloads_idx ON modules USING btree (downloads);
 -- CREATE INDEX modules_labels_idx ON modules USING gin (labels) WHERE (modules.* IS NOT NULL);
 -- CREATE INDEX modules_name_idx ON modules USING btree (name);
--- CREATE INDEX modules_name_search_idx ON modules USING gin ((COALESCE(display_name, name)) gin_trgm_ops);
+-- CREATE INDEX modules_name_search_idx ON modules USING gin (COALESCE(display_name, name) public.gin_trgm_ops);
 -- CREATE INDEX modules_user_id_idx ON modules USING btree (user_id);
 -- CREATE UNIQUE INDEX modules_user_id_name_idx ON modules USING btree (user_id, name);
 --
