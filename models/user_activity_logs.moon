@@ -2,6 +2,26 @@
 import Model, enum from require "lapis.db.model"
 import to_json from require "lapis.util"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE user_activity_logs (
+--   id integer NOT NULL,
+--   user_id integer NOT NULL,
+--   source smallint NOT NULL,
+--   action text NOT NULL,
+--   data json,
+--   ip inet,
+--   accept_lang text,
+--   user_agent text,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL,
+--   object_type smallint,
+--   object_id integer
+-- );
+-- ALTER TABLE ONLY user_activity_logs
+--   ADD CONSTRAINT user_activity_logs_pkey PRIMARY KEY (id);
+-- CREATE INDEX user_activity_logs_user_id_created_at_idx ON user_activity_logs USING btree (user_id, created_at);
+--
 class UserActivityLogs extends Model
   @timestamp: true
 

@@ -3,6 +3,25 @@ db = require "lapis.db"
 import Model, enum from require "lapis.db.model"
 date = require "date"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE user_sessions (
+--   id integer NOT NULL,
+--   user_id integer NOT NULL,
+--   type smallint NOT NULL,
+--   revoked boolean DEFAULT false NOT NULL,
+--   ip inet NOT NULL,
+--   accept_lang text,
+--   user_agent text,
+--   last_active_at timestamp without time zone,
+--   revoked_at timestamp without time zone,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY user_sessions
+--   ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
+-- CREATE INDEX user_sessions_user_id_idx ON user_sessions USING btree (user_id);
+--
 class UserSessions extends Model
   @timestamp: true
 
