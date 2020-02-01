@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.1
--- Dumped by pg_dump version 11.1
+-- Dumped from database version 12.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -12,11 +12,12 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: 
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
@@ -30,7 +31,7 @@ COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching
 
 
 --
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
@@ -45,7 +46,7 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
+SET default_table_access_method = heap;
 
 --
 -- Name: api_keys; Type: TABLE; Schema: public; Owner: postgres
@@ -127,6 +128,20 @@ CREATE TABLE public.downloads_daily (
 
 
 ALTER TABLE public.downloads_daily OWNER TO postgres;
+
+--
+-- Name: endorsements; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.endorsements (
+    user_id integer NOT NULL,
+    module_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.endorsements OWNER TO postgres;
 
 --
 -- Name: exception_requests; Type: TABLE; Schema: public; Owner: postgres
@@ -573,12 +588,27 @@ CREATE TABLE public.user_data (
 ALTER TABLE public.user_data OWNER TO postgres;
 
 --
+-- Name: user_module_tags; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_module_tags (
+    user_id integer NOT NULL,
+    module_id integer NOT NULL,
+    tag character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.user_module_tags OWNER TO postgres;
+
+--
 -- Name: user_server_logs; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.user_server_logs (
     id integer NOT NULL,
-    user_id integer,
+    user_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     log_date timestamp without time zone NOT NULL,
@@ -899,6 +929,14 @@ ALTER TABLE ONLY public.downloads_daily
 
 
 --
+-- Name: endorsements endorsements_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.endorsements
+    ADD CONSTRAINT endorsements_pkey PRIMARY KEY (user_id, module_id);
+
+
+--
 -- Name: exception_requests exception_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1024,6 +1062,14 @@ ALTER TABLE ONLY public.user_activity_logs
 
 ALTER TABLE ONLY public.user_data
     ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: user_module_tags user_module_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_module_tags
+    ADD CONSTRAINT user_module_tags_pkey PRIMARY KEY (user_id, module_id, tag);
 
 
 --
@@ -1213,6 +1259,13 @@ CREATE INDEX user_activity_logs_user_id_created_at_idx ON public.user_activity_l
 
 
 --
+-- Name: user_module_tags_module_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX user_module_tags_module_id_idx ON public.user_module_tags USING btree (module_id);
+
+
+--
 -- Name: user_server_logs_user_id_log_date_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1297,8 +1350,8 @@ CREATE UNIQUE INDEX versions_rockspec_key_idx ON public.versions USING btree (ro
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 11.1
--- Dumped by pg_dump version 11.1
+-- Dumped from database version 12.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1307,6 +1360,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -1325,10 +1379,10 @@ COPY public.lapis_migrations (name) FROM stdin;
 1408086639
 1413268904
 1423334387
-1427445542
-1427448938
 1427443263
 1427444511
+1427445542
+1427448938
 1437970205
 1438259102
 1438314813
