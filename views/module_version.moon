@@ -17,8 +17,11 @@ class ModuleVersion extends require "widgets.page"
 
   inner_content: =>
     p ->
-      text "Version #{@version.version_name} of #{@module\name_for_display!}
-      was uploaded #{time_ago_in_words @version.created_at}."
+      text "Version #{@version.version_name} of #{@module\name_for_display!}"
+      if @version.revision == 1
+        text " was uploaded #{time_ago_in_words @version.created_at}."
+      else
+        text " was updated #{time_ago_in_words @version.updated_at}, and originally uploaded #{time_ago_in_words @version.created_at}."
 
       if @version.lua_version
         text " For #{@version.lua_version}"

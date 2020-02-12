@@ -19,7 +19,7 @@ config { "development", "test", "production", "staging" }, ->
     database: "moonrocks"
   }
 
-  host "localhost:8080"
+  host "localhost"
 
   systemd {
     name: "luarocks"

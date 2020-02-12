@@ -34,7 +34,7 @@ class Module extends require "widgets.page"
     h3 "Versions"
     for v in *@versions
       div class: "version_row", ->
-        url = "/modules/#{@user.slug}/#{@module.name}/#{v.version_name}"
+        url = @url_for v
         a href: url, v\name_for_display!
 
         if v.development
@@ -43,7 +43,14 @@ class Module extends require "widgets.page"
         if v.archived
           span title: "Not available in manifest", class: "archive_flag", "Archived"
 
-        span class: "sub", title: "#{v.created_at} UTC", time_ago_in_words(v.created_at)
+        span class: "sub", title: "Updated #{v.updated_at} UTC, Created #{v.created_at} UTC", time_ago_in_words(v.updated_at)
+        if v.revision > 1
+          span class: "sub", ->
+            text "(revision: "
+            code v.revision
+            text ")"
+
+
         span class: "sub", @plural v.downloads, "download", "downloads"
 
     if @dependencies and next @dependencies
@@ -103,15 +110,20 @@ class Module extends require "widgets.page"
 
     h3 "Manifests"
     for m in *@manifests
-      @manifest = m
       div class: "manifest_row", ->
-        a href: @url_for("manifest", @), ->
+        a href: @url_for(m), ->
           code m.name
 
         if can_edit
           span class: "sub", ->
             text " ("
-            a href: @url_for("remove_from_manifest", @), "remove"
+            a {
+              href: @url_for "remove_from_manifest", {
+                user: @module\get_user!
+                module: @module
+                manifest: m
+              }
+            }, "remove..."
             text ")"
 
       @manifest = nil

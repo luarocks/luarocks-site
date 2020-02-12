@@ -3,10 +3,10 @@
 
 Installing LuaRocks in a Unix system:
 
-    $ wget https://luarocks.org/releases/luarocks-3.0.4.tar.gz
-    $ tar zxpf luarocks-3.0.4.tar.gz
-    $ cd luarocks-3.0.4
-    $ ./configure; sudo make bootstrap
+    $ wget https://luarocks.org/releases/luarocks-3.3.1.tar.gz
+    $ tar zxpf luarocks-3.3.1.tar.gz
+    $ cd luarocks-3.3.1
+    $ ./configure && make && sudo make install
     $ sudo luarocks install luasocket
     $ lua
     Lua 5.3.5 Copyright (C) 1994-2018 Lua.org, PUC-Rio
