@@ -110,6 +110,17 @@ class Users extends Model
       order by similarity(username, ?) desc
     ]], query, query, per_page: 50
 
+  update_email: (email, r) =>
+    dupemail = Users\find [db.raw "lower(email)"]: email\lower!
+    return nil, "duplicate email" unless dupemail == nil
+
+    @update email: email
+    if r
+      if r.current_user_session
+        r.current_user_session\revoke!
+      @write_session r, type: "update_email"
+    return true
+
   update_password: (pass, r) =>
     @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
     if r

@@ -62,13 +62,10 @@ class UserActivityLogs extends Model
             table.insert parts, "set #{k}"
 
         table.concat parts, ", "
+      when "account.update_email"
+        "updated email from #{@data[1]} to #{@data[2]}"
       when "account.update_password_attempt"
         @data.reason
       when "account.create_api_key", "account.revoke_api_key"
         if @data.key
           @data.key\sub(1, 10) .. "…"
-
-
-
-
-
