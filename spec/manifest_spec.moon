@@ -75,7 +75,7 @@ describe "moonrocks", ->
   should_load "/dev/manifest.wow", 404
   should_load "/dev/manifest-5.2.wow", 404
 
-  for v in *{"", "-5.1", "-5.2", "-5.3"}
+  for v in *{"", "-5.1", "-5.2", "-5.3", "-5.4"}
     should_load_manifest "/manifest#{v}", is_empty_manifest
     should_load_manifest "/dev/manifest#{v}", is_empty_manifest
 

@@ -47,7 +47,7 @@ serve_manifest = capture_errors_404 =>
 
   assert_valid @params, {
     {"format", optional: true, one_of: {"json", "zip"}}
-    {"version", optional: true, one_of: {"5.1", "5.2", "5.3"}}
+    {"version", optional: true, one_of: {"5.1", "5.2", "5.3", "5.4"}}
   }
 
   @format = @params.format
