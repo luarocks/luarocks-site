@@ -238,9 +238,10 @@ class Modules extends Model
       for link in *LinkedModules\select "where module_id = ?", @id
         link\delete!
 
-      @get_user!\update {
-        modules_count: db.raw "modules_count - 1"
-      }, timestamp: false
+      if user = @get_user!
+        user\update {
+          modules_count: db.raw "modules_count - 1"
+        }, timestamp: false
 
       true
 
