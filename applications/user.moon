@@ -14,6 +14,8 @@ import
 import assert_valid from require "lapis.validate"
 import trim_filter from require "lapis.util"
 
+shapes = require "helpers.shapes"
+
 import
   ApiKeys
   Users
@@ -291,18 +293,17 @@ class MoonRocksUser extends lapis.Application
     POST: capture_errors =>
       assert_csrf @
 
-      assert_valid @params, {
-        {"profile", type: "table"}
+      profile_update = shapes.assert_params @params.profile, {
+        website: shapes.url + shapes.empty / db.NULL
+        twitter: shapes.twitter_username + shapes.empty / db.NULL
+        github: shapes.limited_text(120) + shapes.empty / db.NULL
+        profile: shapes.limited_text(1024*4) + shapes.empty / db.NULL
       }
 
-      profile = trim_filter @params.profile,
-        {"website", "twitter", "github", "profile"}, db.NULL
-
-      shapes = require "helpers.shapes"
-      difference = shapes.difference profile, @user\get_data!
+      difference = shapes.difference profile_update, @user\get_data!
 
       if next difference
-        @user\get_data!\update profile
+        @user\get_data!\update profile_update
         import UserActivityLogs from require "models"
 
         UserActivityLogs\create_from_request @, {
