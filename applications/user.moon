@@ -15,6 +15,7 @@ import assert_valid from require "lapis.validate"
 import trim_filter from require "lapis.util"
 
 shapes = require "helpers.shapes"
+import types from require "tableshape"
 
 import
   ApiKeys
@@ -83,12 +84,12 @@ class MoonRocksUser extends lapis.Application
     POST: capture_errors =>
       assert_csrf @
 
-      assert_valid @params, {
-        { "username", exists: true }
-        { "password", exists: true }
+      params = shapes.assert_params @params, {
+        username: shapes.limited_text 100
+        password: shapes.valid_text * types.string\length 1, 150
       }
 
-      user = assert_error Users\login @params.username, @params.password
+      user = assert_error Users\login params.username, params.password
       user\write_session @, type: "login_password"
 
       redirect_to: verify_return_to(@params.return_to) or @url_for "index"
