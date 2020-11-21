@@ -53,4 +53,11 @@ difference = (update, source, check_removals=false) ->
 
   out
 
-{:valid_text, :trimmed_text, :difference}
+to_db_array = types.one_of {
+  -- already an array, do nothing
+  types.custom((v) -> db.is_array v)\describe "db.array"
+  types.equivalent({})\describe("empty table") / db.NULL
+  types.table\describe("table array") / (v) -> db.array [v for v in *v]
+}
+
+{:valid_text, :trimmed_text, :difference, :to_db_array}

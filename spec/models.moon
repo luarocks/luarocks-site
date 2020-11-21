@@ -1,7 +1,7 @@
 -- this will let you import specs and also set up truncation
 -- you should call this inside a descibe block
 
--- import Users, Games from require "spec.models"
+-- import Users, Rocks from require "spec.models"
 
 setmetatable {}, {
   __index: (model_name) =>
