@@ -1,0 +1,18 @@
+name: "spec"
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: build
+      run: |
+        docker build -f Dockerfile.test -t luarocks-test .
+
+    - name: test
+      run: |
+        docker run luarocks-test
