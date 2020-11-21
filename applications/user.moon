@@ -85,7 +85,7 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
 
       params = shapes.assert_params @params, {
-        username: shapes.limited_text 100
+        username: shapes.limited_text 25
         password: shapes.valid_text * types.string\length 1, 150
       }
 
@@ -105,14 +105,19 @@ class MoonRocksUser extends lapis.Application
 
     POST: capture_errors =>
       assert_csrf @
-      assert_valid @params, {
-        { "username", exists: true, min_length: 2, max_length: 25 }
-        { "password", exists: true, min_length: 2 }
-        { "password_repeat", equals: @params.password }
-        { "email", exists: true, min_length: 3 }
+
+      password_shape = shapes.valid_text * types.string\length 1, 150
+
+      params = shapes.assert_params @params, {
+        username: shapes.limited_text 25
+        password: password_shape
+        password_repeat: password_shape
+        email: shapes.email
       }
 
-      {:username, :password, :email } = @params
+      assert_error params.password == params.password_repeat, "Password repeat does not match"
+
+      {:username, :password, :email } = params
       user = assert_error Users\create username, password, email
 
       user\write_session @, type: "register"
