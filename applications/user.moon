@@ -142,19 +142,23 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
 
       if validate_reset_token @
-        assert_valid @params, {
-          { "password", exists: true, min_length: 2 }
-          { "password_repeat", equals: @params.password }
+        password_shape = shapes.valid_text * types.string\length 1, 150
+        params = shapes.assert_params @params, {
+          password: password_shape
+          password_repeat: password_shape
         }
-        @user\update_password @params.password, @
+
+        assert_error params.password == params.password_repeat, "Password repeat does not match"
+
+        @user\update_password params.password, @
         @user.data\update { password_reset_token: db.NULL }
         redirect_to: @url_for"index"
       else
-        assert_valid @params, {
-          { "email", exists: true, min_length: 3 }
+        params = shapes.assert_params @params, {
+          email: shapes.email / string.lower
         }
 
-        user = assert_error Users\find([db.raw "lower(email)"]: @params.email\lower!),
+        user = assert_error Users\find([db.raw "lower(email)"]: params.email),
           "don't know anyone with that email"
 
         token = user\generate_password_reset!
