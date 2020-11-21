@@ -100,6 +100,14 @@ difference = (update, source, check_removals=false) ->
 
   out
 
+db_id = types.one_of({
+  types.number * types.custom (v) -> v == math.floor(v)
+  types.string\length(0,18) / trim * types.pattern("^%d+$") / tonumber
+}, describe: -> "integer") * types.range(0, 2147483647)\describe "database id"
+
+db_id_list = (types.string / (str) ->
+  [s for s in str\gmatch "(%d+)"]) * types.array_of db_id, length: types.range(1, 100)
+
 to_db_array = types.one_of {
   -- already an array, do nothing
   types.custom((v) -> db.is_array v)\describe "db.array"
@@ -176,6 +184,8 @@ assert_params = (tbl, shape) ->
   :limited_text
   :twitter_username
   :slug
+  :db_id
+  :db_id_list
 
   :difference, :to_db_array
   :params, :assert_params
