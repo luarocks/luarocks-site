@@ -13,6 +13,7 @@ import
 
 import assert_valid from require "lapis.validate"
 import trim_filter from require "lapis.util"
+import trim from require "lapis.util"
 
 import
   ApiKeys
@@ -293,6 +294,19 @@ class MoonRocksUser extends lapis.Application
 
       assert_valid @params, {
         {"profile", type: "table"}
+        { "username", exists: true, min_length: 2, max_length: 25 }
+      }
+
+      username = trim @params.username
+      assert_error @user\update_username(username)
+
+      import UserActivityLogs from require "models"
+
+      UserActivityLogs\create_from_request @, {
+        user_id: @user.id
+        source: "web"
+        action: "account.update_username"
+        data: {@user\get_username!, @username}
       }
 
       profile = trim_filter @params.profile,

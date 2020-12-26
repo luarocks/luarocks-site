@@ -110,6 +110,20 @@ class Users extends Model
       order by similarity(username, ?) desc
     ]], query, query, per_page: 50
 
+  get_username: =>
+    @username
+
+  update_username: (name, r) =>
+    dupuser = Users\find [db.raw "lower(username)"]: name\lower!
+    return nil, "duplicate username" unless dupuser == nil
+
+    @update username: name, slug: name, display_name: name
+    if r
+      if r.current_user_session
+        r.current_user_session\revoke!
+      @write_session r, type: "update_username"
+    return true
+
   update_password: (pass, r) =>
     @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
     if r
