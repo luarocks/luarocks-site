@@ -11,7 +11,7 @@ class Search extends require "widgets.page"
 
     p ->
       text "Don't see what you expect? "
-      a href: "https://github.com/leafo/luarocks-site/issues/82", "Give feedback on our issues tracker"
+      a href: "https://github.com/luarocks/luarocks-site/issues/82", "Give feedback on our issues tracker"
 
   render_search_form: =>
     form action: "", method: "get", class: "form", ->

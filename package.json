@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leafo/luarocks-site.git"
+    "url": "git+https://github.com/luarocks/luarocks-site.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/leafo/luarocks-site/issues"
+    "url": "https://github.com/luarocks/luarocks-site/issues"
   },
-  "homepage": "https://github.com/leafo/luarocks-site#readme",
+  "homepage": "https://github.com/luarocks/luarocks-site#readme",
   "dependencies": {
     "d3": "^4.2.6",
     "jquery": "^3.1.1",

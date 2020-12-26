@@ -50,7 +50,7 @@ For a more detailed list of changes see: <https://github.com/luarocks/luarocks-s
 * Add a method to convert Lua Toolbox endorsements to follows
 
 Thanks to Etiene Dalcol for the work on merging Lua Toolbox into LuaRocks.org:
-<https://github.com/leafo/luarocks-site/pull/86>
+<https://github.com/luarocks/luarocks-site/pull/86>
 
 **2016/1/23**
 
