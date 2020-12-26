@@ -50,14 +50,14 @@ class Layout extends Widget
 
         div class: "footer", ->
           div class: "right", ->
-            a href: "http://twitter.com/luarocksorg", "@luarocksorg"
+            a href: "https://twitter.com/luarocksorg", "@luarocksorg"
             raw " &middot; "
             revision = require "revision"
-            a href: "https://github.com/leafo/luarocks-site/commit/#{revision}", rel: "nofollow", revision
+            a href: "https://github.com/luarocks/luarocks-site/commit/#{revision}", rel: "nofollow", revision
             raw " &middot; "
-            a href: "http://github.com/leafo/luarocks-site", "Source"
+            a href: "https://github.com/luarocks/luarocks-site", "Source"
             raw " &middot; "
-            a href: "https://github.com/leafo/luarocks-site/issues", "Issues"
+            a href: "https://github.com/luarocks/luarocks-site/issues", "Issues"
 
           a href: @url_for("index"), "Home"
           raw " &middot; "
