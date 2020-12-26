@@ -13,7 +13,7 @@ class UserSettingsProfile extends require "widgets.user_settings_page"
           type: "text"
           class: "medium_input"
           name: "profile[website]"
-          placeholder: "http://..."
+          placeholder: "https://..."
           value: data.website and @format_url data.website
         }
 

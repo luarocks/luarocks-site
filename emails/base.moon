@@ -26,7 +26,7 @@ class Email extends Widget
 
   footer: =>
     h4 ->
-      a href: "http://luarocks.org", "LuaRocks"
+      a href: "https://luarocks.org", "LuaRocks"
 
   hr: =>
     hr style: "border: 0; height: 1px; background: #dadada"

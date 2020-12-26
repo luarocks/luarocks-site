@@ -20,8 +20,8 @@ Install the following dependencies:
 
 * [Tup][4]
 * [sassc](https://github.com/sass/sassc)
-* [coffeescript](http://coffeescript.org/#installation)
-* [discount](http://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` executable)
+* [CoffeeScript](https://coffeescript.org/#installation)
+* [Discount](https://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` executable)
 * PostgreSQL
 * [OpenResty][1]
 * Redis
@@ -57,7 +57,7 @@ the changes. You can run `tup monitor -a` to watch the filesystem to rebuild.
 
 ### Running tests
 
-This site uses [Busted](http://olivinelabs.com/busted/) for its tests:
+This site uses [Busted](https://olivinelabs.com/busted/) for its tests:
 
 ```bash
 make test_db
@@ -103,10 +103,10 @@ make it look something like this: (it must return a table of options)
 }
 ```
 
-  [1]: http://openresty.org/
-  [2]: http://moonscript.org/
+  [1]: https://openresty.org/
+  [2]: https://moonscript.org/
   [3]: https://github.com/leafo/lapis
   [4]: http://gittup.org/tup/
-  [5]: http://www.mailgun.com/
+  [5]: https://www.mailgun.com/
 
 
