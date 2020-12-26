@@ -32,6 +32,7 @@ class UserSessions extends Model
     admin: 4
     login_github: 5
     register_github: 6
+    update_email: 7
   }
 
   @create_from_request: (req, user, more_params) =>

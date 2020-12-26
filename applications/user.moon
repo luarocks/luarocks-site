@@ -293,6 +293,7 @@ class MoonRocksUser extends lapis.Application
 
       assert_valid @params, {
         {"profile", type: "table"}
+        {"email", type: "string"}
       }
 
       profile = trim_filter @params.profile,
@@ -310,6 +311,18 @@ class MoonRocksUser extends lapis.Application
           source: "web"
           action: "account.update_profile"
           data: difference
+        }
+
+      if @user.email != @params.email
+        old_email = @user.email
+        @user\update_email @params.email
+        import UserActivityLogs from require "models"
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @user.id
+          source: "web"
+          action: "account.update_email"
+          data: {old_email, @user.email}
         }
 
       redirect_to: @url_for "user_settings.profile"
