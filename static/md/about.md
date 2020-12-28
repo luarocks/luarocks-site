@@ -68,6 +68,6 @@ This site is written in [MoonScript][3] using the [Lapis framework][4]. You can 
 
   [1]: https://luarocks.org/
   [2]: https://github.com/luarocks/luarocks-site
-  [3]: http://moonscript.org
-  [4]: http://leafo.net/lapis/
+  [3]: https://moonscript.org
+  [4]: https://leafo.net/lapis/
 
