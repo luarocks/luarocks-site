@@ -92,8 +92,8 @@ CloudStorage(o, "PROJECT_ID")\bucket "BUCKET_NAME"
 ### Setting up email
 
 If you want to test sending emails you'll have to provide [Mailgun][5]
-credentials. A test account is free. Create a file `secret/email.moon` and
-make it look something like this: (it must return a table of options)
+credentials. Create a file `secret/email.moon` and make it look something like
+this: (it must return a table of options)
 
 ```moonscript
 { -- secret/email.moon
