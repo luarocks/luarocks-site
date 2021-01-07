@@ -2,7 +2,7 @@
 
 <https://luarocks.org>
 
-[![Build Status](https://travis-ci.org/luarocks/luarocks-site.svg?branch=master)](https://travis-ci.org/luarocks/luarocks-site)
+![spec](https://github.com/luarocks/luarocks-site/workflows/spec/badge.svg)
 
 The official module repository of the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
 
