@@ -1,6 +1,6 @@
 SHELL := /bin/bash
-CURRENT_DB=$(shell luajit -e 'print(require("lapis.config").get().postgres.database)')
-CURRENT_ENVIRONMENT=$(shell luajit -e 'print(require("lapis.config").get()._name)')
+CURRENT_DB=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get().postgres.database)')
+CURRENT_ENVIRONMENT=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get()._name)')
 
 .PHONY: test test_db lint schema routes vendor_js
 
