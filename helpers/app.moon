@@ -50,10 +50,24 @@ ensure_https = (fn) ->
 
     fn @
 
-capture_errors_404 = (fn) ->
-  import capture_errors from require "lapis.application"
+-- this will return errors as json on test so we can check them, otherwise
+-- works just like the built in capture_errors
+capture_errors = (fn) ->
+  app = require "lapis.application"
 
-  capture_errors {
+  app.capture_errors {
+    on_error: =>
+      if config._name == "test"
+        return json: { errors: @errors }
+
+      not_found
+    fn
+  }
+
+capture_errors_404 = (fn) ->
+  app = require "lapis.application"
+
+  app.capture_errors {
     on_error: => not_found
     fn
   }
@@ -84,4 +98,4 @@ verify_return_to = (url) ->
 
 { :assert_editable, :generate_csrf, :assert_csrf, :require_login,
   :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page,
-  :login_and_return_url, :verify_return_to }
+  :login_and_return_url, :verify_return_to, :capture_errors }

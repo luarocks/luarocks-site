@@ -131,6 +131,9 @@ params = (shape) ->
     out = {}
     local state
 
+    unless type(p) == "table"
+      return nil, "missing table"
+
     for key, t in pairs shape
       local options
 

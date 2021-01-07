@@ -5,7 +5,6 @@ db = require "lapis.db"
 
 import
   respond_to
-  capture_errors
   assert_error
   yield_error
   capture_errors_json
@@ -16,6 +15,8 @@ import trim_filter from require "lapis.util"
 
 shapes = require "helpers.shapes"
 import types from require "tableshape"
+
+password_shape = shapes.valid_text * types.string\length 2, 150
 
 import
   ApiKeys
@@ -32,6 +33,7 @@ import
   capture_errors_404
   assert_editable
   verify_return_to
+  capture_errors
   from require "helpers.app"
 
 import
@@ -106,8 +108,6 @@ class MoonRocksUser extends lapis.Application
     POST: capture_errors =>
       assert_csrf @
 
-      password_shape = shapes.valid_text * types.string\length 1, 150
-
       params = shapes.assert_params @params, {
         username: shapes.limited_text 25
         password: password_shape
@@ -142,7 +142,6 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
 
       if validate_reset_token @
-        password_shape = shapes.valid_text * types.string\length 1, 150
         params = shapes.assert_params @params, {
           password: password_shape
           password_repeat: password_shape
@@ -221,26 +220,25 @@ class MoonRocksUser extends lapis.Application
 
       assert_csrf @
 
-      assert_valid @params, {
-        {"password", type: "table"}
+      passwords = shapes.assert_params @params.password, {
+        current_password: password_shape
+        new_password: password_shape
+        new_password_repeat: password_shape
       }
 
-      passwords = @params.password
+      assert_error passwords.new_password == passwords.new_password_repeat,
+        "Password repeat does not match"
 
-      assert_valid passwords, {
-        { "new_password", exists: true, min_length: 2 }
-        { "new_password_repeat", equals: passwords.new_password }
-      }
-
-      unless @user\check_password(passwords.current_password)
+      unless @user\check_password passwords.current_password
         UserActivityLogs\create_from_request @, {
           user_id: @user.id
           source: "web"
           action: "account.update_password_attempt"
-          data: { reason: "incorrect old password"}
+          data: { reason: "incorrect old password" }
         }
 
-        return yield_error "Incorrect old password"
+        yield_error "Incorrect old password"
+        error "Incorrect old password (not captured)"
 
       old_pword = @user.encrypted_password
       @user\update_password passwords.new_password, @

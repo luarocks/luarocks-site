@@ -110,6 +110,88 @@ describe "moonrocks", ->
       status, body = request_as user, "/settings/profile"
       assert.same 200, status
 
+    describe "reset password", ->
+      import UserActivityLogs from require "spec.models"
+
+      it "updates old password", ->
+        user\update_password "hello"
+        before_hash = user.encrypted_password
+        assert not user\check_password "world"
+
+        status, body = request_as user, "/settings/reset-password", {
+          post: {
+            "password[current_password]": "hello"
+            "password[new_password]": "world"
+            "password[new_password_repeat]": "world"
+          }
+        }
+
+        assert.same 302, status
+
+        user\refresh!
+        assert user\check_password "world"
+
+        logs = UserActivityLogs\select!
+        assert.same 1, #logs
+        assert.same "account.update_password", logs[1].action
+        assert.same {
+          encrypted_password: {
+            before: before_hash
+            after: user.encrypted_password
+          }
+        }, logs[1].data
+
+
+      it "doesn't update when old password is wrong", ->
+        user\update_password "hello2"
+
+        status, body = request_as user, "/settings/reset-password", {
+          post: {
+            "password[current_password]": "hello"
+            "password[new_password]": "world"
+            "password[new_password_repeat]": "world"
+          }
+          expect: "json"
+        }
+
+        assert.same {
+          errors: {"Incorrect old password"}
+        }, body
+
+        user\refresh!
+        assert user\check_password "hello2"
+
+        logs = UserActivityLogs\select!
+        assert.same 1, #logs
+        assert.same "account.update_password_attempt", logs[1].action
+        assert.same {
+          reason: "incorrect old password"
+        }, logs[1].data
+
+
+      it "doesn't update when passwords don't match", ->
+        user\update_password "hello"
+        assert not user\check_password "world"
+
+        status, body = request_as user, "/settings/reset-password", {
+          post: {
+            "password[current_password]": "hello"
+            "password[new_password]": "world1"
+            "password[new_password_repeat]": "world2"
+          }
+          expect: "json"
+        }
+
+        assert.same {
+          errors: {"Password repeat does not match"}
+        }, body
+
+        user\refresh!
+        assert not user\check_password "world1"
+
+        logs = UserActivityLogs\select!
+        assert.same 0, #logs
+
     it "should load upload page", ->
       status, body = request_as user,  "/upload"
       assert.same 200, status
