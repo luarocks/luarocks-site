@@ -22,7 +22,8 @@ dependencies = {
   "tableshape ~> 2.2",
   "mailgun ~> 1.2",
   "cloud_storage ~> 1.1",
-  "lzlib",
+  "lzlib", -- zipwriter dependency
+  "struct >= 1.2", -- zipwriter dependency
   "zipwriter ~> 0.1.5",
   "moonrocks ~> 1.1",
 }
