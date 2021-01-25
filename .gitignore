@@ -9,3 +9,8 @@ static/storage
 .moonbox
 secret/
 node_modules/
+/luarocks
+/lua
+/lua_modules
+/.luarocks
+/luarocks
