@@ -24,6 +24,7 @@ dependencies = {
   "cloud_storage ~> 1.1",
   "lua-zlib ~> 1.2",
   "zipwriter ~> 0.1.5",
+  "moonrocks ~> 1.1",
 }
 build = {
    type = "none",
