@@ -32,9 +32,9 @@ make init_schema
 make migrate
 make test_db
 
-# mkdir -p logs
-# touch logs/notice.log
-# tail -f logs/notice.log &
+mkdir -p logs
+touch logs/notice.log
+tail -f logs/notice.log &
 
 echo 'user root;' >> nginx.conf
 
