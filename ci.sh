@@ -7,6 +7,8 @@ set -o xtrace
 luarocks --lua-version=5.1 build --only-deps
 eval $(luarocks --lua-version=5.1 path)
 
+npm install
+
 # prepare secrets
 cp -r secret_example secret
 echo "config 'test', -> logging false" >> config.moon
