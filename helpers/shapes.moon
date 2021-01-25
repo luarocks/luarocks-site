@@ -119,7 +119,7 @@ transformer_type = types.shape({
   transform: types.function
 }, open: true)\describe "type transformer"
 
-param_transform_with_options = types.assert types.shape({
+param_transform_with_options = assert types.shape({
   transformer_type\tag "t"
   error: types.nil + types.string\tag "error"
   label: types.nil + types.string\tag "label"
