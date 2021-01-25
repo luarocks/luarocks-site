@@ -73,11 +73,6 @@ class Layout extends Widget
           raw " &middot; "
           a href: @url_for"about", "About"
 
-        div class: "sub_footer", ->
-          span "supported by"
-          a href: "https://github.com/Kong/kong", ->
-            img width: "117", height: "47", alt: "Sponsored by Kong", src: "/static/kong.svg"
-
       @content_for "js_init"
 
   render_user_panel: =>
