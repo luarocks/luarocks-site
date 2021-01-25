@@ -7,6 +7,9 @@ CURRENT_ENVIRONMENT=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(req
 test:
 	busted
 
+install_deps::
+	luarocks build --only-deps
+
 init_schema::
 	createdb -U postgres moonrocks
 	cat schema.sql | psql -U postgres moonrocks

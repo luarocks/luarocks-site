@@ -7,14 +7,18 @@ set -o xtrace
 luarocks --lua-version=5.1 build --only-deps
 eval $(luarocks --lua-version=5.1 path)
 
-npm install
 
 # prepare secrets
 cp -r secret_example secret
 echo "config 'test', -> logging false" >> config.moon
 
 # build
-tup init && tup generate build.sh && ./build.sh
+tup init && tup generate build.sh
+
+npm install # install npm to here to prevent noise from tup scanning node_modules
+
+./build.sh
+
 cat $(which busted) | sed 's/\/usr\/bin\/lua5\.1/\/usr\/local\/openresty\/luajit\/bin\/luajit/' > busted
 chmod +x busted
 
