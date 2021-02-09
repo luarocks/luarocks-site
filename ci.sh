@@ -4,9 +4,8 @@ set -o pipefail
 set -o xtrace
 
 # setup lua
-luarocks --lua-version=5.1 build --only-deps
-eval $(luarocks --lua-version=5.1 path)
-
+luarocks --lua-version=5.1 build --local --only-deps
+eval $(luarocks --lua-version=5.1 --local path)
 
 # prepare secrets
 cp -r secret_example secret
