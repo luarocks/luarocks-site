@@ -4,7 +4,7 @@ import Model from require "lapis.db.model"
 --
 -- CREATE TABLE user_server_logs (
 --   id integer NOT NULL,
---   user_id integer,
+--   user_id integer NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
 --   updated_at timestamp without time zone NOT NULL,
 --   log_date timestamp without time zone NOT NULL,
