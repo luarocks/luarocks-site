@@ -110,10 +110,7 @@ class MoonRocksAdmin extends lapis.Application
     @user = assert_error Users\find(id: @params.id), "invalid user"
 
     @title = "User '#{@user.username}'"
-
-    @followings = Followings\select "where source_user_id = ?", @user.id
-    Followings\preload_objects @followings
-
+    preload @user\get_follows!, "object"
     render: true
 
   [become_user: "/become-user"]: respond_to {

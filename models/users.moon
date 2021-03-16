@@ -48,6 +48,7 @@ class Users extends Model
     {"revoked_api_keys", has_many: "ApiKeys", where: { revoked: true }}
     {"modules", has_many: "Modules", order: "created_at desc"}
     {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
+    {"follows", has_many: "Followings", key: "source_user_id"}
   }
 
   @create: (username, password, email, display_name) =>

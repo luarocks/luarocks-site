@@ -11,14 +11,13 @@ class AdminUser extends require "widgets.admin.page"
       "created_at", "last_active_at"
     }
 
-    if next @followings
-      h3 "Followings"
-      import Followings from require "models"
-      @column_table @followings, {
-        {":get_object", label: "user"}
-        {"object_type", Followings.object_types}
-        "created_at"
-      }
+    h3 "Followings"
+    import Followings from require "models"
+    @column_table @user\get_follows!, {
+      {":get_object", label: "user"}
+      {"object_type", Followings.object_types}
+      "created_at"
+    }
 
     fieldset ->
       legend "Admin tools"
