@@ -23,6 +23,9 @@ class MoonRocksAdmin extends lapis.Application
       @write not_found
 
   [cache: "/cache"]: capture_errors_json respond_to {
+    before: =>
+      @title = "Cache"
+
     GET: =>
       import get_keys from require "helpers.pagecache"
       @cache_keys = get_keys!
@@ -56,6 +59,8 @@ class MoonRocksAdmin extends lapis.Application
   }
 
   [users: "/users"]: capture_errors_json =>
+    @title = "Users"
+
     import Users from require "models"
     assert_page @
 
@@ -84,6 +89,9 @@ class MoonRocksAdmin extends lapis.Application
     }
 
     @user = assert_error Users\find(id: @params.id), "invalid user"
+
+    @title = "User '#{@user.username}'"
+
     @followings = Followings\select "where source_user_id = ?", @user.id
     Followings\preload_objects @followings
 
@@ -104,6 +112,9 @@ class MoonRocksAdmin extends lapis.Application
   }
 
   [labels: "/labels"]: respond_to {
+    before: =>
+      @title = "Labels"
+
     GET: =>
       import ApprovedLabels from require "models"
       @approved_labels = ApprovedLabels\select!

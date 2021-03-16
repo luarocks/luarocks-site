@@ -3,8 +3,6 @@ class AdminUsers extends require "widgets.admin.page"
   @needs: {"users", "pager"}
 
   inner_content: =>
-    h2 "Users"
-
     form class: "form", ->
       label ->
         text "Find by email"

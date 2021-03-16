@@ -1,9 +1,20 @@
 
+$margin: 40px;
 
 .main_column {
     min-width: 0;
     max-width: none;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: $margin;
+    margin-right: $margin;
+}
+
+.page_header_widget {
+    margin-bottom: 20px;
+    & > * {
+        min-width: 0;
+        max-width: none;
+        margin-left: $margin;
+        margin-right: $margin;
+    }
 }
 
