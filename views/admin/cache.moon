@@ -1,6 +1,4 @@
 class AdminCache extends require "widgets.page"
-  @include "widgets.table_helpers"
-
   inner_content: =>
     h2 "Purge cache"
     form method: "post", class: "form", ->

@@ -1,7 +1,5 @@
 
 class UserSettingsApiKeys extends require "widgets.user_settings_page"
-  @include "widgets.table_helpers"
-
   @needs: {
     "api_keys"
   }

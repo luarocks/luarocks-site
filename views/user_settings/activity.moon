@@ -1,8 +1,6 @@
 import UserActivityLogs from require "models"
 
 class UserSettingsSessions extends require "widgets.user_settings_page"
-  @include "widgets.table_helpers"
-
   settings_content: =>
     p "On this page you can track account changing events and any other important security events associated with your account."
 

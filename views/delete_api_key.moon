@@ -1,7 +1,4 @@
 class DeleteApiKey extends require "widgets.page"
-  @include "widgets.table_helpers"
-
-
   inner_content: =>
     h2 "Are you sure you want to revoke this API key?"
     pre @key.key

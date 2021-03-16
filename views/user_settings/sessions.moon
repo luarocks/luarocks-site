@@ -10,8 +10,6 @@ types = {
 }
 
 class UserSettingsSessions extends require "widgets.user_settings_page"
-  @include "widgets.table_helpers"
-
   settings_content: =>
     p ->
       text "This page tracks website sessions for your account. You can disable

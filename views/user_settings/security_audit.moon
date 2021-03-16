@@ -1,7 +1,4 @@
 class UserSettingsSecurityAudit extends require "widgets.user_settings_page"
-
-  @include "widgets.table_helpers"
-
   settings_content: =>
     p "On March 4th, 2019, we were made aware of a vulnerability on
     LuaRocks.org that would theoretically allow someone to guess generated API

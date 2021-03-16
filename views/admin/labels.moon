@@ -1,7 +1,6 @@
 
-class AdminUsers extends require "widgets.page"
+class AdminUsers extends require "widgets.admin.page"
   @needs: {"approved_labels"}
-  @include "widgets.table_helpers"
 
   inner_content: =>
     h2 "Labels"
