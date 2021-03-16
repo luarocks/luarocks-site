@@ -26,6 +26,28 @@ h3 {
     font-size: 18px;
 }
 
+details.query_log {
+    position: fixed;
+    background: white;
+    border: 2px solid $border_color;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    opacity: 0.8;
+    margin: 10px;
+    max-height: 50vh;
+    overflow: auto;
+    border-radius: 4px;
+
+    summary {
+        cursor: pointer;
+    }
+
+    &[open] {
+        opacity: 1;
+    }
+}
+
 button, input[type='submit'], .button {
     display: inline-block;
     text-decoration: none;

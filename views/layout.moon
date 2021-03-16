@@ -75,18 +75,34 @@ class Layout extends Widget
           a href: @url_for"about", "About"
 
       @content_for "js_init"
+      @render_query_log!
 
-      if @current_user and @current_user\is_admin!
-        if query_log = ngx and ngx.ctx and ngx.ctx.query_log
-          details class: "query_log", ->
-            summary ->
-              text "Queries"
-              strong "(#{@format_number #query_log})"
 
-            @column_table query_log, {
-              {"query", type: "collapse_pre", value: (l) -> l[1]}
-              {"duration", type: "duration", value: (l) -> l[2]}
-            }
+  render_query_log: =>
+    return unless @current_user and @current_user\is_admin!
+    query_log = ngx and ngx.ctx and ngx.ctx.query_log
+
+    return unless query_log
+
+    details class: "query_log", ->
+      summary ->
+        text "Queries"
+        text " "
+        strong "(#{@format_number #query_log})"
+
+      total_time = 0
+      for {_, d} in *query_log
+        total_time += d
+
+      p ->
+        text "Total query time: "
+        code @format_duration total_time
+
+      @column_table query_log, {
+        {"query", type: "collapse_pre", value: (l) -> l[1]}
+        {"duration", type: "duration", value: (l) -> l[2]}
+      }
+
 
   render_user_panel: =>
     nav class: "user_panel", ->
