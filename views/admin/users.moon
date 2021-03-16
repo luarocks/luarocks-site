@@ -1,5 +1,5 @@
 
-class AdminUsers extends require "widgets.page"
+class AdminUsers extends require "widgets.admin.page"
   @needs: {"users", "pager"}
 
   inner_content: =>
@@ -14,6 +14,10 @@ class AdminUsers extends require "widgets.page"
         button "Find"
 
     @render_pager @pager
+    @column_table @users, {
+      "id"
+    }
+
     element "table", class: "table", ->
       thead ->
         tr ->

@@ -5,6 +5,7 @@ import underscore from require "lapis.util"
 class Base extends Widget
   @include "widgets.helpers"
   @include "widgets.icons"
+  @include "widgets.table_helpers"
 
   @widget_name: => underscore(@__name or "unknown") .. "_widget"
 

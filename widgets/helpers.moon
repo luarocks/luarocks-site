@@ -1,5 +1,6 @@
 
 date = require "date"
+import time_ago_in_words from require "lapis.util"
 
 class Helpers
   raw_ssi: (fname) =>
@@ -55,7 +56,6 @@ class Helpers
       @format_number(bytes) .. suffix
 
   render_date: (d, abs_first=false) =>
-    import time_ago_in_words from require "lapis.util"
     span class: "date", title: date(d)\fmt "${iso}Z", @format_relative_timestamp(d)
 
   format_relative_timestamp: (d, extra_opts) =>
