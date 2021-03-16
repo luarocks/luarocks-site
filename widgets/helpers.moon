@@ -1,3 +1,6 @@
+
+date = require "date"
+
 class Helpers
   raw_ssi: (fname) =>
     res = ngx.location.capture "/static/md/#{fname}"
@@ -53,23 +56,14 @@ class Helpers
 
   render_date: (d, abs_first=false) =>
     import time_ago_in_words from require "lapis.util"
-    span class: "date", title: tostring(d), time_ago_in_words(d)
+    span class: "date", title: date(d)\fmt "${iso}Z", @format_relative_timestamp(d)
 
-  format_date: (d, extra_opts) =>
-    if type(d) == "string"
-      date = require "date"
-      d = date(d)
+  format_relative_timestamp: (d, extra_opts) =>
+    now = date true
 
-    opts = {
-      class: "date_format"
-      title: tostring(d)
-    }
+    suffix = if date(true) < date(d)
+      "from now"
+    else
+      "ago"
 
-    if extra_opts
-      for k,v in pairs extra_opts
-        if k == "class"
-          opts[k] = opts[k] .. " " .. v
-        else
-          opts[k] = v
-
-    span opts, d\fmt "${iso}Z"
+    time_ago_in_words tostring(d), nil, suffix
