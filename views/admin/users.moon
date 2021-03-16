@@ -16,34 +16,16 @@ class AdminUsers extends require "widgets.admin.page"
     @render_pager @pager
     @column_table @users, {
       "id"
+      {"user", value: (user) -> user}
+      "flags"
+      "created_at"
+      "last_active_at"
+      "email"
+      "following_count"
+      "followers_count"
+      "modules_count"
+      "stared_count"
     }
-
-    element "table", class: "table", ->
-      thead ->
-        tr ->
-          td "User"
-          td "Registered"
-          td "Last active"
-          td "Email"
-          td "Followings"
-          td "Modules"
-          td ""
-
-      for user in *@users
-        tr ->
-          td ->
-            a href: @url_for(user), user\name_for_display!
-
-          td -> @render_date user.created_at
-          td -> user.last_active_at and @render_date user.last_active_at
-
-          td user.email
-          td @format_number user.following_count
-          td @format_number user.modules_count
-
-          td ->
-            a href: @url_for("admin.user", id: user.id), "Admin"
-
     @render_pager @pager
 
 

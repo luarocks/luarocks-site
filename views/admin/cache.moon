@@ -1,4 +1,4 @@
-class AdminCache extends require "widgets.page"
+class AdminCache extends require "widgets.admin.page"
   inner_content: =>
     h2 "Purge cache"
     form method: "post", class: "form", ->

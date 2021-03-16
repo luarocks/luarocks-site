@@ -8,6 +8,8 @@ class AdminPage extends require "widgets.page"
         text " ("
         a href: @url_for("admin.user", id: instance.id), "admin"
         text ")"
+      when "Modules"
+        a href: @url_for(instance), instance\name_for_display!
       else
         em "<don't know how to render model (#{instance.__class.__name})>"
 
