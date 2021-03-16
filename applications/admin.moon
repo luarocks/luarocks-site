@@ -58,6 +58,22 @@ class MoonRocksAdmin extends lapis.Application
       redirect_to: @url_for @route_name
   }
 
+  [modules: "/modules"]: capture_errors_json =>
+    @title = "Modules"
+
+    import Modules from require "models"
+    assert_page @
+
+
+    @pager = Modules\paginated "order by id desc", {
+      per_page: 50
+    }
+
+    @modules = @pager\get_page @page
+
+    render: true
+
+
   [users: "/users"]: capture_errors_json =>
     @title = "Users"
 

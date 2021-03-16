@@ -124,11 +124,15 @@ class TableHelpers
 
       when "collapse_pre"
         ->
-          details ->
-            summary ->
-              code @truncate value, 180
+          preview = @truncate value, field.truncate or 180
+          if preview == value
+            code value
+          else
+            details ->
+              summary ->
+                code preview
 
-            pre style: "white-space: pre-wrap;", value
+              pre style: "white-space: pre-wrap;", value
 
       when "json"
         _id_gen += 1

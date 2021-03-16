@@ -19,6 +19,7 @@ class AdminPage extends require "widgets.page"
 
         div class: "page_tabs", ->
           @render_nav_tab "admin.users", "Users"
+          @render_nav_tab "admin.modules", "Modules"
           @render_nav_tab "admin.labels", "Labels"
           @render_nav_tab "admin.cache", "Cache"
     }
@@ -33,6 +34,9 @@ class AdminPage extends require "widgets.page"
         text ")"
       when "Modules"
         a href: @url_for(instance), instance\name_for_display!
+      when "Versions"
+        a href: @url_for(instance), ->
+          code instance\name_for_display!
       else
         em "<don't know how to render model (#{instance.__class.__name})>"
 

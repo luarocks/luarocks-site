@@ -49,6 +49,7 @@ class Modules extends Model
   @relations: {
     {"user", belongs_to: "Users"}
     {"versions", has_many: "Versions", order: "created_at desc"}
+    {"current_version", belongs_to: "Versions"}
   }
 
   -- spec: parsed rockspec
