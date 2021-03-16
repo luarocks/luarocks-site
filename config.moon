@@ -9,6 +9,7 @@ config { "development", "test", "production", "staging" }, ->
   redis_port 6379
   log_format "combined"
   disable_manifest_cache ""
+  measure_performance true
 
   tool_version "1.0.0"
   pcall -> include require "secret.init"

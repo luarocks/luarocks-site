@@ -108,6 +108,10 @@ class TableHelpers
           -> strong "Invalid enum value: #{value}"
       when "filesize"
         @filesize_format value
+      when "duration"
+        @format_duration(value), {
+          title: "%0.4fs"\format value
+        }
       when "checkbox"
         group_name = assert field.input, "missing input name for checkbox"
         form_name = assert field.form, "missing form for checkbox"

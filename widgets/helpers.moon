@@ -37,6 +37,25 @@ class Helpers
     return str if #str <= length
     str\sub(1, length) .. "..."
 
+  format_duration: do
+    limits = {
+      {"y", 60*60*24*365}
+      {"w", 60*60*24*7}
+      {"d", 60*60*24}
+      {"h", 60*60}
+      {"m", 60}
+      {"s", 1}
+      {"ms", 1/1000}
+    }
+
+    (seconds) =>
+      for {label, min} in *limits
+        if seconds > min or min < 1
+          formatted = "%0.2f"\format(seconds / min)\gsub "%.0+$", ""
+          return "#{formatted} #{label}"
+
+      "#{seconds} s"
+
   format_bytes: do
     limits = {
       {"gb", 1024^3}

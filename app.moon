@@ -48,6 +48,14 @@ import concat, insert from table
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"
 
+logger = require "lapis.logging"
+old_query = logger.query
+logger.query = (q, time, ...) ->
+  if ngx and ngx.ctx.query_log
+    table.insert ngx.ctx.query_log, {q, time}
+
+  old_query q, time, ...
+
 class MoonRocks extends lapis.Application
   layout: require "views.layout"
   Request: require "helpers.request"
@@ -67,8 +75,12 @@ class MoonRocks extends lapis.Application
 
     if @current_user
       @current_user\update_last_active!
+
       if @current_user_session
         @current_user_session\update_last_active!
+
+      if @current_user\is_admin! and ngx and ngx.ctx
+        ngx.ctx.query_log = {}
 
     @csrf_token = generate_csrf @
 

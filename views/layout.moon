@@ -4,6 +4,7 @@ cache_buster = require "helpers.cache_buster"
 
 class Layout extends Widget
   @include "widgets.helpers"
+  @include "widgets.table_helpers"
 
   content: =>
     html_5 ->
@@ -74,6 +75,18 @@ class Layout extends Widget
           a href: @url_for"about", "About"
 
       @content_for "js_init"
+
+      if @current_user and @current_user\is_admin!
+        if query_log = ngx and ngx.ctx and ngx.ctx.query_log
+          details class: "query_log", ->
+            summary ->
+              text "Queries"
+              strong "(#{@format_number #query_log})"
+
+            @column_table query_log, {
+              {"query", type: "collapse_pre", value: (l) -> l[1]}
+              {"duration", type: "duration", value: (l) -> l[2]}
+            }
 
   render_user_panel: =>
     nav class: "user_panel", ->
