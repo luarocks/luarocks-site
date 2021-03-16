@@ -66,7 +66,7 @@ class MoonRocksUser extends lapis.Application
     @user = assert_error Users\find(slug: @params.user), "invalid user"
 
     @title = "#{@user\name_for_display!}'s Modules"
-    @user_following = @current_user and @current_user\follows @user
+    @user_following = @current_user and @current_user\find_follow @user
 
     paginated_modules @, @user, (mods) ->
       for mod in *mods

@@ -75,8 +75,8 @@ class MoonRocksModules extends lapis.Application
     @manifests = @module\get_manifests!
     @depended_on = @module\find_depended_on!
 
-    @module_following = @current_user and @current_user\follows @module
-    @module_starring = @current_user and @current_user\stars @module
+    @module_following = @current_user and @current_user\find_follow @module
+    @module_starring = @current_user and @current_user\find_star @module
 
     Versions\sort_versions @versions
 
@@ -179,7 +179,7 @@ class MoonRocksModules extends lapis.Application
     @title = "#{@module\name_for_display!} #{@version.version_name}"
     @rocks = Rocks\select "where version_id = ? order by arch asc", @version.id
 
-    @module_following = @current_user and @current_user\follows @module
+    @module_following = @current_user and @current_user\find_follow @module
 
     render: true
 

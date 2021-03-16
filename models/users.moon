@@ -210,7 +210,7 @@ class Users extends Model
 
     true
 
-  follows: (object) =>
+  find_follow: (object) =>
     return unless object
     import Followings from require "models"
     Followings\find {
@@ -220,7 +220,7 @@ class Users extends Model
       type: Followings.types\for_db "subscription"
     }
 
-  stars: (object) =>
+  find_star: (object) =>
     return unless object
     import Followings from require "models"
     Followings\find {
