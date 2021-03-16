@@ -14,6 +14,8 @@ import assert_csrf, assert_page from require "helpers.app"
 import assert_valid from require "lapis.validate"
 import trim_filter from require "lapis.util"
 
+import preload from require "lapis.db.model"
+
 class MoonRocksAdmin extends lapis.Application
   @path: "/admin"
   @name: "admin."
@@ -67,12 +69,13 @@ class MoonRocksAdmin extends lapis.Application
 
     @pager = Modules\paginated "order by id desc", {
       per_page: 50
+      prepare_results: (mods) ->
+        preload mods, "user", current_version: { module: "user" }
+        mods
     }
 
     @modules = @pager\get_page @page
-
     render: true
-
 
   [users: "/users"]: capture_errors_json =>
     @title = "Users"
