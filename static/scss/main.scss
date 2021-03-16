@@ -141,8 +141,7 @@ hr {
 
     .user_panel {
         font-size: $small_font_size;
-        flex: 1;
-        text-align: right;
+        margin-left: auto;
         display: flex;
         justify-content: flex-end;
         align-content: center;

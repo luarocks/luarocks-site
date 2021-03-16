@@ -20,7 +20,7 @@ class UploadRockspec extends require "widgets.page"
     p ->
       strong ->
         em ->
-          text "It is recommended to use the command line to upload, see below:"
+          text "It is recommended to use the command line to upload, see below."
 
     form action: @url_for"upload_rockspec", method: "POST", enctype: "multipart/form-data", ->
       input type: "hidden", name: "csrf_token", value: @csrf_token
