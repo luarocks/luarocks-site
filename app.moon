@@ -71,6 +71,9 @@ class MoonRocks extends lapis.Application
   @include "applications.labels"
 
   @before_filter =>
+    if ngx and ngx.ctx
+      ngx.ctx.query_log = {}
+
     @current_user, @current_user_session = Users\read_session @
 
     if @current_user
@@ -78,9 +81,6 @@ class MoonRocks extends lapis.Application
 
       if @current_user_session
         @current_user_session\update_last_active!
-
-      if @current_user\is_admin! and ngx and ngx.ctx
-        ngx.ctx.query_log = {}
 
     @csrf_token = generate_csrf @
 
