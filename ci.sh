@@ -4,7 +4,7 @@ set -o pipefail
 set -o xtrace
 
 # setup lua
-luarocks --lua-version=5.1 --local remove lapis
+luarocks --lua-version=5.1 --local remove --force lapis
 luarocks --lua-version=5.1 --local install https://raw.githubusercontent.com/leafo/lapis/master/lapis-dev-1.rockspec
 luarocks --lua-version=5.1 build --local --only-deps
 eval $(luarocks --lua-version=5.1 --local path)
