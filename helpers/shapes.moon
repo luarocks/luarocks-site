@@ -140,8 +140,6 @@ params = (shape) ->
       unless transformer_type t
         options = param_transform_with_options t
         t = options.t
-        if options.field
-          key = options.field
 
       out[key], state_or_err = t\transform p[key], state
 
