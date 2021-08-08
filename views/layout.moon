@@ -21,6 +21,7 @@ class Layout extends Widget
 
         link href: "https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700", rel: "stylesheet", type: "text/css"
         link href: "/static/icons/style.css", rel: "stylesheet", type: "text/css"
+        link href: "/static/opensearch.xml",  rel: "search", type: "application/opensearchdescription+xml", title: "LuaRocks"
 
         if @page_description
           meta name: "description", content: @page_description
