@@ -68,8 +68,7 @@ class GitHub
     req = {
       :method
       url: "#{@api_prefix}#{url}"
-      headers: {
-      }
+      :headers
     }
 
     res, status = http.simple req
