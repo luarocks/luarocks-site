@@ -20,14 +20,17 @@ class GitHub
 
   access_token: (code) =>
     params = encode_query_string {
-      client_id: @client_id
-      client_secret: @client_secret
       :code
     }
 
     res, status = http.simple {
       url: "#{@login_prefix}/login/oauth/access_token?#{params}"
       method: "POST"
+
+      headers: {
+        "User-agent": "luarocks.org"
+        "Authorization": ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+      }
     }
 
     if status != 200
@@ -41,23 +44,28 @@ class GitHub
     out
 
   delete_access_token: (access_token) =>
-    @_api_request "DELETE", "/applications/#{@client_id}/tokens/#{access_token}", {}, true
+    @_api_request "DELETE", "/applications/#{@client_id}/tokens/#{access_token}", {}, {
+      "Authorization": ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+    }
 
   -- for requests to api prefix
-  _api_request: (method="GET", url, params={}, auth=false) =>
+  _api_request: (method="GET", url, params={}, more_headers=nil) =>
     if next params
       params = encode_query_string params
       url = "#{url}?#{params}"
 
-    auth = if auth
-      ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+    headers = {
+      "User-agent": "luarocks.org"
+    }
+
+    if more_headers
+      for k,v in pairs more_headers
+        headers[k] = v
 
     req = {
       :method
       url: "#{@api_prefix}#{url}"
       headers: {
-        "User-agent": "luarocks.org"
-        "Authorization": auth and "Basic #{auth}" or nil
       }
     }
 
@@ -69,7 +77,9 @@ class GitHub
     json.decode res
 
   primary_email: (access_token) =>
-    emails = assert @_api_request "GET", "/user/emails", { :access_token }
+    emails = assert @_api_request "GET", "/user/emails", nil, {
+      "Authorization": "token #{access_token}"
+    }
 
     for email in *emails
       if email.primary
@@ -78,10 +88,14 @@ class GitHub
     nil
 
   user: (access_token) =>
-    @_api_request "GET", "/user", { :access_token }
+    @_api_request "GET", "/user", nil, {
+      "Authorization": "token #{access_token}"
+    }
 
-  orgs: (user) =>
-    @_api_request "GET", "/users/#{user}/orgs"
+  orgs: (user, access_token) =>
+    @_api_request "GET", "/users/#{user}/orgs", nil, {
+      "Authorization": "token #{access_token}"
+    }
 
 config = require("lapis.config").get!
 GitHub config.github_client_id, config.github_client_secret
