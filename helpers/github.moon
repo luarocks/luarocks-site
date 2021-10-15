@@ -18,6 +18,9 @@ class GitHub
 
     "#{@login_prefix}/login/oauth/authorize?#{params}"
 
+  _client_auth: =>
+    "Basic #{ngx.encode_base64 "#{@client_id}:#{@client_secret}"}"
+
   access_token: (code) =>
     params = encode_query_string {
       :code
@@ -29,7 +32,7 @@ class GitHub
 
       headers: {
         "User-agent": "luarocks.org"
-        "Authorization": ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+        "Authorization": @_client_auth!
       }
     }
 
@@ -45,7 +48,7 @@ class GitHub
 
   delete_access_token: (access_token) =>
     @_api_request "DELETE", "/applications/#{@client_id}/tokens/#{access_token}", {}, {
-      "Authorization": ngx.encode_base64 "#{@client_id}:#{@client_secret}"
+      "Authorization": @_client_auth!
     }
 
   -- for requests to api prefix
