@@ -7,10 +7,9 @@ date = require "date"
 
 db = require "lapis.db"
 
-bcrypt = require "bcrypt"
+LOG_ROUDS = 9
 
-unless bcrypt.salt
-  bcrypt.salt = (v) -> v
+bcrypt = require "bcrypt"
 
 import strip_non_ascii from require "helpers.strings"
 
@@ -55,7 +54,7 @@ class Users extends Model
     encrypted_password = nil
 
     if password
-      encrypted_password = bcrypt.digest password, bcrypt.salt 5
+      encrypted_password = bcrypt.digest password, LOG_ROUDS
 
     stripped = strip_non_ascii username
     return nil, "username must be ascii only" unless stripped == username
@@ -112,7 +111,7 @@ class Users extends Model
     ]], query, query, per_page: 50
 
   update_password: (pass, r) =>
-    @update encrypted_password: bcrypt.digest pass, bcrypt.salt 5
+    @update encrypted_password: bcrypt.digest pass, LOG_ROUDS
     if r
       if r.current_user_session
         r.current_user_session\revoke!
