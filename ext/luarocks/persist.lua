@@ -6,6 +6,20 @@
 -- as it is used in the bootstrapping stage of the cfg module.
 module("ext.luarocks.persist", package.seeall)
 
+
+local lua_keywords = {
+  'and', 'break', 'do', 'else', 'elseif',
+  'end', 'false', 'for', 'function', 'if',
+  'in', 'local', 'nil', 'not', 'or',
+  'repeat', 'return', 'then', 'true',
+  'until', 'while'
+}
+
+local lua_keywords_set = {}
+for idx,k in ipairs(lua_keywords) do
+  lua_keywords_set[k] = true
+end
+
 local util = require("ext.luarocks.util")
 
 --- Load a Lua file containing assignments, storing them in a table.
@@ -111,7 +125,7 @@ write_table = function(out, tbl, level, field_order)
          write_table(out, k, level + 1)
          out:write("] = ")
       else
-         if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") then
+         if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") and not lua_keywords_set[k] then
             out:write(k.." = ")
          else
             out:write("['"..k:gsub("'", "\\'").."'] = ") 
@@ -133,6 +147,11 @@ end
 -- @return userdata The file object originally passed in as the `out` parameter.
 local function write_table(out, tbl, field_order)
    for k, v, sub_order in util.sortedpairs(tbl, field_order) do
+
+      if not k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") or lua_keywords_set[k] then
+        error("Invalid top level key: " .. k)
+      end
+
       out:write(k.." = ")
       write_value(out, v, 0, sub_order)
       out:write("\n")
