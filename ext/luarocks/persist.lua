@@ -9,11 +9,12 @@ module("ext.luarocks.persist", package.seeall)
 
 local lua_keywords = {
   'and', 'break', 'do', 'else', 'elseif',
-  'end', 'false', 'for', 'function', 'if',
+  'end', 'false', 'for', 'function', 'if', 'goto',
   'in', 'local', 'nil', 'not', 'or',
   'repeat', 'return', 'then', 'true',
   'until', 'while'
 }
+
 
 local lua_keywords_set = {}
 for idx,k in ipairs(lua_keywords) do
@@ -125,7 +126,7 @@ write_table = function(out, tbl, level, field_order)
          write_table(out, k, level + 1)
          out:write("] = ")
       else
-         if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") and not lua_keywords_set[k] then
+         if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") and not lua_keywords_set[k:lower()] then
             out:write(k.." = ")
          else
             out:write("['"..k:gsub("'", "\\'").."'] = ") 
@@ -148,7 +149,7 @@ end
 local function write_table(out, tbl, field_order)
    for k, v, sub_order in util.sortedpairs(tbl, field_order) do
 
-      if not k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") or lua_keywords_set[k] then
+      if not k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") or lua_keywords_set[k:lower()] then
         error("Invalid top level key: " .. k)
       end
 
