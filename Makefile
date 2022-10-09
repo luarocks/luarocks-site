@@ -8,7 +8,7 @@ test:
 	busted
 
 install_deps::
-	luarocks build --only-deps
+	luarocks build --only-deps --lua-version=5.1 --local
 
 init_schema::
 	createdb -U postgres moonrocks
