@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.1
--- Dumped by pg_dump version 13.1
+-- Dumped from database version 13.4
+-- Dumped by pg_dump version 13.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -136,13 +136,13 @@ ALTER TABLE public.downloads_daily OWNER TO postgres;
 CREATE TABLE public.exception_requests (
     id integer NOT NULL,
     exception_type_id integer NOT NULL,
-    path text NOT NULL,
-    method character varying(255) NOT NULL,
+    path text,
+    method character varying(255),
     referer text,
-    ip character varying(255) NOT NULL,
-    data text NOT NULL,
+    ip character varying(255),
+    data jsonb,
     msg text NOT NULL,
-    trace text NOT NULL,
+    trace text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -180,7 +180,8 @@ CREATE TABLE public.exception_types (
     label text NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    count integer DEFAULT 0 NOT NULL
+    count integer DEFAULT 0 NOT NULL,
+    status smallint DEFAULT 1 NOT NULL
 );
 
 
@@ -1298,8 +1299,8 @@ CREATE UNIQUE INDEX versions_rockspec_key_idx ON public.versions USING btree (ro
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.1
--- Dumped by pg_dump version 13.1
+-- Dumped from database version 13.4
+-- Dumped by pg_dump version 13.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1356,6 +1357,11 @@ COPY public.lapis_migrations (name) FROM stdin;
 1551918146
 1551935898
 1551990095
+lapis_exceptions_1446940278
+lapis_exceptions_1446941278
+lapis_exceptions_1451464107
+lapis_exceptions_1459407609
+1668488536
 \.
 
 
