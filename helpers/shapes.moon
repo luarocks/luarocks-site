@@ -11,20 +11,19 @@ valid_text = types.string / strip_bad_chars
 
 trimmed_text = valid_text / trim * types.custom(
   (v) -> v != "", "expected text"
-  describe: -> "not empty"
-)
+)\describe "not empty"
 
-empty = types.one_of {
+empty = types.one_of({
   types.nil
   types.pattern("^%s*$") / nil
-}, describe: -> "empty"
+})\describe "empty"
 
 email = trimmed_text * types.pattern("^[^@%s]+@[^@%s%.]+%.[^@%s]+$")\describe "email"
 
-url = trimmed_text * types.one_of {
+url = trimmed_text * types.one_of({
   types.pattern("^https?://[^%s]+$")
   types.pattern("^[^%s]+$") / (str) -> "http://#{str}"
-}, describe: -> "url"
+})\describe "url"
 
 truncated_text = (len) ->
   assert len, "missing length for shapes.truncated_text"
@@ -50,8 +49,8 @@ limited_text = (max_len, min_len=1) ->
   out\describe "text between #{min_len} and #{max_len} characters"
 
 twitter_username = trimmed_text * types.string\length(1,20) * types.pattern(
-  "^@?[_a-zA-Z0-9]+$", describe: -> "twitter usename"
-) / (str) ->
+  "^@?[_a-zA-Z0-9]+$"
+)\describe("twitter username") / (str) ->
   unless str\match "^@"
     "@#{str}"
   else
@@ -103,7 +102,7 @@ difference = (update, source, check_removals=false) ->
 db_id = types.one_of({
   types.number * types.custom (v) -> v == math.floor(v)
   types.string\length(0,18) / trim * types.pattern("^%d+$") / tonumber
-}, describe: -> "integer") * types.range(0, 2147483647)\describe "database id"
+})\describe("integer") * types.range(0, 2147483647)\describe "database id"
 
 db_id_list = (types.string / (str) ->
   [s for s in str\gmatch "(%d+)"]) * types.array_of db_id, length: types.range(1, 100)
