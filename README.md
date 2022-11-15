@@ -28,10 +28,13 @@ Install the following dependencies:
 
 Check out this repository.
 
-Install the dependencies listed in
-<https://github.com/luarocks/luarocks-site/blob/master/BoxFile> with LuaRocks.
+Install dependencies:
 
-Run these commands to build.
+```bash
+luarocks build --only-deps --lua-version=5.1 --local
+```
+
+Run these commands to build:
 
 ```bash
 tup init
