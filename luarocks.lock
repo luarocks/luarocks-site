@@ -4,7 +4,7 @@ return {
       ansicolors = "1.0.2-3",
       bcrypt = "2.1-6",
       cloud_storage = "1.3.0-1",
-      date = "2.1.2-3",
+      date = "2.2-2",
       etlua = "1.3.0-1",
       inifile = "1.0-2",
       lapis = "1.10.0-1",
