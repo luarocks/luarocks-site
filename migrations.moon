@@ -350,6 +350,8 @@ import
 
     create_index "user_activity_logs", "user_id", "created_at"
 
+  [1668488536]: require("lapis.exceptions.schema").run_migrations
+
 }
 
 
