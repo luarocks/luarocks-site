@@ -10,6 +10,9 @@ test:
 install_deps::
 	luarocks build --only-deps --lua-version=5.1 --local
 
+pin_deps::
+	luarocks build --only-deps --lua-version=5.1 --local --pin
+
 init_schema::
 	createdb -U postgres moonrocks
 	cat schema.sql | psql -U postgres moonrocks
