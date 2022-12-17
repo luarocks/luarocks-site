@@ -7,7 +7,7 @@ return {
       date = "2.2-2",
       etlua = "1.3.0-1",
       inifile = "1.0-2",
-      lapis = "1.10.0-1",
+      lapis = "1.11.0-1",
       ["lapis-console"] = "1.2.0-1",
       ["lapis-exceptions"] = "2.3.0-1",
       ["lapis-systemd"] = "1.0.0-1",

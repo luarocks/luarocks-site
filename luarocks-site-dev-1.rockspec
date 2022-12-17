@@ -15,7 +15,7 @@ dependencies = {
   "bcrypt == 2.1-6", -- Note: future versions of bcrypt will fail to verify due to prefix change 2y vs 2b
   "luabitop",
   "pgmoon ~> 1.15",
-  "lapis ~> 1.10",
+  "lapis ~> 1.11",
   "lapis-exceptions ~> 2",
   "lapis-console ~> 1.2",
   "lapis-systemd ~> 1.0",
