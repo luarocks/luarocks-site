@@ -7,9 +7,10 @@ date = require "date"
 
 db = require "lapis.db"
 
-LOG_ROUDS = 9
+BCRYPT_ROUNDS = 9
 
 bcrypt = require "bcrypt"
+bit = require "bit"
 
 import strip_non_ascii from require "helpers.strings"
 
@@ -54,7 +55,7 @@ class Users extends Model
     encrypted_password = nil
 
     if password
-      encrypted_password = bcrypt.digest password, LOG_ROUDS
+      encrypted_password = bcrypt.digest password, BCRYPT_ROUNDS
 
     stripped = strip_non_ascii username
     return nil, "username must be ascii only" unless stripped == username
@@ -79,6 +80,10 @@ class Users extends Model
     user or= Users\find [db.raw "lower(email)"]: username\lower!
 
     if user and user\check_password password
+
+      if user\password_is_outdated!
+        user\update_password password
+
       user
     else
       nil, "Incorrect username or password"
@@ -110,8 +115,15 @@ class Users extends Model
       order by similarity(username, ?) desc
     ]], query, query, per_page: 50
 
+  @generate_username: (username) =>
+    if username == nil
+      username = "username"
+
+    uuid = generate_uuid()
+    "#{username}-#{uuid\gsub("-", "")\sub 1, 10}"
+
   update_password: (pass, r) =>
-    @update encrypted_password: bcrypt.digest pass, LOG_ROUDS
+    @update encrypted_password: bcrypt.digest pass, BCRYPT_ROUNDS
     if r
       if r.current_user_session
         r.current_user_session\revoke!
@@ -119,7 +131,8 @@ class Users extends Model
 
   check_password: (pass) =>
     return false unless @encrypted_password
-    bcrypt.verify pass, @encrypted_password
+    encrypted = @encrypted_password\gsub "^%$2y%$", "$2b$"
+    bcrypt.verify pass, encrypted
 
   generate_password_reset: =>
     @get_data!
@@ -256,9 +269,17 @@ class Users extends Model
   has_password: =>
     not not @encrypted_password
 
-  @generate_username: (username) =>
-    if username == nil
-      username = "username"
+  password_is_outdated: =>
+    return false unless @encrypted_password
 
-    uuid = generate_uuid()
-    "#{username}-#{uuid\gsub("-", "")\sub 1, 10}"
+    -- old format string
+    if @encrypted_password\match "^%$2y%$"
+      return true
+
+    -- rounds mismatch
+    rounds_str = "%02d"\format BCRYPT_ROUNDS
+    unless @encrypted_password\match "^%$..%$#{rounds_str}%$"
+      return true
+
+    false
+
