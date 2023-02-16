@@ -48,11 +48,26 @@ class Layout extends Widget
 
 
       body ->
-        div class: "content", ->
+        main class: "content", ->
           @render_header!
           @content_for "inner"
 
         div class: "footer", ->
+          div class: "left", ->
+            a href: @url_for("index"), "Home"
+            raw " &middot; "
+            a href: @url_for"search", "Search"
+            raw " &middot; "
+            a href: @url_for("manifest", manifest: "root"), "Root Manifest"
+            raw " &middot; "
+            a href: @url_for"manifests", "Manifests"
+            raw " &middot; "
+            a href: @url_for"modules", "Modules"
+            raw " &middot; "
+            a href: @url_for"changes", "Changes"
+            raw " &middot; "
+            a href: @url_for"about", "About"
+
           div class: "right", ->
             a href: "https://twitter.com/luarocksorg", "@luarocksorg"
             raw " &middot; "
@@ -62,20 +77,6 @@ class Layout extends Widget
             a href: "https://github.com/luarocks/luarocks-site", "Source"
             raw " &middot; "
             a href: "https://github.com/luarocks/luarocks-site/issues", "Issues"
-
-          a href: @url_for("index"), "Home"
-          raw " &middot; "
-          a href: @url_for"search", "Search"
-          raw " &middot; "
-          a href: @url_for("manifest", manifest: "root"), "Root Manifest"
-          raw " &middot; "
-          a href: @url_for"manifests", "Manifests"
-          raw " &middot; "
-          a href: @url_for"modules", "Modules"
-          raw " &middot; "
-          a href: @url_for"changes", "Changes"
-          raw " &middot; "
-          a href: @url_for"about", "About"
 
       @content_for "js_init"
       @render_query_log!

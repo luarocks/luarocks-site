@@ -126,17 +126,7 @@ hr {
         height: 100%;
         display: flex;
         align-items: center;
-
-        > * {
-            margin: 0 10px;
-            &:last-child {
-                margin-right: 0;
-            }
-
-            &:first-child {
-                margin-left: 0;
-            }
-        }
+        gap: 15px;
     }
 
     .header_search {
@@ -232,13 +222,14 @@ hr {
     margin: 0 auto;
     padding: 20px 0;
     font-size: 12px;
+    display: flex;
 
     a {
         color: #9E9E9E;
     }
 
-    .right {
-        float: right;
+    > :last-child {
+        margin-left: auto;
     }
 }
 
@@ -501,19 +492,13 @@ img.avatar {
 .page_tabs {
     border-bottom: 1px solid $border_color;
     margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
 
-    .tab, .tab_sub {
+    .tab {
         font-size: 16px;
         padding-bottom: 5px;
-        display: inline-block;
-        vertical-align: top;
-        position: relative;
-        top: 1px;
-    }
-
-    .tab_sub {
-        color: #999;
-        margin-right: 40px;
     }
 
     .tab {
@@ -521,11 +506,6 @@ img.avatar {
         color: $body_color;
         text-decoration: none;
         border-bottom: 4px solid rgba($link_color, 0);
-        margin-right: 40px;
-
-        &.has_sub {
-            margin-right: 0px;
-        }
 
         &.active, &:hover {
             color: $link_color;

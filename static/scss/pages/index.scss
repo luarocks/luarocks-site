@@ -1,17 +1,9 @@
 .home_columns {
     display: flex;
+    gap: 10px;
+
     > * {
         width: 50%;
-        margin-right: 5px;
-        margin-left: 5px;
-
-        &:last-child {
-            margin-right: 0;
-        }
-
-        &:first-child {
-            margin-left: 0;
-        }
     }
 
     .split_header {
@@ -71,16 +63,17 @@
     .intro_banner_inner {
         width: $site_width;
         margin: 0 auto;
+        display: flex;
+        gap: 20px;
     }
 
     img {
-        float: left;
         width: 130px;
         height: 124px;
     }
 
     .intro_text {
-        margin-left: 155px;
+        flex: 1;
     }
 
     p {
