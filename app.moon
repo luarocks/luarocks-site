@@ -12,7 +12,9 @@ import
   yield_error
   from require "lapis.application"
 
-import assert_valid from require "lapis.validate"
+import assert_valid, with_params from require "lapis.validate"
+
+types = require "lapis.validate.types"
 
 import trim_filter from require "lapis.util"
 
@@ -241,12 +243,15 @@ class MoonRocks extends lapis.Application
     @title = "Changes"
     render: true
 
-  [search: "/search"]: =>
-    trim_filter @params
-    if query = @params.q
+  [search: "/search"]: capture_errors with_params {
+    {"q", types.empty + types.limited_text(128), label: "query" }
+    {"non_root", types.empty + types.any / true}
+  }, (params) =>
+    if query = params.q
       @title = "Search '#{query}'"
+      @search_query = query
 
-      manifests = unless @params.non_root
+      manifests = unless params.non_root
         { Manifests\root!.id }
 
       @results = Modules\search query, manifests

@@ -28,6 +28,8 @@ class Layout extends Widget
 
         link rel: "stylesheet", href: "/static/style.css?#{cache_buster}"
 
+        @content_for "head"
+
         raw [[
           <script type="text/javascript">
             if (window.location.hostname != "localhost") {

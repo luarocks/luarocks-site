@@ -1,6 +1,13 @@
 class Search extends require "widgets.page"
   inner_content: =>
     h2 "Search"
+
+    if @search_query
+      @content_for "head", ->
+        meta name: "robots", content: "noindex"
+
+    @render_errors!
+
     @render_search_form!
 
     if @results
@@ -17,7 +24,7 @@ class Search extends require "widgets.page"
     form action: "", method: "get", class: "form", ->
       div class: "row", ->
         label for: "search_input", "Query"
-        input type: "text", name: "q", id: "search_input", value: @params.q, autofocus: "autofocus"
+        input type: "text", name: "q", id: "search_input", value: @search_query
 
       div class: "row", ->
         label for: "root_toggle", "Include non-root"
