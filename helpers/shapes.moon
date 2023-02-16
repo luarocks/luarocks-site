@@ -54,7 +54,6 @@ difference = (update, source, check_removals=false) ->
   :email
   :url
   :twitter_username
-  :slug
 
   :difference
 }
