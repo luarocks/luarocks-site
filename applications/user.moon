@@ -10,13 +10,12 @@ import
   capture_errors_json
   from require "lapis.application"
 
-import assert_valid from require "lapis.validate"
-import trim_filter from require "lapis.util"
+import assert_valid, with_params from require "lapis.validate"
 
 shapes = require "helpers.shapes"
-import types from require "tableshape"
+types = require "lapis.validate.types"
 
-password_shape = shapes.valid_text * types.string\length 2, 150
+password_shape = types.valid_text * types.string\length 2, 150
 
 import
   ApiKeys
@@ -83,13 +82,11 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      { "username", types.limited_text 25}
+      { "password", types.valid_text * types.string\length 1, 150}
+    }, (params) =>
       assert_csrf @
-
-      params = shapes.assert_params @params, {
-        username: shapes.limited_text 25
-        password: shapes.valid_text * types.string\length 1, 150
-      }
 
       user = assert_error Users\login params.username, params.password
       user\write_session @, type: "login_password"
@@ -105,16 +102,13 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      { "username", types.limited_text 25 }
+      { "password", password_shape }
+      { "password_repeat", password_shape }
+      { "email", shapes.email }
+    }, (params) =>
       assert_csrf @
-
-      params = shapes.assert_params @params, {
-        username: shapes.limited_text 25
-        password: password_shape
-        password_repeat: password_shape
-        email: shapes.email
-      }
-
       assert_error params.password == params.password_repeat, "Password repeat does not match"
 
       {:username, :password, :email } = params
@@ -142,9 +136,9 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
 
       if validate_reset_token @
-        params = shapes.assert_params @params, {
-          password: password_shape
-          password_repeat: password_shape
+        params = assert_valid @params, types.params_shape {
+          {"password", password_shape}
+          {"password_repeat", password_shape}
         }
 
         assert_error params.password == params.password_repeat, "Password repeat does not match"
@@ -153,8 +147,8 @@ class MoonRocksUser extends lapis.Application
         @user.data\update { password_reset_token: db.NULL }
         redirect_to: @url_for"index"
       else
-        params = shapes.assert_params @params, {
-          email: shapes.email / string.lower
+        params = assert_valid @params, types.params_shape {
+          {"email", shapes.email / string.lower}
         }
 
         user = assert_error Users\find([db.raw "lower(email)"]: params.email),
@@ -215,16 +209,16 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      {"password", types.params_shape {
+        {"current_password", password_shape}
+        {"new_password", password_shape}
+        {"new_password_repeat", password_shape}
+      }}
+    }, (params) =>
       import UserActivityLogs from require "models"
-
       assert_csrf @
-
-      passwords = shapes.assert_params @params.password, {
-        current_password: password_shape
-        new_password: password_shape
-        new_password_repeat: password_shape
-      }
+      passwords = params.password
 
       assert_error passwords.new_password == passwords.new_password_repeat,
         "Password repeat does not match"
@@ -271,20 +265,18 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      {"api_key", types.limited_text 512 }
+      {"comment", types.empty / db.NULL + types.limited_text 255 }
+    }, (params)=>
       assert_csrf @
-      trim_filter @params
-      assert_valid @params, {
-        {"api_key", exists: true, type: "string"}
-        {"comment", optional: true, max_length: 255}
-      }
 
-      key = ApiKeys\find @current_user.id, assert @params.api_key
+      key = ApiKeys\find @current_user.id, assert params.api_key
       assert_error key and key.user_id == @current_user.id, "invalid key"
       assert_error not key.revoked, "invalid key"
 
       key\update {
-        comment: @params.comment or db.NULL
+        comment: params.comment
       }
 
       redirect_to: @url_for "user_settings.api_keys"
@@ -298,16 +290,16 @@ class MoonRocksUser extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      {"profile", types.params_shape {
+        {"website", shapes.url + types.empty / db.NULL}
+        {"twitter", shapes.twitter_username + types.empty / db.NULL}
+        {"github", types.limited_text(120) + types.empty / db.NULL}
+        {"profile", types.limited_text(1024*4) + types.empty / db.NULL}
+      }}
+    }, (params) =>
       assert_csrf @
-
-      profile_update = shapes.assert_params @params.profile, {
-        website: shapes.url + shapes.empty / db.NULL
-        twitter: shapes.twitter_username + shapes.empty / db.NULL
-        github: shapes.limited_text(120) + shapes.empty / db.NULL
-        profile: shapes.limited_text(1024*4) + shapes.empty / db.NULL
-      }
-
+      profile_update = params.profile
       difference = shapes.difference profile_update, @user\get_data!
 
       if next difference
@@ -339,7 +331,7 @@ class MoonRocksUser extends lapis.Application
         for log in *@server_logs
           ngx.say log.log
 
-        return layout: false
+        return skip_render: true
 
       render: true
   }
