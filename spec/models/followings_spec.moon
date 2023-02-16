@@ -1,15 +1,7 @@
-import use_test_env from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
-
 factory = require "spec.factory"
 
-import Users, Modules, Followings from require "models"
-
 describe "models.followings", ->
-  use_test_env!
-
-  before_each ->
-    truncate_tables Users, Modules, Followings
+  import Users, Modules, Followings from require "spec.models"
 
   it "creates follow", ->
     Followings\create {

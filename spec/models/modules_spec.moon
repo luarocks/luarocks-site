@@ -1,20 +1,7 @@
-import use_test_env from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
-
 factory = require "spec.factory"
 
-import
-  Manifests
-  Modules
-  Users
-  Versions
-  from require "models"
-
 describe "models.modules", ->
-  use_test_env!
-
-  before_each ->
-    truncate_tables Manifests, Users, Versions, Modules
+  import Manifests, Modules, Users, Versions from require "spec.models"
 
   it "should refresh has_dev_version with no dev versions", ->
     mod = factory.Modules!

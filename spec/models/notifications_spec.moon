@@ -1,25 +1,14 @@
-import use_test_env from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
-
-
 factory = require "spec.factory"
 
-import
-  Users
-  Modules
-  Manifests
-  Versions
-  Notifications
-  NotificationObjects
-  from require "models"
-
-
 describe "models.notifications", ->
-  use_test_env!
-
-  before_each ->
-    truncate_tables Users, Modules, Manifests, Versions, Notifications,
-      NotificationObjects
+  import
+    Users
+    Modules
+    Manifests
+    Versions
+    Notifications
+    NotificationObjects
+    from require "spec.models"
 
   it "creates a notification for following module", ->
     user = factory.Users!

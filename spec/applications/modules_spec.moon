@@ -1,18 +1,13 @@
 import use_test_server from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
 
 import request_as from require "spec.helpers"
 
 factory = require "spec.factory"
 
-
-import Modules, Versions, Followings, Users, Notifications, NotificationObjects from require "models"
-
 describe "applications.modules", ->
   use_test_server!
 
-  before_each ->
-    truncate_tables Modules, Versions, Followings, Users, Notifications, NotificationObjects
+  import Modules, Versions, Followings, Users, Notifications, NotificationObjects from require "spec.models"
 
   it "follows module", ->
     current_user = factory.Users!

@@ -1,9 +1,5 @@
-import use_test_env from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
-
 factory = require "spec.factory"
 
-import Modules, Users, ApprovedLabels, Manifests, ManifestModules from require "models"
 import ToolboxImport from require "helpers.toolbox"
 
 modules = {
@@ -27,12 +23,11 @@ labels = {
 
 
 describe "helpers.toolbox", ->
-  use_test_env!
-
   local toolbox
 
+  import Modules, Users, ApprovedLabels, Manifests, ManifestModules from require "spec.models"
+
   before_each ->
-    truncate_tables Modules, Users, ApprovedLabels, Manifests, ManifestModules
     toolbox = ToolboxImport modules, labels
 
   it "imports labels", ->

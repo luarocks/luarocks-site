@@ -1,21 +1,13 @@
-import use_test_env from require "lapis.spec"
-import truncate_tables from require "lapis.spec.db"
-
 factory = require "spec.factory"
 
-import
-  Manifests
-  Modules
-  Users
-  Versions
-  Rocks
-  from require "models"
-
 describe "models.rocks", ->
-  use_test_env!
-
-  before_each ->
-    truncate_tables Manifests, Users, Modules, Versions, Rocks
+  import
+    Manifests
+    Modules
+    Users
+    Versions
+    Rocks
+    from require "spec.models"
 
   it "allowed_to_edit only retrns true for owner/admin", ->
     rock = factory.Rocks!
