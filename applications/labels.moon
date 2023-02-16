@@ -9,10 +9,11 @@ import
   from require "helpers.app"
 
 import paginated_modules from require "helpers.modules"
-import trim_filter from require "lapis.util"
-import assert_valid from require "lapis.validate"
+import assert_valid, with_params from require "lapis.validate"
 
 import load_module from require "helpers.loaders"
+
+types = require "lapis.validate.types"
 
 import
   capture_errors
@@ -20,27 +21,24 @@ import
   assert_error
   from require "lapis.application"
 
-
 class MoonRocksLabels extends lapis.Application
-  [label: "/labels/:label"]: capture_errors_404 =>
+  [label: "/labels/:label"]: capture_errors_404 with_params {
+    {"label", types.limited_text 256}
+    {"non_root", types.empty / false + types.any / true}
+  }, (params) =>
     import Manifests, ApprovedLabels, Modules from require "models"
 
-    trim_filter @params
-    assert_valid @params, {
-      {"label", type: "string", exists: true}
-    }
+    @show_non_root = params.non_root
 
-    @show_non_root = not not @params.non_root
-
-    @approved_label = ApprovedLabels\find name: @params.label
+    @approved_label = ApprovedLabels\find name: params.label
 
     @title = if @show_non_root
-      "All modules labeled '#{@params.label}'"
+      "All modules labeled '#{params.label}'"
     else
-      "Modules labeled '#{@params.label}'"
+      "Modules labeled '#{params.label}'"
 
     clause = {
-      db.interpolate_query "? && labels", db.array { @params.label }
+      db.interpolate_query "? && labels", db.array { params.label }
       "labels is not null"
     }
 

@@ -7,8 +7,9 @@ import
   assert_error
   from require "lapis.application"
 
-import assert_valid from require "lapis.validate"
-import trim_filter from require "lapis.util"
+import assert_valid, with_params from require "lapis.validate"
+types = require "lapis.validate.types"
+shapes = require "helpers.shapes"
 
 import
   assert_csrf
@@ -107,22 +108,29 @@ class MoonRocksModules extends lapis.Application
     GET: =>
       render: true
 
-    POST: =>
-      changes = @params.m
+    POST: capture_errors with_params {
+      {"m", types.params_shape {
+        {"display_name", types.empty / db.NULL + types.limited_text 128}
+        {"summary", types.empty / db.NULL + types.limited_text 512}
+        {"license", types.empty / db.NULL + types.limited_text 128}
+        {"description", types.empty / db.NULL + types.limited_text 1024*5}
+        {"homepage", types.empty / db.NULL + types.limited_text(512) * shapes.url}
 
-      assert_valid @params, {
-        {"labels", type: "string", optional: true}
-      }
+        {"labels", types.one_of {
+          types.empty / -> {}
+          types.limited_text(512) / Modules\parse_labels
+        }}
+      }}
+    }, (params) =>
+      assert_csrf @
 
-      labels = Modules\parse_labels changes.labels or ""
+      labels = params.m.labels
+      params.m.labels = nil
 
-      trim_filter changes, {
-        "license", "description", "display_name", "homepage", "summary"
-      }, db.NULL
+      @module\update params.m
+      @module\set_labels labels
 
-
-      @module\update changes
-      @module\set_labels labels or {}
+      -- TODO: record user activity log
 
       redirect_to: @url_for("module", @)
   }
@@ -138,39 +146,23 @@ class MoonRocksModules extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      {"v", types.params_shape {
+        {"development", types.empty / false + types.any / true}
+        {"archived", types.empty / false + types.any / true}
+        {"external_rockspec_url", types.nil + types.empty / db.NULL + shapes.url}
+      }}
+    }, (params) =>
       assert_csrf @
 
-      @params.v or= {}
+      unless @current_user\is_admin!
+        params.v.external_rockspec_url = nil
 
-      assert_valid @params, {
-        {"v", type: "table"}
-      }
+      @version\update params.v
 
-      version_update = trim_filter @params.v
-      development = not not version_update.development
-      archived = not not version_update.archived
+      -- TODO: record user activity log
 
-      external_rockspec_url = if @current_user\is_admin!
-        assert_valid version_update, {
-          {"external_rockspec_url", type: "string", optional: true}
-        }
-
-        if url = version_update.external_rockspec_url
-          unless url\match "%w+://"
-            url = "http://" .. url
-          url
-        else
-          db.NULL
-
-
-      @version\update {
-        :development
-        :archived
-        :external_rockspec_url
-      }
-
-      redirect_to: @url_for("module_version", @)
+      redirect_to: @url_for @version
   }
 
   [module_version: "/modules/:user/:module/:version"]: capture_errors_404 =>

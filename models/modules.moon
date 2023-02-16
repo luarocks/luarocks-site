@@ -139,7 +139,7 @@ class Modules extends Model
       l = slugify trim l
       continue if l == "" or l == "-"
       continue if #l == 1
-      continue if #l > 20
+      continue if #l > 32
       continue if seen[l]
       seen[l] = true
 

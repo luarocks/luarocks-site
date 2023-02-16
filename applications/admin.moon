@@ -11,8 +11,9 @@ import
   from require "lapis.application"
 
 import assert_csrf, assert_page from require "helpers.app"
-import assert_valid from require "lapis.validate"
-import trim_filter from require "lapis.util"
+import assert_valid, with_params from require "lapis.validate"
+
+types = require "lapis.validate.types"
 
 import preload from require "lapis.db.model"
 
@@ -137,26 +138,20 @@ class MoonRocksAdmin extends lapis.Application
       @uncreated_labels = ApprovedLabels\find_uncreated!
       render: true
 
-    POST: capture_errors_json =>
+    POST: capture_errors_json with_params {
+      {"label", types.params_shape {
+        {"name", types.valid_text}
+      }}
+      {"action", types.empty + types.one_of {"delete"}}
+    }, (params) =>
       assert_csrf @
-
-      assert_valid @params, {
-        {"label", type: "table"}
-        {"action", optional: true, one_of: {"delete"}}
-      }
-
-      trim_filter @params.label
-
-      assert_valid @params.label, {
-        {"name", exists: true}
-      }
 
       import ApprovedLabels from require "models"
 
-      label = switch @params.action
+      label = switch params.action
         when "delete"
           al = ApprovedLabels\find {
-            name: @params.label.name
+            name: params.label.name
           }
 
           if al
@@ -165,7 +160,7 @@ class MoonRocksAdmin extends lapis.Application
 
         else -- create by default
           ApprovedLabels\create {
-            name: @params.label.name
+            name: params.label.name
           }
 
       json: {
