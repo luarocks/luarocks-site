@@ -38,6 +38,7 @@ config { "development", "test" }, ->
 config "test", ->
   code_cache "on"
   disable_manifest_cache "1"
+  logging false
 
 config { "production", "staging" }, ->
   num_workers 2
