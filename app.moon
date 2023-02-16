@@ -16,8 +16,6 @@ import assert_valid, with_params from require "lapis.validate"
 
 types = require "lapis.validate.types"
 
-import trim_filter from require "lapis.util"
-
 import
   ManifestModules
   Manifests
@@ -281,18 +279,16 @@ class MoonRocks extends lapis.Application
       GET: =>
         render: true
 
-      POST: capture_errors =>
-        trim_filter @params
-        assert_valid @params, {
-          { "username", exists: true }
-        }
-
+      POST: capture_errors with_params {
+        {"username", types.limited_text 256}
+        {"take_root", types.empty / false + types.any / true}
+      }, (params) =>
         import slugify from require "lapis.util"
-        target_user = Users\find slug: slugify @params.username
+        target_user = Users\find slug: slugify params.username
         assert_error target_user, "could not find user"
         assert_error @module.user.id != target_user.id, "users are the same"
 
-        new_module = @module\copy_to_user target_user, not not @params.take_root
+        new_module = @module\copy_to_user target_user, params.take_root
 
         redirect_to: @url_for("module", user: target_user.slug, module: new_module.name)
     }
@@ -306,18 +302,19 @@ class MoonRocks extends lapis.Application
     GET: =>
       render: true
 
-    POST: capture_errors =>
+    POST: capture_errors with_params {
+      {"manifest_name", types.limited_text 60}
+      {"description", types.empty + types.limited_text 1024*5}
+      {"is_open", types.empty / false + types.any / true}
+    }, (params) =>
       import ManifestAdmins from require "models"
       assert_csrf @
 
-      trim_filter @
-      assert_valid @params, {
-        {"manifest_name", exists: true, max_length: 60}
-        {"description", optional: true, max_length: 1024*5}
-      }
-
-      manifest = assert_error Manifests\create @params.manifest_name,
-        not not @params.is_open, @params.description
+      manifest = assert_error Manifests\create(
+        params.manifest_name,
+        params.is_open,
+        params.description
+      )
 
       ManifestAdmins\create manifest, @current_user, true
 
