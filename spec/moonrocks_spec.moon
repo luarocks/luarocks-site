@@ -110,6 +110,34 @@ describe "moonrocks", ->
       status, body = request_as user, "/settings/profile"
       assert.same 200, status
 
+    describe "profile", ->
+      it "updates profile", ->
+
+        data = user\get_data!
+        data\update {
+          github: "zool"
+          profile: "Goodbye world"
+        }
+
+
+        status, body = request_as user, "/settings/profile", {
+          post: {
+            "profile[website]": "leafo.net"
+            "profile[twitter]": "leafo"
+            "profile[profile]": "Hello world!"
+          }
+        }
+
+        assert.same 302, status
+
+        user\refresh!
+        data = user\get_data!
+
+        assert.same nil, data.github
+        assert.same "http://leafo.net", data.website
+        assert.same "@leafo", data.twitter
+        assert.same "Hello world!", data.profile
+
     describe "reset password", ->
       import UserActivityLogs from require "spec.models"
 
