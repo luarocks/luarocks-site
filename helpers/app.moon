@@ -9,6 +9,14 @@ import assert_valid from require "lapis.validate"
 generate_csrf = => csrf.generate_token @
 assert_csrf = => csrf.assert_token @
 
+-- decorator for action functions to assert that function is called with CSRF
+-- token validated
+with_csrf = (fn) ->
+  import assert_csrf from require "helpers.csrf"
+  (...) =>
+    assert_csrf @
+    fn @, ...
+
 assert_editable = (thing) =>
   unless thing\allowed_to_edit @current_user
     yield_error "Don't have permission to edit"
@@ -96,6 +104,6 @@ verify_return_to = (url) ->
   false
 
 
-{ :assert_editable, :generate_csrf, :assert_csrf, :require_login,
+{ :assert_editable, :generate_csrf, :assert_csrf, :with_csrf, :require_login,
   :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page,
   :login_and_return_url, :verify_return_to, :capture_errors }
