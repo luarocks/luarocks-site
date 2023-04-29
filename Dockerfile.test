@@ -1,4 +1,4 @@
-FROM ghcr.io/leafo/lapis-archlinux-itchio:2023-2-1
+FROM ghcr.io/leafo/lapis-archlinux-itchio:2023-4-28
 MAINTAINER leaf corcoran <leafot@gmail.com>
 
 WORKDIR /site/luarocks.org
