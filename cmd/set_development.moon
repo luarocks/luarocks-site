@@ -2,9 +2,6 @@
 http = require "socket.http"
 import parse_rockspec from require "helpers.uploaders"
 
-import connect_postgres from require "cmd.helpers"
-connect_postgres!
-
 set_development = ->
   import Versions from require "models"
   versions = Versions\select!

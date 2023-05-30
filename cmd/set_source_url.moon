@@ -1,7 +1,4 @@
 
-import connect_postgres from require "cmd.helpers"
-connect_postgres!
-
 import Versions from require "models"
 versions = Versions\select!
 print "Processing #{#versions} rockspecs"

@@ -11,10 +11,6 @@ http = require "socket.http"
 import parse_rockspec from require "helpers.uploaders"
 
 import
-  connect_postgres
-  from require "cmd.helpers"
-
-import
   parse_manifest
   assert_request
   from require "helpers.mirror"
@@ -56,7 +52,6 @@ log = do
 local user
 
 mirror = ->
-  connect_postgres!
   log "Mirroring #{SERVER} to user: #{USER}, (dev: #{development})"
   import Users, LinkedModules from require "models"
   user = Users\find slug: USER

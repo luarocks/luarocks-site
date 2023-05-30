@@ -6,9 +6,6 @@ unless user_slug
   print HELP
   os.exit!
 
-import connect_postgres from require "cmd.helpers"
-connect_postgres!
-
 import Users, Modules, Manifests, ManifestModules from require "models"
 
 luarocks = Users\find slug: "luarocks"
