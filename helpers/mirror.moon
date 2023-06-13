@@ -65,13 +65,19 @@ update_manifest_on_disk = (server, dest, force=false) ->
 
           tmp_fname = "#{fname}.tmp"
 
-          http.request {
+          res, status = http.request {
             :url
             sink: ltn12.sink.file io.open tmp_fname, "w"
             headers: {
               "user-agent": "moonrocks_backup"
             }
           }
+
+          if (not res) or (type(status) == "number" and status >= 400)
+            seen_files[fname] = nil
+            os.execute "rm '#{tmp_fname}'"
+            print "failed"
+            continue
 
           os.execute "mv '#{tmp_fname}' #{fname}"
           print "done"
