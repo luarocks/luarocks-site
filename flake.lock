@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1688739866,
+        "narHash": "sha256-Oo8XzlBRPfCdWvmfSXaeQ3s+t7tFOsp6PHtORjqpBJI=",
+        "owner": "teto",
+        "repo": "nixpkgs",
+        "rev": "757b3cdd99693318384b00b82358d61968594348",
+        "type": "github"
+      },
+      "original": {
+        "owner": "teto",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /bin/sh
 CURRENT_DB=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get().postgres.database)')
 CURRENT_ENVIRONMENT=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get()._name)')
 
