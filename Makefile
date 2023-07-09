@@ -8,7 +8,7 @@ test:
 	busted
 
 install_deps::
-	luarocks build --only-deps --lua-version=5.1 --local
+	luarocks build --only-deps --lua-version=5.1 --tree ./.luarocks
 
 pin_deps::
 	luarocks build --only-deps --lua-version=5.1 --local --pin

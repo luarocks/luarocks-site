@@ -60,9 +60,13 @@
           text = luarocksContent;
           name = "luarocks-config" ;
         };
+      # export PATH="$PATH:~/.luarocks/bin"
+      # export LUA_PATH='.luarocks/share/lua/5.1/?.lua;;'
       in ''
         export LUAROCKS_CONFIG=${luarocksConfigFile}
-
+        luarocks path --tree ./.luarocks > .luarocks-init.sh
+        echo "sourcing .luarocks-init.sh"
+        source .luarocks-init.sh
         echo "You need a postgres server"
         echo "Read README for next steps"
         echo "make install_deps"
