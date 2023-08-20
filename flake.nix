@@ -27,6 +27,7 @@
                   lp.lapis-exceptions
                   lp.tableshape
                   lp.mailgun
+                  lp.cloud_storage
                   # cloudstorage / zipwriter
 
                 ]);
