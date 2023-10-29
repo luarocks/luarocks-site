@@ -3,7 +3,7 @@
 
   inputs = {
 
-    nixpkgs.url = "github:teto/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:teto/nixpkgs/package-luarocks-updater";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -16,21 +16,22 @@
             inherit system;
             overlays = [ self.overlays.default ];
           };
-                # openresty uses luajit so we need lua5.1
-                luaEnv = pkgs.lua5_1.withPackages (lp: [
-                  lp.luaexpat
-                  lp.busted
-                  lp.luarocks
-                  lp.moonscript # provides moonc compiler
-                  lp.lapis
-                  lp.lapis-console
-                  lp.lapis-exceptions
-                  lp.tableshape
-                  lp.mailgun
-                  lp.cloud_storage
-                  # cloudstorage / zipwriter
 
-                ]);
+          # openresty uses luajit so we need lua5.1
+          luaEnv = pkgs.lua5_1.withPackages (lp: [
+            lp.luaexpat
+            lp.busted
+            lp.luarocks
+            lp.moonscript # provides moonc compiler
+            lp.lapis
+            lp.lapis-console
+            lp.lapis-exceptions
+            lp.tableshape
+            lp.mailgun
+            lp.cloud_storage
+            # cloudstorage / zipwriter
+
+          ]);
 
         in
         {
@@ -54,6 +55,7 @@
             # with pkgs;
             buildInputs =
               [
+                pkgs.luarocks-packages-updater
                 pkgs.tup
                 # pkgs.lua5_1.pkgs.luarocks
                 # expat.dev # for the lua

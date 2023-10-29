@@ -5,11 +5,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1689068808,
-        "narHash": "sha256-6ixXo3wt24N/melDWjq70UuHQLxGV8jZvooRanIHXw0=",
+        "lastModified": 1694529238,
+        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "919d646de7be200f3bf08cb76ae1f09402b6f9b4",
+        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
         "type": "github"
       },
       "original": {
@@ -20,16 +20,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1688739866,
-        "narHash": "sha256-Oo8XzlBRPfCdWvmfSXaeQ3s+t7tFOsp6PHtORjqpBJI=",
+        "lastModified": 1698540220,
+        "narHash": "sha256-le2yB11Yl4jEPUhswmC59DluIthT9LxA42oR05k+euI=",
         "owner": "teto",
         "repo": "nixpkgs",
-        "rev": "757b3cdd99693318384b00b82358d61968594348",
+        "rev": "8cf8be40492431d2c7bc8c7fb9d5dc565e6e9af2",
         "type": "github"
       },
       "original": {
         "owner": "teto",
-        "ref": "nixos-unstable",
+        "ref": "package-luarocks-updater",
         "repo": "nixpkgs",
         "type": "github"
       }
