@@ -6,7 +6,7 @@ You can customize the generated packages in pkgs/development/lua-modules/overrid
 { stdenv, lib, fetchurl, fetchgit, callPackage, ... } @ args:
 final: prev:
 {
-ansicolors = callPackage({ fetchurl, lua, luaOlder, buildLuarocksPackage }:
+ansicolors = callPackage({ buildLuarocksPackage, fetchurl, lua, luaOlder }:
 buildLuarocksPackage {
   pname = "ansicolors";
   version = "1.0.2-3";
@@ -29,7 +29,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-cloud_storage = callPackage({ lua, buildLuarocksPackage, luaexpat, date, lua-cjson, luaossl, mimetypes, luasocket, luaOlder, fetchgit }:
+cloud_storage = callPackage({ luaOlder, fetchgit, mimetypes, luaossl, buildLuarocksPackage, lua, lua-cjson, date, luaexpat, luasocket }:
 buildLuarocksPackage {
   pname = "cloud_storage";
   version = "1.3.0-1";
@@ -61,7 +61,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-date = callPackage({ luaOlder, lua, fetchgit, buildLuarocksPackage, luaAtLeast }:
+date = callPackage({ luaAtLeast, buildLuarocksPackage, lua, luaOlder, fetchgit }:
 buildLuarocksPackage {
   pname = "date";
   version = "2.2.1-1";
@@ -93,7 +93,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-etlua = callPackage({ lua, buildLuarocksPackage, luaOlder, fetchgit }:
+etlua = callPackage({ luaOlder, buildLuarocksPackage, lua, fetchgit }:
 buildLuarocksPackage {
   pname = "etlua";
   version = "1.3.0-1";
@@ -125,7 +125,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-lapis = callPackage({ argparse, lua-cjson, date, luaossl, lua, fetchgit, luasocket, lpeg, ansicolors, loadkit, pgmoon, etlua, buildLuarocksPackage }:
+lapis = callPackage({ date, ansicolors, lua, luaossl, etlua, argparse, pgmoon, buildLuarocksPackage, loadkit, lua-cjson, lpeg, fetchgit, luasocket }:
 buildLuarocksPackage {
   pname = "lapis";
   version = "1.15.0-1";
@@ -156,7 +156,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-lapis-exceptions = callPackage({ tableshape, lapis, buildLuarocksPackage, lua, fetchgit }:
+lapis-exceptions = callPackage({ fetchgit, buildLuarocksPackage, lua, lapis, tableshape }:
 buildLuarocksPackage {
   pname = "lapis-exceptions";
   version = "2.4.0-1";
@@ -188,7 +188,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-mailgun = callPackage({ lua, fetchgit, luaOlder, luasec, luasocket, lpeg, buildLuarocksPackage, lua-cjson }:
+mailgun = callPackage({ buildLuarocksPackage, lua, lua-cjson, luasocket, lpeg, luaOlder, fetchgit, luasec }:
 buildLuarocksPackage {
   pname = "mailgun";
   version = "1.2.0-1";
@@ -220,7 +220,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-mimetypes = callPackage({ lua, buildLuarocksPackage, luaOlder, fetchurl }:
+mimetypes = callPackage({ buildLuarocksPackage, fetchurl, luaOlder, lua }:
 buildLuarocksPackage {
   pname = "mimetypes";
   version = "1.0.0-3";
@@ -243,7 +243,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-pgmoon = callPackage({ lua, luaOlder, buildLuarocksPackage, lpeg, fetchgit }:
+pgmoon = callPackage({ fetchgit, luaOlder, buildLuarocksPackage, lua, lpeg }:
 buildLuarocksPackage {
   pname = "pgmoon";
   version = "1.16.0-1";
