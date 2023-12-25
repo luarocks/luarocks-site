@@ -3,12 +3,12 @@
 
   inputs = {
 
-    nixpkgs.url = "github:teto/nixpkgs/package-luarocks-updater";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" ]
+    flake-utils.lib.eachDefaultSystem 
       (system:
         let
 
