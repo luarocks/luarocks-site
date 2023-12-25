@@ -29,7 +29,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-cloud_storage = callPackage({ luaOlder, fetchgit, mimetypes, luaossl, buildLuarocksPackage, lua, lua-cjson, date, luaexpat, luasocket }:
+cloud_storage = callPackage({ buildLuarocksPackage, date, fetchgit, fetchurl, lua, lua-cjson, luaOlder, luaexpat, luaossl, luasocket, mimetypes }:
 buildLuarocksPackage {
   pname = "cloud_storage";
   version = "1.3.0-1";
@@ -49,19 +49,19 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.1");
   propagatedBuildInputs = [ date lua lua-cjson luaexpat luaossl luasocket mimetypes ];
 
   meta = {
-    homepage = "git://github.com/leafo/cloud_storage.git";
+    homepage = "https://github.com/leafo/cloud_storage.git";
     description = "Access Google Cloud Storage from Lua";
     license.fullName = "MIT";
   };
 }) {};
 
-date = callPackage({ luaAtLeast, buildLuarocksPackage, lua, luaOlder, fetchgit }:
+date = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lua, luaAtLeast, luaOlder }:
 buildLuarocksPackage {
   pname = "date";
   version = "2.2.1-1";
@@ -81,7 +81,7 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.0") || (luaAtLeast "5.5");
   propagatedBuildInputs = [ lua ];
@@ -93,7 +93,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-etlua = callPackage({ luaOlder, buildLuarocksPackage, lua, fetchgit }:
+etlua = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lua, luaOlder }:
 buildLuarocksPackage {
   pname = "etlua";
   version = "1.3.0-1";
@@ -113,7 +113,7 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.1");
   propagatedBuildInputs = [ lua ];
@@ -125,27 +125,27 @@ buildLuarocksPackage {
   };
 }) {};
 
-lapis = callPackage({ date, ansicolors, lua, luaossl, etlua, argparse, pgmoon, buildLuarocksPackage, loadkit, lua-cjson, lpeg, fetchgit, luasocket }:
+lapis = callPackage({ ansicolors, argparse, buildLuarocksPackage, date, etlua, fetchgit, fetchurl, loadkit, lpeg, lua, lua-cjson, luaossl, luasocket, pgmoon }:
 buildLuarocksPackage {
   pname = "lapis";
-  version = "1.15.0-1";
+  version = "1.16.0-1";
   knownRockspec = (fetchurl {
-    url    = "mirror://luarocks/lapis-1.15.0-1.rockspec";
-    sha256 = "1gzgc446q4aab9ly68niai7r7636l3kylzna3qj6sh6w54c8kgi2";
+    url    = "mirror://luarocks/lapis-1.16.0-1.rockspec";
+    sha256 = "0rqq02kpqawhpwii8i4vziv0cfc9ifz8w8pgi19wf8d0p3yhczig";
   }).outPath;
   src = fetchgit ( removeAttrs (builtins.fromJSON ''{
   "url": "https://github.com/leafo/lapis.git",
-  "rev": "1cbd6cc76818eaac500bb427f2da445b7cdb4b73",
-  "date": "2023-10-17T00:40:34-07:00",
-  "path": "/nix/store/i1s0gcddzpswi2q9bcar53pasrrlmv7p-lapis",
-  "sha256": "1zj5c2j9g6fd66j0jg9pf5962razgndwfk154z3b5jkapln4q4rh",
-  "hash": "sha256-MBNMLL1qyrLGJyVMx5t9X2VhUnE3PQmkMc2Zl6RgRf4=",
+  "rev": "2871ab9661a97f0ce3f622e9d9504a596a83c727",
+  "date": "2023-11-03T10:32:22-07:00",
+  "path": "/nix/store/r4kkw2gg5m0hlqnh0qdshmj8y83i3xxa-lapis",
+  "sha256": "08yh7ijqma564lkfb2dvh5hbik5hdcf9mih5f5rlnm05jkamrx77",
+  "hash": "sha256-5/Rc1ZQFVEtzcQXGmhxrsMy4YIG7ieUmJaaoimU80CM=",
   "fetchLFS": false,
   "fetchSubmodules": true,
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   propagatedBuildInputs = [ ansicolors argparse date etlua loadkit lpeg lua lua-cjson luaossl luasocket pgmoon ];
 
@@ -156,7 +156,39 @@ buildLuarocksPackage {
   };
 }) {};
 
-lapis-exceptions = callPackage({ fetchgit, buildLuarocksPackage, lua, lapis, tableshape }:
+lapis-console = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lapis, lua }:
+buildLuarocksPackage {
+  pname = "lapis-console";
+  version = "1.2.0-1";
+  knownRockspec = (fetchurl {
+    url    = "mirror://luarocks/lapis-console-1.2.0-1.rockspec";
+    sha256 = "1947hsr891z47hwxynrcx6binzwshg3rr81wzcjszybhqv7hprkp";
+  }).outPath;
+  src = fetchgit ( removeAttrs (builtins.fromJSON ''{
+  "url": "https://github.com/leafo/lapis-console.git",
+  "rev": "b76ad976086e2ddb87603a3c8a31a8efa483450a",
+  "date": "2021-01-25T08:51:59-08:00",
+  "path": "/nix/store/rapxaa6ca3grwxbxpyhbcha2048vzcp8-lapis-console",
+  "sha256": "0344p3cr29c5lzp1whxsh4fsyp2bk7f78wzqx5h9y0234k20jbc1",
+  "hash": "sha256-gS0JxCRDAJ9g6fhzdNyZS1yvHYG6Qx7up4Ulkdm4hAw=",
+  "fetchLFS": false,
+  "fetchSubmodules": true,
+  "deepClone": false,
+  "leaveDotGit": false
+}
+ '') ["date" "path" "sha256"]) ;
+
+  disabled = (lua.luaversion != "5.1");
+  propagatedBuildInputs = [ lapis lua ];
+
+  meta = {
+    homepage = "https://github.com/leafo/lapis-console.git";
+    description = "An interactive web based console for Lapis";
+    license.fullName = "MIT";
+  };
+}) {};
+
+lapis-exceptions = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lapis, lua, tableshape }:
 buildLuarocksPackage {
   pname = "lapis-exceptions";
   version = "2.4.0-1";
@@ -176,19 +208,19 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (lua.luaversion != "5.1");
   propagatedBuildInputs = [ lapis lua tableshape ];
 
   meta = {
-    homepage = "git://github.com/leafo/lapis-exceptions.git";
+    homepage = "https://github.com/leafo/lapis-exceptions.git";
     description = "Track Lapis exceptions to database and email when they happen";
     license.fullName = "MIT";
   };
 }) {};
 
-mailgun = callPackage({ buildLuarocksPackage, lua, lua-cjson, luasocket, lpeg, luaOlder, fetchgit, luasec }:
+mailgun = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lpeg, lua, lua-cjson, luaOlder, luasec, luasocket }:
 buildLuarocksPackage {
   pname = "mailgun";
   version = "1.2.0-1";
@@ -208,7 +240,7 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.1");
   propagatedBuildInputs = [ lpeg lua lua-cjson luasec luasocket ];
@@ -220,7 +252,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-mimetypes = callPackage({ buildLuarocksPackage, fetchurl, luaOlder, lua }:
+mimetypes = callPackage({ buildLuarocksPackage, fetchurl, lua, luaOlder }:
 buildLuarocksPackage {
   pname = "mimetypes";
   version = "1.0.0-3";
@@ -243,7 +275,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-pgmoon = callPackage({ fetchgit, luaOlder, buildLuarocksPackage, lua, lpeg }:
+pgmoon = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lpeg, lua, luaOlder }:
 buildLuarocksPackage {
   pname = "pgmoon";
   version = "1.16.0-1";
@@ -263,7 +295,7 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.1");
   propagatedBuildInputs = [ lpeg lua ];
@@ -275,7 +307,7 @@ buildLuarocksPackage {
   };
 }) {};
 
-tableshape = callPackage({ luaOlder, buildLuarocksPackage, fetchgit, lua }:
+tableshape = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lua, luaOlder }:
 buildLuarocksPackage {
   pname = "tableshape";
   version = "2.6.0-1";
@@ -295,7 +327,7 @@ buildLuarocksPackage {
   "deepClone": false,
   "leaveDotGit": false
 }
- '') ["date" "path"]) ;
+ '') ["date" "path" "sha256"]) ;
 
   disabled = (luaOlder "5.1");
   propagatedBuildInputs = [ lua ];
