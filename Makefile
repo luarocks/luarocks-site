@@ -66,3 +66,5 @@ annotate_models:
 zipserver-dev::
 	zipserver -config configs/zipserver-dev.json
 
+nix-update:
+	nix run 'nixpkgs#luarocks-packages-updater' -- -i contrib/luarocks-packages.csv -o contrib/generated-packages.nix
