@@ -21,6 +21,7 @@
           luaEnv = pkgs.lua5_1.withPackages (lp: [
             lp.luaexpat
             lp.busted
+            lp.bcrypt
             lp.luarocks
             lp.moonscript # provides moonc compiler
             lp.lapis

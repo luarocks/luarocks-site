@@ -1,5 +1,6 @@
 name,src,ref,server,version,luaversion,maintainers
 ansicolors,,,,,,
+bcrypt,,,,,,
 date,,,,,,
 etlua,,,,,,
 lapis,,,,,,
