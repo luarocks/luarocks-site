@@ -29,6 +29,38 @@ buildLuarocksPackage {
   };
 }) {};
 
+bcrypt = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lua, luaOlder }:
+buildLuarocksPackage {
+  pname = "bcrypt";
+  version = "2.3-1";
+  knownRockspec = (fetchurl {
+    url    = "mirror://luarocks/bcrypt-2.3-1.rockspec";
+    sha256 = "1zjy7sflyd50jvp603hmw0sg3rw5xyray0spzv5x5ky9hxivcdrf";
+  }).outPath;
+  src = fetchgit ( removeAttrs (builtins.fromJSON ''{
+  "url": "https://github.com/mikejsavage/lua-bcrypt.git",
+  "rev": "8914833d1bdc86af9b10454a22a6c042e1ac29ba",
+  "date": "2022-04-09T19:53:15+03:00",
+  "path": "/nix/store/dw74i71i3ydkiysf41yadz6g0bvfphnp-lua-bcrypt",
+  "sha256": "0sj0nzppqw6b98g8mx9q856frlwa3j5vddrsr5gkzpn36xpl1py1",
+  "hash": "sha256-wd9AbzfD3j9fyTq3toscitPsTEE49YoeSstwfO+3QGo=",
+  "fetchLFS": false,
+  "fetchSubmodules": true,
+  "deepClone": false,
+  "leaveDotGit": false
+}
+ '') ["date" "path" "sha256"]) ;
+
+  disabled = (luaOlder "5.1");
+  propagatedBuildInputs = [ lua ];
+
+  meta = {
+    homepage = "http://github.com/mikejsavage/lua-bcrypt";
+    description = "A Lua wrapper for bcrypt";
+    license.fullName = "ISC";
+  };
+}) {};
+
 cloud_storage = callPackage({ buildLuarocksPackage, date, fetchgit, fetchurl, lua, lua-cjson, luaOlder, luaexpat, luaossl, luasocket, mimetypes }:
 buildLuarocksPackage {
   pname = "cloud_storage";
