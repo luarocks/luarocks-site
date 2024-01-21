@@ -252,6 +252,38 @@ buildLuarocksPackage {
   };
 }) {};
 
+lzlib = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lua, luaOlder }:
+buildLuarocksPackage {
+  pname = "lzlib";
+  version = "0.4.1.53-4";
+  knownRockspec = (fetchurl {
+    url    = "mirror://luarocks/lzlib-0.4.1.53-4.rockspec";
+    sha256 = "1z0c7jr5mpjixhiq0yjlmyd6lpk63ybhq3g6lkwicdjsfs60lphh";
+  }).outPath;
+  src = fetchgit ( removeAttrs (builtins.fromJSON ''{
+  "url": "https://github.com/hishamhm/lzlib.git",
+  "rev": "93b88e931ffa7cd0a52a972b6b26d37628f479f3",
+  "date": "2015-01-12T21:43:55-02:00",
+  "path": "/nix/store/h55zm1m3bcmna8icyk6if84gv87yqskf-lzlib",
+  "sha256": "0xxx8mn6zki9irhhcqp3adbzw9a8v48y6anshxky1xg7hw9g42k3",
+  "hash": "sha256-YwryEofn9eBnh9oq4xHZSCX+V1PjYgZhjinOb2xFvXc=",
+  "fetchLFS": false,
+  "fetchSubmodules": true,
+  "deepClone": false,
+  "leaveDotGit": false
+}
+ '') ["date" "path" "sha256"]) ;
+
+  disabled = (luaOlder "5.1");
+  propagatedBuildInputs = [ lua ];
+
+  meta = {
+    homepage = "http://luaforge.net/projects/lzlib/";
+    description = "Lua bindings to the ZLib compression library";
+    license.fullName = "MIT/X11";
+  };
+}) {};
+
 mailgun = callPackage({ buildLuarocksPackage, fetchgit, fetchurl, lpeg, lua, lua-cjson, luaOlder, luasec, luasocket }:
 buildLuarocksPackage {
   pname = "mailgun";
