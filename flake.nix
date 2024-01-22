@@ -17,23 +17,48 @@
             overlays = [ self.overlays.default ];
           };
 
+            # TODO fix in the overlay directly
+            mylzlib = pkgs.lua5_1.pkgs.lzlib.overrideAttrs(oa: {
+                    # buildInputs = oa.buildInputs ++ [
+                    #     pkgs.zlib.dev
+                    #     pkgs.zlib.out
+                    #   ];
+                externalDeps = [
+                  { name = "ZLIB"; dep = pkgs.zlib; }
+                ];
+                # extraVariables = rec {
+                #   ZLIB_INCDIR = "${readline.dev}/include";
+                #                   # { name = "ZLIB"; dep = pkgs.zlib; }
+                # };
+
+            });
+
+            # myStruct = 
+            # # else we get 'unpacker appears to have produced no directories'
+            #   sourceRoot = ".";
+
           # openresty uses luajit so we need lua5.1
-          luaEnv = pkgs.lua5_1.withPackages (lp: [
-            lp.luaexpat
-            lp.busted
+          luaEnv = pkgs.lua5_1.withPackages (lp: let
+
+          in [
             lp.bcrypt
-            lp.luarocks
-            lp.moonscript # provides moonc compiler
+            lp.busted
+            lp.cloud_storage
             lp.lapis
             lp.lapis-console
             lp.lapis-exceptions
-            lp.tableshape
+            lp.luaexpat
+            lp.luarocks
             lp.mailgun
-            lp.cloud_storage
+            lp.moonscript # provides moonc compiler
+            lp.tableshape
+            lp.struct
+            mylzlib
             # cloudstorage / zipwriter
 
           ]);
 
+          lua = pkgs.lua5_1;
         in
         {
 
@@ -74,7 +99,7 @@
             # we should be able to do better
             shellHook =
               let
-                luarocksContent = pkgs.lua.pkgs.luaLib.generateLuarocksConfig {
+                luarocksContent = lua.pkgs.luaLib.generateLuarocksConfig {
 
                   externalDeps = [
                     { name = "EXPAT"; dep = pkgs.expat; }
@@ -107,6 +132,11 @@
                 # if your pgsql server is configured via TCP
                 export PGHOST=localhost
 
+                # Probably a fault in our lua infra
+                export LUA_PATH="share/lua/${lua.luaversion}/?.lua;;"
+                export LUA_CPATH="share/lua/${lua.luaversion}/?.lua;;"
+                echo ${mylzlib.configFile}
+
               '';
 
           };
@@ -117,10 +147,25 @@
         let
           lua =
             let
-              packageOverrides = prev.callPackage ./contrib/generated-packages.nix {
+              # TODO 
+              
+              generatedOverrides  = prev.callPackage ./contrib/generated-packages.nix {
                 # as done in nixpkgs
                 inherit (lua.pkgs) callPackage;
               };
+
+              packageOverrides = final: prev: 
+                let
+                  result = (generatedOverrides final prev) ;
+                in (result // {
+                  # else we get 'unpacker appears to have produced no directories'
+                  #   sourceRoot = ".";
+                  struct = result.struct.overrideAttrs(oa: {
+                    sourceRoot = ".";
+                  });
+
+
+                });
             in
             (prev.lua5_1.override { inherit packageOverrides; self = lua; });
         in
