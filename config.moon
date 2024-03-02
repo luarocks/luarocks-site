@@ -18,6 +18,8 @@ config { "development", "test", "production", "staging" }, ->
     backend: "pgmoon"
     user: "postgres"
     database: "moonrocks"
+	-- port: 5432
+	password: os.getenv("PGPASSWORD")
   }
 
   host "localhost"
