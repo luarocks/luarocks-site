@@ -23,6 +23,7 @@ Install the following dependencies:
 * [CoffeeScript](https://coffeescript.org/#installation)
 * [Discount](https://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` executable)
 * PostgreSQL
+* nginx
 * [OpenResty][1]
 * Redis
 

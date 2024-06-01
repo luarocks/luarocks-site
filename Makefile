@@ -1,6 +1,6 @@
-SHELL := /bin/bash
-CURRENT_DB=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get().postgres.database)')
-CURRENT_ENVIRONMENT=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(require("lapis.config").get()._name)')
+SHELL := /bin/sh
+CURRENT_DB=$(shell luajit -e 'print(require("lapis.config").get().postgres.database)')
+CURRENT_ENVIRONMENT=$(shell luajit -e 'print(require("lapis.config").get()._name)')
 
 .PHONY: test test_db lint schema routes vendor_js
 
@@ -8,7 +8,7 @@ test:
 	busted
 
 install_deps::
-	luarocks build --only-deps --lua-version=5.1 --local
+	luarocks build --only-deps --lua-version=5.1 --tree ./.luarocks
 
 pin_deps::
 	luarocks build --only-deps --lua-version=5.1 --local --pin
@@ -66,3 +66,5 @@ annotate_models:
 zipserver-dev::
 	zipserver -config configs/zipserver-dev.json
 
+nix-update:
+	nix run 'nixpkgs#luarocks-packages-updater' -- -i contrib/luarocks-packages.csv -o contrib/generated-packages.nix
