@@ -18,7 +18,7 @@
   "homepage": "https://github.com/luarocks/luarocks-site#readme",
   "dependencies": {
     "coffeescript": "^1.9.2",
-    "d3": "^4.2.6",
+    "d3": "^7.6.1",
     "jquery": "^3.1.1",
     "selectize": "^0.12.6"
   }
