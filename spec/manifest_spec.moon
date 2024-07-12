@@ -43,6 +43,8 @@ should_load_zip_manifest = (url, fn) ->
     m = parse_manifest unzipped
     fn m if fn
 
+prefixes = {"", "/m/root"}
+
 describe "moonrocks", ->
   use_test_server!
 
@@ -61,29 +63,31 @@ describe "moonrocks", ->
       modules: {}
     }, m
 
-  -- doesn't load invalid pages
-  should_load "/manifestfwafe", 404
-  should_load "/manifest/nope", 404
-  should_load "/manifest-4.0", 404
-  should_load "/manifest.wow", 404
-  should_load "/manifest-5.2.wow", 404
+  for prefix in *prefixes
+    describe "prefix(#{prefix})", ->
+      -- doesn't load invalid pages
+      should_load "#{prefix}/manifestfwafe", 404
+      should_load "#{prefix}/manifest/nope", 404
+      should_load "#{prefix}/manifest-4.0", 404
+      should_load "#{prefix}/manifest.wow", 404
+      should_load "#{prefix}/manifest-5.2.wow", 404
 
-  should_load "/dev/manifests", 404
-  should_load "/dev/manifestfwafe", 404
-  should_load "/dev/manifest/nope", 404
-  should_load "/dev/manifest-4.0", 404
-  should_load "/dev/manifest.wow", 404
-  should_load "/dev/manifest-5.2.wow", 404
+      should_load "#{prefix}/dev/manifests", 404
+      should_load "#{prefix}/dev/manifestfwafe", 404
+      should_load "#{prefix}/dev/manifest/nope", 404
+      should_load "#{prefix}/dev/manifest-4.0", 404
+      should_load "#{prefix}/dev/manifest.wow", 404
+      should_load "#{prefix}/dev/manifest-5.2.wow", 404
 
-  for v in *{"", "-5.1", "-5.2", "-5.3", "-5.4"}
-    should_load_manifest "/manifest#{v}", is_empty_manifest
-    should_load_manifest "/dev/manifest#{v}", is_empty_manifest
+      for v in *{"", "-5.1", "-5.2", "-5.3", "-5.4"}
+        should_load_manifest "#{prefix}/manifest#{v}", is_empty_manifest
+        should_load_manifest "#{prefix}/dev/manifest#{v}", is_empty_manifest
 
-    should_load_zip_manifest "/manifest#{v}.zip"
-    should_load_zip_manifest "/dev/manifest#{v}.zip"
+        should_load_zip_manifest "#{prefix}/manifest#{v}.zip"
+        should_load_zip_manifest "#{prefix}/dev/manifest#{v}.zip"
 
-    should_load_json_manifest "/manifest#{v}.json"
-    should_load_json_manifest "/dev/manifest#{v}.json"
+        should_load_json_manifest "#{prefix}/manifest#{v}.json"
+        should_load_json_manifest "#{prefix}/dev/manifest#{v}.json"
 
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
@@ -96,64 +100,68 @@ describe "moonrocks", ->
       mod = factory.Modules!
       ManifestModules\create root, mod
 
-    should_load_manifest "/manifest", is_empty_manifest
+    for prefix in *prefixes
+      describe "prefix(#{prefix})", ->
+        should_load_manifest "#{prefix}/manifest", is_empty_manifest
 
-    describe "with regular version", ->
-      local version
+        describe "with regular version", ->
+          local version
 
-      before_each ->
-        version = factory.Versions module_id: mod.id
+          before_each ->
+            version = factory.Versions module_id: mod.id
 
-      -- no lua version, should have module in versioned
-      should_load_manifest "/manifest", (m) -> has_module m, mod
-      should_load_manifest "/manifest-5.1", (m) -> has_module m, mod
-      should_load_manifest "/manifest-5.2", (m) -> has_module m, mod
+          -- no lua version, should have module in versioned
+          should_load_manifest "#{prefix}/manifest", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/manifest-5.1", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/manifest-5.2", (m) -> has_module m, mod
 
-      should_load_zip_manifest "/manifest.zip", (m) -> has_module m, mod
-      should_load_zip_manifest "/manifest-5.1.zip", (m) -> has_module m, mod
-      should_load_zip_manifest "/manifest-5.2.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/manifest.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/manifest-5.1.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/manifest-5.2.zip", (m) -> has_module m, mod
 
-      should_load_manifest "/dev/manifest", is_empty_manifest
+          should_load_manifest "#{prefix}/dev/manifest", is_empty_manifest
 
-      should_load_json_manifest "/dev/manifest-5.1.json", (res) ->
-        assert.same {
-          modules: {}
-          commands: {}
-          repository: {}
-        }, res
+          should_load_json_manifest "#{prefix}/dev/manifest-5.1.json", (res) ->
+            assert.same {
+              modules: {}
+              commands: {}
+              repository: {}
+            }, res
 
-      should_load_json_manifest "/manifest-5.1.json", (res) ->
-        mod = version\get_module!
-        assert.same {
-          modules: {}
-          commands: {}
-          repository: {
-            [mod.name]: {
-              [version.version_name]: {
-                {arch: "rockspec"}
+          should_load_json_manifest "#{prefix}/manifest-5.1.json", (res) ->
+            mod = version\get_module!
+            assert.same {
+              modules: {}
+              commands: {}
+              repository: {
+                [mod.name]: {
+                  [version.version_name]: {
+                    {arch: "rockspec"}
+                  }
+                }
               }
+            }, res
+
+          it "should do HEAD", ->
+            status, body, headers = request "#{prefix}/manifest", {
+              method: "HEAD"
             }
-          }
-        }, res
 
-      it "should do HEAD", ->
-        status, body, headers = request "/manifest", {
-          method: "HEAD"
-        }
-
-        assert.same 200, status
-        assert.same "", body
-        assert.truthy headers["Last-Modified"]
+            assert.same 200, status
+            assert.same "", body
+            assert.truthy headers["Last-Modified"]
 
     describe "with archived version #ddd", ->
       before_each ->
         v_one = factory.Versions module_id: mod.id, version_name: "1.1.1", archived: true
         v_two = factory.Versions module_id: mod.id, version_name: "1.1.2"
 
-      should_load_manifest "/manifest", (m) ->
-        module_name = next m.repository
-        versions = [k for k in pairs m.repository[module_name]]
-        assert.same {"1.1.2"}, versions
+      for prefix in *prefixes
+        describe "prefix(#{prefix})", ->
+          should_load_manifest "#{prefix}/manifest", (m) ->
+            module_name = next m.repository
+            versions = [k for k in pairs m.repository[module_name]]
+            assert.same {"1.1.2"}, versions
 
     describe "with development version", ->
       local version
@@ -161,35 +169,37 @@ describe "moonrocks", ->
       before_each ->
         version = factory.Versions module_id: mod.id, development: true
 
-      should_load_manifest "/manifest", is_empty_manifest
-      should_load_manifest "/dev/manifest", (m) -> has_module m, mod
-      should_load_manifest "/dev/manifest-5.1", (m) -> has_module m, mod
-      should_load_manifest "/dev/manifest-5.2", (m) -> has_module m, mod
+      for prefix in *prefixes
+        describe "prefix(#{prefix})", ->
+          should_load_manifest "#{prefix}/manifest", is_empty_manifest
+          should_load_manifest "#{prefix}/dev/manifest", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/dev/manifest-5.1", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/dev/manifest-5.2", (m) -> has_module m, mod
 
-      should_load_zip_manifest "/dev/manifest.zip", (m) -> has_module m, mod
-      should_load_zip_manifest "/dev/manifest-5.1.zip", (m) -> has_module m, mod
-      should_load_zip_manifest "/dev/manifest-5.2.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/dev/manifest.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/dev/manifest-5.1.zip", (m) -> has_module m, mod
+          should_load_zip_manifest "#{prefix}/dev/manifest-5.2.zip", (m) -> has_module m, mod
 
-      should_load_json_manifest "/manifest-5.1.json", (res) ->
-        assert.same {
-          modules: {}
-          commands: {}
-          repository: {}
-        }, res
+          should_load_json_manifest "#{prefix}/manifest-5.1.json", (res) ->
+            assert.same {
+              modules: {}
+              commands: {}
+              repository: {}
+            }, res
 
-      should_load_json_manifest "/dev/manifest-5.1.json", (res) ->
-        mod = version\get_module!
-        assert.same {
-          modules: {}
-          commands: {}
-          repository: {
-            [mod.name]: {
-              [version.version_name]: {
-                {arch: "rockspec"}
+          should_load_json_manifest "#{prefix}/dev/manifest-5.1.json", (res) ->
+            mod = version\get_module!
+            assert.same {
+              modules: {}
+              commands: {}
+              repository: {
+                [mod.name]: {
+                  [version.version_name]: {
+                    {arch: "rockspec"}
+                  }
+                }
               }
-            }
-          }
-        }, res
+            }, res
 
     describe "with versioned version", ->
       local version
@@ -198,11 +208,13 @@ describe "moonrocks", ->
         version = factory.Versions module_id: mod.id, lua_version: "lua >= 5.1, < 5.2"
 
       -- no lua version, should have module in versioned
-      should_load_manifest "/manifest", (m) -> has_module m, mod
-      should_load_manifest "/manifest-5.1", (m) -> has_module m, mod
-      should_load_manifest "/manifest-5.2", is_empty_manifest
+      for prefix in *prefixes
+        describe "prefix(#{prefix})", ->
+          should_load_manifest "#{prefix}/manifest", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/manifest-5.1", (m) -> has_module m, mod
+          should_load_manifest "#{prefix}/manifest-5.2", is_empty_manifest
 
-      should_load_manifest "/dev/manifest", is_empty_manifest
+          should_load_manifest "#{prefix}/dev/manifest", is_empty_manifest
 
 
     describe "with many versions", ->
@@ -231,45 +243,47 @@ describe "moonrocks", ->
           development: true
         }
 
-      should_load_manifest "/manifest", (m) ->
-        assert.same {
-          [mod.name]: {
-            ["1-1"]: { { arch: "rockspec" }, { arch: "win99" } }
-            ["2-1"]: { { arch: "rockspec" } }
-          }
-        }, m.repository
+      for prefix in *prefixes
+        describe "prefix(#{prefix})", ->
+          should_load_manifest "#{prefix}/manifest", (m) ->
+            assert.same {
+              [mod.name]: {
+                ["1-1"]: { { arch: "rockspec" }, { arch: "win99" } }
+                ["2-1"]: { { arch: "rockspec" } }
+              }
+            }, m.repository
 
-      should_load_manifest "/manifest-5.1", (m) ->
-        assert.same {
-          [mod.name]: {
-            ["1-1"]: { { arch: "rockspec" }, { arch: "win99" } }
-            ["2-1"]: { { arch: "rockspec" } }
-          }
-        }, m.repository
+          should_load_manifest "#{prefix}/manifest-5.1", (m) ->
+            assert.same {
+              [mod.name]: {
+                ["1-1"]: { { arch: "rockspec" }, { arch: "win99" } }
+                ["2-1"]: { { arch: "rockspec" } }
+              }
+            }, m.repository
 
-      should_load_manifest "/manifest-5.2", (m) ->
-        assert.same {
-          [mod.name]: {
-            ["2-1"]: { { arch: "rockspec" } }
-          }
-        }, m.repository
+          should_load_manifest "#{prefix}/manifest-5.2", (m) ->
+            assert.same {
+              [mod.name]: {
+                ["2-1"]: { { arch: "rockspec" } }
+              }
+            }, m.repository
 
 
-      should_load_manifest "/dev/manifest", (m) ->
-        assert.same {
-          [mod.name]: {
-            ["git-1"]: { { arch: "rockspec" } }
-          }
-        }, m.repository
+          should_load_manifest "#{prefix}/dev/manifest", (m) ->
+            assert.same {
+              [mod.name]: {
+                ["git-1"]: { { arch: "rockspec" } }
+              }
+            }, m.repository
 
-      should_load_manifest "/dev/manifest-5.1", (m) ->
-        assert.same {
-          [mod.name]: {
-            ["git-1"]: { { arch: "rockspec" } }
-          }
-        }, m.repository
+          should_load_manifest "#{prefix}/dev/manifest-5.1", (m) ->
+            assert.same {
+              [mod.name]: {
+                ["git-1"]: { { arch: "rockspec" } }
+              }
+            }, m.repository
 
-      should_load_json_manifest "/dev/manifest-5.1.json"
+          should_load_json_manifest "#{prefix}/dev/manifest-5.1.json"
 
   describe "with many modules", ->
     before_each ->
