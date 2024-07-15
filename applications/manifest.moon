@@ -107,6 +107,10 @@ class MoonRocksManifest extends lapis.Application
   [sub_manifest: "/m/:manifest/manifest(-:a.:b)(.:format)"]: zipable is_stable serve_manifest
   [sub_manifest_dev: "/m/:manifest/dev/manifest(-:a.:b)(.:format)"]: zipable is_dev serve_manifest
 
+  -- this is done so that file requests from LuaRocks succeed.
+  [sub_manifest_redirect: "/m/:manifest/*"]: => redirect_to: "/#{@params.splat}"
+  [sub_manifest_redirect: "/m/:manifest/dev/*"]: => redirect_to: "/dev/#{@params.splat}"
+
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
