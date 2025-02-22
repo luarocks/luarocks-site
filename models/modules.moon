@@ -137,6 +137,7 @@ class Modules extends Model
     seen = {}
     return for l in label_str\gmatch "[^,]+"
       l = slugify trim l
+
       continue if l == "" or l == "-"
       continue if #l == 1
       continue if #l > 32
@@ -290,7 +291,7 @@ class Modules extends Model
         params.module_id = new_module.id
         params.rockspec_key = "#{user.id}/#{version.rockspec_fname}"
 
-        rockspec_text = bucket\get_file version.rockspec_key
+        rockspec_text = assert bucket\get_file version.rockspec_key
         bucket\put_file_string params.rockspec_key, rockspec_text, {
           mimetype: "text/x-rockspec"
         }
