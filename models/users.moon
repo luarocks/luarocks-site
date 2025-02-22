@@ -192,6 +192,8 @@ class Users extends Model
     return unless super!
     -- all other related models are deleted in cascade
 
+    import Modules from require "models"
+
     -- delete modules in app layer to trigger deleting sub-models
     for m in *Modules\select "where user_id = ?", @id
       m\delete!
