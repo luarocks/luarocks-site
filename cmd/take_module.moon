@@ -1,33 +1,40 @@
 
+argparse = require "argparse"
 
-user_slug, module_name = ...
-HELP = "moon cmd/take_module.moon USER_NAME [MODULE_NAME]"
-unless user_slug
-  print HELP
-  os.exit!
+parser = argparse("take_module.moon", "Transfer module ownership from the `luarocks` user to another user")
+
+parser\argument("user_slug", "user slug that will recieve the module")
+parser\argument("module_name", "name of the module to be transferred. Will try every module name owned by target user if not provided")\args "?"
+
+parser\option("--source_user", "User slug we are taking from", "luarocks")
+
+args = parser\parse [v for _, v in ipairs _G.arg]
 
 import Users, Modules, Manifests, ManifestModules from require "models"
+db = require "lapis.db"
 
-luarocks = Users\find slug: "luarocks"
-
-user = Users\find slug: assert user_slug, "missing user slug"
-assert user, "could not find user '#{user_slug}'"
+luarocks = assert Users\find(slug: args.source_user), "failed to find source user '#{args.source_user}'"
+user = assert Users\find(slug: args.user_slug), "failed to find destination user '#{args.user_slug}'"
 
 take_module = (module_name) ->
-  print "Giving #{module_name} to #{user\name_for_display!}"
+  io.stdout\write "Giving #{module_name} to #{user\name_for_display!}..."
+  io.stdout\flush!
 
   mod = Modules\find {
-      name: assert module_name, "missing module name"
-      user_id: luarocks.id
+    name: assert module_name, "missing module name"
+    user_id: luarocks.id
   }
 
-  return nil, "could not find module '#{module_name}'" unless mod
+  unless mod
+    print "Failed: could not find module '#{module_name}'"
+    return nil, "failed"
 
   mod\copy_to_user user, true
+  print "Success"
+  true
 
-if module_name
-  assert take_module module_name
+if args.module_name
+  assert take_module args.module_name
 else
   for mod in *user\get_modules!
     take_module mod.name
-
