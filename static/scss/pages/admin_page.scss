@@ -18,3 +18,43 @@ $margin: 40px;
     }
 }
 
+
+
+.filter_form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    > input {
+        max-width: 200px;
+    }
+
+    > .enum_field {
+        li {
+            display: inline-block;
+        }
+
+        button {
+            display: block;
+            cursor: pointer;
+
+            &.active {
+                font-weight: bold;
+                border: 2px solid $button_color;
+            }
+        }
+
+        ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            max-width: 300px;
+        }
+    }
+}
+
