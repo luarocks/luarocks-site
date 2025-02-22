@@ -30,12 +30,16 @@ git_runner = (path) ->
 class ManifestBackups extends Model
   @timestamp: true
 
-  do_backup: =>
+  @relations: {
+    {"manifest", belongs_to: "Manifests"}
+  }
+
+  do_backup: (base_dir="/tmp")=>
     import Manifests from require "models"
     m = Manifests\find @manifest_id
     -- TODO do for non root
     manifest_url = "http://#{config.host}"
-    temp_path = "/tmp/moonrocks_#{m.name}_mirror"
+    temp_path = "#{base_dir}/moonrocks_#{m.name}_mirror"
 
     if @development
       manifest_url ..= "/dev"

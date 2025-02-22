@@ -8,6 +8,10 @@ parser\command_target "command"
 
 parser\command "list", "List all configured backups"
 
+with parser\command "sync", "Sync all configured backups"
+  \argument("backup_id", "Only backup the specified IDs")\args("*")\convert tonumber
+  \option("--base-dir", "Where to store the backup repos on disk", "/tmp")
+
 with parser\command "remove", "Remove a backup"
   \argument("backup_id", "ID of the backup to be removed")\convert tonumber
   \flag("--confirm", "Confirm removal of backup")
@@ -20,6 +24,7 @@ with parser\command "add", "Add a new backup"
 args = parser\parse [v for _, v in ipairs _G.arg]
 
 import Manifests, ManifestBackups from require "models"
+db = require "lapis.db"
 import preload from require "lapis.db.model"
 
 switch args.command
@@ -54,7 +59,12 @@ switch args.command
     }
     if backup
       print "Added backup: #{backup.id}"
-  else
-    for backup in *ManifestBackups\select!
-      backup\do_backup!
+  when "sync"
+    backups = if next args.backup_id
+      ManifestBackups\select "where id in ?", db.list args.backup_id
+    else
+      ManifestBackups\select!
+
+    for backup in *backups
+      backup\do_backup args.base_dir
 
