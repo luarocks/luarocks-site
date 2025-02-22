@@ -4,7 +4,7 @@
 
 ![spec](https://github.com/luarocks/luarocks-site/workflows/spec/badge.svg)
 
-The official module repository of the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
+This is the web app that serves the default package manifest for for the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
 
 The entire site runs on [OpenResty][1], an Nginx based platform with Lua
 support. The site itself is coded in [MoonScript][2] and uses [Lapis][3] as a
@@ -20,7 +20,6 @@ Install the following dependencies:
 
 * [Tup][4]
 * [sassc](https://github.com/sass/sassc)
-* [CoffeeScript](https://coffeescript.org/#installation)
 * [Discount](https://www.pell.portland.or.us/~orc/Code/discount/) (or something that provides `markdown` executable)
 * PostgreSQL
 * [OpenResty][1]
