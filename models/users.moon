@@ -260,3 +260,24 @@ class Users extends Model
 
     false
 
+  data_export: =>
+    db.query [[
+      SELECT
+        u.*,
+        (SELECT json_agg(api_keys) FROM api_keys WHERE user_id = u.id) AS api_keys,
+        (SELECT json_agg(github_accounts) FROM github_accounts WHERE user_id = u.id) AS github_accounts,
+        (SELECT json_agg(linked_modules) FROM linked_modules WHERE user_id = u.id) AS linked_modules,
+        (SELECT json_agg(manifest_admins) FROM manifest_admins WHERE user_id = u.id) AS manifest_admins,
+        (SELECT json_agg(notifications) FROM notifications WHERE user_id = u.id) AS notifications,
+        (SELECT json_agg(user_activity_logs) FROM user_activity_logs WHERE user_id = u.id) AS user_activity_logs,
+        (SELECT json_agg(user_data) FROM user_data WHERE user_id = u.id) AS user_data,
+        (SELECT json_agg(user_server_logs) FROM user_server_logs WHERE user_id = u.id) AS user_server_logs,
+        (SELECT json_agg(user_sessions) FROM user_sessions WHERE user_id = u.id) AS user_sessions,
+        (SELECT json_agg(followings) FROM followings WHERE source_user_id = u.id) AS followings,
+        (SELECT json_agg(row_to_json(m.*)::jsonb || jsonb_build_object('versions', (SELECT json_agg(v.*) FROM versions v WHERE v.module_id = m.id))) FROM modules m WHERE user_id = u.id) AS modules
+
+      FROM users u
+      WHERE u.id = ?
+    ]], @id
+
+
