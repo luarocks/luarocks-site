@@ -1,4 +1,9 @@
 
+local turnstile_config
+
+pcall ->
+  turnstile_config = require("secret.turnstile")
+
 class UserRegister extends require "widgets.page"
   inner_content: =>
     h2 "Register"
@@ -27,6 +32,14 @@ class UserRegister extends require "widgets.page"
       div class: "row", ->
         label for: "email_field", "Email Address"
         input type: "email", name: "email", id: "email_field"
+
+      if turnstile_config
+        script src: "https://challenges.cloudflare.com/turnstile/v0/api.js", async: true, defer: true
+
+        div {
+          class: "row cf-turnstile"
+          "data-sitekey": turnstile_config.site_key
+        }
 
       div ->
         input type: "submit"

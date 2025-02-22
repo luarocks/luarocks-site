@@ -111,6 +111,19 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
       assert_error params.password == params.password_repeat, "Password repeat does not match"
 
+      local turnstile_config
+      pcall ->
+        turnstile_config = require("secret.turnstile")
+
+      if turnstile_config
+        {:cf_turnstile_response} = assert_valid @params, types.params_shape {
+          {"cf-turnstile-response", types.valid_text, as: "cf_turnstile_response", error: "Please complete the human verification (missing param)"}
+        }
+
+        import verify_turnstile_response from require "helpers.turnstile"
+        unless verify_turnstile_response cf_turnstile_response, require("helpers.remote_addr")!
+          return yield_error "Please complete the human verification (invalid response)"
+
       {:username, :password, :email } = params
       user = assert_error Users\create username, password, email
 
