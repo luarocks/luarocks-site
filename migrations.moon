@@ -352,6 +352,84 @@ import
 
   [1668488536]: require("lapis.exceptions.schema").run_migrations
 
+  [1740212163]: =>
+    db.query [[
+      ALTER TABLE notification_objects
+        ADD FOREIGN KEY (notification_id)
+        REFERENCES notifications(id)
+        ON DELETE CASCADE
+    ]]
+
+    db.query [[
+      ALTER TABLE api_keys
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE github_accounts
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE linked_modules
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE manifest_admins
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE notifications
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE user_activity_logs
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE user_data
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE user_server_logs
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE user_sessions
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+    ]]
+
+    db.query [[
+      ALTER TABLE followings
+          ADD FOREIGN KEY (source_user_id)
+          REFERENCES users(id)
+          ON DELETE CASCADE;
+      ]]
+
 }
 
 

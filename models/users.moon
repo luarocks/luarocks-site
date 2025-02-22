@@ -190,36 +190,11 @@ class Users extends Model
 
   delete: =>
     return unless super!
+    -- all other related models are deleted in cascade
 
-    import
-      Modules
-      UserData
-      ApiKeys
-      GithubAccounts
-      ManifestAdmins
-      LinkedModules
-      Followings
-      from require "models"
-
-    -- delete modules
+    -- delete modules in app layer to trigger deleting sub-models
     for m in *Modules\select "where user_id = ?", @id
       m\delete!
-
-    -- delete user data
-    @get_data!\delete!
-
-    -- delete api keys
-    db.delete ApiKeys\table_name!, user_id: @id
-
-    -- delete github accounts
-    db.delete GithubAccounts\table_name!, user_id: @id
-
-    -- delete manifest admins
-    db.delete ManifestAdmins\table_name!, user_id: @id
-
-    -- delete linked modules
-    for link in *LinkedModules\select "where user_id = ?", @id
-      link\delete!
 
     true
 
