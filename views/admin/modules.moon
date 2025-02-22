@@ -1,8 +1,18 @@
+import enum from require "lapis.db.model"
 
 class AdminModules extends require "widgets.admin.page"
   @needs: {"users", "pager"}
 
   inner_content: =>
+    @filter_form (field) ->
+      field "label"
+      field "sort", enum {
+        "downloads",
+        "followers_count",
+        "stars_count"
+        "versions_count"
+      }
+
     @render_pager @pager
     @column_table @modules, {
       "id"

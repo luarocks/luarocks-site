@@ -63,14 +63,33 @@ class MoonRocksAdmin extends lapis.Application
       redirect_to: @url_for @route_name
   }
 
-  [modules: "/modules"]: capture_errors_json =>
+  [modules: "/modules"]: capture_errors_json with_params {
+    {"label", types.empty + types.valid_text}
+    {"sort", shapes.default("id") * types.one_of {
+      "id"
+      "downloads"
+      "followers_count"
+      "stars_count"
+      "versions_count"
+    }}
+  }, (params) =>
     @title = "Modules"
 
     import Modules from require "models"
     assert_page @
 
+    sort_clause = switch params.sort
+      when "versions_count"
+        "order by (select count(*) from versions where module_id = modules.id) desc"
+      else
+        "order by #{db.escape_identifier params.sort} desc"
 
-    @pager = Modules\paginated "order by id desc", {
+    clause = db.clause {
+      if params.label
+        {"labels @> ?", db.array { params.label }}
+    }, prefix: "WHERE", allow_empty: true
+
+    @pager = Modules\paginated "? #{sort_clause}", clause, {
       per_page: 50
       prepare_results: (mods) ->
         preload mods, "user", current_version: { module: "user" }
@@ -83,10 +102,10 @@ class MoonRocksAdmin extends lapis.Application
   [users: "/users"]: capture_errors_json with_params {
     {"email", types.empty + types.valid_text}
     {"sort", shapes.default("id") * types.one_of {
-      "id",
-      "following_count",
-      "modules_count",
-      "followers_count",
+      "id"
+      "following_count"
+      "modules_count"
+      "followers_count"
       "stared_count"
     }}
   }, (params) =>
@@ -96,7 +115,7 @@ class MoonRocksAdmin extends lapis.Application
     assert_page @
 
     if params.email
-      assert_error Users\find([db.raw "lower(email)"]: @params.email\lower!), "failed to find user for email: #{params.email}"
+      assert_error Users\find([db.raw "lower(email)"]: params.email\lower!), "failed to find user for email: #{params.email}"
       return redirect_to: @url_for("admin.user", id: user.id)
 
     sort_clause = "order by #{db.escape_identifier params.sort} desc"
@@ -109,29 +128,24 @@ class MoonRocksAdmin extends lapis.Application
 
     render: true
 
-  [user: "/user/:id"]: capture_errors_json =>
+  [user: "/user/:id"]: capture_errors_json with_params {
+    {"id", types.db_id}
+  }, (params) =>
     import Users, Followings from require "models"
-
-    assert_valid @params, {
-      {"id", is_integer: true}
-    }
-
-    @user = assert_error Users\find(id: @params.id), "invalid user"
+    @user = assert_error Users\find(id: params.id), "invalid user"
 
     @title = "User '#{@user.username}'"
     preload @user\get_follows!, "object"
     render: true
 
   [become_user: "/become-user"]: respond_to {
-    POST: capture_errors_json =>
+    POST: capture_errors_json with_params {
+      {"user_id", types.db_id}
+    }, (params) =>
       assert_csrf @
       import Users from require "models"
 
-      assert_valid @params, {
-        {"user_id", is_integer: true}
-      }
-
-      user = assert_error Users\find(@params.user_id), "invalid user"
+      user = assert_error Users\find(params.user_id), "invalid user"
       user\write_session @, type: "admin"
       redirect_to: @url_for "index"
   }

@@ -27,18 +27,35 @@ $margin: 40px;
     align-items: flex-start;
     flex-wrap: wrap;
 
+    > * {
+        min-width: 0;
+    }
+
     > input {
         max-width: 200px;
     }
 
     > .enum_field {
+        display: flex;
+        border-style: solid;
+        border-color: $border_color;
+
+        legend {
+            font-weight: bold;
+        }
+
         li {
             display: inline-block;
         }
 
         button {
             display: block;
+            box-sizing: border-box;
             cursor: pointer;
+            padding: 5px 10px;
+            font-size: 14px;
+            height: 30px;
+            line-height: initial;
 
             &.active {
                 font-weight: bold;
@@ -47,13 +64,14 @@ $margin: 40px;
         }
 
         ul {
+            display: flex;
+            gap: 5px;
             padding: 0;
             margin: 0;
             list-style: none;
             display: flex;
             gap: 5px;
             flex-wrap: wrap;
-            max-width: 300px;
         }
     }
 }
