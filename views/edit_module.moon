@@ -1,23 +1,21 @@
 import to_json from require "lapis.util"
 
 class EditModule extends require "widgets.page"
-  inner_content: =>
-    @content_for "js_init", ->
-      data = {
-        suggested_labels: [l.name for l in *@suggested_labels]
-        module: {
-          id: @module_id
-          labels: @module.labels and next(@module.labels) and @module.labels
-        }
+  @es_module: [[
+    console.log("hello world!")
+    // new M.EditModule(widget_selector, widget_params);
+  ]]
+
+  js_init: =>
+    super {
+      suggested_labels: [l.name for l in *@suggested_labels]
+      module: {
+        id: @module_id
+        labels: @module.labels and next(@module.labels) and @module.labels
       }
+    }
 
-      script type: "text/javascript", src: "/static/lib.js"
-      script type: "text/javascript", src: "/static/main.js"
-
-      script type: "text/javascript", ->
-        raw "new M.EditModule(#{@widget_selector!}, #{to_json data});"
-
-
+  inner_content: =>
     h2 "Edit Module '#{@module\name_for_display!}'"
 
     @render_errors!

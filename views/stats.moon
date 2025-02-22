@@ -8,11 +8,13 @@ class Stats extends require "widgets.page"
     "cumulative_modules"
   }
 
-  header_content: =>
-    widget Header page_name: "global"
+  @es_module: [[
+    console.log("hello from the stats", widget_params);
+    // M.Stats(widget_selector, widget_params);
+  ]]
 
   js_init: =>
-    data = {
+    super {
       graphs: {
         cumulative_users: @cumulative_users
         cumulative_modules: @cumulative_modules
@@ -20,7 +22,8 @@ class Stats extends require "widgets.page"
       }
     }
 
-    "M.Stats(#{@widget_selector!}, #{to_json data});"
+  header_content: =>
+    widget Header page_name: "global"
 
   inner_content: =>
     h3 "Cumulative modules"
@@ -31,11 +34,3 @@ class Stats extends require "widgets.page"
 
     h3 "Cumulative registered accounts"
     div id: "cumulative_users", class: "graph_container"
-
-    @content_for "js_init", ->
-      script type: "text/javascript", src: "/static/lib.js"
-      script type: "text/javascript", src: "/static/main.js"
-
-      script type: "text/javascript", ->
-        raw @js_init!
-

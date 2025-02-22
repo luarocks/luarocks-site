@@ -2,33 +2,12 @@
 import Widget from require "lapis.html"
 import underscore from require "lapis.util"
 
-class Base extends Widget
+class Base extends require "lapis.eswidget"
+  @asset_packages: {"main"}
+
   @include "widgets.helpers"
   @include "widgets.icons"
   @include "widgets.table_helpers"
-
-  @widget_name: => underscore(@__name or "unknown") .. "_widget"
-
-  -- classes chained from inheritance hierarchy
-  @css_classes: =>
-    return if @ == Base
-
-    unless rawget @, "_css_classes"
-      classes = @widget_name!
-      if @__parent and @__parent.css_classes
-        if parent_classes = @__parent\css_classes!
-          classes ..= " #{parent_classes}"
-
-      @_css_classes = classes
-
-    @_css_classes
-
-  content: =>
-    element @enclosing_element_type or "div", class: @@css_classes!, ->
-      @inner_content!
-
-  widget_selector:  =>
-    "'.#{@@widget_name!}'"
 
   render_modules: (modules, empty_text="No modules") =>
     unless next modules

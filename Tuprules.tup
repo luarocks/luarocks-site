@@ -1,1 +1,4 @@
-: foreach *.moon |> moonc %f |> %B.lua
+TOP=$(TUP_CWD)
+ESBUILD=node_modules/.bin/esbuild
+
+: foreach *.moon |> moonc %f |> %B.lua $(TOP)/<moon>

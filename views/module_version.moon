@@ -6,14 +6,10 @@ class ModuleVersion extends require "widgets.page"
   rock_url: (item) =>
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
-  content: =>
-    div class: @@css_classes!, ->
-      widget Header {
-        admin_panel: @\admin_panel
-      }
-
-      div class: "main_column", ->
-        @inner_content!
+  header_content: =>
+    widget Header {
+      admin_panel: @\admin_panel
+    }
 
   inner_content: =>
     p ->

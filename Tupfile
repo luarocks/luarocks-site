@@ -1,1 +1,2 @@
 include_rules
+include assetspec.Tupfile

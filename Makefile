@@ -13,6 +13,9 @@ install_deps::
 pin_deps::
 	luarocks build --only-deps --lua-version=5.1 --local --pin
 
+assetspec.Tupfile::
+	 lapis eswidget generate_spec --output-dir static --tup-compile-dep-group='$$(TOP)/<moon>' --source-dir=static/js --format tup  > $@
+
 init_schema::
 	createdb -U postgres moonrocks
 	cat schema.sql | psql -U postgres moonrocks

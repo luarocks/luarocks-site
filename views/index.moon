@@ -1,17 +1,21 @@
 import to_json from require "lapis.util"
 
 class Index extends require "widgets.page"
-  content: =>
-    div class: @@css_classes!, ->
-      div class: "intro_banner", ->
-        div class: "intro_banner_inner", ->
-          img src: "/static/logo.svg"
+  @es_module: [[
+    console.log("hello from the index", widget_params);
+    // new M.Index(widget_selector, widget_params);
+  ]]
 
-          div class: "intro_text", ->
-            @raw_ssi "intro.html"
+  js_init: =>
+    super @downloads_daily
 
-      div class: "main_column", ->
-        @inner_content!
+  header_content: =>
+    div class: "intro_banner", ->
+      div class: "intro_banner_inner", ->
+        img src: "/static/logo.svg"
+
+        div class: "intro_text", ->
+          @raw_ssi "intro.html"
 
   inner_content: =>
     section class: "home_columns", ->
@@ -60,11 +64,4 @@ class Index extends require "widgets.page"
 
     section ->
       @raw_ssi "home.html"
-
-    @content_for "js_init", ->
-      script type: "text/javascript", src: "/static/lib.js"
-      script type: "text/javascript", src: "/static/main.js"
-
-      script type: "text/javascript", ->
-        raw "new M.Index(#{@widget_selector!}, #{to_json @downloads_daily});"
 

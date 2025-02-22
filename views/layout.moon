@@ -78,7 +78,12 @@ class Layout extends Widget
             raw " &middot; "
             a href: "https://github.com/luarocks/luarocks-site/issues", "Issues"
 
-      @content_for "js_init"
+      if @has_content_for "js_init"
+        script type: "text/javascript", src: "/static/lib.js?#{cache_buster}"
+        script type: "text/javascript", src: "/static/main.js?#{cache_buster}"
+        script type: "text/javascript", ->
+          raw @content_for "js_init"
+
       @render_query_log!
 
 

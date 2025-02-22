@@ -3,7 +3,7 @@ class ModuleList extends require "widgets.base"
     "modules"
   }
 
-  enclosing_element_type: "ul"
+  widget_enclosing_element: "ul"
 
   inner_content: =>
     for mod in *@modules
