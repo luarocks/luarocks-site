@@ -44,21 +44,21 @@ object = if uri\match "^/manifests"
       WHERE rock_fname = ?
     ]], user.id, file
 
--- a custom manifest
-else if uri\match "^/m"
-  error "not yet"
+else
+  file_name = assert validate_text\transform ngx.var.filename
+  manifest = if uri\match "^/m"
+    manifest_name = assert validate_text\transform ngx.var.manifest_name
+    assert Manifests\find name: manifest_name
+  else
+    Manifests\root!
 
-else -- the root manifest
-  file = ngx.var[1]
-  manifest = Manifests\root!
-
-  -- TODO: do this with less complex query
+  -- TODO: this query is pretty nasty to do on every file request
   if is_rockspec!
     unpack Versions\select [[
       INNER JOIN manifest_modules
         ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
       WHERE rockspec_fname = ?
-    ]], manifest.id, file
+    ]], manifest.id, file_name
   else
     unpack Rocks\select [[
       INNER JOIN versions
@@ -66,7 +66,7 @@ else -- the root manifest
       INNER JOIN manifest_modules
         ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
       WHERE rock_fname = ?
-    ]], manifest.id, file
+    ]], manifest.id, file_name
 
 assert object
 
