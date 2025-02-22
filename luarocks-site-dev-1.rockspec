@@ -15,7 +15,7 @@ dependencies = {
   "bcrypt",
   "luabitop",
   "pgmoon >= 1.15",
-  "lapis >= 1.14, < 2",
+  "lapis >= 1.16, < 2",
   "lapis-exceptions ~> 2",
   "lapis-console >= 1.2, < 2",
   "lapis-systemd >= 2.0, < 3",
