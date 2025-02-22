@@ -4,6 +4,9 @@ db = require "lapis.db"
 
 email = types.trimmed_text * types.pattern("^[^@%s]+@[^@%s%.]+%.[^@%s]+$")\describe "email"
 
+-- replace empty value with default
+default = (value) -> types.empty / value + types.any
+
 url = types.trimmed_text * types.one_of({
   types.pattern("^https?://[^%s]+$")
   types.pattern("^[^%s]+$") / (str) -> "http://#{str}"
@@ -54,6 +57,7 @@ difference = (update, source, check_removals=false) ->
   :email
   :url
   :twitter_username
+  :default
 
   :difference
 }

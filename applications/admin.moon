@@ -2,6 +2,8 @@
 lapis = require "lapis"
 db = require "lapis.db"
 
+shapes = require "helpers.shapes"
+
 import not_found from require "helpers.app"
 
 import
@@ -169,4 +171,51 @@ class MoonRocksAdmin extends lapis.Application
       }
 
   }
+
+  [db_tables: "/tables"]: with_params {
+    {"filter", types.empty + types.valid_text}
+    {"sort", shapes.default("total_size") * types.one_of {
+      "total_size",
+      "indexes_size"
+    }}
+  }, (params) =>
+    @title = "Tables"
+    @inner_column_classes = "wide_column"
+
+    order = switch params.sort
+      when "total_size"
+        "order by total_size desc"
+      when "indexes_size"
+        "order by indexes_size desc"
+      else
+        ""
+
+    clause = db.clause {
+      if params.filter
+        {"table_name like ?", "%" .. params.filter .. "%"}
+    }, prefix: "WHERE", allow_empty: true
+
+    @tables = db.query [[
+      SELECT
+        table_name,
+        pg_size_pretty(table_size) AS table_size,
+        pg_size_pretty(indexes_size) AS indexes_size,
+        pg_size_pretty(total_size) AS total_size
+      FROM (
+        SELECT
+            table_name,
+            pg_table_size(table_name) AS table_size,
+            pg_indexes_size(table_name) AS indexes_size,
+            pg_total_relation_size(table_name) AS total_size
+        FROM (
+            SELECT ('"' || table_schema || '"."' || table_name || '"') AS table_name
+            FROM information_schema.tables
+            ?
+        ) AS all_tables
+        ]] .. order .. [[
+      ) AS pretty_sizes
+    ]], clause
+
+    render: true
+
 
