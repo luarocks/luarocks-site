@@ -12,6 +12,9 @@
     border-radius: 2px;
     border: 1px solid var(--border-color);
     line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 
     .title {
         font-size: 16px;
@@ -52,7 +55,6 @@
 
     .summary {
         color: gray;
-        margin-top: 5px;
         font-size: var(--small-font-size);
     }
 

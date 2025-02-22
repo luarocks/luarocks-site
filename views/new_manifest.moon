@@ -1,8 +1,7 @@
 class NewManifest extends require "widgets.page"
   inner_content: =>
     h2 "Create New Manifest"
-    p "A manifest is a collection of modules that has its own URLs for
-    installing modules from LuaRocks."
+    p "A manifest is a collection of modules that has its own URLs for installing modules from LuaRocks. For example, if you have a project with a Lua environment that has a specific runtime, you might create a manifest to hold all the modules that are compatible, preventing users from accidentally installing something that won't work. If you just want a way to tag your modules by category, consider using labels instead."
 
     @render_errors!
 
