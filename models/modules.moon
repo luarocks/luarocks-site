@@ -53,7 +53,9 @@ class Modules extends Model
     {"manifest_modules", has_many: "ManifestModules"}
 
     {"manifests", fetch: =>
-      [mm\get_manifest! for mm in *@get_manifest_modules!]
+      manifests = [mm\get_manifest! for mm in *@get_manifest_modules!]
+      table.sort manifests, (a, b) -> a.name < b.name
+      manifests
     }
   }
 
@@ -199,18 +201,6 @@ class Modules extends Model
     return nil, "unchanged" if same
 
     @update labels: next(labels) and db.array(labels) or db.NULL
-
-  get_manifests: =>
-    unless @manifests
-      import Manifests from require "models"
-
-      @manifests = Manifests\select "
-        where id in
-          (select manifest_id from manifest_modules where module_id = ?)
-        order by name asc
-      ", @id
-
-    @manifests
 
   -- gets the first non-root manifest
   get_primary_manifest: =>
