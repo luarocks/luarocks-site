@@ -5,6 +5,7 @@ class AdminModules extends require "widgets.admin.page"
 
   inner_content: =>
     @filter_form (field) ->
+      field "user_id"
       field "label"
       field "sort", enum {
         "downloads",

@@ -6,6 +6,7 @@ class AdminUsers extends require "widgets.admin.page"
 
   inner_content: =>
     @filter_form (field) ->
+      field "username"
       field "email"
       field "sort", enum {
         "following_count"

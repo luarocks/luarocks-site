@@ -65,6 +65,7 @@ class MoonRocksAdmin extends lapis.Application
 
   [modules: "/modules"]: capture_errors_json with_params {
     {"label", types.empty + types.valid_text}
+    {"user_id", types.empty + types.db_id}
     {"sort", shapes.default("id") * types.one_of {
       "id"
       "downloads"
@@ -87,6 +88,9 @@ class MoonRocksAdmin extends lapis.Application
     clause = db.clause {
       if params.label
         {"labels @> ?", db.array { params.label }}
+
+      if params.user_id
+        {"user_id = ?", params.user_id}
     }, prefix: "WHERE", allow_empty: true
 
     @pager = Modules\paginated "? #{sort_clause}", clause, {
@@ -100,7 +104,8 @@ class MoonRocksAdmin extends lapis.Application
     render: true
 
   [users: "/users"]: capture_errors_json with_params {
-    {"email", types.empty + types.valid_text}
+    {"email", types.empty + types.trimmed_text}
+    {"username", types.empty + types.trimmed_text}
     {"sort", shapes.default("id") * types.one_of {
       "id"
       "following_count"
@@ -114,13 +119,20 @@ class MoonRocksAdmin extends lapis.Application
     import Users from require "models"
     assert_page @
 
-    if params.email
-      user = assert_error Users\find([db.raw "lower(email)"]: params.email\lower!), "failed to find user for email: #{params.email}"
-      return redirect_to: @url_for("admin.user", id: user.id)
-
     sort_clause = "order by #{db.escape_identifier params.sort} desc"
 
-    @pager = Users\paginated sort_clause, {
+    clause = db.clause {
+      if params.email
+        {"lower(email) = ?", params.email\lower!}
+
+      if params.username
+        db.clause {
+          {"lower(username) = ?", params.username\lower!}
+          {"slug = ?", params.username\lower!}
+        }, operator: "OR"
+    }, prefix: "WHERE", allow_empty: true
+
+    @pager = Users\paginated "? #{sort_clause}", clause, {
       per_page: 50
     }
 

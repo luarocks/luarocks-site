@@ -7,8 +7,21 @@ class AdminUser extends require "widgets.admin.page"
       a href: @url_for(@user), @user\name_for_display!
 
     @field_table @user, {
-      "id", "username", "slug", "email", "following_count", "updated_at",
-      "created_at", "last_active_at"
+      "id",
+      "username"
+      "slug"
+      "display_name"
+      "email"
+      "updated_at"
+      "created_at"
+      "last_active_at"
+      "stared_count"
+      "followers_count"
+      "following_count"
+      {"modules_count", ->
+        a href: @url_for("admin.modules", nil, user_id: @user.id),
+          @format_table_value_by_type "number", {}, @user.modules_count
+      }
     }
 
     h3 "Followings"
