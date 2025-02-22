@@ -115,7 +115,7 @@ class MoonRocksAdmin extends lapis.Application
     assert_page @
 
     if params.email
-      assert_error Users\find([db.raw "lower(email)"]: params.email\lower!), "failed to find user for email: #{params.email}"
+      user = assert_error Users\find([db.raw "lower(email)"]: params.email\lower!), "failed to find user for email: #{params.email}"
       return redirect_to: @url_for("admin.user", id: user.id)
 
     sort_clause = "order by #{db.escape_identifier params.sort} desc"
@@ -130,9 +130,13 @@ class MoonRocksAdmin extends lapis.Application
 
   [user: "/user/:id"]: capture_errors_json with_params {
     {"id", types.db_id}
+    {"dump", types.empty / false + types.any / true}
   }, (params) =>
     import Users, Followings from require "models"
     @user = assert_error Users\find(id: params.id), "invalid user"
+
+    if params.dump
+      return json: @user\data_export!
 
     @title = "User '#{@user.username}'"
     preload @user\get_follows!, "object"
