@@ -9,7 +9,7 @@ class Manifests extends require "widgets.page"
     p ->
       text "Manifests are collections of modules that you can install from. The "
       a href: @url_for("manifest", manifest: "root"), -> code "root"
-      text " manifest is the default install location for MoonRocks. You can also "
+      text " manifest is the default install location for LuaRocks.org. You can also "
       a href: @url_for("new_manifest"), "create your own manifest."
 
     @render_pager @pager
