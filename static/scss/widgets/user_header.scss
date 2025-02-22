@@ -2,6 +2,8 @@
 img.avatar {
     width: 60px;
     height: 60px;
+    display: block;
+    margin: 0;
 }
 
 .user_flag {
@@ -20,11 +22,12 @@ h1 {
 
 .social_links {
     font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 
     a {
         text-decoration: none;
-        display: inline-block;
-        margin-right: 12px;
         color: rgba($sub_color, 0.8);
         @include transition(color 0.1s ease);
 

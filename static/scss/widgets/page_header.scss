@@ -40,15 +40,14 @@
 .page_header_inner {
     display: flex;
     align-items: center;
+    gap: 10px;
 
     h1, p {
         margin: 0;
     }
 
     > * {
-        margin-right: 10px;
         &:last-child {
-            margin-right: 0;
             &:first-child {
                 flex: 1
             }
@@ -60,6 +59,7 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        gap: 10px;
     }
 }
 
@@ -94,13 +94,11 @@ h1 {
         display: inline-flex;
         align-items: center;
         padding: 0 20px;
-        .svgicon {
-            margin-right: 6px;
-        }
+        gap: 6px;
     }
 
     .followers_count {
-        @include border_box;
+        box-sizing: border-box;
         border: 1px solid $border_color;
         border-left: 0;
         display: inline-block;
@@ -122,6 +120,8 @@ h1 {
     .metadata_columns_inner {
         @include site_width;
         margin: 0 auto;
+        display: flex;
+        gap: 40px;
     }
 
     .column {
@@ -129,10 +129,7 @@ h1 {
         white-space: normal;
         height: 75px;
 
-        margin-right: 40px;
         border-left: 1px solid $light_border_color;
-        display: inline-block;
-        vertical-align: top;
         font-size: 18px;
         padding: 15px 0 15px 20px;
 
