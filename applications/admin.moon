@@ -80,22 +80,28 @@ class MoonRocksAdmin extends lapis.Application
     @modules = @pager\get_page @page
     render: true
 
-  [users: "/users"]: capture_errors_json =>
+  [users: "/users"]: capture_errors_json with_params {
+    {"email", types.empty + types.valid_text}
+    {"sort", shapes.default("id") * types.one_of {
+      "id",
+      "following_count",
+      "modules_count",
+      "followers_count",
+      "stared_count"
+    }}
+  }, (params) =>
     @title = "Users"
 
     import Users from require "models"
     assert_page @
 
-    assert_valid @params, {
-      {"email", type: "string", optional: true}
-    }
+    if params.email
+      assert_error Users\find([db.raw "lower(email)"]: @params.email\lower!), "failed to find user for email: #{params.email}"
+      return redirect_to: @url_for("admin.user", id: user.id)
 
-    if @params.email
-      user = Users\find [db.raw "lower(email)"]: @params.email\lower!
-      if user
-        return redirect_to: @url_for("admin.user", id: user.id)
+    sort_clause = "order by #{db.escape_identifier params.sort} desc"
 
-    @pager = Users\paginated "order by id desc", {
+    @pager = Users\paginated sort_clause, {
       per_page: 50
     }
 
