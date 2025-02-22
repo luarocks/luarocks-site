@@ -6,6 +6,8 @@ return ngx.exec "/" if uri\match "/manifest[^/]*/?$"
 
 import Users, Modules, Versions, Rocks, Manifests from require "models"
 
+types = require "lapis.validate.types"
+
 assert = (thing) ->
   ngx.exit 404 unless thing
   thing
@@ -19,9 +21,12 @@ should_increment = ->
 is_rockspec = ->
   (uri\match "%.rockspec$")
 
+validate_text = types.limited_text 512
+
+-- the user specific manifestg
 object = if uri\match "^/manifests"
-  slug = ngx.var[1]
-  file = ngx.var[2]
+  slug = assert validate_text\transform ngx.var.username
+  file = assert validate_text\transform ngx.var.filename
   user = assert Users\find(:slug)
 
   if is_rockspec!
@@ -38,7 +43,12 @@ object = if uri\match "^/manifests"
         ON (modules.id = versions.module_id and modules.user_id = ?)
       WHERE rock_fname = ?
     ]], user.id, file
-else
+
+-- a custom manifest
+else if uri\match "^/m"
+  error "not yet"
+
+else -- the root manifest
   file = ngx.var[1]
   manifest = Manifests\root!
 
