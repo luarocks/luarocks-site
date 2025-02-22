@@ -1,12 +1,17 @@
+
+shapes = require "helpers.shapes"
+import types from require "tableshape"
+
 class ModuleList extends require "widgets.base"
-  @needs: {
-    "modules"
+  @prop_types: {
+    modules: types.table
+    show_manifests: shapes.default(false) * types.boolean
   }
 
   widget_enclosing_element: "ul"
 
   inner_content: =>
-    for mod in *@modules
+    for mod in *@props.modules
       user = mod\get_user!
 
       li class: "module_row", ->
@@ -25,6 +30,13 @@ class ModuleList extends require "widgets.base"
             raw " &mdash; "
             text " downloads: "
             span title: @format_number(mod.downloads), class: "value", @format_big_number mod.downloads
+
+          if @props.show_manifests
+            manifests = mod\get_manifests!
+            if next manifests
+              div class: "module_manifests", ->
+                for manifest in *manifests
+                  a href: @url_for(manifest), class: "manifest_tag", manifest\name_for_display!
 
         div class: "summary", ->
           text mod.summary

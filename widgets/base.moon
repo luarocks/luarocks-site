@@ -9,12 +9,20 @@ class Base extends require "lapis.eswidget"
   @include "widgets.icons"
   @include "widgets.table_helpers"
 
-  render_modules: (modules, empty_text="No modules") =>
+  render_modules: (modules, empty_text="No modules", opts) =>
     unless next modules
       p class: "empty_message", "No modules"
       return
 
-    widget require("widgets.module_list") :modules
+    params = {
+      :modules
+    }
+
+    if opts
+      for k, v in pairs opts
+        params[k] = v
+
+    widget require("widgets.module_list") params
 
   term_snippet: (cmd) =>
     pre class: "highlight lang_bash term_snippet", ->

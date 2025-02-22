@@ -12,14 +12,14 @@ class DeleteModule extends require "widgets.page"
 
     @render_errors!
     form action: @req.cmd_url, method: "POST", class: "form", ->
+      input type: "hidden", name: "csrf_token", value: @csrf_token
+      label class: "wide_row", ->
+        div class: "label", "Module Name"
+        input type: "text", name: "module_name", required: true
+
       div class: "button_row", ->
-        input type: "hidden", name: "csrf_token", value: @csrf_token
-        div class: "row", ->
-          input type: "text", name: "module_name", id: "module_name"
-
         input type: "submit", value: "Delete Module"
-
-    div ->
-      a href: @url_for("module", @), ->
-        raw "&laquo; No, Return to module"
+        text " "
+        a href: @url_for("module", @), class: "aside", ->
+          raw "&laquo; No, Return to module"
 

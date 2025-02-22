@@ -353,18 +353,24 @@ hr {
         .label {
             font-size: 14px;
             margin-bottom: 4px;
+            font-weight: bold;
 
             .sub {
+                font-weight: normal;
                 color: var(--sub-color);
             }
         }
 
         input[type="text"], input[type="password"], input[type="email"] {
-            width: 300px;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 450px;
         }
 
         textarea {
-            width: 600px;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 600px;
             height: 200px;
         }
     }
@@ -374,17 +380,27 @@ hr {
     }
 
     .selectize-input {
-        width: 300px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 450px;
+
         @include input_style;
     }
 
     .button_row {
         margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
 
         a {
             color: var(--sub-color);
             &:hover {
                 color: color-mix(in lab, var(--sub-color), white 10%);
+            }
+
+            &.aside {
+                margin-left: auto;
             }
         }
     }
@@ -546,7 +562,7 @@ img.avatar {
     }
 }
 
-.development_flag, .new_tag, .user_flag, .archive_flag {
+.development_flag, .new_tag, .user_flag, .archive_flag, .manifest_tag {
     display: inline-block;
     vertical-align: 2px;
     font-weight: bold;
@@ -565,6 +581,10 @@ img.avatar {
     &.archive_flag {
         background: rgba(black, 0.1);
         color: rgba(black, 0.5);
+    }
+
+    &.manifest_tag {
+        text-transform: initial;
     }
 }
 

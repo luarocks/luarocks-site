@@ -5,6 +5,8 @@ with require "cloud_storage.http"
 db = require "lapis.db"
 lapis = require "lapis.init"
 
+import preload from require "lapis.db.model"
+
 import
   assert_error
   capture_errors
@@ -253,7 +255,13 @@ class MoonRocks extends lapis.Application
         { Manifests\root!.id }
 
       @results = Modules\search query, manifests
-      Modules\preload_relation @results, "user", fields: "id, slug, username"
+
+      preload @results, user: {
+        [preload]: {
+          fields: "id, slug, username"
+        }
+      }, manifest_modules: "manifest"
+
       @user_results = Users\search(query)\get_page!
     else
       @title = "Search"

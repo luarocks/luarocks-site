@@ -50,6 +50,11 @@ class Modules extends Model
     {"user", belongs_to: "Users"}
     {"versions", has_many: "Versions", order: "created_at desc"}
     {"current_version", belongs_to: "Versions"}
+    {"manifest_modules", has_many: "ManifestModules"}
+
+    {"manifests", fetch: =>
+      [mm\get_manifest! for mm in *@get_manifest_modules!]
+    }
   }
 
   -- spec: parsed rockspec

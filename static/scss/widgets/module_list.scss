@@ -27,6 +27,25 @@
         }
     }
 
+    .main {
+        display: flex;
+        gap: 5px;
+    }
+
+    .module_manifests {
+        margin-left: auto;
+        display: flex;
+        gap: 5px;
+
+        > a {
+            text-decoration: none;
+            margin: 0;
+            &:hover {
+                color: var(--button-fg);
+            }
+        }
+    }
+
     .main, .summary {
         @include single_line;
     }

@@ -35,12 +35,9 @@ class Search extends require "widgets.page"
 
   render_search_results: =>
     h2 "Modules"
-
-    unless next @results
-      p class: "empty_message", "No results"
-      return
-
-    @render_modules @results
+    @render_modules @results, "No results", {
+      show_manifests: true
+    }
 
   render_user_results: =>
     h2 "Users"
