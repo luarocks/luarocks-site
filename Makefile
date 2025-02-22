@@ -60,8 +60,8 @@ vendor_js:
 	npm install
 	cp node_modules/d3/build/d3.min.js static/lib
 	cp node_modules/jquery/dist/jquery.min.js static/lib
-	cp node_modules/selectize/dist/js/standalone/selectize.min.js static/lib
-	cp node_modules/selectize/dist/css/selectize.css static/lib
+	cp node_modules/@selectize/selectize/dist/js/selectize.min.js static/lib
+	cp node_modules/@selectize/selectize/dist/css/selectize.css static/lib
 
 annotate_models:
 	lapis annotate $$(find models -type f | grep -v /shapes/ | grep moon$$)
