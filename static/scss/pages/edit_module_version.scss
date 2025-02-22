@@ -1,6 +1,6 @@
 
 .development_group {
-    border: 1px solid $border_color;
+    border: 1px solid var(--border-color);
     background: white;
     padding: 20px;
     margin-bottom: 20px;
@@ -11,7 +11,7 @@
 
     .sub {
         margin: 5px 0;
-        color: $sub_color;
+        color: var(--sub-color);
     }
 
     .label {
@@ -43,19 +43,23 @@
 
     .timestamp, .downloads {
         margin-left: 10px;
-        color: $sub_color;
+        color: var(--sub-color);
     }
 
     .delete_btn {
-        background: $red_button_color;
+        background: var(--red-button-color);
         &:hover {
-            background: lighten($red_button_color, 5%);
+            background: color-mix(in lab, var(--red-button-color), white 10%);
+        }
+
+        &:active {
+            background: color-mix(in lab, var(--red-button-color), black 10%);
         }
     }
 
     .arch {
-        line-height: $button_height;
-        border: 1px solid $border_color;
+        line-height: var(--button-height);
+        border: 1px solid var(--border-color);
         background: white;
         padding: 10px 20px;
         list-style: none;

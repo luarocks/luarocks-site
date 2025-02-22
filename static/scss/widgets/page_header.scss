@@ -1,7 +1,7 @@
     margin: 0;
     background: white;
 
-    border-bottom: 1px solid $light_border_color;
+    border-bottom: 1px solid var(--light-border-color);
     padding-top: 15px;
 
 
@@ -67,7 +67,7 @@ h1 {
     font-size: 32px;
 
     .sub {
-        color: $sub_color;
+        color: var(--sub-color);
         font-size: 18px;
         font-weight: normal;
     }
@@ -99,22 +99,22 @@ h1 {
 
     .followers_count {
         box-sizing: border-box;
-        border: 1px solid $border_color;
+        border: 1px solid var(--border-color);
         border-left: 0;
         display: inline-block;
         vertical-align: top;
         padding: 0 10px;
-        height: $button_height;
+        height: var(--button-height);
         line-height: $button_height - 2px;
-        color: $sub_color;
-        background: mix($back_color, white, 50%);
+        color: var(--sub-color);
+        background: color-mix(in lab, var(--back-color), white 50%);
         border-radius: 0 3px 3px 0;
     }
 }
 
 .metadata_columns {
     margin-top: 25px;
-    border-top: 1px solid $light_border_color;
+    border-top: 1px solid var(--light-border-color);
     white-space: nowrap;
 
     .metadata_columns_inner {
@@ -125,11 +125,11 @@ h1 {
     }
 
     .column {
-        @include border_box;
+        box-sizing: border-box;
         white-space: normal;
         height: 75px;
 
-        border-left: 1px solid $light_border_color;
+        border-left: 1px solid var(--light-border-color);
         font-size: 18px;
         padding: 15px 0 15px 20px;
 
@@ -138,7 +138,7 @@ h1 {
             margin-bottom: 3px;
 
             font-size: 12px;
-            color: $sub_color_light;
+            color: var(--sub-color-light);
             font-weight: bold;
             text-transform: uppercase;
         }

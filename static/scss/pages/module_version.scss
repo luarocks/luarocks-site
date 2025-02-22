@@ -6,9 +6,9 @@ h3 {
 
 .rock_list {
     .sub {
-        color: $sub_color_light;
+        color: var(--sub-color-light);
         a {
-        color: $sub_color;
+            color: var(--sub-color);
         }
     }
 }

@@ -1,10 +1,10 @@
 
 a.sub {
-    color: $sub_color;
+    color: var(--sub-color);
 }
 
 .table {
-    font-size: $base_font_size;
+    font-size: var(--base-font-size);
     margin-bottom: 60px;
 
     td:first-child, td:nth-child(2) {

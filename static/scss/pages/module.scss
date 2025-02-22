@@ -1,6 +1,6 @@
 
 .installer {
-    width: $site_width;
+    width: var(--site-width);
     margin: 15px auto;
 
     pre {
@@ -10,7 +10,7 @@
 
         &:before {
             content: "Install:";
-            font-family: $font_family;
+            font-family: var(--font-family);
             font-size: 12px;
             text-transform: uppercase;
             font-weight: bold;
@@ -39,12 +39,12 @@ h3 {
 
     .sub {
         margin-left: 10px;
-        color: $sub_color;
+        color: var(--sub-color);
 
         a {
-            color: #888;
+            color: color-mix(in lab, var(--sub-color), black 10%);
             &:hover {
-                color: darken(#888, 10%);
+                color: color-mix(in lab, var(--sub-color), black 30%);
             }
         }
     }

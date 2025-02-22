@@ -6,6 +6,6 @@
     margin: 0;
 
     > p {
-        max-width: $site_width;
+        max-width: var(--site-width);
     }
 }

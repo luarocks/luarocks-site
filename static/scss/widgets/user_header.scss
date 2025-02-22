@@ -28,11 +28,11 @@ h1 {
 
     a {
         text-decoration: none;
-        color: rgba($sub_color, 0.8);
-        @include transition(color 0.1s ease);
+        color: color-mix(in srgb, var(--sub-color) 80%, transparent);
+        transition: color 0.1s ease;
 
         &:hover {
-            color: $link_color
+            color: var(--link-color)
         }
     }
 }

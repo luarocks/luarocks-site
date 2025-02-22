@@ -2,8 +2,10 @@ $lua_blue: #00257A; // color of lua logo
 $back_color: lighten($lua_blue, 73%);
 $header_color: lighten(desaturate($lua_blue, 60%), 5%);
 $button_color: #637393;
+$admin_color: #FFCAD9;
 $site_width: 960px;
 $link_color: #008FEE;
+$link_color_hover: lighten($link_color, 10%);
 $button_height: 35px;
 $red_button_color: #EE004F;
 
@@ -15,6 +17,9 @@ $border_color: #C1CCE4;
 $light_border_color: lighten(#C1CCE4, 5%); // for use on white background
 $line_height: 24px;
 
+$input_border_color: darken($border_color, 10%);
+$input_border_color_focused: darken($border_color, 35%);
+
 $font_family: 'Open Sans', sans-serif;
 
 $sub_color: mix($body_color, gray, 20%);
@@ -25,6 +30,7 @@ $tag_color: lighten($header_color, 20%);
 
 $button_color: $link_color;
 
+
 @mixin unselectable {
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -32,7 +38,7 @@ $button_color: $link_color;
 }
 
 @mixin site_width {
-    max-width: $site_width;
+    max-width: var(--site-width);
     min-width: 800px;
 }
 
@@ -42,30 +48,14 @@ $button_color: $link_color;
     text-overflow: ellipsis;
 }
 
-@mixin border_box {
-    box-sizing: border-box;
-}
-
-@mixin transition($args...) {
-    transition: $args;
-}
-
-@mixin prefixed($prop, $args...) {
-    -webkit-#{$prop}: $args;
-    -moz-#{$prop}: $args;
-    -ms-#{$prop}: $args;
-    #{$prop}: $args;
-}
-
-
 @mixin input_style {
-    border: 2px solid darken($border_color, 10%);
+    border: 2px solid var(--input-border-color);
     border-radius: 2px;
     padding: 4px;
-    @include border_box;
+    box-sizing: border-box;
 
     &:focus {
-        border-color: darken($border_color, 35%);
+        border-color: var(--input-border-color-focused);
         outline: none;
     }
 }

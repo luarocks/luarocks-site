@@ -1,6 +1,6 @@
 .version {
     background: white;
-    border: 1px solid $border_color;
+    border: 1px solid var(--border-color);
     border-radius: 2px;
 
     margin-bottom: 20px;
@@ -54,7 +54,7 @@
             color: rgba(255,255,255,0.8);
             padding: 5px;
             margin: 10px 0;
-            font-family: $font-family;
+            font-family: var(--font-family);
             &:last-child {
                 margin-bottom: 0;
             }

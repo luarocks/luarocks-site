@@ -38,7 +38,7 @@ $margin: 40px;
     > .enum_field {
         display: flex;
         border-style: solid;
-        border-color: $border_color;
+        border-color: var(--border-color);
 
         legend {
             font-weight: bold;
@@ -59,7 +59,7 @@ $margin: 40px;
 
             &.active {
                 font-weight: bold;
-                border: 2px solid $button_color;
+                border: 2px solid var(--button-color);
             }
         }
 

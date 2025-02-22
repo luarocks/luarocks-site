@@ -35,7 +35,7 @@
 .announce {
     font-size: 14px;
     margin: 20px 0;
-    color: $sub_color;
+    color: var(--sub-color);
 
     .new_tag {
         margin: 0 10px 0 0;
@@ -43,25 +43,25 @@
 }
 
 .header_sub {
-    font-size: $small_font_size;
+    font-size: var(--small-font-size);
     margin-left: 5px;
-    color: $sub_color_light;
+    color: var(--sub-color-light);
     display: inline-block;
     vertical-align: 4px;
 
     a {
-        color: $sub_color;
+        color: var(--sub-color);
     }
 }
 
 .intro_banner {
     background: white;
-    border-bottom: 1px solid $light_border_color;
+    border-bottom: 1px solid var(--light-border-color);
     margin-bottom: 30px;
     padding: 25px 0;
 
     .intro_banner_inner {
-        width: $site_width;
+        width: var(--site-width);
         margin: 0 auto;
         display: flex;
         gap: 20px;
@@ -86,8 +86,5 @@
             margin-bottom: 0;
         }
     }
-
 }
-
-
 
