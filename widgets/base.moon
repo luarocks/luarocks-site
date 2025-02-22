@@ -1,6 +1,6 @@
 
 import Widget from require "lapis.html"
-import underscore from require "lapis.util"
+import underscore, encode_query_string from require "lapis.util"
 
 class Base extends require "lapis.eswidget"
   @asset_packages: {"main"}
@@ -42,8 +42,11 @@ class Base extends require "lapis.eswidget"
     num_pages = pager\num_pages!
     return unless num_pages > 1
 
+    default_params = {k,v for k,v in pairs @GET}
+
     page_url = (p) ->
-      p == 1 and @req.parsed_url.path or "?page=#{p}"
+      default_params.page = if p == 1 then nil else p
+      "?" .. encode_query_string default_params
 
     div class: "pager", ->
       if current_page > 1

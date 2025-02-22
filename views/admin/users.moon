@@ -8,11 +8,17 @@ class AdminUsers extends require "widgets.admin.page"
     @filter_form (field) ->
       field "username"
       field "email"
+      field "active_7d", type: "bool"
+
+      field "has_module", type: "bool"
+      field "has_star", type: "bool"
+
       field "sort", enum {
         "following_count"
         "modules_count"
         "followers_count"
         "stared_count"
+        "last_active_at"
       }
 
     @render_pager @pager

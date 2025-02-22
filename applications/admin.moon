@@ -106,12 +106,16 @@ class MoonRocksAdmin extends lapis.Application
   [users: "/users"]: capture_errors_json with_params {
     {"email", types.empty + types.trimmed_text}
     {"username", types.empty + types.trimmed_text}
+    {"active_7d", types.empty + types.any / true}
+    {"has_module", types.empty + types.any / true}
+    {"has_star", types.empty + types.any / true}
     {"sort", shapes.default("id") * types.one_of {
       "id"
       "following_count"
       "modules_count"
       "followers_count"
       "stared_count"
+      "last_active_at"
     }}
   }, (params) =>
     @title = "Users"
@@ -119,7 +123,11 @@ class MoonRocksAdmin extends lapis.Application
     import Users from require "models"
     assert_page @
 
-    sort_clause = "order by #{db.escape_identifier params.sort} desc"
+    sort_clause = switch params.sort
+      when "last_active_at"
+        "order by last_active_at desc nulls last"
+      else
+        "order by #{db.escape_identifier params.sort} desc"
 
     clause = db.clause {
       if params.email
@@ -130,6 +138,16 @@ class MoonRocksAdmin extends lapis.Application
           {"lower(username) = ?", params.username\lower!}
           {"slug = ?", params.username\lower!}
         }, operator: "OR"
+
+      if params.active_7d
+        {"coalesce(last_active_at, created_at) > now() at time zone 'utc' - '7d'::interval"}
+
+      if params.has_module
+        {"modules_count > 0"}
+
+      if params.has_star
+        {"stared_count > 0"}
+
     }, prefix: "WHERE", allow_empty: true
 
     @pager = Users\paginated "? #{sort_clause}", clause, {

@@ -103,7 +103,7 @@ class AdminPage extends require "widgets.page"
               type: "checkbox"
               name: name
               checked: not_empty @params[name]
-              onchange: "$(event.target).closest('form').submit()"
+              onchange: "this.form.submit()"
               class: "filter_field"
             }
             text " "
