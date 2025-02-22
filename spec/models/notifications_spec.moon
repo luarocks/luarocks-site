@@ -26,8 +26,14 @@ describe "models.notifications", ->
     action, notification = Notifications\notify_for factory.Users!, factory.Modules!, "subscription", factory.Users!
     assert.same "insert", action
     assert.same 2, Notifications\count!
-
     assert.same 3, NotificationObjects\count!
+
+    -- it cascades deletes
+    assert notification\delete!
+    assert.same {}, NotificationObjects\select "where notification_id = ?", notification.id
+
+    assert.same 1, Notifications\count!
+    assert.same 2, NotificationObjects\count!
 
   it "creates a notification for starring module", ->
     user = factory.Users!
