@@ -13,6 +13,8 @@ import Model from require "lapis.db.model"
 -- );
 -- ALTER TABLE ONLY manifest_admins
 --   ADD CONSTRAINT manifest_admins_pkey PRIMARY KEY (user_id, manifest_id);
+-- ALTER TABLE ONLY manifest_admins
+--   ADD CONSTRAINT manifest_admins_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class ManifestAdmins extends Model
   @timestamp: true

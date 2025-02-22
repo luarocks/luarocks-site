@@ -21,6 +21,8 @@ import to_json from require "lapis.util"
 -- ALTER TABLE ONLY user_activity_logs
 --   ADD CONSTRAINT user_activity_logs_pkey PRIMARY KEY (id);
 -- CREATE INDEX user_activity_logs_user_id_created_at_idx ON user_activity_logs USING btree (user_id, created_at);
+-- ALTER TABLE ONLY user_activity_logs
+--   ADD CONSTRAINT user_activity_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class UserActivityLogs extends Model
   @timestamp: true

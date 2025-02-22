@@ -14,6 +14,8 @@ import safe_insert from require "helpers.models"
 -- );
 -- ALTER TABLE ONLY notification_objects
 --   ADD CONSTRAINT notification_objects_pkey PRIMARY KEY (notification_id, object_type, object_id);
+-- ALTER TABLE ONLY notification_objects
+--   ADD CONSTRAINT notification_objects_notification_id_fkey FOREIGN KEY (notification_id) REFERENCES public.notifications(id) ON DELETE CASCADE;
 --
 class NotificationObjects extends Model
   @timestamp: true

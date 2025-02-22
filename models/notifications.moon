@@ -19,6 +19,8 @@ import upsert from require "helpers.models"
 --   ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
 -- CREATE INDEX notifications_user_id_seen_id_idx ON notifications USING btree (user_id, seen, id);
 -- CREATE UNIQUE INDEX notifications_user_id_type_object_type_object_id_idx ON notifications USING btree (user_id, type, object_type, object_id) WHERE (NOT seen);
+-- ALTER TABLE ONLY notifications
+--   ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class Notifications extends Model
   @timestamp: true

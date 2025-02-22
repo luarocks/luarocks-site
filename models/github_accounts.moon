@@ -13,6 +13,8 @@ import Model from require "lapis.db.model"
 -- );
 -- ALTER TABLE ONLY github_accounts
 --   ADD CONSTRAINT github_accounts_pkey PRIMARY KEY (user_id, github_user_id);
+-- ALTER TABLE ONLY github_accounts
+--   ADD CONSTRAINT github_accounts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class GithubAccounts extends Model
   @primary_key: {"user_id", "github_user_id"}

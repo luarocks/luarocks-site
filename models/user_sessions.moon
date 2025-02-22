@@ -21,6 +21,8 @@ date = require "date"
 -- ALTER TABLE ONLY user_sessions
 --   ADD CONSTRAINT user_sessions_pkey PRIMARY KEY (id);
 -- CREATE INDEX user_sessions_user_id_idx ON user_sessions USING btree (user_id);
+-- ALTER TABLE ONLY user_sessions
+--   ADD CONSTRAINT user_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class UserSessions extends Model
   @timestamp: true

@@ -16,6 +16,8 @@ import safe_insert from require "helpers.models"
 -- ALTER TABLE ONLY followings
 --   ADD CONSTRAINT followings_pkey PRIMARY KEY (source_user_id, object_type, object_id, type);
 -- CREATE INDEX followings_object_type_object_id_idx ON followings USING btree (object_type, object_id);
+-- ALTER TABLE ONLY followings
+--   ADD CONSTRAINT followings_source_user_id_fkey FOREIGN KEY (source_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class Followings extends Model
   @primary_key: {"source_user_id", "object_type", "object_id", "type"}

@@ -11,6 +11,8 @@ import Model from require "lapis.db.model"
 -- );
 -- ALTER TABLE ONLY linked_modules
 --   ADD CONSTRAINT linked_modules_pkey PRIMARY KEY (module_id, user_id);
+-- ALTER TABLE ONLY linked_modules
+--   ADD CONSTRAINT linked_modules_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class LinkedModules extends Model
   @primary_key: {"module_id", "user_id"}

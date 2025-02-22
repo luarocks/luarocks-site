@@ -14,6 +14,8 @@ import Model from require "lapis.db.model"
 -- );
 -- ALTER TABLE ONLY user_data
 --   ADD CONSTRAINT user_data_pkey PRIMARY KEY (user_id);
+-- ALTER TABLE ONLY user_data
+--   ADD CONSTRAINT user_data_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class UserData extends Model
   @primary_key: "user_id"

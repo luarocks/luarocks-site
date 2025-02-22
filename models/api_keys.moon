@@ -22,6 +22,8 @@ date = require "date"
 -- ALTER TABLE ONLY api_keys
 --   ADD CONSTRAINT api_keys_pkey PRIMARY KEY (key);
 -- CREATE INDEX api_keys_user_id_idx ON api_keys USING btree (user_id);
+-- ALTER TABLE ONLY api_keys
+--   ADD CONSTRAINT api_keys_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 --
 class ApiKeys extends Model
   @primary_key: {"user_id", "key"}
