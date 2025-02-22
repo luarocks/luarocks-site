@@ -2,8 +2,8 @@ import to_json from require "lapis.util"
 
 class EditModule extends require "widgets.page"
   @es_module: [[
-    console.log("hello world!")
-    // new M.EditModule(widget_selector, widget_params);
+    import {EditModulePage} from "edit_module";
+    new EditModulePage(widget_selector, widget_params);
   ]]
 
   js_init: =>

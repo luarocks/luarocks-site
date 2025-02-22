@@ -2,8 +2,8 @@ import to_json from require "lapis.util"
 
 class Index extends require "widgets.page"
   @es_module: [[
-    console.log("hello from the index", widget_params);
-    // new M.Index(widget_selector, widget_params);
+    import {IndexPage} from "index";
+    new IndexPage(widget_selector, widget_params);
   ]]
 
   js_init: =>

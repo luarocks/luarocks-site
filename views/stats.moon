@@ -9,8 +9,8 @@ class Stats extends require "widgets.page"
   }
 
   @es_module: [[
-    console.log("hello from the stats", widget_params);
-    // M.Stats(widget_selector, widget_params);
+    import {StatsPage} from "stats";
+    new StatsPage(widget_selector, widget_params);
   ]]
 
   js_init: =>

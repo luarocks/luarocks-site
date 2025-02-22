@@ -9,6 +9,7 @@ export LUA_CPATH
 
 : views/edit_module.lua | $(TOP)/<moon> |> !compile_js |> views/edit_module.js {package_main}
 : views/index.lua | $(TOP)/<moon> |> !compile_js |> views/index.js {package_main}
+: views/stats.lua | $(TOP)/<moon> |> !compile_js |> views/stats.js {package_main}
 
 # package: main
 : {package_main} |> !bundle_js |> static/main.js {packages}
