@@ -1,7 +1,7 @@
 
 .development_group {
     border: 1px solid var(--border-color);
-    background: white;
+    background: var(--white-back-color);
     padding: 20px;
     margin-bottom: 20px;
 
@@ -60,7 +60,7 @@
     .arch {
         line-height: var(--button-height);
         border: 1px solid var(--border-color);
-        background: white;
+        background: var(--white-back-color);
         padding: 10px 20px;
         list-style: none;
         margin: 0 0 10px 0;

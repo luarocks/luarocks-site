@@ -2,9 +2,12 @@
 
 :root {
     --lua-blue: #{$lua_blue};
+    --white-back-color: #{$white_back_color};
     --back-color: #{$back_color};
     --header-color: #{$header_color};
+    --header-fg: white;
     --button-color: #{$button_color};
+    --button-fg: white;
     --admin-color: #{$admin_color};
     --site-width: #{$site_width};
     --link-color: #{$link_color};
@@ -60,7 +63,7 @@ h3 {
 
 details.query_log {
     position: fixed;
-    background: white;
+    background: var(--white-back-color);
     border: 2px solid var(--border-color);
     bottom: 0;
     right: 0;
@@ -91,13 +94,13 @@ button, input[type='submit'], .button {
     font-family: 'Open Sans', sans-serif;
     border: 0;
     border-radius: 3px;
-    color: #FFF;
+    color: var(--button-fg);
     cursor: pointer;
 
 
     &:hover {
         background-color: color-mix(in lab, var(--button-color), white 5%);
-        color: white;
+        color: var(--button-fg);
     }
 
     &:active {
@@ -117,7 +120,7 @@ button, input[type='submit'], .button {
     font-size: var(--small-font-size);
 
     &:hover {
-        color: white;
+        color: var(--button-fg);
         opacity: 1;
         background: var(--link-color);
     }
@@ -150,7 +153,7 @@ hr {
 .header {
     background: var(--header-color);
     height: 55px;
-    color: white;
+    color: var(--header-fg);
 
     .header_inner {
         @include site_width;
@@ -198,7 +201,7 @@ hr {
         }
 
         .unread_notifications {
-            background: white;
+            background: var(--white-back-color);
             height: 22px;
             line-height: 22px;
             color: var(--link-color);
@@ -319,11 +322,9 @@ hr {
     background: #444;
     padding: 8px;
     font-size: 12px;
-    color: white;
+    color: var(--button-fg);
     border-radius: 2px;
 }
-
-
 
 .form {
     .row {
@@ -404,7 +405,7 @@ pre {
 }
 
 .table {
-    background: white;
+    background: var(--white-back-color);
     border: 1px solid desaturate(darken($back_color, 30%), 50%);
     box-shadow: 1px 1px 0 desaturate(darken($back_color, 40%), 50%);
     font-size: 14px;
@@ -557,7 +558,7 @@ img.avatar {
     letter-spacing: 0.03em;
 
     background: var(--tag-color);
-    color: white;
+    color: var(--button-fg);
     border-radius: 2px;
     padding: 0 4px;
 

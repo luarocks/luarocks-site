@@ -2,7 +2,7 @@
 .manifest_list {
     .manifest_row {
         margin: 10px 0;
-        background: white;
+        background: var(--white-back-color);
         padding: 5px 10px;
         border-radius: 2px;
         border: 1px solid var(--border-color);
@@ -29,7 +29,7 @@
             line-height: 17px;
 
             background: var(--tag-color);
-            color: white;
+            color: var(--button-fg);
             border-radius: 2px;
             padding: 0 4px;
         }

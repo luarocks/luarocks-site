@@ -7,7 +7,7 @@
     .version_row {
         font-size: 16px;
         margin: 10px 0;
-        background: white;
+        background: var(--white-back-color);
         padding: 5px 10px;
         border-radius: 2px;
         border: 1px solid var(--border-color);
@@ -15,9 +15,9 @@
         color: var(--sub-color-light);
 
         .author {
-            color: #444;
+            color: var(--body-color);
             &:hover {
-                color: #666;
+                color: color-mix(in lab, var(--body-color), black 20%);
             }
         }
 
