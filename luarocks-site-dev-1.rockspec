@@ -14,6 +14,7 @@ dependencies = {
   "moonscript",
   "bcrypt",
   "luabitop",
+  "argparse",
   "pgmoon >= 1.15",
   "lapis >= 1.16, < 2",
   "lapis-exceptions ~> 2",

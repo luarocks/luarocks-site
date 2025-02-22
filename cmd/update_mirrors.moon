@@ -1,32 +1,59 @@
-import Manifests, ManifestBackups from require "models"
 
-switch ...
+argparse = require "argparse"
+
+parser = argparse "update_mirrors.moon", "Manage manifest backups"
+
+parser\add_help_command!
+parser\command_target "command"
+
+parser\command "list", "List all configured backups"
+
+with parser\command "remove", "Remove a backup"
+  \argument("backup_id", "ID of the backup to be removed")\convert tonumber
+  \flag("--confirm", "Confirm removal of backup")
+
+with parser\command "add", "Add a new backup"
+  \argument("name", "Manifest name")
+  \argument("git", "Git repository URL")
+  \flag("--dev", "Flag backup as development")
+
+args = parser\parse [v for _, v in ipairs _G.arg]
+
+import Manifests, ManifestBackups from require "models"
+import preload from require "lapis.db.model"
+
+switch args.command
   when "list"
     backups = ManifestBackups\select!
-    Manifests\include_in backups, "manifest_id"
+    preload backups, "manifest"
     print "Configured backups:"
     print "none! (add with `add`)" unless next backups
 
     for backup in *backups
-      print "[#{backup.id}] #{backup.manifest.name} -> #{backup.repository_url} (dev: #{backup.development})"
+      manifest = backup\get_manifest!
+      print "[#{backup.id}] #{manifest.name} -> #{backup.repository_url} (dev: #{backup.development})"
 
   when "remove"
-    _, backup_id = ...
-    backup = ManifestBackups\find assert backup_id, "missing backup id"
-    assert backup, "could not find backup with id #{backup_id}"
-    backup\delete!
+    backup = ManifestBackups\find args.backup_id
+    assert backup, "could not find backup with id #{args.backup_id}"
+
+    if args.confirm
+      print backup\delete!
+    else
+      print "Will remove backup: #{backup.id}?"
+      require("moon").p backup
+      print "Pass --confirm to delete it"
 
   when "add"
-    _, name, git, dev = ...
-    assert name, "missing manifest name"
-    assert git, "missing git repo url"
+    m = assert Manifests\find(name: args.name), "could not find manifest with name '#{args.name}'"
 
-    m = assert Manifests\find(:name), "could not find manifest"
-    ManifestBackups\create {
+    backup = ManifestBackups\create {
       manifest_id: m.id
-      repository_url: git
-      development: not not dev
+      repository_url: args.git
+      development: args.dev
     }
+    if backup
+      print "Added backup: #{backup.id}"
   else
     for backup in *ManifestBackups\select!
       backup\do_backup!
