@@ -1,5 +1,5 @@
 
-import Model from require "lapis.db.model"
+import Model, enum from require "lapis.db.model"
 import generate_key, generate_uuid from require "helpers.models"
 import slugify from require "lapis.util"
 
@@ -42,6 +42,13 @@ import strip_non_ascii from require "helpers.strings"
 --
 class Users extends Model
   @timestamp: true
+
+  -- this is for a bitset, so only bit values should be used
+  @flags: enum {
+    "admin": 1
+    "suspended": 2
+    "spam": 4
+  }
 
   @relations: {
     {"api_keys", has_many: "ApiKeys", where: { revoked: false }}
@@ -171,7 +178,26 @@ class Users extends Model
       order by name asc
     ]], @id, ...
 
-  is_admin: => @flags == 1
+  has_flag: (flag) =>
+    0 != bit.band @flags or 0, flag
+
+  -- user\update_flags suspended: true, spam: false
+  update_flags: (t) =>
+    flags = @flags
+    for field, enabled in pairs t
+      val = @@flags\for_db field
+
+      if enabled
+        flags = bit.bor flags, val
+      else
+        flags = bit.band flags, bit.bnot(val)
+
+    if flags != @flags
+      @update { :flags }
+
+  is_admin: => @has_flag @@flags.admin
+  is_suspended: => @has_flag @@flags.suspended
+  is_spam: => @has_flag @@flags.spam
 
   source_url: (r) => r\build_url "/manifests/#{@slug}"
 
