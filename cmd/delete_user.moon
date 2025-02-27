@@ -18,7 +18,11 @@ import to_json from require "lapis.util"
 
 db.query "BEGIN"
 
+count = 0
+total = 0
+
 for user_id in *args.user_id
+  total += 1
   user = Users\find user_id
   unless user
     io.stderr\write "No user with ID #{user_id}\n"
@@ -31,9 +35,13 @@ for user_id in *args.user_id
     continue
 
   if user\delete!
+    count += 1
     io.stderr\write "Deleted user #{user.username}\n"
+
+io.stderr\write "Deleted #{count} of #{total} users\n"
 
 if args.confirm
   db.query "COMMIT"
 else
   io.stderr\write "Rolling back, use --confirm to commit deletion\n"
+
