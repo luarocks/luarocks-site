@@ -46,7 +46,7 @@ object = if uri\match "^/manifests"
 
 else
   file_name = assert validate_text\transform ngx.var.filename
-  manifest = if uri\match "^/m"
+  manifest = if uri\match "^/m/"
     manifest_name = assert validate_text\transform ngx.var.manifest_name
     assert Manifests\find name: manifest_name
   else
