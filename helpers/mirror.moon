@@ -2,6 +2,8 @@
 ltn12 = require "ltn12"
 http = require "socket.http"
 
+import shell_escape from require "lapis.cmd.path"
+
 assert_request = (...) ->
   body, status, headers = http.request ...
   assert status == 200, "Failed to request #{...}, got #{status}"
@@ -26,11 +28,11 @@ parse_manifest = (text) ->
 -- checkpoint_fn: A callback function that gets called after each successful download, with the downloaded file's name as an argument
 update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
   print "Copying #{server} to #{dest}"
-  os.execute "mkdir -p '#{dest}'"
+  os.execute "mkdir -p '#{shell_escape dest}'"
 
   seen_files = {}
   existing_files = do
-    f = io.popen "ls '#{dest}' | grep '\\.rock$\\|\\.rockspec$'", "r"
+    f = io.popen "ls '#{shell_escape dest}' | grep '\\.rock$\\|\\.rockspec$'", "r"
     with { fname, true for fname in f\read("*a")\gmatch "[^\n]+" }
       f\close!
 
@@ -79,11 +81,11 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
 
           if (not res) or (type(status) == "number" and status >= 400)
             seen_files[fname] = nil
-            os.execute "rm '#{tmp_fname}'"
+            os.execute "rm '#{shell_escape tmp_fname}'"
             print "failed"
             continue
 
-          os.execute "mv '#{tmp_fname}' #{fname}"
+          os.execute "mv '#{shell_escape tmp_fname}' '#{shell_escape fname}'"
           print "done"
           if checkpoint_fn
             checkpoint_fn fname, mod, rock
@@ -93,7 +95,7 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
 
   for fname in pairs existing_files
     print "Removing #{fname}"
-    os.execute "rm '#{dest}/#{fname}'"
-
+    full_path = "#{dest}/#{fname}"
+    os.execute "rm '#{shell_escape full_path}'"
 
 { :update_manifest_on_disk, :parse_manifest, :assert_request }
