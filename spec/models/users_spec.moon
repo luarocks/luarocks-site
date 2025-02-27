@@ -78,4 +78,3 @@ describe "models.users", ->
 
       user\update flags: Users.flags.spam
       assert.truthy user\is_spam!
->>>>>>> 07bbfce (add bit flags to users table)
