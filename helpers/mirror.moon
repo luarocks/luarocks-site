@@ -20,7 +20,11 @@ parse_manifest = (text) ->
 
   manif
 
-update_manifest_on_disk = (server, dest, force=false) ->
+-- server: The base URL of the server where the manifests and rocks are hosted
+-- dest: The destination directory on the local filesystem where the files will be copied
+-- force: A boolean flag indicating whether to force-download files even if they already exist locally
+-- checkpoint_fn: A callback function that gets called after each successful download, with the downloaded file's name as an argument
+update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
   print "Copying #{server} to #{dest}"
   os.execute "mkdir -p '#{dest}'"
 
@@ -81,6 +85,8 @@ update_manifest_on_disk = (server, dest, force=false) ->
 
           os.execute "mv '#{tmp_fname}' #{fname}"
           print "done"
+          if checkpoint_fn
+            checkpoint_fn fname, mod, rock
 
   for m in *{ "manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3", "manifest-5.4"}
     download_manifest m

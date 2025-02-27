@@ -57,11 +57,17 @@ class ManifestBackups extends Model
     git "fetch"
     git "reset --hard origin/master"
 
-    -- do the backup
-    update_manifest_on_disk manifest_url, temp_path
+    commit = ->
+      git "add -A ."
+      git "commit -m 'updated backup'"
+      git "push origin master"
 
-    -- update
-    git "add -A ."
-    git "commit -m 'updated backup'"
-    git "push origin master"
+    count = 0
+    update_manifest_on_disk manifest_url, temp_path, nil, ->
+      count += 1
+      if count > 500
+        commit!
+        count = 0
+
+    commit!
     true
