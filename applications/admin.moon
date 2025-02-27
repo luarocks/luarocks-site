@@ -162,7 +162,7 @@ class MoonRocksAdmin extends lapis.Application
     {"id", types.db_id}
     {"dump", types.empty / false + types.any / true}
   }, (params) =>
-    import Users, Followings from require "models"
+    import Users, Followings, ManifestAdmins, Manifests from require "models"
     @user = assert_error Users\find(id: params.id), "invalid user"
 
     if params.dump
@@ -170,6 +170,10 @@ class MoonRocksAdmin extends lapis.Application
 
     @title = "User '#{@user.username}'"
     preload @user\get_follows!, "object"
+
+    @user_manifest_admins = ManifestAdmins\select "where user_id = ?", @user.id
+    preload @user_manifest_admins, "manifest"
+
     render: true
 
   [become_user: "/become-user"]: respond_to {

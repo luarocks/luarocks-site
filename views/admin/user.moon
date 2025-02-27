@@ -1,6 +1,6 @@
 
 class AdminUser extends require "widgets.admin.page"
-  @needs: {"user", "followings"}
+  @needs: {"user", "followings", "user_manifest_admins"}
 
   inner_content: =>
     h2 ->
@@ -23,6 +23,28 @@ class AdminUser extends require "widgets.admin.page"
           @format_table_value_by_type "number", {}, @user.modules_count
       }
     }
+
+    h3 "GitHub Accounts"
+    github_accounts = @user\get_github_accounts!
+    if github_accounts and #github_accounts > 0
+      @column_table github_accounts, {
+        {"github_login", label: "Login", (account) -> a href: account\profile_url!, target: "_blank", account.github_login}
+        {"github_user_id", label: "User ID"}
+        "created_at"
+        "updated_at"
+      }
+    else
+      p class: "empty_table", "No connected GitHub accounts"
+
+    if @user_manifest_admins and #@user_manifest_admins > 0
+      h3 "Manifest Admin For"
+      @column_table @user_manifest_admins, {
+        {"Manifest", (ma) ->
+          manifest = ma\get_manifest!
+          a href: @url_for(manifest), manifest.name}
+        {"is_owner", label: "Owner"}
+        "created_at"
+      }
 
     h3 "Followings"
     import Followings from require "models"
