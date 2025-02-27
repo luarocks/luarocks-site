@@ -75,7 +75,7 @@ class Helpers
       @format_number(bytes) .. suffix
 
   render_date: (d, abs_first=false) =>
-    span class: "date", title: date(d)\fmt "${iso}Z", @format_relative_timestamp(d)
+    span class: "date", title: date(d)\fmt("${iso}Z"), @format_relative_timestamp(d)
 
   format_relative_timestamp: (d, extra_opts) =>
     now = date true

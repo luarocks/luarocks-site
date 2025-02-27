@@ -39,12 +39,26 @@ class UserSettingsProfile extends require "widgets.user_settings_page"
         label ->
           div class: "label", "GitHub account"
 
-        input {
-          type: "text"
-          class: "medium_input"
-          name: "profile[github]"
-          value: data.github and data\github_handle!
-        }
+        github_accounts = @user\get_github_accounts!
+        if github_accounts and #github_accounts > 0
+          div class: "medium_input", ->
+            for account in *github_accounts
+              div ->
+                a href: account\profile_url!, target: "_blank", account.github_login
+                text " "
+                span class: "sub", ->
+                  text "(connected "
+                  @render_date account.created_at
+                  text " | "
+                  a href: @url_for("github_remove", account), "Remove..."
+                  text ")"
+        else
+          input {
+            type: "text"
+            class: "medium_input"
+            name: "profile[github]"
+            value: data.github and data\github_handle!
+          }
 
       div class: "row", ->
         label ->

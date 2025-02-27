@@ -25,7 +25,7 @@ class UserHeader extends require "widgets.page_header"
 
         div class: "social_links", ->
           data = @user\get_data!
-          if github = data\github_handle!
+          if github = @user\github_handle!
             a href: "https://github.com/#{github}", title: github, ->
               span class: "icon-github"
 

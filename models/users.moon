@@ -272,6 +272,13 @@ class Users extends Model
   has_password: =>
     not not @encrypted_password
 
+  github_handle: =>
+    if github_account = unpack @get_github_accounts!
+      return github_account.github_login
+
+    -- fall back to the manually provided github handle
+    @get_data!\github_handle!
+
   password_is_outdated: =>
     return false unless @encrypted_password
 

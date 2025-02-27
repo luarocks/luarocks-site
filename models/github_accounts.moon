@@ -67,6 +67,10 @@ class GithubAccounts extends Model
 
     Modules\find_all [key for key in pairs module_id_set]
 
+  -- Get the GitHub profile URL for this account
+  profile_url: =>
+    "https://github.com/#{@github_login}"
+
   -- only if the user account has password
   can_be_deleted: =>
     @get_user!\has_password!

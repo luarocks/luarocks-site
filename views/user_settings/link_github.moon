@@ -8,20 +8,22 @@ class UserSettingsLinkGithub extends require "widgets.user_settings_page"
     github = require "helpers.github"
 
     p ->
-      text "Link a GitHub account to automatically transfer ownership of
-      modules from the "
-      a href: @url_for("user_profile", user: "luarocks"), "luarocks"
-      text " account to your own. Any modules that have a repository URL in
-      their rockspec that matches your account will be copied into your
-      account."
+      text "Connected accounts can be used to
+      log into your LuaRocks account. You can connect multiple GitHub accounts
+      to the same LuaRocks account."
 
     p ->
-      a href: github\login_url(@csrf_token), "Link a new account"
+      a {
+        class: "button"
+          href: github\login_url(@csrf_token)
+      }, "Link a new GitHub account..."
 
-    p ->
-      a href: @url_for("github_claim_modules"), "Claim modules with GitHub account"
 
     if next @github_accounts
+      details ->
+        summary "Legacy tools..."
+        a href: @url_for("github_claim_modules"), "Claim modules with GitHub account"
+
       p ->
         strong "Linked accounts"
 
@@ -31,8 +33,10 @@ class UserSettingsLinkGithub extends require "widgets.user_settings_page"
             text account.github_login
             text " "
             span class: "sub", ->
-              text "("
-              a href: @url_for("github_remove", account), "Remove"
+              text "(connected "
+              @render_date account.created_at
+              text " | "
+              a href: @url_for("github_remove", account), "Remove..."
               text ")"
 
 
