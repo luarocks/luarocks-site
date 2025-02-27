@@ -13,6 +13,7 @@
 
 ## Code Style
 - **Language**: MoonScript with Lapis framework
+- **Styles**: SCSS is used for writing CSS
 - **Indentation**: 2 spaces
 - **Imports**: Group at top of file, ordered by dependency
 - **Naming**: snake_case for variables/functions, CamelCase for classes

@@ -7,6 +7,12 @@ class UserSettingsProfile extends require "widgets.user_settings_page"
 
       div class: "row", ->
         label ->
+          div class: "label", "Email address"
+
+        div class: "medium_input", @user.email
+
+      div class: "row", ->
+        label ->
           div class: "label", "Your website"
 
         input {

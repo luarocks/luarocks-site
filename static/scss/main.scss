@@ -328,11 +328,11 @@ hr {
 
 .form {
     .row {
+        display: flex;
+        gap: 10px;
         margin: 10px 0;
 
         label {
-            display: inline-block;
-            margin-right: 10px;
             width: 200px;
             text-align: right;
             color: var(--sub-color);
