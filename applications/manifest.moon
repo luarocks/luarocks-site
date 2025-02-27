@@ -118,17 +118,20 @@ class MoonRocksManifest extends lapis.Application
 
     @pager = Manifests\paginated [[
       order by id asc
-    ]], prepare_results: (manifests) ->
-      ManifestAdmins\include_in manifests, "manifest_id", flip: true, many: true
-      mas = {}
+    ]], {
+      per_page: 50
+      prepare_results: (manifests) ->
+        ManifestAdmins\include_in manifests, "manifest_id", flip: true, many: true
+        mas = {}
 
-      for m in *manifests
-        if admins = m.manifest_admins
-          for a in *admins
-            table.insert mas, a
+        for m in *manifests
+          if admins = m.manifest_admins
+            for a in *admins
+              table.insert mas, a
 
-      Users\include_in mas, "user_id"
-      manifests
+        Users\include_in mas, "user_id"
+        manifests
+    }
 
     @manifests = @pager\get_page @page
     render: true
