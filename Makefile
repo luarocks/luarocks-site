@@ -69,3 +69,6 @@ annotate_models:
 zipserver-dev::
 	zipserver -config configs/zipserver-dev.json
 
+tags::
+	moon-tags --lapis $$(git ls-files models/ applications/ helpers/ flows/ app.moon widgets/helpers.moon) $$(git ls-files widgets | grep '_helpers.moon$$' ) > $@
+
