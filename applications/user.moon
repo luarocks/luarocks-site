@@ -83,7 +83,7 @@ class MoonRocksUser extends lapis.Application
       render: true
 
     POST: capture_errors with_params {
-      { "username", types.limited_text 25}
+      { "username", types.limited_text 80} -- this can also take an email
       { "password", types.valid_text * types.string\length 1, 150}
     }, (params) =>
       assert_csrf @
@@ -106,7 +106,7 @@ class MoonRocksUser extends lapis.Application
       { "username", types.limited_text 25 }
       { "password", password_shape }
       { "password_repeat", password_shape }
-      { "email", shapes.email }
+      { "email", types.limited_text(80) * shapes.email }
     }, (params) =>
       assert_csrf @
       assert_error params.password == params.password_repeat, "Password repeat does not match"
@@ -161,7 +161,7 @@ class MoonRocksUser extends lapis.Application
         redirect_to: @url_for"index"
       else
         params = assert_valid @params, types.params_shape {
-          {"email", shapes.email / string.lower}
+          {"email", types.limited_text(80) * shapes.email / string.lower}
         }
 
         user = assert_error Users\find([db.raw "lower(email)"]: params.email),
