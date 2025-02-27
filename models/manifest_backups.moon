@@ -2,6 +2,8 @@
 import Model from require "lapis.db.model"
 import update_manifest_on_disk from require "helpers.mirror"
 
+import shell_escape from require "lapis.cmd.path"
+
 colors = require "ansicolors"
 config = require("lapis.config").get!
 
@@ -11,7 +13,7 @@ exec = (cmd) ->
 
 git_runner = (path) ->
   (cmd) ->
-    exec "cd #{path} && git #{cmd}"
+    exec "cd '#{shell_escape path}' && git #{cmd}"
 
 -- Generated schema dump: (do not edit)
 --
@@ -34,7 +36,7 @@ class ManifestBackups extends Model
     {"manifest", belongs_to: "Manifests"}
   }
 
-  do_backup: (base_dir="/tmp")=>
+  do_backup: (base_dir="/tmp", commit_size=500)=>
     import Manifests from require "models"
     m = Manifests\find @manifest_id
     -- TODO do for non root
@@ -47,12 +49,12 @@ class ManifestBackups extends Model
 
     git = git_runner temp_path
 
-    exec "mkdir -p #{temp_path}"
+    exec "mkdir -p '#{shell_escape temp_path}'"
     res = git "status"
 
     if res > 0
       git "init"
-      git "remote add origin '#{@repository_url}'"
+      git "remote add origin '#{shell_escape @repository_url}'"
 
     git "fetch"
     git "reset --hard origin/master"
@@ -65,7 +67,7 @@ class ManifestBackups extends Model
     count = 0
     update_manifest_on_disk manifest_url, temp_path, nil, ->
       count += 1
-      if count > 500
+      if count > commit_size
         commit!
         count = 0
 
