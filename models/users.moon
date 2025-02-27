@@ -214,17 +214,24 @@ class Users extends Model
   name_for_display: =>
     @display_name or @username
 
+  -- NOTE: we have foriegn keys for cascading deletes
   delete: =>
-    return unless super!
-    -- all other related models are deleted in cascade
+    -- see if they have modules
+    has_module = unpack @get_modules_paginated(per_page: 1)\get_page!
+    if has_module
+      return false, "user has modules, can't delete. Move or delete the modules first. Usel user:delete_modules to delete all modules"
 
+    super!
+
+  -- this will permanently delete all modules for this user
+  delete_modules: =>
     import Modules from require "models"
-
-    -- delete modules in app layer to trigger deleting sub-models
+    count = 0
     for m in *Modules\select "where user_id = ?", @id
-      m\delete!
+      if m\delete!
+        count += 1
 
-    true
+    count
 
   find_follow: (object) =>
     return unless object

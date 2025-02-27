@@ -430,6 +430,15 @@ import
           ON DELETE CASCADE;
       ]]
 
+
+  [1740682237]: =>
+    db.query [[
+      ALTER TABLE modules
+          ADD FOREIGN KEY (user_id)
+          REFERENCES users(id)
+          ON DELETE RESTRICT;
+    ]]
+
 }
 
 
