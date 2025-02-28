@@ -12,7 +12,7 @@ load_module = with_params {
   {"version", types.nil + types.limited_text 256}
   {"arch", types.nil + types.limited_text 256}
 }, (params) =>
-  @user = assert_error Users\find(slug: params.user), "Invalid user"
+  @user = assert_error Users\find(slug: params.user\lower!), "Invalid user"
   @module = assert_error Modules\find(user_id: @user.id, name: params.module\lower!), "Invalid module"
   @module.user = @user
 
@@ -30,7 +30,7 @@ load_module = with_params {
     }), "Invalid rock"
 
 
-  if @route_name and (@module.name != params.module or @version and @version.version_name != params.version)
+  if @route_name and (@user.slug != params.user or @module.name != params.module or @version and @version.version_name != params.version)
     url = @url_for @route_name, user: @user, module: @module, version: @version, arch: @rock
     @write status: 301, redirect_to: url
     return false
