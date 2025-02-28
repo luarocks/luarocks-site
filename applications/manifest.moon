@@ -7,7 +7,10 @@ import
   capture_errors
   from require "lapis.application"
 
-import assert_valid from require "lapis.validate"
+import assert_valid, with_params from require "lapis.validate"
+types = require "lapis.validate.types"
+
+import slugify from require "lapis.util"
 
 import
   Manifests
@@ -45,19 +48,22 @@ serve_manifest = capture_errors_404 =>
   if @params.a or @params.b
     @params.version = "#{@params.a}.#{@params.b}"
 
-  assert_valid @params, {
-    {"format", optional: true, one_of: {"json", "zip"}}
-    {"version", optional: true, one_of: {"5.1", "5.2", "5.3", "5.4"}}
+  params = assert_valid @params, types.params_shape {
+    {"format", types.nil + types.one_of {"json", "zip"}}
+    {"version", types.nil + types.one_of {"5.1", "5.2", "5.3", "5.4"}}
+
+    {"user", types.nil + types.limited_text(256) / slugify }
+    {"manifest", types.nil + types.limited_text(256) / slugify }
   }
 
-  @format = @params.format
-  @version = @params.version
+  @format = params.format
+  @version = params.version
 
   -- find what we are fetching modules from
-  thing = if @params.user
-    assert_error Users\find(slug: @params.user), "invalid user"
-  elseif @params.manifest
-    Manifests\find(name: @params.manifest)
+  thing = if params.user
+    assert_error Users\find(slug: params.user), "invalid user"
+  elseif params.manifest
+    assert_error Manifests\find(name: params.manifest), "invalid manifest"
   else
     Manifests\root!
 
