@@ -61,8 +61,15 @@ validate_reset_token = =>
     true
 
 class MoonRocksUser extends lapis.Application
-  [user_profile: "/modules/:user"]: capture_errors_404 =>
-    @user = assert_error Users\find(slug: @params.user), "invalid user"
+  [user_profile: "/modules/:user"]: capture_errors_404 with_params {
+    {"user", types.limited_text 256}
+  }, (params) =>
+    @user = assert_error Users\find(slug: params.user\lower!), "invalid user"
+    if @user.slug != params.user
+      return {
+        status: 301
+        redirect_to: @url_for @user
+      }
 
     @title = "#{@user\name_for_display!}'s Modules"
     @user_following = @current_user and @current_user\find_follow @user
