@@ -3,6 +3,8 @@
 lapis = require "lapis"
 db = require "lapis.db"
 
+config = require("lapis.config").get!
+
 import
   respond_to
   assert_error
@@ -119,8 +121,8 @@ class MoonRocksUser extends lapis.Application
       assert_error params.password == params.password_repeat, "Password repeat does not match"
 
       local turnstile_config
-      pcall ->
-        turnstile_config = require("secret.turnstile")
+      if config._name != "test"
+        pcall -> turnstile_config = require("secret.turnstile")
 
       if turnstile_config
         {:cf_turnstile_response} = assert_valid @params, types.params_shape {
