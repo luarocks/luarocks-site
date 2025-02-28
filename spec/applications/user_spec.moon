@@ -38,10 +38,10 @@ describe "application.user", ->
 
   describe "with user", ->
     local user
-      
+
     before_each ->
       user = Users\create "leafo", "pword", "leafo@example.com"
-        
+
     it "should log in a user", ->
       status, body, headers = request "/login", {
         csrf: true
@@ -54,6 +54,33 @@ describe "application.user", ->
       assert.truthy headers.set_cookie
       session = get_session cookies: parse_cookie_string(headers.set_cookie)
       assert.same user.id, session.user.id
+
+    it "should redirect to canonical user profile when case doesn't match", ->
+      status, body, headers = request "/modules/LeAfO"
+      assert.same 301, status
+      assert.same "http://localhost:8080/modules/leafo", headers.location
+
+    it "should not redirect when user slug matches exactly", ->
+      status, body, headers = request "/modules/leafo"
+      assert.same 200, status
+      assert.falsy headers.location
+
+    it "should handle user with mixed case username correctly", ->
+      mixed_user = Users\create "MixedCase", "pword", "mixed@example.com"
+
+      -- Should redirect to lowercase slug
+      status, body, headers = request "/modules/MiXeDcAsE"
+      assert.same 301, status
+      assert.same "http://localhost:8080/modules/mixedcase", headers.location
+
+      -- Should not redirect when using correct slug
+      status, body, headers = request "/modules/mixedcase"
+      assert.same 200, status
+      assert.falsy headers.location
+
+    it "should return 404 for non-existent user", ->
+      status, body = request "/modules/nonexistentuser"
+      assert.same 404, status
 
     it "should follow a user", ->
       other_user = factory.Users!
@@ -83,7 +110,7 @@ describe "application.user", ->
 
       status, res = request_as user, "/users/#{other_user.slug}/unfollow"
       assert.same 302, status
-        
+
       followings = Followings\select!
 
       assert.same 0, #followings
@@ -91,7 +118,7 @@ describe "application.user", ->
       user\refresh!
 
       assert.same 0, user.following_count
-        
+
     describe "api keys", ->
       it "gets api keys with no api keys", ->
         status, body, headers = request_as user, "/settings/api-keys"
