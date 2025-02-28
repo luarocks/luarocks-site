@@ -75,7 +75,7 @@ describe "models.modules", ->
 
       other_user\refresh!
       assert.same 1, other_user.modules_count
-  
+
   describe "labels", ->
     it "sets labels to something", ->
       mod = factory.Modules!
@@ -95,6 +95,64 @@ describe "models.modules", ->
       mod = factory.Modules!
       mod\set_labels {"one", "- -", "   ", "two"}
       assert.same {"one", "two"}, mod.labels
+
+    it "creates module with labels from rockspec", ->
+      user = factory.Users!
+      spec = {
+        package: "my_module"
+        version: "1.0.0"
+        description: {
+          summary: "A test module"
+          detailed: "A more detailed description"
+          homepage: "http://example.com"
+          license: "MIT"
+        }
+        labels: {"Test", "MoonScript", "Hello World"}
+      }
+
+      mod = Modules\create spec, user
+      assert.truthy mod
+      assert.same {"test", "moonscript", "hello-world"}, mod.labels
+
+    it "handles invalid type for labels", ->
+      user = factory.Users!
+      spec = {
+        package: "my_module"
+        version: "1.0.0"
+        description: {}
+        labels: "this is not an array"
+      }
+
+      mod = Modules\create spec, user
+      assert.truthy mod
+      assert.nil mod.labels
+
+    it "handles empty array for labels", ->
+      user = factory.Users!
+      spec = {
+        package: "my_module"
+        version: "1.0.0"
+        description: {}
+        labels: {}
+      }
+
+      mod = Modules\create spec, user
+      assert.truthy mod
+      assert.nil mod.labels
+
+    it "only takes the first 10 labels", ->
+      user = factory.Users!
+      spec = {
+        package: "my_module"
+        version: "1.0.0"
+        description: {}
+        labels: {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"}
+      }
+
+      mod = Modules\create spec, user
+      assert.truthy mod
+      assert.same {"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"}, mod.labels
+
 
   describe "parse labels", ->
     it "parses labels", ->

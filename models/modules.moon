@@ -5,6 +5,8 @@ import Model from require "lapis.db.model"
 import concat from table
 import safe_insert from require "helpers.models"
 
+types = require "lapis.validate.types"
+
 -- Generated schema dump: (do not edit)
 --
 -- CREATE TABLE modules (
@@ -86,6 +88,15 @@ class Modules extends Model
       user\update {
         modules_count: db.raw "modules_count + 1"
       }, timestamp: false
+
+
+      -- Transfer labels from rockspec if present
+      if spec.labels
+        labels = types.array_of(types.truncated_text(128))\transform spec.labels
+        if labels and next labels
+          -- take the first 10
+          labels = [l for l in *labels[1,10]]
+          mod\set_labels labels
 
     mod
 
