@@ -77,10 +77,12 @@ class MoonrocksGithub extends lapis.Application
         username = Users\generate_username(github_user.login)
         user = Users\create(username, nil, email, github_user.login)
 
+        import slugify from require "lapis.util"
+
         -- try to claim the username
         db.update Users\table_name!, {
           username: github_user.login
-          slug: github_user.login
+          slug: slugify github_user.login
         }, "id = ? and not exists(select 1 from users where username = ?)", user.id, github_user.login
 
         account_data.user_id = user.id
