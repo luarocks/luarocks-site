@@ -12,7 +12,7 @@ Installing LuaRocks in a Unix system:
     Lua 5.3.5 Copyright (C) 1994-2018 Lua.org, PUC-Rio
     > require "socket"
 
-On Windows? [Installation instructions for Windows](https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows).
+On Windows? [Installation instructions for Windows](https://github.com/luarocks/luarocks/blob/master/docs/installation_instructions_for_windows.md).
 
 ## Contributing Modules
 
