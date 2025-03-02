@@ -2,6 +2,8 @@
 class ManifestHeader extends require "widgets.page_header"
   page_name: "all"
 
+  admin_panel: =>
+
   inner_content: =>
     div class: "page_header_inner", ->
       h1 ->
@@ -9,7 +11,9 @@ class ManifestHeader extends require "widgets.page_header"
         text " Manifest"
         if @show_count
           text " "
-          span class: "sub", "(#{@pager\total_items!})"
+          span class: "sub", "(#{@format_number @pager\total_items!})"
+
+    @admin_panel!
 
     div class: "page_tabs", ->
       @render_tab "all", "All modules", @url_for @manifest

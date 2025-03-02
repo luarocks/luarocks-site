@@ -54,6 +54,13 @@ class Manifests extends Model
     import ManifestAdmins from require "models"
     ManifestAdmins\find user_id: user.id, manifest_id: @id
 
+  allowed_to_edit: (user) =>
+    return false unless user
+    return true if user\is_admin!
+
+    import ManifestAdmins from require "models"
+    ManifestAdmins\find user_id: user.id, manifest_id: @id
+
   find_admins: (opts={}) =>
     import ManifestAdmins, Users from require "models"
 

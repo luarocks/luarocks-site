@@ -5,10 +5,13 @@ lapis = require "lapis"
 import
   assert_error
   capture_errors
+  respond_to
   from require "lapis.application"
 
 import assert_valid, with_params from require "lapis.validate"
 types = require "lapis.validate.types"
+
+db = require "lapis.db"
 
 import slugify from require "lapis.util"
 
@@ -22,7 +25,7 @@ import
 
 import build_manifest, preload_modules, serve_lua_table from require "helpers.manifests"
 import get_all_pages from require "helpers.models"
-import capture_errors_404, assert_page from require "helpers.app"
+import capture_errors_404, assert_page, require_login, assert_csrf from require "helpers.app"
 import zipped_file from require "helpers.zip"
 
 config = require("lapis.config").get!
@@ -115,6 +118,36 @@ class MoonRocksManifest extends lapis.Application
 
   "/dev": => redirect_to: @url_for "root_manifest_dev"
   "/manifests/:user": => redirect_to: @url_for("user_manifest", user: @params.user)
+
+  [edit_manifest: "/m/:manifest/edit"]: capture_errors_404 require_login respond_to {
+    before: =>
+      import ManifestAdmins from require "models"
+
+      @manifest = assert_error Manifests\find(name: @params.manifest), "Invalid manifest"
+      @title = "Edit #{@manifest\name_for_display!}"
+
+      assert_error @manifest\allowed_to_edit(@current_user),
+        "You don't have permission to edit this manifest"
+
+    GET: =>
+      render: "edit_manifest"
+
+    POST: capture_errors with_params {
+      {"display_name", types.empty / db.NULL + types.limited_text 128}
+      {"description", types.empty / db.NULL + types.limited_text 1024}
+    }, (params) =>
+      assert_csrf @
+
+      @manifest\update {
+        display_name: params.display_name
+        description: params.description
+      }
+
+      -- TODO: record user activity log
+
+      @manifest\purge!
+      redirect_to: @url_for @manifest
+  }
 
   [manifests: "/manifests"]: capture_errors_404 =>
     @title = "All manifests"

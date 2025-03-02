@@ -5,6 +5,7 @@ class Manifest extends require "widgets.page"
     widget ManifestHeader {
       page_name: @development_only and "development_only" or "all"
       show_count: true
+      admin_panel: @\admin_panel
     }
 
   inner_content: =>
@@ -23,9 +24,16 @@ class Manifest extends require "widgets.page"
       p @manifest.description
 
     @render_pager @pager
-
     @render_modules @modules, "No modules have been added yet"
-
     @render_pager @pager
 
+  admin_panel: =>
+    return unless @manifest\allowed_to_edit @current_user
 
+    div class: "admin_tools", ->
+      if @current_user\is_admin!
+        text "Admin Tools: "
+      else
+        text "Owner Tools: "
+
+      a href: @url_for("edit_manifest", manifest: @manifest.name), "Edit Manifest"
