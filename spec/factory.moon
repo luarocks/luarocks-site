@@ -70,6 +70,10 @@ Rocks = (opts={}) ->
 Manifests = (opts={}) ->
   opts.description or= "Manifest description #{next_counter "manifest-desc"}"
   opts.name or= "manifest-#{next_counter "manifest-slug"}"
+
+  if opts.is_open == nil
+    opts.is_open = true
+
   assert Model.create models.Manifests, opts
 
 ManifestModules = (opts={}) ->
@@ -94,5 +98,14 @@ Followings = (opts={}) ->
   opts.source_user_id or= Users!.id
   models.Followings\create opts
 
+ManifestAdmins = (opts={}) ->
+  opts.manifest_id or= Manifests!.id
+  opts.user_id or= Users!.id
+
+  if opts.is_owner == nil
+    opts.is_owner = true
+
+  assert Model.create models.ManifestAdmins, opts
+
 { :next_counter, :next_email, :Users, :Modules, :Versions, :Rocks, :Manifests,
-  :ManifestModules, :ApiKeys, :Followings }
+  :ManifestModules, :ApiKeys, :Followings, :ManifestAdmins }
