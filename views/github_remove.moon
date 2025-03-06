@@ -15,6 +15,6 @@ class GithubRemove extends require "widgets.page"
         input type: "submit", value: "Remove link"
 
     p ->
-      a href: @url_for("user_settings.link_github"), ->
-        raw "&laquo; No, return to account settings"
+      a href: @url_for("user_settings.link_github"),
+        "« No, return to account settings"
 
