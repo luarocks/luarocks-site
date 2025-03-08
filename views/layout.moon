@@ -119,9 +119,9 @@ class Layout extends Widget
         a href: @url_for("notifications"), title: "notifications", class: "unread_notifications",
           @current_user\get_unseen_notifications_count!
 
-      a href: "https://github.com/luarocks/luarocks/wiki/Download", "Install"
+      a href: "https://github.com/luarocks/luarocks/blob/main/docs/download.md", "Install"
       text " "
-      a href: "https://github.com/luarocks/luarocks/wiki/Documentation", "Docs"
+      a href: "https://github.com/luarocks/luarocks/blob/main/docs/index.md", "Docs"
       text " "
 
       if @current_user
