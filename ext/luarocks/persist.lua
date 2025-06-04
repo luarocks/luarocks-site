@@ -101,7 +101,11 @@ end
 -- @param level number: the indentation level
 -- @param field_order table: optional prioritization table
 write_table = function(out, tbl, level, field_order)
-   out:write("{")
+   if level == 2 then
+     out:write("(function () return {")
+   else
+     out:write("{")
+   end
    local sep = "\n"
    local indentation = "   "
    local indent = true
@@ -138,7 +142,11 @@ write_table = function(out, tbl, level, field_order)
       out:write("\n")
       for n = 1,level-1 do out:write(indentation) end
    end
-   out:write("}")
+   if level == 2 then
+     out:write("} end)()")
+   else
+     out:write("}")
+   end
 end
 
 --- Writes a table to an io-like object.
