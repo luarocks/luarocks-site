@@ -4,7 +4,7 @@
 
 ![spec](https://github.com/luarocks/luarocks-site/workflows/spec/badge.svg)
 
-This is the web app that serves the default package manifest for for the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
+This is the web app that serves the default package manifest for the [LuaRocks package manager](https://github.com/luarocks/luarocks) for Lua.
 
 The entire site runs on [OpenResty][1], an Nginx based platform with Lua
 support. The site itself is coded in [MoonScript][2] and uses [Lapis][3] as a
@@ -68,7 +68,7 @@ busted
 
 The `make test_db` command will copy the schema of the `moonrocks` local
 database into the test database, wiping out what whatever was there. You'll
-only need to run this command once and the beginning any any time the schema
+only need to run this command once and the beginning any time the schema
 has changed.
 
 ### Setting up Google Cloud Storage
