@@ -46,7 +46,7 @@ class UploadRockspec extends require "widgets.page"
       text "The recommended way to upload a new module is to use the "
       code "luarocks upload"
       text " command line tool. The "
-      a href: "https://github.com/luarocks/luarocks/wiki/upload", "upload command"
+      a href: "https://github.com/luarocks/luarocks/blob/main/docs/luarocks_upload.md", "upload command"
       text " will automatically create and upload a source rock along with your rockspec."
 
     p "Run from the command line:"
