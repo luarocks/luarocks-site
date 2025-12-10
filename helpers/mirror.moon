@@ -90,7 +90,7 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
           if checkpoint_fn
             checkpoint_fn fname, mod, rock
 
-  for m in *{ "manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3", "manifest-5.4"}
+  for m in *{ "manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3", "manifest-5.4", "manifest-5.5"}
     download_manifest m
 
   for fname in pairs existing_files
