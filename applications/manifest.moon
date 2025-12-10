@@ -53,7 +53,7 @@ serve_manifest = capture_errors_404 =>
 
   params = assert_valid @params, types.params_shape {
     {"format", types.nil + types.one_of {"json", "zip"}}
-    {"version", types.nil + types.one_of {"5.1", "5.2", "5.3", "5.4"}}
+    {"version", types.nil + types.one_of {"5.1", "5.2", "5.3", "5.4", "5.5"}}
 
     {"user", types.nil + types.limited_text(256) / slugify }
     {"manifest", types.nil + types.limited_text(256) / slugify }
