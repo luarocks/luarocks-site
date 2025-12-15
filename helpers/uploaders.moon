@@ -29,6 +29,15 @@ has_invalid_chars = (str) ->
 
   false
 
+-- Set of characters that are allowed for module names, version names, and
+-- arches. Anything that will get rendered into a manifest file should be
+-- pass through here
+is_valid_manifest_string = (str) ->
+  return false unless str and type(str) == "string"
+  return false if str == ""
+  return false if #str > 255
+  str\match("^[a-zA-Z0-9%.%_%-]+$") != nil
+
 filename_for_rockspec = (spec) ->
   if has_invalid_chars spec.package
     return nil, "package name has invalid characters"
@@ -38,14 +47,24 @@ filename_for_rockspec = (spec) ->
 
   "#{spec.package\lower!}-#{spec.version\lower!}.rockspec"
 
+-- NOTE: this takes untrusted input, so be very strict about parsing
+-- prefer failing instead of fixing inputs
 parse_rock_fname = (module_name, fname) ->
   version, arch = fname\match "^#{escape_pattern(module_name)}%-(.-)%.([^.]+)%.rock$"
 
   unless version
     return nil, "Filename must be in format `#{module_name}-VERSION.ARCH.rock`"
 
+  unless is_valid_manifest_string version
+    return nil, "Version contains invalid characters, only alphanumeric, period, underscore, and hyphen allowed"
+
+  unless is_valid_manifest_string arch
+    return nil, "Arch contains invalid characters, only alphanumeric, period, underscore, and hyphen allowed"
+
   { :version, :arch }
 
+-- NOTE: this takes untrusted input, so be very strict about parsing
+-- prefer failing instead of fixing inputs
 parse_rockspec = (text) ->
   -- remove #! if it's there
   text = text\gsub "^%#[^\n]*", ""
@@ -88,6 +107,9 @@ parse_rockspec = (text) ->
   unless strip_non_ascii(spec.package) == spec.package
     return nil, "Invalid rockspec (invalid package name, ascii only)"
 
+  unless is_valid_manifest_string spec.package
+    return nil, "Invalid rockspec (package name contains invalid characters, only alphanumeric, period, underscore, and hyphen allowed)"
+
   unless spec.version
     return nil, "Invalid rockspec (missing version)"
 
@@ -96,6 +118,9 @@ parse_rockspec = (text) ->
 
   unless strip_non_ascii(spec.version) == spec.version
     return nil, "Invalid rockspec (invalid version name, ascii only)"
+
+  unless is_valid_manifest_string spec.version
+    return nil, "Invalid rockspec (version name contains invalid characters, only alphanumeric, period, underscore, and hyphen allowed)"
 
   spec
 
@@ -209,4 +234,4 @@ handle_rock_upload = =>
     @version, file.filename, file.content
 
 { :handle_rock_upload, :handle_rockspec_upload, :do_rockspec_upload,
-  :do_rock_upload, :parse_rockspec }
+  :do_rock_upload, :parse_rockspec, :parse_rock_fname, :is_valid_manifest_string }
