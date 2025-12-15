@@ -175,3 +175,131 @@ zebra = "last"
    ['123'] = "numeric string key"
 }
 ]], result
+
+  describe "security edge cases", ->
+    -- Helper to verify roundtrip: serialize then load should return original value
+    roundtrip = (tbl) ->
+      result = persist.save_from_table_to_string tbl
+      -- Load the result as Lua code
+      env = {}
+      fn, err = if setfenv
+        -- Lua 5.1
+        chunk, load_err = loadstring result
+        if chunk
+          setfenv chunk, env
+        chunk, load_err
+      else
+        -- Lua 5.2+
+        load result, "persist_output", "t", env
+
+      assert fn, "Failed to parse output as Lua: #{err}\nOutput was:\n#{result}"
+      fn!
+      env
+
+    it "escapes backslashes in strings", ->
+      result = persist.save_from_table_to_string {
+        path: "C:\\Users\\test"
+      }
+      -- Backslashes should be escaped so the output is valid Lua
+      assert.same [[path = "C:\\Users\\test"
+]], result
+
+    it "prevents quote escape injection (backslash before quote)", ->
+      -- This is the classic injection: \" in input becomes \\" in naive escaping
+      -- which means escaped-backslash + unescaped-quote = string termination
+      result = persist.save_from_table_to_string {
+        payload: '\\"'
+      }
+      -- Should properly escape both backslash and quote
+      assert.same [[payload = "\\\""
+]], result
+
+    it "prevents code injection via backslash-quote sequence", ->
+      -- Attempt to inject code: the payload tries to close the string and add code
+      malicious = '\\", evil = true, x = "'
+      result = persist.save_from_table_to_string {
+        data: malicious
+      }
+      -- Verify it roundtrips correctly (original value is preserved, no injection)
+      loaded = roundtrip { data: malicious }
+      assert.same malicious, loaded.data
+
+    it "handles multiple backslashes before quote", ->
+      result = persist.save_from_table_to_string {
+        test: '\\\\"'
+      }
+      loaded = roundtrip { test: '\\\\"' }
+      assert.same '\\\\"', loaded.test
+
+    it "escapes backslashes in keys", ->
+      result = persist.save_from_table_to_string {
+        data: {["key\\'inject"]: "value"}
+      }
+      loaded = roundtrip { data: {["key\\'inject"]: "value"} }
+      assert.same "value", loaded.data["key\\'inject"]
+
+    it "handles null bytes in strings", ->
+      result = persist.save_from_table_to_string {
+        binary: "before\0after"
+      }
+      loaded = roundtrip { binary: "before\0after" }
+      assert.same "before\0after", loaded.binary
+
+    it "handles carriage return characters", ->
+      result = persist.save_from_table_to_string {
+        text: "line1\r\nline2"
+      }
+      loaded = roundtrip { text: "line1\r\nline2" }
+      assert.same "line1\r\nline2", loaded.text
+
+    it "handles tab characters", ->
+      result = persist.save_from_table_to_string {
+        text: "col1\tcol2"
+      }
+      loaded = roundtrip { text: "col1\tcol2" }
+      assert.same "col1\tcol2", loaded.text
+
+    it "handles all escape sequences together", ->
+      complex = 'a"b\'c\\d\ne\rf\tg\0h'
+      result = persist.save_from_table_to_string {
+        complex: complex
+      }
+      loaded = roundtrip { complex: complex }
+      assert.same complex, loaded.complex
+
+    it "prevents injection in nested table values", ->
+      malicious = '\\", injected = true, ignore = "'
+      result = persist.save_from_table_to_string {
+        outer: {
+          inner: malicious
+        }
+      }
+      loaded = roundtrip { outer: { inner: malicious } }
+      assert.same malicious, loaded.outer.inner
+      assert.is_nil loaded.outer.injected
+
+    it "prevents injection in array values", ->
+      malicious = '\\", print("pwned"), "'
+      result = persist.save_from_table_to_string {
+        items: {"safe", malicious, "also safe"}
+      }
+      loaded = roundtrip { items: {"safe", malicious, "also safe"} }
+      assert.same malicious, loaded.items[2]
+
+    it "handles long bracket edge case with equals signs", ->
+      -- String that contains ]=] should use higher bracket level
+      tricky = "end]=]more"
+      result = persist.save_from_table_to_string {
+        text: "line1\n#{tricky}"
+      }
+      loaded = roundtrip { text: "line1\n#{tricky}" }
+      assert.same "line1\n#{tricky}", loaded.text
+
+    it "handles string that looks like long bracket close at all levels", ->
+      -- Try to break out of any bracket level
+      tricky = "]]\n]=]\n]==]\n]===]"
+      result = persist.save_from_table_to_string {
+        text: "start\n#{tricky}\nend"
+      }
+      loaded = roundtrip { text: "start\n#{tricky}\nend" }
+      assert.same "start\n#{tricky}\nend", loaded.text
