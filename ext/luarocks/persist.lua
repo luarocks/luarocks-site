@@ -48,7 +48,7 @@ function load_into_table(filename, tbl)
          ran, err = pcall(chunk)
       end
    end
-   
+
    if not chunk then
       if err:sub(1,5) ~= filename:sub(1,5) then
          return false, err
@@ -75,7 +75,7 @@ local function write_value(out, v, level, sub_order)
    if type(v) == "table" then
       write_table(out, v, level + 1, sub_order)
    elseif type(v) == "string" then
-      if v:match("\n") then
+      if v:match("\n") and not v:match("%z") then
          local open, close = "[[", "]]"
          local equals = 0
          while v:find(open,1,true) or v:find(close,1,true) do
@@ -85,7 +85,7 @@ local function write_value(out, v, level, sub_order)
          end
          out:write(open.."\n"..v..close)
       else
-         out:write("\""..v:gsub("\"", "\\\"").."\"")
+         out:write(string.format("%q", v))
       end
    else
       out:write(tostring(v))
@@ -129,7 +129,7 @@ write_table = function(out, tbl, level, field_order)
          if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") and not lua_keywords_set[k:lower()] then
             out:write(k.." = ")
          else
-            out:write("['"..k:gsub("'", "\\'").."'] = ") 
+            out:write("["..string.format("%q", k).."] = ")
          end
       end
       write_value(out, v, level, sub_order)
