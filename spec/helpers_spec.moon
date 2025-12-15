@@ -49,9 +49,9 @@ hello = {
       { layout: false }
       [[
 thing = {
-   ['end'] = 55,
-   ['function'] = {
-      ['do'] = true
+   ["end"] = 55,
+   ["function"] = {
+      ["do"] = true
    }
 }
 ]]
