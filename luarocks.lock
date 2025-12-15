@@ -14,7 +14,6 @@ return {
       ["lapis-systemd"] = "2.1.0-1",
       loadkit = "1.1.0-1",
       lpeg = "1.0.2-1",
-      lua = "5.1-1",
       ["lua-cjson"] = "2.1.0.10-1",
       luabitop = "1.0.2-3",
       luaexpat = "1.5.1-1",
