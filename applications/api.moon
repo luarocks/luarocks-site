@@ -12,6 +12,7 @@ import assert_valid from require "lapis.validate"
 
 import
   ApiKeys
+  FileAudits
   ManifestModules
   Manifests
   Modules
@@ -203,4 +204,83 @@ class MoonRocksApi extends lapis.Application
 
     module_url = @build_url @url_for "module", user: @current_user, module: @module
     json: { :rock, :module_url }
+
+  -- Callback endpoint for audit results from GitHub Actions
+  -- Authenticated via HMAC signature, not API key
+  "/api/1/audit-callback": capture_errors_json respond_to {
+    POST: =>
+      config = require("lapis.config").get!
+      hmac_secret = config.audit_hmac_secret
+
+      unless hmac_secret
+        return status: 500, json: { error: "audit_hmac_secret not configured" }
+
+      -- Get signature from header
+      signature_header = ngx and ngx.var.http_x_signature
+      unless signature_header
+        return status: 401, json: { error: "missing X-Signature header" }
+
+      expected_prefix = "sha256="
+      unless signature_header\sub(1, #expected_prefix) == expected_prefix
+        return status: 401, json: { error: "invalid signature format" }
+
+      provided_signature = signature_header\sub(#expected_prefix + 1)
+
+      -- Get raw request body for HMAC verification
+      ngx.req.read_body!
+      body = ngx.req.get_body_data!
+
+      unless body
+        return status: 400, json: { error: "missing request body" }
+
+      -- Compute expected signature
+      openssl_hmac = require "openssl.hmac"
+      hmac = openssl_hmac.new hmac_secret, "sha256"
+      hmac\update body
+      expected_signature = hmac\final!\gsub ".", (c) -> string.format "%02x", string.byte c
+
+      -- Constant-time comparison
+      if #provided_signature != #expected_signature
+        return status: 401, json: { error: "invalid signature" }
+
+      mismatch = 0
+      for i = 1, #expected_signature
+        mismatch = bit.bor mismatch, bit.bxor(
+          string.byte(provided_signature, i),
+          string.byte(expected_signature, i)
+        )
+
+      if mismatch != 0
+        return status: 401, json: { error: "invalid signature" }
+
+      -- Parse body and update audit
+      import from_json from require "lapis.util"
+      params = from_json body
+
+      audit_id = tonumber params.audit_id
+      unless audit_id
+        return status: 400, json: { error: "missing audit_id" }
+
+      audit = FileAudits\find audit_id
+      unless audit
+        return status: 404, json: { error: "audit not found" }
+
+      external_id = params.external_id
+
+      switch params.status
+        when "completed"
+          if external_id and not audit.external_id
+            audit\update external_id: external_id
+          audit\mark_complete params.result_data
+        when "failed"
+          if external_id and not audit.external_id
+            audit\update external_id: external_id
+          audit\mark_failed params.error_message or "unknown error"
+        when "running"
+          audit\start_run external_id
+        else
+          return status: 400, json: { error: "invalid status" }
+
+      json: { success: true }
+  }
 

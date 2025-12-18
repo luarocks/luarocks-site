@@ -439,6 +439,26 @@ import
           ON DELETE RESTRICT;
     ]]
 
+  [1765741992]: =>
+    create_table "file_audits", {
+      {"id", serial}
+      {"object_type", enum}
+      {"object_id", foreign_key}
+      {"status", enum default: 1}
+      {"runner", enum default: 1}
+      {"external_id", text null: true}
+      {"result_data", "json"}
+      {"error_message", text null: true}
+      {"started_at", time null: true}
+      {"finished_at", time null: true}
+      {"created_at", time}
+      {"updated_at", time}
+
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "file_audits", "object_type", "object_id", unique: true
+    create_index "file_audits", "status"
 }
 
 

@@ -19,6 +19,8 @@ types = require "lapis.validate.types"
 
 import preload from require "lapis.db.model"
 
+import dispatch_audit from require "helpers.audit_dispatch"
+
 class MoonRocksAdmin extends lapis.Application
   @path: "/admin"
   @name: "admin."
@@ -275,5 +277,47 @@ class MoonRocksAdmin extends lapis.Application
     ]], clause
 
     render: true
+
+  [audits: "/audits"]: capture_errors_json with_params {
+    {"status", types.empty + types.one_of {"pending", "running", "completed", "failed"}}
+    {"object_type", types.empty + types.one_of {"version", "rock"}}
+  }, (params) =>
+    @title = "Audits"
+    import FileAudits from require "models"
+    assert_page @
+
+    clause = db.clause {
+      if params.status
+        {"status = ?", FileAudits.statuses\for_db params.status}
+
+      if params.object_type
+        {"object_type = ?", FileAudits.object_types\for_db params.object_type}
+    }, prefix: "WHERE", allow_empty: true
+
+    @pager = FileAudits\paginated "? order by id desc", clause, {
+      per_page: 50
+      prepare_results: (audits) ->
+        preload audits, "object"
+        audits
+    }
+
+    @audits = @pager\get_page @page
+    render: true
+
+  [audit_dispatch: "/audits/:id/dispatch"]: respond_to {
+    POST: capture_errors_json with_params {
+      {"id", types.db_id}
+    }, (params) =>
+      assert_csrf @
+      import FileAudits from require "models"
+
+      audit = assert_error FileAudits\find(params.id), "audit not found"
+
+      success, err = dispatch_audit audit
+      unless success
+        return json: { success: false, error: err }
+
+      json: { success: true }
+  }
 
 
