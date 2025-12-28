@@ -3,9 +3,9 @@
 
 Installing LuaRocks in a Unix system:
 
-    $ wget https://luarocks.org/releases/luarocks-3.12.2.tar.gz
-    $ tar zxpf luarocks-3.12.2.tar.gz
-    $ cd luarocks-3.12.2
+    $ wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz
+    $ tar zxpf luarocks-3.13.0.tar.gz
+    $ cd luarocks-3.13.0
     $ ./configure && make && sudo make install
     $ sudo luarocks install luasocket
     $ lua
