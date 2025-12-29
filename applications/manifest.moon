@@ -34,13 +34,15 @@ zipable = (fn) ->
   =>
     @write fn @
 
-    return unless @format == "zip"
+    return unless (@format == "zip" or @format == "json.zip")
     return unless (@options.status or 200) == 200
     return unless @req.cmd_mth == "GET"
 
     fname = "manifest"
     if @version
       fname ..= "-#{@version}"
+    if @format == "json.zip"
+      fname ..= ".json"
 
     @options.content_type = "application/zip"
     @res.content = zipped_file fname, table.concat @buffer
@@ -52,7 +54,7 @@ serve_manifest = capture_errors_404 =>
     @params.version = "#{@params.a}.#{@params.b}"
 
   params = assert_valid @params, types.params_shape {
-    {"format", types.nil + types.one_of {"json", "zip"}}
+    {"format", types.nil + types.one_of {"json", "zip", "json.zip"}}
     {"version", types.nil + types.one_of {"5.1", "5.2", "5.3", "5.4", "5.5"}}
 
     {"user", types.nil + types.limited_text(256) / slugify }
@@ -94,7 +96,7 @@ serve_manifest = capture_errors_404 =>
   modules = get_all_pages pager
   manifest = build_manifest modules, @version, @development
 
-  if @format == "json"
+  if @format == "json" or @format == "json.zip"
     json: manifest
   else
     serve_lua_table @, manifest
