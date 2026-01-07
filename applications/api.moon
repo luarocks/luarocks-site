@@ -239,7 +239,6 @@ class MoonRocksApi extends lapis.Application
       hmac\update body
       expected_signature = hmac\final!\gsub ".", (c) -> string.format "%02x", string.byte c
 
-      -- Constant-time comparison
       if #provided_signature != #expected_signature
         return status: 401, json: { error: "invalid signature" }
 
@@ -277,7 +276,7 @@ class MoonRocksApi extends lapis.Application
             audit\update external_id: external_id
           audit\mark_failed params.error_message or "unknown error"
         when "running"
-          audit\start_run external_id
+          audit\mark_started external_id
         else
           return status: 400, json: { error: "invalid status" }
 

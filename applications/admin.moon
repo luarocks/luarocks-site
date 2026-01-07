@@ -19,7 +19,6 @@ types = require "lapis.validate.types"
 
 import preload from require "lapis.db.model"
 
-import dispatch_audit from require "helpers.audit_dispatch"
 
 class MoonRocksAdmin extends lapis.Application
   @path: "/admin"
@@ -329,11 +328,25 @@ class MoonRocksAdmin extends lapis.Application
 
       audit = assert_error FileAudits\find(params.id), "audit not found"
 
-      success, err = dispatch_audit audit
-      unless success
-        return json: { success: false, error: err }
+      ready_to_dispatch = audit\update {
+        status: FileAudits.statuses.dispatched
+      }, {
+        where: db.clause {
+          status: db.list {
+            FileAudits.statuses.pending
+            FileAudits.statuses.failed
+            FileAudits.statuses.completed
+          }
+        }
+      }
 
-      json: { success: true }
+      assert_error ready_to_dispatch, "file audit is not in correct state to dispatch (must be pending, failed or completed)"
+
+      import dispatch_audit from require "helpers.audit_dispatch"
+      status, response = dispatch_audit audit
+
+      -- on success will return a 204, ""
+      json: { :status, :response }
   }
 
   [audit_create: "/audits/create"]: respond_to {
