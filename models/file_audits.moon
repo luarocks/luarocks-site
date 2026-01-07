@@ -31,9 +31,10 @@ class FileAudits extends Model
 
   @statuses: enum {
     pending: 1
-    running: 2
-    completed: 3
-    failed: 4
+    dispatched: 2 -- send to the runner but haven't gotten the the start event
+    running: 3 -- the first event from the runner marks the audit as started with a external_id, so that we can lock any further messages to that run
+    completed: 4 -- the audit has completed
+    failed: 5 -- the audit has failed, check error_message
   }
 
   @runners: enum {
@@ -65,7 +66,7 @@ class FileAudits extends Model
       runner: runner
     }
 
-  start_run: (external_id) =>
+  mark_started: (external_id) =>
     @update {
       status: @@statuses.running
       :external_id

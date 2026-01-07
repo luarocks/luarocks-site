@@ -44,18 +44,10 @@ dispatch_audit = (file_audit) ->
     }
   }
 
-  -- GitHub returns 204 No Content on success
-  if status == 204
-    return true
-
-  -- Parse error response
   response_text = table.concat out
-  error_msg = if response_text and response_text != ""
-    res = from_json response_text
-    res and res.message or response_text
-  else
-    "HTTP #{status}"
+  response = if response_text and response_text != ""
+    from_json response_text
 
-  nil, "GitHub API error: #{error_msg}"
+  status, response or response_text
 
 {:dispatch_audit}
