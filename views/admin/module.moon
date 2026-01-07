@@ -1,5 +1,5 @@
 class AdminModule extends require "widgets.admin.page"
-  @needs: {"module", "versions", "manifest_modules"}
+  @needs: {"module"}
 
   inner_content: =>
     h2 ->
@@ -45,8 +45,8 @@ class AdminModule extends require "widgets.admin.page"
       }
 
     h3 "Versions"
-    if #@versions > 0
-      @column_table @versions, {
+    if next @module\get_versions!
+      @column_table @module\get_versions!, {
         "id"
         "version_name"
         {"current", value: (version) -> version.id == @module.current_version_id}
@@ -86,8 +86,8 @@ class AdminModule extends require "widgets.admin.page"
       p class: "empty_table", "No versions"
 
     h3 "Manifests"
-    if #@manifest_modules > 0
-      @column_table @manifest_modules, {
+    if next @module\get_manifest_modules!
+      @column_table @module\get_manifest_modules!, {
         {"manifest", value: (mm) -> mm\get_manifest! }
         "module_name"
         "created_at"
@@ -97,11 +97,11 @@ class AdminModule extends require "widgets.admin.page"
 
     h3 "Audits"
     audits = {}
-    for version in *@versions
+    for version in *@module\get_versions!
       if version.audit
         table.insert audits, version.audit
       if version.rocks
-        for rock in *version.rocks
+        for rock in *version\get_rocks!
           if rock.audit
             table.insert audits, rock.audit
 

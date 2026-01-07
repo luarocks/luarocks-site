@@ -112,11 +112,9 @@ class MoonRocksAdmin extends lapis.Application
 
     @title = "Module '#{@module\name_for_display!}'"
 
-    preload {@module}, "user", "current_version"
-    @versions = @module\get_versions!
-    preload @versions, "audit", rocks: "audit"
-    @manifest_modules = ManifestModules\select "where module_id = ?", @module.id
-    preload @manifest_modules, "manifest"
+    preload { @module }, "user", "current_version", manifest_modules: "manifest", versions: {
+      "audit", rocks: "audit"
+    }
 
     render: true
 
