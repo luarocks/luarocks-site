@@ -96,18 +96,9 @@ class AdminModule extends require "widgets.admin.page"
       p class: "empty_table", "Not in any manifests"
 
     h3 "Audits"
-    audits = {}
-    for version in *@module\get_versions!
-      if version.audit
-        table.insert audits, version.audit
-      if version.rocks
-        for rock in *version\get_rocks!
-          if rock.audit
-            table.insert audits, rock.audit
-
-    if #audits > 0
+    if next @module\get_audits!
       import FileAudits from require "models"
-      @column_table audits, {
+      @column_table @module\get_audits!, {
         "id"
         {":get_object_type", label: "type"}
         {":get_object", label: "object"}
