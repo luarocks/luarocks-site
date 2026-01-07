@@ -325,20 +325,7 @@ class MoonRocksAdmin extends lapis.Application
       import FileAudits from require "models"
 
       audit = assert_error FileAudits\find(params.id), "audit not found"
-
-      ready_to_dispatch = audit\update {
-        status: FileAudits.statuses.dispatched
-      }, {
-        where: db.clause {
-          status: db.list {
-            FileAudits.statuses.pending
-            FileAudits.statuses.failed
-            FileAudits.statuses.completed
-          }
-        }
-      }
-
-      assert_error ready_to_dispatch, "file audit is not in correct state to dispatch (must be pending, failed or completed)"
+      assert_error audit\mark_dispatched!, "file audit is not in correct state to dispatch (must be pending, failed or completed)"
 
       import dispatch_audit from require "helpers.audit_dispatch"
       status, response = dispatch_audit audit
