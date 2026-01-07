@@ -49,9 +49,38 @@ class AdminModule extends require "widgets.admin.page"
       @column_table @versions, {
         "id"
         "version_name"
+        {"current", value: (version) -> version.id == @module.current_version_id}
         "downloads"
         "development_version"
         "created_at"
+        {"rocks", (version) ->
+          rocks = version\get_rocks!
+          unless next rocks
+            em "none"
+
+          @column_table rocks, {
+            "id"
+            {"rock_fname", (rock) ->
+              a href: @url_for(rock), rock.rock_fname
+            }
+            "arch"
+            "downloads"
+            {"audit", (rock) ->
+              form action: @url_for("admin.audit_create"), method: "POST", ->
+                input type: "hidden", name: "object_type", value: "rock"
+                input type: "hidden", name: "object_id", value: rock.id
+                @csrf_input!
+                button class: "button", "Create Audit"
+            }
+          }
+        }
+        {"audit", (version) ->
+          form action: @url_for("admin.audit_create"), method: "POST", ->
+            input type: "hidden", name: "object_type", value: "version"
+            input type: "hidden", name: "object_id", value: version.id
+            @csrf_input!
+            button class: "button", "Create Audit"
+        }
       }
     else
       p class: "empty_table", "No versions"

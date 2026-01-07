@@ -18,55 +18,41 @@ class AdminAudits extends require "widgets.admin.page"
 
     @render_pager @pager
 
+    import FileAudits from require "models"
+
     @column_table @audits, {
       "id"
-      {":get_object_type", label: "type"}
-      {"object", label: "object", value: (audit) ->
-        obj = audit\get_object!
-        if obj
-          switch audit\get_object_type!
-            when "version"
-              mod = obj\get_module!
-              if mod
-                a href: @url_for(obj), "#{mod.name} #{obj.version_name}"
-              else
-                code obj.rockspec_fname
-            when "rock"
-              version = obj\get_version!
-              if version
-                mod = version\get_module!
-                a href: @url_for(obj), "#{mod and mod.name or '?'} #{obj.rock_fname}"
-              else
-                code obj.rock_fname
-        else
-          em "deleted"
+      {"object_type", FileAudits.object_types}
+      {"module", value: (audit) ->
+        if object = audit\get_object!
+          switch audit.object_type
+            when FileAudits.object_types.version
+              object\get_module!
+            when FileAudits.object_types.rock
+              if v = object\get_version!
+                v\get_module_name!
       }
-      {"status", label: "status", value: (audit) ->
-        span class: "status_#{audit\get_status!}", audit\get_status!
-      }
-      {"external_id", label: "external_id", value: (audit) ->
-        if audit.external_id
-          code tostring audit.external_id
-        else
-          em "—"
-      }
+      {"object", value: (audit) -> audit\get_object! }
+      {"status", FileAudits.statuses}
+      {"external_id"}
       "created_at"
-      {"actions", label: "actions", value: (audit) ->
-        if audit\get_status! == "pending"
-          form {
-            action: @url_for "admin.audit_dispatch", id: audit.id
-            method: "POST"
-            class: "dispatch_form"
-          }, ->
-            @csrf_input!
-            button type: "submit", class: "button", "Dispatch"
-
-        if audit\get_status! == "completed" and audit.result_data
-          button {
-            class: "button"
-            onclick: "this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'"
-          }, "Results"
-          pre style: "display: none; max-width: 400px; overflow: auto;", audit.result_data
+      {"actions", (audit) ->
+        switch audit.status
+          when FileAudits.statuses.pending
+            form {
+              action: @url_for "admin.audit_dispatch", id: audit.id
+              method: "POST"
+              class: "dispatch_form"
+            }, ->
+              @csrf_input!
+              button type: "submit", class: "button", "Dispatch"
+          when FileAudits.statuses.completed
+            if audit.result_data
+              button {
+                class: "button"
+                onclick: "this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'"
+              }, "Results"
+              pre style: "display: none; max-width: 400px; overflow: auto;", audit.result_data
       }
     }
 
