@@ -61,6 +61,19 @@ class Modules extends Model
       table.sort manifests, (a, b) -> a.name < b.name
       manifests
     }
+
+    {"audits", fetch: =>
+      audits = {}
+      for version in *@get_versions!
+        if a = version\get_audit!
+          table.insert audits, a
+
+        for rock in *version\get_rocks!
+          if a = rock\get_audit!
+            table.insert audits, a
+
+      audits
+    }
   }
 
   -- spec: parsed rockspec
