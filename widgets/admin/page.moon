@@ -44,8 +44,13 @@ class AdminPage extends require "widgets.page"
         text " ("
         a href: @url_for("admin.user", id: instance.id), "admin"
         text ")"
+      when "Manifests"
+        a href: @url_for(instance), instance\name_for_display!
       when "Modules"
         a href: @url_for(instance), instance\name_for_display!
+        text " ("
+        a href: @url_for("admin.module", id: instance.id), "admin"
+        text ")"
       when "Versions"
         a href: @url_for(instance), ->
           code instance\name_for_display!
