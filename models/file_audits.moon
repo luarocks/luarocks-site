@@ -1,10 +1,31 @@
 
 import Model, enum from require "lapis.db.model"
-import safe_insert from require "helpers.models"
+import insert_on_conflict_ignore from require "helpers.models"
 
 db = require "lapis.db"
 date = require "date"
 
+-- Generated schema dump: (do not edit)
+--
+-- CREATE TABLE file_audits (
+--   id integer NOT NULL,
+--   object_type smallint NOT NULL,
+--   object_id integer NOT NULL,
+--   status smallint DEFAULT 1 NOT NULL,
+--   runner smallint DEFAULT 1 NOT NULL,
+--   external_id text,
+--   result_data json,
+--   error_message text,
+--   started_at timestamp without time zone,
+--   finished_at timestamp without time zone,
+--   created_at timestamp without time zone NOT NULL,
+--   updated_at timestamp without time zone NOT NULL
+-- );
+-- ALTER TABLE ONLY file_audits
+--   ADD CONSTRAINT file_audits_pkey PRIMARY KEY (id);
+-- CREATE UNIQUE INDEX file_audits_object_type_object_id_idx ON file_audits USING btree (object_type, object_id);
+-- CREATE INDEX file_audits_status_idx ON file_audits USING btree (status);
+--
 class FileAudits extends Model
   @timestamp: true
 
@@ -28,26 +49,20 @@ class FileAudits extends Model
 
   -- Create audit for a rockspec (version)
   @audit_version: (version, runner=@runners.github_actions) =>
-    safe_insert @, {
+    insert_on_conflict_ignore @, {
       object_type: @object_types.version
       object_id: version.id
       status: @statuses.pending
       runner: runner
-    }, {
-      object_type: @object_types.version
-      object_id: version.id
     }
 
   -- Create audit for a rock
   @audit_rock: (rock, runner=@runners.github_actions) =>
-    safe_insert @, {
+    insert_on_conflict_ignore @, {
       object_type: @object_types.rock
       object_id: rock.id
       status: @statuses.pending
       runner: runner
-    }, {
-      object_type: @object_types.rock
-      object_id: rock.id
     }
 
   start_run: (external_id) =>

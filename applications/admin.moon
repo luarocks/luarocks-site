@@ -105,6 +105,22 @@ class MoonRocksAdmin extends lapis.Application
     @modules = @pager\get_page @page
     render: true
 
+  [module: "/module/:id"]: capture_errors_json with_params {
+    {"id", types.db_id}
+  }, (params) =>
+    import Modules, ManifestModules from require "models"
+    @module = assert_error Modules\find(id: params.id), "invalid module"
+
+    @title = "Module '#{@module\name_for_display!}'"
+
+    preload {@module}, "user", "current_version"
+    @versions = @module\get_versions!
+    preload @versions, "audit", rocks: "audit"
+    @manifest_modules = ManifestModules\select "where module_id = ?", @module.id
+    preload @manifest_modules, "manifest"
+
+    render: true
+
   [users: "/users"]: capture_errors_json with_params {
     {"email", types.empty + types.trimmed_text}
     {"username", types.empty + types.trimmed_text}
