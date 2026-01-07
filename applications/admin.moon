@@ -336,4 +336,26 @@ class MoonRocksAdmin extends lapis.Application
       json: { success: true }
   }
 
+  [audit_create: "/audits/create"]: respond_to {
+    POST: capture_errors_json with_params {
+      {"object_type", types.one_of {"version", "rock"}}
+      {"object_id", types.db_id}
+    }, (params) =>
+      assert_csrf @
+      import FileAudits, Versions, Rocks from require "models"
+
+      audit, err = switch params.object_type
+        when "version"
+          version = assert_error Versions\find(params.object_id), "version not found"
+          FileAudits\audit_version version
+        when "rock"
+          rock = assert_error Rocks\find(params.object_id), "rock not found"
+          FileAudits\audit_rock rock
+
+      unless audit
+        return json: { success: false, error: err or "failed to create audit" }
+
+      json: { success: true, audit_id: audit.id }
+  }
+
 
