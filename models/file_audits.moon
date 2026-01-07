@@ -66,6 +66,41 @@ class FileAudits extends Model
       runner: runner
     }
 
+  -- this is to prevent rogue messages from other audit runs interfering with
+  -- the current run
+  verify_external_id: (external_id) =>
+    -- if we don't have access to an external id then we always let it through
+    return true unless external_id
+
+    -- matches, good to go
+    if @external_id == external_id
+      return true
+
+    -- try to update it, returns true if it was applied
+    @update {
+      external_id: external_id
+    }, {
+      where: db.clause {
+        external_id: db.NULL
+      }
+    }
+
+  -- this gets a lock on the file audit so that we are safe to trigger the
+  -- dispatch http request
+  mark_dispatched: =>
+    @update {
+      status: @@statuses.dispatched
+      external_id: db.NULL
+    }, {
+      where: db.clause {
+        status: db.list {
+          @@statuses.pending
+          @@statuses.failed
+          @@statuses.completed
+        }
+      }
+    }
+
   mark_started: (external_id) =>
     @update {
       status: @@statuses.running

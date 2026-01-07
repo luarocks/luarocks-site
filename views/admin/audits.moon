@@ -1,4 +1,5 @@
 import enum from require "lapis.db.model"
+import FileAudits from require "models"
 
 class AdminAudits extends require "widgets.admin.page"
   @needs: {"audits", "pager"}
@@ -17,8 +18,6 @@ class AdminAudits extends require "widgets.admin.page"
       }
 
     @render_pager @pager
-
-    import FileAudits from require "models"
 
     @column_table @audits, {
       "id"

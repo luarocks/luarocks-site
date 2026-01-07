@@ -216,7 +216,7 @@ class MoonRocksApi extends lapis.Application
         return status: 500, json: { error: "audit_hmac_secret not configured" }
 
       -- Get signature from header
-      signature_header = ngx and ngx.var.http_x_signature
+      signature_header = @req.headers["x-signature"]
       unless signature_header
         return status: 401, json: { error: "missing X-Signature header" }
 
@@ -268,12 +268,12 @@ class MoonRocksApi extends lapis.Application
 
       switch params.status
         when "completed"
-          if external_id and not audit.external_id
-            audit\update external_id: external_id
+          unless audit\verify_external_id external_id
+            return status: 400, json: { error: "external_id mismatch, dropping event" }
           audit\mark_complete params.result_data
         when "failed"
-          if external_id and not audit.external_id
-            audit\update external_id: external_id
+          unless audit\verify_external_id external_id
+            return status: 400, json: { error: "external_id mismatch, dropping event" }
           audit\mark_failed params.error_message or "unknown error"
         when "running"
           audit\mark_started external_id
