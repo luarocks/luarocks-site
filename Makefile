@@ -7,11 +7,15 @@ CURRENT_ENVIRONMENT=$(shell /usr/local/openresty/luajit/bin/luajit -e 'print(req
 test:
 	busted
 
+# NOTE: gcc override is needed for luaossl, consider dropping as lapis dependency
 install_deps::
-	luarocks build --only-deps --lua-version=5.1 --local
+	CC="gcc -std=gnu99" luarocks build --only-deps --lua-version=5.1 --local
 
 pin_deps::
-	luarocks build --only-deps --lua-version=5.1 --local --pin
+	rm -rf clean-tree
+	rm -f luarocks.lock
+	CC="gcc -std=gnu99" luarocks build --only-deps --lua-version=5.1 --local --tree clean-tree
+	CC="gcc -std=gnu99" luarocks build --only-deps --lua-version=5.1 --local --pin --tree clean-tree
 
 assetspec.Tupfile::
 	 lapis eswidget generate_spec --output-dir static --tup-compile-dep-group='$$(TOP)/<moon>' --source-dir=static/js --format tup  > $@
