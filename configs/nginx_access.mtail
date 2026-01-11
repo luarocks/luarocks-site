@@ -1,0 +1,89 @@
+# mtail config for LuaRocks.org nginx access logs
+# Log format: [$request_time] $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" cache:$upstream_cache_status
+
+# Core HTTP metrics
+counter http_requests_total by status, method, request_type
+histogram http_request_duration_seconds by request_type buckets 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10
+counter http_response_bytes_total by request_type
+
+# Cache metrics
+counter http_cache_status_total by cache_status
+
+# LuaRocks-specific metrics
+counter rock_downloads_total by file_type
+counter api_requests_total by endpoint
+counter manifest_requests_total
+
+# Client metrics
+counter luarocks_client_requests_total by version
+
+# Main log line pattern
+/^\[(?P<request_time>\d+\.\d+)\] \S+ - \S+ \[[^\]]+\] "(?P<method>\S+) (?P<uri>\S+) [^"]*" (?P<status>\d+) (?P<bytes_sent>\d+) "[^"]*" "(?P<user_agent>[^"]*)" cache:(?P<cache_status>\S+)/ {
+  # Always record cache status
+  http_cache_status_total[$cache_status]++
+
+  # API requests
+  $uri =~ /^\/api\// {
+    http_requests_total[$status][$method]["api"]++
+    http_request_duration_seconds["api"] = $request_time
+    http_response_bytes_total["api"] += $bytes_sent
+
+    # Key-authenticated routes: /api/1/{key}/{action}
+    $uri =~ /^\/api\/1\/[^\/]+\/(?P<action>[^\/\?]+)/ {
+      api_requests_total[$action]++
+    }
+
+    # Exception: /api/tool_version (no key)
+    $uri =~ /^\/api\/tool_version/ {
+      api_requests_total["tool_version"]++
+    }
+
+    # Exception: /api/1/audit-callback (HMAC auth, no key)
+    $uri =~ /^\/api\/1\/audit-callback/ {
+      api_requests_total["audit-callback"]++
+    }
+  }
+
+  # Rock file downloads
+  $uri =~ /\.rock$/ {
+    http_requests_total[$status][$method]["rock_download"]++
+    http_request_duration_seconds["rock_download"] = $request_time
+    http_response_bytes_total["rock_download"] += $bytes_sent
+    rock_downloads_total["rock"]++
+  }
+
+  # Rockspec file downloads
+  $uri =~ /\.rockspec$/ {
+    http_requests_total[$status][$method]["rock_download"]++
+    http_request_duration_seconds["rock_download"] = $request_time
+    http_response_bytes_total["rock_download"] += $bytes_sent
+    rock_downloads_total["rockspec"]++
+  }
+
+  # Manifest index requests
+  $uri =~ /manifest(-[\d\.]+)?(\.zip|\.json)?$/ {
+    http_requests_total[$status][$method]["manifest"]++
+    http_request_duration_seconds["manifest"] = $request_time
+    http_response_bytes_total["manifest"] += $bytes_sent
+    manifest_requests_total++
+  }
+
+  # Static files
+  $uri =~ /^\/static\// {
+    http_requests_total[$status][$method]["static"]++
+    http_request_duration_seconds["static"] = $request_time
+    http_response_bytes_total["static"] += $bytes_sent
+  }
+
+  # Everything else is a web request (catch-all)
+  otherwise {
+    http_requests_total[$status][$method]["web"]++
+    http_request_duration_seconds["web"] = $request_time
+    http_response_bytes_total["web"] += $bytes_sent
+  }
+
+  # LuaRocks client version extraction (runs for all requests)
+  $user_agent =~ /LuaRocks\/(?P<version>\d+\.\d+\.\d+)/ {
+    luarocks_client_requests_total[$version]++
+  }
+}
