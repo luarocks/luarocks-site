@@ -112,4 +112,60 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
     full_path = "#{dest}/#{fname}"
     os.execute "rm '#{shell_escape full_path}'"
 
-{ :update_manifest_on_disk, :parse_manifest, :assert_request }
+render_index = ->
+  import render_html from require "lapis.html"
+
+  render_html ->
+    raw "<!DOCTYPE html>"
+    html ->
+      head ->
+        meta charset: "utf-8"
+        meta name: "viewport", content: "width=device-width, initial-scale=1"
+        title "LuaRocks Mirror"
+        style [[
+          body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+          }
+          h1 { color: #333; }
+          ul { list-style: none; padding: 0; }
+          li { margin: 8px 0; }
+          a { color: #2563eb; text-decoration: none; }
+          a:hover { text-decoration: underline; }
+          code { background: #f3f4f6; padding: 2px 6px; border-radius: 3px; }
+          pre { white-space: pre-wrap; word-break: break-all; }
+          .info { color: #666; margin-bottom: 30px; }
+        ]]
+      body ->
+        h1 "LuaRocks Mirror"
+        p class: "info", ->
+          text "This is a static mirror of the "
+          a href: "https://luarocks.org", "LuaRocks"
+          text " package repository. Use this mirror by configuring your "
+          code "luarocks"
+          text " client:"
+        pre ->
+          code ->
+            text "luarocks install --server="
+            span id: "mirror-host"
+            text " <rock-name>"
+        script ->
+          raw [[document.getElementById('mirror-host').textContent = window.location.href.replace(/\/?(index\.html)?$/, '')]]
+
+        h2 "Manifest Files"
+        ul ->
+          for m in *MANIFESTS
+            li ->
+              a href: m, m
+              text " ("
+              a href: "#{m}.json", "json"
+              text ")"
+        p class: "info", ->
+          text "For more information, visit "
+          a href: "https://luarocks.org", "luarocks.org"
+          text "."
+
+{ :update_manifest_on_disk, :parse_manifest, :assert_request, :render_index }

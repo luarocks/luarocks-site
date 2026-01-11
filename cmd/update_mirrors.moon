@@ -68,3 +68,12 @@ switch args.command
     for backup in *backups
       backup\do_backup args.base_dir
 
+    -- Generate index.html for the mirror root
+    import render_index from require "helpers.mirror"
+
+    index_path = "#{args.base_dir}/index.html"
+    f = assert io.open index_path, "w"
+    f\write render_index!
+    f\close!
+    print "Generated #{index_path}"
+
