@@ -33,7 +33,10 @@ class AdminAudits extends require "widgets.admin.page"
       }
       {"object", value: (audit) -> audit\get_object! }
       {"status", FileAudits.statuses}
-      {"external_id"}
+      {"external_id", (audit) ->
+        if audit.external_id
+          a href: "https://github.com/luarocks/rocks-audit/actions/runs/#{audit.external_id}", audit.external_id
+      }
       "created_at"
       {"actions", (audit) ->
         switch audit.status
