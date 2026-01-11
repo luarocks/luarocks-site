@@ -177,7 +177,7 @@ class MoonRocksAdmin extends lapis.Application
     {"id", types.db_id}
     {"dump", types.empty / false + types.any / true}
   }, (params) =>
-    import Users, Followings, ManifestAdmins, Manifests from require "models"
+    import Users, Followings, ManifestAdmins, Manifests, UserSessions, UserActivityLogs, ApiKeys from require "models"
     @user = assert_error Users\find(id: params.id), "invalid user"
 
     if params.dump
@@ -188,6 +188,12 @@ class MoonRocksAdmin extends lapis.Application
 
     @user_manifest_admins = ManifestAdmins\select "where user_id = ?", @user.id
     preload @user_manifest_admins, "manifest"
+
+    @user_data = @user\get_data!
+    @user_sessions = UserSessions\select "where user_id = ? order by created_at desc limit 20", @user.id
+    @api_keys = ApiKeys\select "where user_id = ? order by created_at desc", @user.id
+    @activity_logs = UserActivityLogs\select "where user_id = ? order by created_at desc limit 20", @user.id
+    preload @activity_logs, "object"
 
     render: true
 
