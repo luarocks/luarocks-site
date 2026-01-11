@@ -2,6 +2,15 @@
 ltn12 = require "ltn12"
 http = require "socket.http"
 
+MANIFESTS = {
+ "manifest"
+ "manifest-5.1"
+ "manifest-5.2"
+ "manifest-5.3"
+ "manifest-5.4"
+ "manifest-5.5"
+}
+
 import shell_escape from require "lapis.cmd.path"
 
 assert_request = (...) ->
@@ -43,6 +52,11 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
 
     with io.open "#{dest}/#{name}", "w"
       \write manifest_text
+      \close!
+
+    json_text = assert_request "#{server}/#{name}.json"
+    with io.open "#{dest}/#{name}.json", "w"
+      \write json_text
       \close!
 
     for mod_name, mod in pairs manifest.repository
@@ -90,7 +104,7 @@ update_manifest_on_disk = (server, dest, force=false, checkpoint_fn=nil) ->
           if checkpoint_fn
             checkpoint_fn fname, mod, rock
 
-  for m in *{ "manifest", "manifest-5.1", "manifest-5.2", "manifest-5.3", "manifest-5.4", "manifest-5.5"}
+  for m in *MANIFESTS
     download_manifest m
 
   for fname in pairs existing_files
