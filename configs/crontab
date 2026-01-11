@@ -1,0 +1,2 @@
+PATH=/home/luarocks/bin/:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/luarocks/.luarocks/bin/
+10 12 * * * /bin/bash /home/luarocks/sites/moonrocks-site/cmd/mirror_to_git.sh
