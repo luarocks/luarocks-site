@@ -29,7 +29,7 @@ class AdminAudits extends require "widgets.admin.page"
               object\get_module!
             when FileAudits.object_types.rock
               if v = object\get_version!
-                v\get_module_name!
+                v\get_module!
       }
       {"object", value: (audit) -> audit\get_object! }
       {"status", FileAudits.statuses}
