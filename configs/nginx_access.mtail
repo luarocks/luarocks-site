@@ -1,23 +1,18 @@
 # mtail config for LuaRocks.org nginx access logs
 # Log format: [$request_time] $remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" cache:$upstream_cache_status
 
-# Core HTTP metrics
 counter http_requests_total by status, method, request_type
 histogram http_request_duration_seconds by request_type buckets 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10
 counter http_response_bytes_total by request_type
 
-# Cache metrics
 counter http_cache_status_total by cache_status
 
-# LuaRocks-specific metrics
 counter rock_downloads_total by file_type
 counter api_requests_total by endpoint
 counter manifest_requests_total
 
-# Client metrics
 counter luarocks_client_requests_total by version
 
-# Main log line pattern
 /^\[(?P<request_time>\d+\.\d+)\] \S+ - \S+ \[[^\]]+\] "(?P<method>\S+) (?P<uri>\S+) [^"]*" (?P<status>\d+) (?P<bytes_sent>\d+) "[^"]*" "(?P<user_agent>[^"]*)" cache:(?P<cache_status>\S+)/ {
   # Always record cache status
   http_cache_status_total[$cache_status]++

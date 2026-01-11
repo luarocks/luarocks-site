@@ -207,6 +207,7 @@ class MoonRocksApi extends lapis.Application
 
   -- Callback endpoint for audit results from GitHub Actions
   -- Authenticated via HMAC signature, not API key
+  -- TOOD: The URL for this is inconsistent, has 1 but no key??
   "/api/1/audit-callback": capture_errors_json respond_to {
     POST: =>
       config = require("lapis.config").get!

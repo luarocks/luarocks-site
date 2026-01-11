@@ -1,0 +1,16 @@
+[Unit]
+Description=mtail log exporter for nginx access logs
+After=network.target
+
+[Service]
+Type=simple
+User=luarocks
+ExecStart=/home/luarocks/go/bin/mtail \
+  --address 127.0.0.1 \
+  --progs /home/luarocks/sites/moonrocks-site/configs/nginx_access.mtail \
+  --logs /home/luarocks/sites/moonrocks-site/logs/access.log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
