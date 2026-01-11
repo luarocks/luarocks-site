@@ -65,11 +65,14 @@ class ManifestBackups extends Model
       git "push origin master"
 
     count = 0
-    update_manifest_on_disk manifest_url, temp_path, nil, ->
-      count += 1
-      if count > commit_size
-        commit!
-        count = 0
+    update_manifest_on_disk manifest_url, temp_path, {
+      development: @development
+      checkpoint_fn: ->
+        count += 1
+        if count > commit_size
+          commit!
+          count = 0
+    }
 
     commit!
     true
