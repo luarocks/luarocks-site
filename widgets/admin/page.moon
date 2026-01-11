@@ -54,6 +54,9 @@ class AdminPage extends require "widgets.page"
       when "Versions"
         a href: @url_for(instance), ->
           code instance\name_for_display!
+      when "Rocks"
+        a href: @url_for(instance), ->
+          code instance.rock_fname
       else
         em "<don't know how to render model (#{instance.__class.__name})>"
 
