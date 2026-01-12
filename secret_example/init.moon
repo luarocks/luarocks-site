@@ -9,4 +9,4 @@
   audit_hmac_secret "shared-secret-for-hmac-signing"
   audit_github_token "ghp_xxxxxxxxxxxxxxxxxxxx" -- PAT with repo scope
   audit_github_repo "owner/rocks-audit" -- GitHub repo with audit workflow
-  audit_callback_url "https://luarocks.org/api/1/audit-callback"
+  audit_callback_url "https://luarocks.org/api/audit-callback"
