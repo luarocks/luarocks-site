@@ -3,3 +3,7 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['127.0.0.1:3903']
+    metric_relabel_configs:
+      - action: drop
+        source_labels: [__name__]
+        regex: "(go|process|mtail)_.+"
