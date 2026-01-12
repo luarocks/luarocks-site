@@ -13,4 +13,10 @@ a.sub {
     tr:nth-child(2n) {
         background: mix(white, #eee, 50%);
     }
+
+    @media (prefers-color-scheme: dark) {
+        tr:nth-child(2n) {
+            background: #21262d;
+        }
+    }
 }

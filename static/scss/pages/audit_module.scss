@@ -47,6 +47,16 @@
             color: rgba(white, 0.8);
         }
 
+        @media (prefers-color-scheme: dark) {
+            .added {
+                background: #238636;
+            }
+
+            .removed {
+                background: #da3633;
+            }
+        }
+
         .truncated {
             font-size: 14px;
             text-align: center;

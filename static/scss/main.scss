@@ -35,6 +35,31 @@
     --tag-color: #{$tag_color};
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --lua-blue: #4A7DFF;
+        --back-color: #0d1117;
+        --white-back-color: #161b22;
+        --header-color: #0d1117;
+        --header-fg: #e6edf3;
+        --body-color: #e6edf3;
+        --sub-color: #8b949e;
+        --sub-color-light: #6e7681;
+        --link-color: #58a6ff;
+        --link-color-hover: #79c0ff;
+        --button-color: #58a6ff;
+        --button-fg: white;
+        --red-button-color: #da3633;
+        --border-color: #30363d;
+        --light-border-color: #21262d;
+        --input-border-color: #30363d;
+        --input-border-color-focused: #58a6ff;
+        --error-color: #f85149;
+        --tag-color: #388bfd;
+        --admin-color: #3d1f28;
+    }
+}
+
 body {
     color: var(--body-color);
     font-size: var(--base-font-size);
@@ -124,6 +149,10 @@ button, input[type='submit'], .button {
         opacity: 1;
         background: var(--link-color);
     }
+
+    @media (prefers-color-scheme: dark) {
+        border-color: rgba(88, 166, 255, 0.6);
+    }
 }
 
 input {
@@ -139,6 +168,10 @@ p {
         background: rgba(#446, 0.1);
         padding: 2px 4px;
         border-radius: 6px;
+
+        @media (prefers-color-scheme: dark) {
+            background: rgba(110, 118, 129, 0.3);
+        }
     }
 }
 
@@ -182,6 +215,15 @@ hr {
                 outline: none;
                 box-shadow: 0 0 5px rgba(0,0,0,0.4);
             }
+
+            @media (prefers-color-scheme: dark) {
+                background: #21262d;
+                color: #e6edf3;
+
+                &::placeholder {
+                    color: #6e7681;
+                }
+            }
         }
 
     }
@@ -220,6 +262,14 @@ hr {
 
             &:hover {
                 color: lighten($link_color, 50%);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                color: #79c0ff;
+
+                &:hover {
+                    color: #a5d6ff;
+                }
             }
         }
     }
@@ -266,6 +316,14 @@ hr {
     > :last-child {
         margin-left: auto;
     }
+
+    @media (prefers-color-scheme: dark) {
+        color: #6e7681;
+
+        a {
+            color: #6e7681;
+        }
+    }
 }
 
 .sub_footer {
@@ -279,6 +337,10 @@ hr {
         font-size: 0.7em;
         font-weight: bold;
         text-transform: uppercase;
+
+        @media (prefers-color-scheme: dark) {
+            color: #6e7681;
+        }
     }
 
     img {
@@ -315,6 +377,15 @@ hr {
 
     a {
         color: #D1496F;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        border-color: #30363d;
+        color: #f0a8b8;
+
+        a {
+            color: #ff7b93;
+        }
     }
 }
 
@@ -456,6 +527,20 @@ pre {
         font-style: italic;
         color: #999;
     }
+
+    @media (prefers-color-scheme: dark) {
+        border-color: #30363d;
+        box-shadow: none;
+
+        thead {
+            background: #21262d;
+            color: #8b949e;
+        }
+
+        .time_ago {
+            color: #6e7681;
+        }
+    }
 }
 
 img.avatar {
@@ -534,6 +619,10 @@ img.avatar {
 
     .pager_label {
         color: lighten($body_color, 10%);
+
+        @media (prefers-color-scheme: dark) {
+            color: #8b949e;
+        }
     }
 }
 
@@ -581,6 +670,11 @@ img.avatar {
     &.archive_flag {
         background: rgba(black, 0.1);
         color: rgba(black, 0.5);
+
+        @media (prefers-color-scheme: dark) {
+            background: rgba(white, 0.1);
+            color: rgba(white, 0.5);
+        }
     }
 
     &.manifest_tag {
@@ -622,6 +716,36 @@ img.avatar {
         circle {
             fill: lighten($back_color, 5%);
             stroke: $header_color;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .axis {
+            path, line {
+                stroke: #30363d;
+            }
+
+            text {
+                fill: #8b949e;
+            }
+        }
+
+        .x_guides, .y_guides {
+            stroke: #21262d;
+        }
+
+        .graph {
+            path {
+                fill: rgba(88, 166, 255, 0.2);
+                stroke: rgba(88, 166, 255, 0.6);
+            }
+        }
+
+        .dots {
+            circle {
+                fill: #0d1117;
+                stroke: #58a6ff;
+            }
         }
     }
 }

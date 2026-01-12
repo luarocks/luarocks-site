@@ -36,7 +36,6 @@
     }
 
     .module_manifests {
-        margin-left: auto;
         display: flex;
         gap: 5px;
 
@@ -46,6 +45,16 @@
             &:hover {
                 color: var(--button-fg);
             }
+        }
+    }
+
+    .dates {
+        margin-left: auto;
+        color: gray;
+        font-size: var(--small-font-size);
+
+        .updated {
+            color: #888;
         }
     }
 
@@ -63,6 +72,40 @@
 
         .value {
             color: #444;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .author {
+            color: #6e7681;
+
+            a {
+                color: #8b949e;
+
+                &:hover {
+                    color: #a5d6ff;
+                }
+            }
+        }
+
+        .dates {
+            color: #6e7681;
+
+            .updated {
+                color: #8b949e;
+            }
+        }
+
+        .summary {
+            color: #6e7681;
+        }
+
+        .downloads {
+            color: #6e7681;
+
+            .value {
+                color: #8b949e;
+            }
         }
     }
 }

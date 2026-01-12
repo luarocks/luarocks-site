@@ -86,3 +86,21 @@ class Helpers
       "ago"
 
     time_ago_in_words tostring(d), nil, suffix
+
+  format_short_age: (d) =>
+    now = date true
+    diff = date.diff now, date(d)
+    seconds = diff\spanseconds!
+
+    if seconds < 60
+      "#{math.floor seconds}s"
+    elseif seconds < 60 * 60
+      "#{math.floor seconds / 60}m"
+    elseif seconds < 60 * 60 * 24
+      "#{math.floor seconds / (60 * 60)}h"
+    elseif seconds < 60 * 60 * 24 * 30
+      "#{math.floor seconds / (60 * 60 * 24)}d"
+    elseif seconds < 60 * 60 * 24 * 365
+      "#{math.floor seconds / (60 * 60 * 24 * 30)}mo"
+    else
+      "#{math.floor seconds / (60 * 60 * 24 * 365)}y"

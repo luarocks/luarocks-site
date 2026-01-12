@@ -6,6 +6,7 @@ class ModuleList extends require "widgets.base"
   @prop_types: {
     modules: types.table
     show_manifests: shapes.default(false) * types.boolean
+    show_dates: shapes.default(false) * types.boolean
   }
 
   widget_enclosing_element: "ul"
@@ -37,6 +38,18 @@ class ModuleList extends require "widgets.base"
               div class: "module_manifests", ->
                 for manifest in *manifests
                   a href: @url_for(manifest), class: "manifest_tag", manifest\name_for_display!
+
+          if @props.show_dates
+            span class: "dates", ->
+              date = require "date"
+              span class: "created", title: date(mod.created_at)\fmt("${iso}Z"), ->
+                text @format_short_age mod.created_at
+
+              current_version = mod\get_current_version!
+              if current_version
+                span class: "updated", title: date(current_version.created_at)\fmt("${iso}Z"), ->
+                  text " → "
+                  text @format_short_age current_version.created_at
 
         div class: "summary", ->
           text mod.summary
