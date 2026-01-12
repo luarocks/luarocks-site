@@ -1,0 +1,11 @@
+[Unit]
+Description=Victoria Metrics luarocks.org
+After=network.target
+
+[Service]
+User=luarocks
+ExecStart=/usr/bin/victoria-metrics -httpListenAddr=127.0.0.1:8428 -graphiteListenAddr=127.0.0.1:2003 -retentionPeriod=100y -search.queryStats.lastQueriesCount=20000 -search.queryStats.minQueryDuration=1ms -storageDataPath=/home/luarocks/vm-data -influxSkipSingleField -usePromCompatibleNaming -promscrape.config=/home/luarocks/sites/moonrocks-site/configs/vm-scrape.yml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
