@@ -14,6 +14,32 @@ Files are stored on Google Cloud Storage. PostgreSQL is used as a database.
 
 [Tup][4] is the build system.
 
+## Production Architecture
+
+```mermaid
+flowchart LR
+    subgraph public["Public (Port 80)"]
+        nginx[nginx]
+    end
+
+    subgraph private["Private"]
+        openresty[OpenResty/Lapis]
+        postgres[(PostgreSQL)]
+        redis[(Redis)]
+        accesslog[/Access Log/]
+        mtail[mtail]
+        victoria[(Victoria Metrics)]
+    end
+
+    HTTP["HTTP Requests"] --> nginx
+    nginx --> openresty
+    openresty --> postgres
+    openresty --> redis
+    openresty --> accesslog
+    accesslog --> mtail
+    mtail --> victoria
+```
+
 ## How To Run Locally
 
 Install the following dependencies:
