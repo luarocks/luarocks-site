@@ -54,6 +54,12 @@ $button_color: $link_color;
     border-radius: 2px;
     padding: 4px;
     box-sizing: border-box;
+    background: var(--input-bg);
+    color: var(--input-color);
+
+    &::placeholder {
+        color: var(--input-placeholder-color);
+    }
 
     &:focus {
         border-color: var(--input-border-color-focused);

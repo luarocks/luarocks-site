@@ -25,6 +25,9 @@
     --line-height: #{$line_height};
     --input-border-color: #{$input_border_color};
     --input-border-color-focused: #{$input_border_color_focused};
+    --input-bg: white;
+    --input-color: #{$body_color};
+    --input-placeholder-color: #6c757d;
 
     --font-family: #{$font_family};
 
@@ -54,6 +57,9 @@
         --light-border-color: #21262d;
         --input-border-color: #30363d;
         --input-border-color-focused: #58a6ff;
+        --input-bg: #21262d;
+        --input-color: #e6edf3;
+        --input-placeholder-color: #6e7681;
         --error-color: #f85149;
         --tag-color: #388bfd;
         --admin-color: #3d1f28;
@@ -62,6 +68,7 @@
 
 body {
     color: var(--body-color);
+    background: var(--white-back-color);
     font-size: var(--base-font-size);
     font-family: var(--font-family);
     margin: 0;
