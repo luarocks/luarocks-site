@@ -2,7 +2,7 @@
 import {Grapher} from "./grapher";
 
 export class IndexPage {
-  constructor(el, downloads_daily) {
+  constructor(el, {downloads_daily}) {
     this.el = $(el);
     new Grapher("#downloads_graph", downloads_daily, {
       label: "Views",

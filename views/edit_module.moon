@@ -1,4 +1,5 @@
 import to_json from require "lapis.util"
+import to_json_array from require "helpers.app"
 
 class EditModule extends require "widgets.page"
   @es_module: [[
@@ -8,7 +9,7 @@ class EditModule extends require "widgets.page"
 
   js_init: =>
     super {
-      suggested_labels: [l.name for l in *@suggested_labels]
+      suggested_labels: to_json_array [l.name for l in *@suggested_labels]
       module: {
         id: @module_id
         labels: @module.labels and next(@module.labels) and @module.labels

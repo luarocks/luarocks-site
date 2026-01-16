@@ -1,10 +1,18 @@
 
 csrf = require "lapis.csrf"
 config = require("lapis.config").get!
+json = require "cjson"
 
 import yield_error from require "lapis.application"
 import build_url from require "lapis.util"
 import assert_valid from require "lapis.validate"
+
+-- Returns cjson.empty_array for empty tables to ensure proper JSON array encoding
+to_json_array = (t) ->
+  if next(t) == nil
+    json.empty_array
+  else
+    t
 
 generate_csrf = => csrf.generate_token @
 assert_csrf = => csrf.assert_token @
@@ -106,4 +114,4 @@ verify_return_to = (url) ->
 
 { :assert_editable, :generate_csrf, :assert_csrf, :with_csrf, :require_login,
   :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page,
-  :login_and_return_url, :verify_return_to, :capture_errors }
+  :login_and_return_url, :verify_return_to, :capture_errors, :to_json_array }

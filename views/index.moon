@@ -1,4 +1,4 @@
-import to_json from require "lapis.util"
+import to_json_array from require "helpers.app"
 
 class Index extends require "widgets.page"
   @es_module: [[
@@ -7,7 +7,9 @@ class Index extends require "widgets.page"
   ]]
 
   js_init: =>
-    super @downloads_daily
+    super {
+      downloads_daily: to_json_array @downloads_daily
+    }
 
   header_content: =>
     div class: "intro_banner", ->

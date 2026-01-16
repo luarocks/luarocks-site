@@ -1,4 +1,4 @@
-import to_json from require "lapis.util"
+import to_json_array from require "helpers.app"
 
 Header = require "widgets.stats_header"
 
@@ -16,9 +16,9 @@ class Stats extends require "widgets.page"
   js_init: =>
     super {
       graphs: {
-        cumulative_users: @cumulative_users
-        cumulative_modules: @cumulative_modules
-        cumulative_versions: @cumulative_versions
+        cumulative_users: to_json_array @cumulative_users
+        cumulative_modules: to_json_array @cumulative_modules
+        cumulative_versions: to_json_array @cumulative_versions
       }
     }
 
