@@ -71,7 +71,7 @@ describe "application.api", ->
     it "blocks revoked key", ->
       key\revoke!
       res = api_request "/status", {
-        status: 200
+        status: 403
       }
 
       assert.same {

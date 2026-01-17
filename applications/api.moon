@@ -51,8 +51,7 @@ api_request = (fn) ->
 
       if @key.revoked
         return {
-          -- TODO: luarocks currently doesn't show error codes when non-200
-          status: 200
+          status: 403
           json: {
             errors: {
               "The API key you provided has been revoked"
