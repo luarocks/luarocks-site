@@ -55,7 +55,7 @@ api_request = (fn) ->
           status: 200
           json: {
             errors: {
-              "The API key you provided has been revoked. If you didn't revoke it then it may have been automatically revoked. See here: https://luarocks.org/security-incident-march-2019 You can generate a new API key here: https://luarocks.org/settings/api-keys"
+              "The API key you provided has been revoked"
             }
           }
         }
