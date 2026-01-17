@@ -29,6 +29,10 @@ assert_editable = (thing) =>
   unless thing\allowed_to_edit @current_user
     yield_error "Don't have permission to edit"
 
+assert_not_suspended = =>
+  if @current_user and @current_user\is_suspended!
+    yield_error "Your account has been suspended"
+
 not_found = { render: "not_found", status: 404 }
 
 login_and_return_url = (url=ngx.var.request_uri, intent) =>
@@ -112,6 +116,6 @@ verify_return_to = (url) ->
   false
 
 
-{ :assert_editable, :generate_csrf, :assert_csrf, :with_csrf, :require_login,
+{ :assert_editable, :assert_not_suspended, :generate_csrf, :assert_csrf, :with_csrf, :require_login,
   :require_admin, :not_found, :capture_errors_404, :ensure_https, :assert_page,
   :login_and_return_url, :verify_return_to, :capture_errors, :to_json_array }

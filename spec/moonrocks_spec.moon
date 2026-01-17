@@ -263,6 +263,20 @@ describe "moonrocks", ->
       user\refresh!
       assert.same 1, user.modules_count
 
+    it "should not allow suspended user to upload rockspec", ->
+      user\update flags: Users.flags.suspended
+      status, body = do_upload "/upload?json=true", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua"), {
+          expect: "json"
+        }
+
+      assert.same {
+        errors: {"Your account has been suspended"}
+      }, body
+
+      assert.same 0, #Versions\select!
+      assert.same 0, #Modules\select!
+
     it "should override rockspec", ->
       mod = factory.Modules user_id: user.id, name: "etlua"
       version = factory.Versions {
@@ -365,4 +379,14 @@ describe "moonrocks", ->
 
         rock\refresh!
         assert.same 2, rock.revision
+
+      it "should not allow suspended user to upload rock", ->
+        user\update flags: Users.flags.suspended
+        fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+        status, body = do_upload "#{version_url}/upload", "rock_file", fname, "hello world"
+
+        assert.same 200, status
+        -- Error is rendered in HTML page
+        assert.truthy body\match "Your account has been suspended"
+        assert.same 0, #Rocks\select!
 

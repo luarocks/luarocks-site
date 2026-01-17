@@ -62,6 +62,13 @@ api_request = (fn) ->
 
       @key\update_last_used_at!
       @current_user = Users\find id: @key.user_id
+
+      if @current_user\is_suspended!
+        return {
+          status: 403
+          json: { errors: {"Your account has been suspended"} }
+        }
+
       fn @
   }
 

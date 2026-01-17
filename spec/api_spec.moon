@@ -78,6 +78,50 @@ describe "application.api", ->
         errors: {"The API key you provided has been revoked. If you didn't revoke it then it may have been automatically revoked. See here: https://luarocks.org/security-incident-march-2019 You can generate a new API key here: https://luarocks.org/settings/api-keys"}
       }, res
 
+    it "blocks suspended user", ->
+      user\update flags: Users.flags.suspended
+      res = api_request "/status", {
+        status: 403
+      }
+
+      assert.same {
+        errors: {"Your account has been suspended"}
+      }, res
+
+    it "suspended user cannot upload rockspec", ->
+      user\update flags: Users.flags.suspended
+      status, res = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua"), {
+          expect: "json"
+        }
+
+      assert.same 403, status
+      assert.same {
+        errors: {"Your account has been suspended"}
+      }, res
+
+      assert.same 0, #Versions\select!
+      assert.same 0, #Modules\select!
+
+    it "suspended user cannot upload rock", ->
+      mod = factory.Modules user_id: user.id
+      version = factory.Versions module_id: mod.id
+
+      user\update flags: Users.flags.suspended
+
+      fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+      status, res = do_upload_as nil, "#{prefix}/upload_rock/#{version.id}",
+        "rock_file", fname, "hello world", {
+          expect: "json"
+        }
+
+      assert.same 403, status
+      assert.same {
+        errors: {"Your account has been suspended"}
+      }, res
+
+      assert.same 0, Rocks\count!
+
     it "checks nonexistent rockspec", ->
       res = api_request "/check_rockspec", {
         get: {

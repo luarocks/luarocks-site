@@ -36,6 +36,7 @@ import
 import
   assert_csrf
   assert_editable
+  assert_not_suspended
   generate_csrf
   require_login
   require_admin
@@ -137,6 +138,7 @@ class MoonRocks extends lapis.Application
 
       =>
         assert_csrf @
+        assert_not_suspended @
         mod, version, is_new = handle_rockspec_upload @
         redirect_to = @url_for "module", user: @current_user, module: mod
 
@@ -186,6 +188,7 @@ class MoonRocks extends lapis.Application
 
     POST: capture_errors =>
       assert_csrf @
+      assert_not_suspended @
       rock = assert_error handle_rock_upload @
 
       import UserActivityLogs from require "models"
