@@ -124,3 +124,32 @@ Install from a custom manifest:
 ```bash
 luarocks install --server=https://luarocks.org/m/mymanifest mymodule
 ```
+
+#### Mirrors
+
+Alternative servers are available for accessing LuaRocks packages:
+
+**HTTP Mirror**
+
+* `https://mirror.luarocks.org/` - An alternative server for accessing LuaRocks packages
+
+**GitHub Repository Mirrors**
+
+Daily git backups of the manifest data:
+
+* [moonrocks-mirror](https://github.com/rocks-moonscript-org/moonrocks-mirror) - Root manifest backup
+* [moonrocks-dev-mirror](https://github.com/rocks-moonscript-org/moonrocks-dev-mirror) - Dev manifest backup
+
+These GitHub mirrors can be used directly as a LuaRocks server via raw.githubusercontent.com:
+
+```bash
+luarocks install --server=https://raw.githubusercontent.com/rocks-moonscript-org/moonrocks-mirror/master lpeg
+```
+
+For dev versions:
+
+```bash
+luarocks install --server=https://raw.githubusercontent.com/rocks-moonscript-org/moonrocks-dev-mirror/master lpeg
+```
+
+This can be useful as a fallback if the main LuaRocks.org server is unavailable.
