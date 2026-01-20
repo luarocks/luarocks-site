@@ -85,7 +85,7 @@ class Helpers
     else
       "ago"
 
-    time_ago_in_words tostring(d), nil, suffix
+    time_ago_in_words d, nil, suffix
 
   format_short_age: (d) =>
     now = date true
