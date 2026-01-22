@@ -7,10 +7,11 @@ parser = argparse "delete_user.moon", "Delete a user from the system"
 parser\argument("user_id", "ID of the user to delete")\args "+"
 
 parser\flag "--confirm", "Confirm deletion"
+parser\flag "--api-key", "Lookup user by API key instead of user ID"
 
 args = parser\parse [v for _, v in ipairs _G.arg]
 
-import Users from require "models"
+import Users, ApiKeys from require "models"
 
 db = require "lapis.db"
 
@@ -23,7 +24,16 @@ total = 0
 
 for user_id in *args.user_id
   total += 1
-  user = Users\find user_id
+
+  user = if args.api_key
+    api_key = ApiKeys\find key: user_id
+    unless api_key
+      io.stderr\write "No API key: #{user_id}\n"
+      continue
+    api_key\get_user!
+  else
+    Users\find user_id
+
   unless user
     io.stderr\write "No user with ID #{user_id}\n"
     continue
