@@ -71,9 +71,9 @@ local write_table
 -- @param level number: the indentation level
 -- @param sub_order table: optional prioritization table
 -- @see write_table
-local function write_value(out, v, level, sub_order)
+local function write_value(out, v, level, sub_order, lua_version)
    if type(v) == "table" then
-      write_table(out, v, level + 1, sub_order)
+      write_table(out, v, level + 1, sub_order, lua_version)
    elseif type(v) == "string" then
       if v:match("\n") and not v:match("%z") then
          local open, close = "[[", "]]"
@@ -100,8 +100,13 @@ end
 -- @param tbl table: the table to be written.
 -- @param level number: the indentation level
 -- @param field_order table: optional prioritization table
-write_table = function(out, tbl, level, field_order)
-   out:write("{")
+write_table = function(out, tbl, level, field_order, lua_version)
+   -- Fix for "main function has more than 65536 constants" in LuaJIT
+  if lua_version == "5.1" and level == 2 then
+     out:write("(function () return {")
+   else
+     out:write("{")
+   end
    local sep = "\n"
    local indentation = "   "
    local indent = true
@@ -123,7 +128,7 @@ write_table = function(out, tbl, level, field_order)
          sep = ", "
       elseif type(k) == "table" then
          out:write("[")
-         write_table(out, k, level + 1)
+         write_table(out, k, level + 1, nil, lua_version)
          out:write("] = ")
       else
          if k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") and not lua_keywords_set[k:lower()] then
@@ -132,13 +137,18 @@ write_table = function(out, tbl, level, field_order)
             out:write("["..string.format("%q", k).."] = ")
          end
       end
-      write_value(out, v, level, sub_order)
+      write_value(out, v, level, sub_order, lua_version)
    end
    if sep ~= "\n" then
       out:write("\n")
       for n = 1,level-1 do out:write(indentation) end
    end
-   out:write("}")
+   -- Fix for "main function has more than 65536 constants" in LuaJIT
+   if lua_version == "5.1" and level == 2 then
+     out:write("} end)()")
+   else
+     out:write("}")
+   end
 end
 
 --- Writes a table to an io-like object.
@@ -146,7 +156,7 @@ end
 -- @param tbl table: the table to be written.
 -- @param field_order table: optional prioritization table
 -- @return userdata The file object originally passed in as the `out` parameter.
-local function write_table(out, tbl, field_order)
+local function write_table(out, tbl, field_order, lua_version)
    for k, v, sub_order in util.sortedpairs(tbl, field_order) do
 
       if not k:match("^[a-zA-Z_][a-zA-Z0-9_]*$") or lua_keywords_set[k:lower()] then
@@ -154,7 +164,7 @@ local function write_table(out, tbl, field_order)
       end
 
       out:write(k.." = ")
-      write_value(out, v, 0, sub_order)
+      write_value(out, v, 0, sub_order, lua_version)
       out:write("\n")
    end
    return out
@@ -167,10 +177,10 @@ end
 -- @param tbl table: the table containing the data to be written
 -- @param field_order table: an optional array indicating the order of top-level fields.
 -- @return string
-function save_from_table_to_string(tbl, field_order)
+function save_from_table_to_string(tbl, field_order, lua_version)
    local out = {buffer = {}}
    function out:write(data) table.insert(self.buffer, data) end
-   write_table(out, tbl, field_order)
+   write_table(out, tbl, field_order, lua_version)
    return table.concat(out.buffer)
 end
 
