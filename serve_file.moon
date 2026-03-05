@@ -34,6 +34,8 @@ object = if uri\match "^/manifests"
       INNER JOIN modules
         ON (modules.id = module_id and modules.user_id = ?)
       WHERE rockspec_fname = ?
+      ORDER BY modules.id ASC
+      LIMIT 1
     ]], user.id, file
   else
     unpack Rocks\select [[
@@ -42,6 +44,8 @@ object = if uri\match "^/manifests"
       INNER JOIN modules
         ON (modules.id = versions.module_id and modules.user_id = ?)
       WHERE rock_fname = ?
+      ORDER BY modules.id ASC
+      LIMIT 1
     ]], user.id, file
 
 else
@@ -55,17 +59,25 @@ else
   -- TODO: this query is pretty nasty to do on every file request
   if is_rockspec!
     unpack Versions\select [[
+      INNER JOIN modules
+        ON (modules.id = versions.module_id)
       INNER JOIN manifest_modules
         ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
       WHERE rockspec_fname = ?
+      ORDER BY modules.id ASC
+      LIMIT 1
     ]], manifest.id, file_name
   else
     unpack Rocks\select [[
       INNER JOIN versions
         ON (versions.id = rocks.version_id)
+      INNER JOIN modules
+        ON (modules.id = versions.module_id)
       INNER JOIN manifest_modules
         ON (manifest_modules.module_id = versions.module_id and manifest_modules.manifest_id = ?)
       WHERE rock_fname = ?
+      ORDER BY modules.id ASC
+      LIMIT 1
     ]], manifest.id, file_name
 
 assert object
@@ -87,4 +99,3 @@ if object.content_type
 
 ngx.header["x-object_url"] = url
 ngx.var._url = url
-
