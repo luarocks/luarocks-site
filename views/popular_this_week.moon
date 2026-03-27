@@ -19,6 +19,7 @@ class PopularThisWeek extends require "widgets.page"
           td "Module"
 
       for rank, {:sum, :version} in ipairs tuples
+        continue unless version
         mod = version\get_module!
         user = mod\get_user!
 
