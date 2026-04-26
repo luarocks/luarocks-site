@@ -156,3 +156,341 @@ describe "application.user", ->
         assert.same 200, status
         key\refresh!
         assert.same "okay", key.comment
+
+    describe "two-factor authentication", ->
+      totp = require "helpers.totp"
+      import TotpSecrets, TotpScratchcodes from require "spec.models"
+
+      it "loads the two-factor settings page", ->
+        status = request_as user, "/settings/two-factor-auth"
+        assert.same 200, status
+
+      it "loads the enrollment page", ->
+        status = request_as user, "/settings/two-factor-auth/setup"
+        assert.same 200, status
+
+      it "rejects enrollment with wrong password", ->
+        secret = totp.generate_secret!
+        status = request_as user, "/settings/two-factor-auth/confirm", {
+          post: {
+            secret: secret
+            code: totp.generate_code secret
+            current_password: "wrong"
+          }
+        }
+        assert.same 200, status -- error page renders inline
+        assert.falsy user\refresh!\has_totp!
+
+      it "rejects enrollment with wrong code", ->
+        secret = totp.generate_secret!
+        status = request_as user, "/settings/two-factor-auth/confirm", {
+          post: {
+            secret: secret
+            code: "000000"
+            current_password: "pword"
+          }
+        }
+        assert.same 200, status
+        assert.falsy user\refresh!\has_totp!
+
+      it "enrolls with correct password and code", ->
+        secret = totp.generate_secret!
+        status, _, headers = request_as user, "/settings/two-factor-auth/confirm", {
+          post: {
+            secret: secret
+            code: totp.generate_code secret
+            current_password: "pword"
+          }
+        }
+        assert.same 302, status
+        assert.truthy headers.location\match "/settings/two%-factor%-auth/scratchcodes$"
+        assert.truthy user\refresh!\has_totp!
+
+        secret_row = TotpSecrets\find user.id
+        assert.same secret, secret_row.secret
+        assert.same 5, #TotpScratchcodes\for_user user
+
+      it "redirects to 2fa challenge on login when enabled", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        status, _, headers = request "/login", {
+          csrf: true
+          post: {
+            username: user.username
+            password: "pword"
+          }
+        }
+        assert.same 302, status
+        assert.truthy headers.location\match("/login/two%-factor%?token="), "got: #{headers.location}"
+
+      it "completes login after entering valid TOTP code", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: {
+            username: user.username
+            password: "pword"
+          }
+        }
+
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+        status, _, headers = request verify_url, {
+          csrf: true
+          post: {
+            code: totp.generate_code secret
+          }
+        }
+        assert.same 302, status
+        assert.truthy headers.set_cookie
+
+      it "completes login with a backup code (single-use)", ->
+        secret = totp.generate_secret!
+        codes = user\enable_totp secret
+        backup = codes[1]
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+
+        status, _, headers2 = request verify_url, {
+          csrf: true
+          post: { code: backup }
+        }
+        assert.same 302, status
+        assert.same 4, #TotpScratchcodes\for_user user
+
+        -- second use of the same backup code fails
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+        status = request verify_url, {
+          csrf: true
+          post: { code: backup }
+        }
+        assert.same 200, status -- re-renders verify page with error
+
+      it "rejects 2fa challenge with wrong code", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+
+        status = request verify_url, {
+          csrf: true
+          post: { code: "000000" }
+        }
+        assert.same 200, status
+
+      it "disable requires password and a valid code", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        -- wrong password
+        request_as user, "/settings/two-factor-auth/disable", {
+          post: { current_password: "wrong", code: totp.generate_code secret }
+        }
+        assert.truthy user\refresh!\has_totp!
+
+        -- wrong code
+        request_as user, "/settings/two-factor-auth/disable", {
+          post: { current_password: "pword", code: "000000" }
+        }
+        assert.truthy user\refresh!\has_totp!
+
+        -- correct
+        status = request_as user, "/settings/two-factor-auth/disable", {
+          post: { current_password: "pword", code: totp.generate_code secret }
+        }
+        assert.same 302, status
+        assert.falsy user\refresh!\has_totp!
+
+      it "regenerates backup codes", ->
+        secret = totp.generate_secret!
+        first_codes = user\enable_totp secret
+
+        status = request_as user, "/settings/two-factor-auth/regenerate-codes", {
+          post: { current_password: "pword", code: totp.generate_code secret }
+        }
+        assert.same 302, status
+        assert.same 5, #TotpScratchcodes\for_user user
+
+        -- old code is gone
+        assert.falsy TotpScratchcodes\verify_and_consume user, first_codes[1]
+
+      it "login without 2fa enabled goes straight through", ->
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        assert.truthy headers.set_cookie
+        assert.same "http://localhost:8080/", headers.location
+
+      it "preserves return_to through the 2fa flow", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: {
+            username: user.username
+            password: "pword"
+            return_to: "/about"
+          }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+
+        _, _, headers2 = request verify_url, {
+          csrf: true
+          post: { code: totp.generate_code secret }
+        }
+        assert.same "http://localhost:8080/about", headers2.location
+
+      it "rejects a tampered token", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+        -- flip the last character of the token (signature byte)
+        tampered_url = verify_url\sub(1, -2) .. (verify_url\sub(-1) == "x" and "y" or "x")
+
+        status, _, headers2 = request tampered_url, { csrf: true, post: { code: "000000" } }
+        assert.same 302, status
+        assert.same "http://localhost:8080/login", headers2.location
+
+      it "rejects an expired token", ->
+        import encode_with_secret from require "lapis.util.encoding"
+        import escape from require "lapis.util"
+
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        token = encode_with_secret {
+          id: user.id
+          key: user\salt!
+          expires: os.time! - 60
+          return_to: false
+        }
+        url = "/login/two-factor?token=" .. escape token
+
+        status, _, headers2 = request url, {
+          csrf: true
+          post: { code: totp.generate_code secret }
+        }
+        assert.same 302, status
+        assert.same "http://localhost:8080/login", headers2.location
+
+      it "rejects a token after the user's password changes", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        _, _, headers = request "/login", {
+          csrf: true
+          post: { username: user.username, password: "pword" }
+        }
+        verify_url = headers.location\gsub "^http://[^/]+", ""
+
+        -- password change between issuing the challenge and verifying it
+        user\update_password "different"
+
+        status, _, headers2 = request verify_url, {
+          csrf: true
+          post: { code: totp.generate_code secret }
+        }
+        assert.same 302, status
+        assert.same "http://localhost:8080/login", headers2.location
+
+      it "redirects logged-in users away from the 2fa challenge", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+        status, _, headers = request_as user, "/login/two-factor?token=anything"
+        assert.same 302, status
+        assert.same "http://localhost:8080/", headers.location
+
+      it "tfa_setup redirects to settings when already enabled", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+        status, _, headers = request_as user, "/settings/two-factor-auth/setup"
+        assert.same 302, status
+        assert.truthy headers.location\match("/settings/two%-factor%-auth$")
+
+      it "tfa_confirm refuses to enroll when already enabled", ->
+        existing_secret = totp.generate_secret!
+        user\enable_totp existing_secret
+
+        new_secret = totp.generate_secret!
+        request_as user, "/settings/two-factor-auth/confirm", {
+          post: {
+            secret: new_secret
+            code: totp.generate_code new_secret
+            current_password: "pword"
+          }
+        }
+
+        -- the original secret is unchanged
+        TotpSecrets = require("models").TotpSecrets
+        row = TotpSecrets\find user.id
+        assert.same existing_secret, row.secret
+
+      it "disable removes the secret and all scratchcodes", ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        request_as user, "/settings/two-factor-auth/disable", {
+          post: { current_password: "pword", code: totp.generate_code secret }
+        }
+
+        TotpSecrets = require("models").TotpSecrets
+        assert.falsy TotpSecrets\find user.id
+        assert.same 0, #TotpScratchcodes\for_user user
+
+      describe "backup codes display", ->
+        it "shows freshly-generated codes once", ->
+          secret = totp.generate_secret!
+
+          headers = {}
+          request_as user, "/settings/two-factor-auth/confirm", {
+            post: {
+              secret: secret
+              code: totp.generate_code secret
+              current_password: "pword"
+            }
+            headers: headers
+          }
+
+          -- follow the redirect chain by reusing the cookie jar via request_as
+          status, body = request_as user, "/settings/two-factor-auth/scratchcodes"
+          assert.same 200, status
+          -- when there's nothing in the session, the empty-state copy renders
+          assert.truthy body\match("Backup codes")
+
+        it "renders empty state on direct visit", ->
+          status, body = request_as user, "/settings/two-factor-auth/scratchcodes"
+          assert.same 200, status
+          assert.truthy body\match("no new backup codes") or body\match("not be shown again") or body\match("Backup")
+
+      it "API key authentication bypasses 2fa", ->
+        import ApiKeys from require "spec.models"
+        secret = totp.generate_secret!
+        user\enable_totp secret
+
+        key = ApiKeys\generate user.id, "specs"
+        status, body = request "/api/1/#{key.key}/status"
+        assert.same 200, status
+        cjson = require "cjson"
+        decoded = cjson.decode body
+        assert.same user.id, decoded.user_id

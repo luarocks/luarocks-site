@@ -98,9 +98,61 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
 
       user = assert_error Users\login params.username, params.password
+
+      if user\has_totp!
+        import encode_with_secret from require "lapis.util.encoding"
+        import escape from require "lapis.util"
+        token = encode_with_secret {
+          id: user.id
+          key: user\salt!
+          expires: os.time! + 120
+          return_to: verify_return_to(@params.return_to)
+        }
+        return redirect_to: @url_for("user_tfa_verify") .. "?token=" .. escape token
+
       user\write_session @, type: "login_password"
 
       redirect_to: verify_return_to(@params.return_to) or @url_for "index"
+  }
+
+  [user_tfa_verify: "/login/two-factor"]: ensure_https respond_to {
+    before: =>
+      @title = "Two-factor verification"
+
+      if @current_user
+        @write redirect_to: @url_for "index"
+        return
+
+      import decode_with_secret from require "lapis.util.encoding"
+
+      message = @params.token and decode_with_secret(@params.token)
+
+      unless message and message.id and message.expires and message.key
+        @write redirect_to: @url_for "user_login"
+        return
+
+      if os.time! > message.expires
+        @write redirect_to: @url_for "user_login"
+        return
+
+      @tfa_user = assert_error Users\find(message.id), "invalid token"
+
+      unless @tfa_user\salt! == message.key
+        @write redirect_to: @url_for "user_login"
+        return
+
+      @return_to = message.return_to
+
+    GET: =>
+      render: true
+
+    POST: capture_errors with_params {
+      { "code", types.valid_text * types.string\length 1, 16 }
+    }, (params) =>
+      assert_csrf @
+      assert_error @tfa_user\verify_totp(params.code), "Invalid verification code"
+      @tfa_user\write_session @, type: "login_password"
+      redirect_to: verify_return_to(@return_to) or @url_for "index"
   }
 
   [user_register: "/register"]: ensure_https respond_to {
@@ -120,11 +172,7 @@ class MoonRocksUser extends lapis.Application
       assert_csrf @
       assert_error params.password == params.password_repeat, "Password repeat does not match"
 
-      local turnstile_config
-      if config._name != "test"
-        pcall -> turnstile_config = require("secret.turnstile")
-
-      if turnstile_config
+      if config.enable_turnstile
         {:cf_turnstile_response} = assert_valid @params, types.params_shape {
           {"cf-turnstile-response", types.valid_text, as: "cf_turnstile_response", error: "Please complete the human verification (missing param)"}
         }
@@ -272,6 +320,119 @@ class MoonRocksUser extends lapis.Application
       }
 
       redirect_to: @url_for "user_settings.reset_password", nil, reset_password: "true"
+  }
+
+  ["user_settings.two_factor_auth": "/settings/two-factor-auth"]: ensure_https require_login respond_to {
+    before: =>
+      @user = @current_user
+      @title = "Two-Factor Authentication - User Settings"
+      @has_totp = @user\has_totp!
+
+    GET: =>
+      render: true
+  }
+
+  ["user_settings.tfa_setup": "/settings/two-factor-auth/setup"]: ensure_https require_login respond_to {
+    before: =>
+      @user = @current_user
+      @title = "Set Up Two-Factor Authentication"
+      if @user\has_totp!
+        @write redirect_to: @url_for "user_settings.two_factor_auth"
+        return
+
+    GET: =>
+      totp = require "helpers.totp"
+      @secret = totp.generate_secret!
+      @otpauth_url = totp.get_url @secret, @user.username
+      render: true
+  }
+
+  ["user_settings.tfa_confirm": "/settings/two-factor-auth/confirm"]: ensure_https require_login respond_to {
+    POST: capture_errors with_params {
+      { "secret", types.valid_text * types.string\length 1, 64 }
+      { "code", types.valid_text * types.string\length 1, 16 }
+      { "current_password", password_shape }
+    }, (params) =>
+      assert_csrf @
+      @user = @current_user
+
+      assert_error not @user\has_totp!, "Two-factor authentication is already enabled"
+      assert_error @user\check_password(params.current_password), "Incorrect password"
+
+      totp = require "helpers.totp"
+      assert_error totp.check_code(params.secret, params.code),
+        "Invalid verification code — make sure your authenticator's clock is correct"
+
+      plaintext_codes = assert_error @user\enable_totp(params.secret),
+        "Could not enable two-factor authentication"
+
+      import UserActivityLogs from require "models"
+      UserActivityLogs\create_from_request @, {
+        user_id: @user.id
+        source: "web"
+        action: "account.enable_two_factor"
+      }
+
+      @session.user_new_scratchcodes = plaintext_codes
+      @session.user_new_scratchcodes_reason = "enrolled"
+      redirect_to: @url_for "user_settings.tfa_scratchcodes"
+  }
+
+  ["user_settings.tfa_scratchcodes": "/settings/two-factor-auth/scratchcodes"]: ensure_https require_login respond_to {
+    GET: =>
+      @user = @current_user
+      @title = "Backup Codes"
+      @new_scratchcodes = @session.user_new_scratchcodes
+      @new_scratchcodes_reason = @session.user_new_scratchcodes_reason
+      @session.user_new_scratchcodes = nil
+      @session.user_new_scratchcodes_reason = nil
+      render: true
+  }
+
+  ["user_settings.tfa_regenerate": "/settings/two-factor-auth/regenerate-codes"]: ensure_https require_login respond_to {
+    POST: capture_errors with_params {
+      { "current_password", password_shape }
+      { "code", types.valid_text * types.string\length 1, 16 }
+    }, (params) =>
+      assert_csrf @
+      @user = @current_user
+
+      assert_error @user\has_totp!, "Two-factor authentication is not enabled"
+      assert_error @user\check_password(params.current_password), "Incorrect password"
+      assert_error @user\verify_totp(params.code), "Invalid verification code"
+
+      import TotpSecrets from require "models"
+      secret_row = assert_error TotpSecrets\find(@user.id), "Two-factor authentication is not enabled"
+      plaintext_codes = assert_error @user\enable_totp(secret_row.secret),
+        "Could not regenerate codes"
+
+      @session.user_new_scratchcodes = plaintext_codes
+      @session.user_new_scratchcodes_reason = "regenerated"
+      redirect_to: @url_for "user_settings.tfa_scratchcodes"
+  }
+
+  ["user_settings.tfa_disable": "/settings/two-factor-auth/disable"]: ensure_https require_login respond_to {
+    POST: capture_errors with_params {
+      { "current_password", password_shape }
+      { "code", types.valid_text * types.string\length 1, 16 }
+    }, (params) =>
+      assert_csrf @
+      @user = @current_user
+
+      assert_error @user\has_totp!, "Two-factor authentication is not enabled"
+      assert_error @user\check_password(params.current_password), "Incorrect password"
+      assert_error @user\verify_totp(params.code), "Invalid verification code"
+
+      @user\disable_totp!
+
+      import UserActivityLogs from require "models"
+      UserActivityLogs\create_from_request @, {
+        user_id: @user.id
+        source: "web"
+        action: "account.disable_two_factor"
+      }
+
+      redirect_to: @url_for "user_settings.two_factor_auth", nil, disabled: "true"
   }
 
   ["user_settings.api_keys": "/settings/api-keys"]: ensure_https require_login respond_to {

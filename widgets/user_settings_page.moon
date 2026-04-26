@@ -10,6 +10,7 @@ class UserSettings extends require "widgets.page"
         div class: "page_tabs", ->
           @render_nav_tab "user_settings.profile", "Profile"
           @render_nav_tab "user_settings.reset_password", "Password"
+          @render_nav_tab "user_settings.two_factor_auth", "Two-factor"
           @render_nav_tab "user_settings.api_keys", "API keys"
           @render_nav_tab "user_settings.link_github", "GitHub"
           -- @render_nav_tab "user_settings.import_toolbox", "Lua Toolbox"

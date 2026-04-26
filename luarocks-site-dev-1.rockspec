@@ -13,6 +13,7 @@ dependencies = {
   "lua ~> 5.1",
   "moonscript",
   "bcrypt",
+  "basexx",
   "luabitop",
   "ansicolors",
   "argparse",

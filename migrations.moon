@@ -459,6 +459,38 @@ import
 
     create_index "file_audits", "object_type", "object_id", unique: true
     create_index "file_audits", "status"
+
+  [1777156739]: =>
+    create_table "totp_secrets", {
+      {"user_id", "integer not null"}
+      {"secret", "text not null"}
+      {"created_at", time}
+      {"updated_at", time}
+      "PRIMARY KEY (user_id)"
+    }
+
+    db.query [[
+      ALTER TABLE totp_secrets
+        ADD FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+    ]]
+
+    create_table "totp_scratchcodes", {
+      {"id", serial}
+      {"user_id", "integer not null"}
+      {"secret", "text not null"}
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "totp_scratchcodes", "user_id"
+
+    db.query [[
+      ALTER TABLE totp_scratchcodes
+        ADD FOREIGN KEY (user_id)
+        REFERENCES totp_secrets(user_id)
+        ON DELETE CASCADE
+    ]]
 }
 
 

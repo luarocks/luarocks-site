@@ -56,6 +56,7 @@ class Users extends Model
     {"modules", has_many: "Modules", order: "created_at desc"}
     {"github_accounts", has_many: "GithubAccounts", order: "updated_at desc"}
     {"follows", has_many: "Followings", key: "source_user_id"}
+    {"totp_secret", has_one: "TotpSecrets", key: "user_id"}
   }
 
   @create: (username, password, email, display_name) =>
@@ -145,6 +146,34 @@ class Users extends Model
     @get_data!
     with token = generate_key 30
       @data\update { password_reset_token: token }
+
+  has_totp: =>
+    not not @get_totp_secret!
+
+  enable_totp: (secret) =>
+    import TotpSecrets from require "models"
+    instance, plaintext_codes = TotpSecrets\create_for @, secret
+    @totp_secret = instance or false
+    plaintext_codes
+
+  disable_totp: =>
+    if existing = @get_totp_secret!
+      existing\delete!
+    @totp_secret = false
+    true
+
+  verify_totp: (code) =>
+    return false unless code and code != ""
+    totp = require "helpers.totp"
+
+    secret_row = @get_totp_secret!
+    return false unless secret_row
+
+    if totp.check_code secret_row.secret, code
+      return true
+
+    import TotpScratchcodes from require "models"
+    TotpScratchcodes\verify_and_consume @, code
 
   url_key: (name) => @slug
 

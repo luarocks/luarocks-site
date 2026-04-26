@@ -1,8 +1,5 @@
 
-local turnstile_config
-
-pcall ->
-  turnstile_config = require("secret.turnstile")
+config = require("lapis.config").get!
 
 class UserRegister extends require "widgets.page"
   inner_content: =>
@@ -33,12 +30,13 @@ class UserRegister extends require "widgets.page"
         label for: "email_field", "Email Address"
         input type: "email", name: "email", id: "email_field"
 
-      if turnstile_config
+      if config.enable_turnstile
+        turnstile_keys = require "secret.turnstile"
         script src: "https://challenges.cloudflare.com/turnstile/v0/api.js", async: true, defer: true
 
         div {
           class: "row cf-turnstile"
-          "data-sitekey": turnstile_config.site_key
+          "data-sitekey": turnstile_keys.site_key
         }
 
       div ->

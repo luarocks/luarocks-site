@@ -12,6 +12,7 @@ config { "development", "test", "production", "staging" }, ->
   measure_performance true
 
   tool_version "1.0.0"
+  enable_turnstile false
   pcall -> include require "secret.init"
 
   postgres {
@@ -46,6 +47,7 @@ config { "production", "staging" }, ->
   log_format "combined_forwarded"
 
   enable_https true
+  enable_turnstile true
 
   admin_email "leafot@gmail.com"
 
