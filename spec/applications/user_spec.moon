@@ -318,12 +318,14 @@ describe "application.user", ->
       it "regenerates backup codes", ->
         secret = totp.generate_secret!
         first_codes = user\enable_totp secret
+        (TotpSecrets\find user.id)\update require_for_uploads: true
 
         status = request_as user, "/settings/two-factor-auth", {
           post: { action: "regenerate", current_password: "pword", code: totp.generate_code secret }
         }
         assert.same 302, status
         assert.same 5, #TotpScratchcodes\for_user user
+        assert.truthy user\refresh!\requires_tfa_for_uploads!
 
         -- old code is gone
         assert.falsy TotpScratchcodes\verify_and_consume user, first_codes[1]

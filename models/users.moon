@@ -150,9 +150,9 @@ class Users extends Model
   has_totp: =>
     not not @get_totp_secret!
 
-  enable_totp: (secret) =>
+  enable_totp: (...) =>
     import TotpSecrets from require "models"
-    instance, plaintext_codes = TotpSecrets\create_for @, secret
+    instance, plaintext_codes = TotpSecrets\create_for @, ...
     @totp_secret = instance or false
     plaintext_codes
 

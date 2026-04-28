@@ -8,7 +8,7 @@ class TotpSecrets extends Model
   @timestamp: true
 
   -- stores the TOTP secret and seeds 5 bcrypt-hashed scratchcodes
-  @create_for: (user, secret) =>
+  @create_for: (user, secret, options={}) =>
     bcrypt = require "bcrypt"
     import TotpScratchcodes from require "models"
 
@@ -16,10 +16,16 @@ class TotpSecrets extends Model
     if existing = @find user.id
       existing\delete!
 
-    instance = @create {
+    create_params = {
       user_id: user.id
       :secret
     }
+
+    if options
+      for k,v in pairs options
+        create_params[k] = v
+
+    instance = @create create_params
 
     return nil unless instance
 

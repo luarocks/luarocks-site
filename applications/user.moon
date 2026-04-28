@@ -357,8 +357,9 @@ class MoonRocksUser extends lapis.Application
           redirect_to: @url_for "user_settings.two_factor_auth", nil, disabled: "true"
 
         when "regenerate"
-          plaintext_codes = assert_error @user\enable_totp(secret_row.secret),
-            "Could not regenerate codes"
+          plaintext_codes = assert_error @user\enable_totp(secret_row.secret, {
+            require_for_uploads: secret_row.require_for_uploads
+          }), "Could not regenerate codes"
           @session.user_new_scratchcodes = plaintext_codes
           @session.user_new_scratchcodes_reason = "regenerated"
           redirect_to: @url_for "user_settings.tfa_scratchcodes"
