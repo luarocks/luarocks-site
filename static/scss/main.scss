@@ -592,8 +592,11 @@ pre {
     font-size: 14px;
     margin: 20px 0;
     max-width: 100%;
-    display: block;
-    overflow-x: auto;
+
+    @media (max-width: 600px) {
+        display: block;
+        overflow-x: auto;
+    }
 
     &.field_table {
         tr > td:first-child {

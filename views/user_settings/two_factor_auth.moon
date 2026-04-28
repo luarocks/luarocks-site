@@ -1,6 +1,10 @@
 
 class UserSettingsTwoFactorAuth extends require "widgets.user_settings_page"
   settings_content: =>
+    if @flash
+      p ->
+        b @flash
+
     if @has_totp
       p ->
         b "Two-factor authentication is enabled "

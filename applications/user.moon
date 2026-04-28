@@ -330,6 +330,8 @@ class MoonRocksUser extends lapis.Application
       @requires_uploads = @user\requires_tfa_for_uploads!
 
     GET: =>
+      @flash = @session.tfa_flash
+      @session.tfa_flash = nil
       render: true
 
     POST: capture_errors with_params {
@@ -381,6 +383,13 @@ class MoonRocksUser extends lapis.Application
               else
                 "account.disable_tfa_for_uploads"
             }
+
+            @session.tfa_flash = if settings_update.require_for_uploads
+              "Two-factor authentication is now required for API uploads."
+            else
+              "Two-factor authentication is no longer required for API uploads."
+          else
+            @session.tfa_flash = "Settings saved."
 
           redirect_to: @url_for "user_settings.two_factor_auth"
   }

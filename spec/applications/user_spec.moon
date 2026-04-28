@@ -493,7 +493,7 @@ describe "application.user", ->
           user\enable_totp secret
 
         it "enables the upload requirement with valid password and code", ->
-          status = request_as user, "/settings/two-factor-auth", {
+          status, _, headers = request_as user, "/settings/two-factor-auth", {
             post: {
               action: "settings"
               current_password: "pword"
@@ -504,11 +504,14 @@ describe "application.user", ->
           assert.same 302, status
           assert.truthy user\refresh!\requires_tfa_for_uploads!
 
+          session = get_session cookies: parse_cookie_string(headers.set_cookie)
+          assert.same "Two-factor authentication is now required for API uploads.", session.tfa_flash
+
         it "disables the upload requirement", ->
           (TotpSecrets\find user.id)\update require_for_uploads: true
           assert.truthy user\refresh!\requires_tfa_for_uploads!
 
-          status = request_as user, "/settings/two-factor-auth", {
+          status, _, headers = request_as user, "/settings/two-factor-auth", {
             post: {
               action: "settings"
               current_password: "pword"
@@ -518,6 +521,24 @@ describe "application.user", ->
           }
           assert.same 302, status
           assert.falsy user\refresh!\requires_tfa_for_uploads!
+
+          session = get_session cookies: parse_cookie_string(headers.set_cookie)
+          assert.same "Two-factor authentication is no longer required for API uploads.", session.tfa_flash
+
+        it "shows a flash message when settings are submitted unchanged", ->
+          status, _, headers = request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "pword"
+              code: totp.generate_code secret
+              require_for_uploads: ""
+            }
+          }
+          assert.same 302, status
+          assert.falsy user\refresh!\requires_tfa_for_uploads!
+
+          session = get_session cookies: parse_cookie_string(headers.set_cookie)
+          assert.same "Settings saved.", session.tfa_flash
 
         it "rejects with wrong password", ->
           request_as user, "/settings/two-factor-auth", {
