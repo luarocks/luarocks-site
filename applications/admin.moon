@@ -173,29 +173,50 @@ class MoonRocksAdmin extends lapis.Application
 
     render: true
 
-  [user: "/user/:id"]: capture_errors_json with_params {
-    {"id", types.db_id}
-    {"dump", types.empty / false + types.any / true}
-  }, (params) =>
-    import Users, Followings, ManifestAdmins, Manifests, UserSessions, UserActivityLogs, ApiKeys from require "models"
-    @user = assert_error Users\find(id: params.id), "invalid user"
+  [user: "/user/:id"]: respond_to {
+    before: with_params {
+      {"id", types.db_id}
+      {"dump", types.empty / false + types.any / true}
+    }, (params) =>
+      import Users, Followings, ManifestAdmins, Manifests, UserSessions, UserActivityLogs, ApiKeys from require "models"
+      @user = assert_error Users\find(id: params.id), "invalid user"
 
-    if params.dump
-      return json: @user\data_export!
+      if params.dump
+        @write json: @user\data_export!
 
-    @title = "User '#{@user.username}'"
-    preload @user\get_follows!, "object"
+    GET: =>
+      @title = "User '#{@user.username}'"
+      preload @user\get_follows!, "object"
 
-    @user_manifest_admins = ManifestAdmins\select "where user_id = ?", @user.id
-    preload @user_manifest_admins, "manifest"
+      import ManifestAdmins, UserSessions, ApiKeys, UserActivityLogs from require "models"
 
-    @user_data = @user\get_data!
-    @user_sessions = UserSessions\select "where user_id = ? order by created_at desc limit 20", @user.id
-    @api_keys = ApiKeys\select "where user_id = ? order by created_at desc", @user.id
-    @activity_logs = UserActivityLogs\select "where user_id = ? order by created_at desc limit 20", @user.id
-    preload @activity_logs, "object"
+      @user_manifest_admins = ManifestAdmins\select "where user_id = ?", @user.id
+      preload @user_manifest_admins, "manifest"
 
-    render: true
+      @user_data = @user\get_data!
+      @user_sessions = UserSessions\select "where user_id = ? order by created_at desc limit 20", @user.id
+      @api_keys = ApiKeys\select "where user_id = ? order by created_at desc", @user.id
+      @activity_logs = UserActivityLogs\select "where user_id = ? order by created_at desc limit 20", @user.id
+      preload @activity_logs, "object"
+
+      render: true
+
+    POST: capture_errors_json with_params {
+      {"action", types.one_of {"set_flags"}}
+      {"suspended", types.empty / false + types.any / true}
+      {"spam", types.empty / false + types.any / true}
+    }, (params) =>
+      assert_csrf @
+
+      switch params.action
+        when "set_flags"
+          @user\update_flags {
+            suspended: params.suspended
+            spam: params.spam
+          }
+
+      redirect_to: @url_for "admin.user", id: @user.id
+  }
 
   [become_user: "/become-user"]: respond_to {
     POST: capture_errors_json with_params {

@@ -121,6 +121,32 @@ class AdminUser extends require "widgets.admin.page"
     else
       p class: "empty_table", "No activity logs"
 
+    fieldset ->
+      legend "User Flags"
+      form action: @url_for("admin.user", id: @user.id), method: "POST", class: "form", ->
+        input type: "hidden", name: "action", value: "set_flags"
+        @csrf_input!
+
+        div class: "row", ->
+          label ->
+            input {
+              type: "checkbox"
+              name: "suspended"
+              checked: @user\is_suspended!
+            }
+            span " Suspended"
+          text " "
+          label ->
+            input {
+              type: "checkbox"
+              name: "spam"
+              checked: @user\is_spam!
+            }
+            span " Spam"
+
+        div class: "button_row", ->
+          button class: "button", "Update Flags"
+
     -- dangerous tools
     if @params.show_become_user
       fieldset ->
