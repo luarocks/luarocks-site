@@ -13,12 +13,6 @@ class UserSettingsTwoFactorAuth extends require "widgets.user_settings_page"
 
       form action: @url_for("user_settings.two_factor_auth"), method: "POST", class: "form", ->
         @csrf_input!
-        -- carries the toggled value for the "settings" action; ignored by other actions
-        input {
-          type: "hidden"
-          name: "require_for_uploads"
-          value: if @requires_uploads then "" else "on"
-        }
 
         div class: "row", ->
           label ->
@@ -40,23 +34,20 @@ class UserSettingsTwoFactorAuth extends require "widgets.user_settings_page"
             autocomplete: "one-time-code"
           }
 
-        h3 "Require two-factor authentication for API uploads"
+        h3 "Update two-factor authentication settings"
 
-        if @requires_uploads
-          p "Module uploads via the API currently require a fresh two-factor
-          verification. Use the moonrocks/luarocks CLI; you will be prompted
-          for a code on each upload session."
-        else
-          p "Optionally require a two-factor verification before any module
-          upload via the API. This protects your modules even if your API key
-          leaks."
+        div class: "wide_row", ->
+          label ->
+            input {
+              type: "checkbox"
+              name: "require_for_uploads"
+              checked: @requires_uploads and "checked" or nil
+            }
+            span class: "label", "Require 2FA for API uploads"
+            span class: "sub", " — ", "Client will ask for 2fa code before module or rockspec upload"
 
         div class: "button_row", ->
-          button class: "button", name: "action", value: "settings",
-            if @requires_uploads
-              "Stop requiring 2FA for API uploads"
-            else
-              "Require 2FA for API uploads"
+          button class: "button", name: "action", value: "settings", "Update settings"
 
         h3 "Backup codes"
 
@@ -72,7 +63,7 @@ class UserSettingsTwoFactorAuth extends require "widgets.user_settings_page"
         p "Removes all two-factor authentication state from your account."
 
         div class: "button_row", ->
-          button class: "button", name: "action", value: "disable", "Disable two-factor authentication"
+          button class: "button delete_btn", name: "action", value: "disable", "Disable two-factor authentication"
     else
       if @params.disabled
         p ->

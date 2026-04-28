@@ -46,17 +46,6 @@
         color: var(--sub-color);
     }
 
-    .delete_btn {
-        background: var(--red-button-color);
-        &:hover {
-            background: color-mix(in lab, var(--red-button-color), white 10%);
-        }
-
-        &:active {
-            background: color-mix(in lab, var(--red-button-color), black 10%);
-        }
-    }
-
     .arch {
         line-height: var(--button-height);
         border: 1px solid var(--border-color);

@@ -140,6 +140,18 @@ button, input[type='submit'], .button {
     }
 }
 
+.delete_btn {
+    background: var(--red-button-color);
+
+    &:hover {
+        background: color-mix(in lab, var(--red-button-color), white 10%);
+    }
+
+    &:active {
+        background: color-mix(in lab, var(--red-button-color), black 10%);
+    }
+}
+
 .round_button {
     transition: all 0.2s ease;
     opacity: 0.8;
