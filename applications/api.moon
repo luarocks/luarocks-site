@@ -30,10 +30,65 @@ import
   require_login
   from require "helpers.app"
 
+import encode_with_secret, decode_with_secret from require "lapis.util.encoding"
+import get_redis from require "helpers.redis_cache"
+
 INVALID_KEY = {
   status: 401
   json: { errors: {"Invalid key"} }
 }
+
+TFA_TOKEN_TTL = 15 * 60
+TFA_RATE_LIMIT_MAX = 5
+TFA_RATE_LIMIT_WINDOW = 5 * 60
+
+tfa_attempts_key = (api_key) -> "tfa_attempts:#{api_key}"
+
+-- returns true if the request is over the failure threshold
+tfa_rate_limited = (api_key) ->
+  r = get_redis!
+  return false unless r
+  ok, count = pcall r.get, r, tfa_attempts_key api_key
+  return false unless ok and count
+  return false if count == ngx.null
+  n = tonumber count
+  n and n >= TFA_RATE_LIMIT_MAX
+
+record_tfa_failure = (api_key) ->
+  r = get_redis!
+  return unless r
+  key = tfa_attempts_key api_key
+  pcall ->
+    r\incr key
+    r\expire key, TFA_RATE_LIMIT_WINDOW
+
+clear_tfa_failures = (api_key) ->
+  r = get_redis!
+  return unless r
+  pcall r.del, r, tfa_attempts_key api_key
+
+tfa_gated = (fn) ->
+  =>
+    if @current_user\requires_tfa_for_uploads!
+      raw_token = @req.headers["x-tfa-token"] or @params.tfa_token
+      payload = raw_token and decode_with_secret raw_token
+      ok = payload and
+        payload.api_key == @key.key and
+        payload.user_id == @current_user.id and
+        payload.expires and payload.expires > os.time!
+
+      unless ok
+        return {
+          status: 403
+          json: {
+            errors: { "Two-factor authentication required" }
+            two_factor_required: true
+          }
+        }
+
+      @tfa_verified = true
+
+    fn @
 
 api_request = (fn) ->
   capture_errors {
@@ -149,7 +204,42 @@ class MoonRocksApi extends lapis.Application
 
     json: { :module, :version }
 
-  "/api/1/:key/upload": api_request =>
+  "/api/1/:key/verify_tfa": api_request =>
+    assert_valid @params, {
+      { "code", exists: true, type: "string", max_length: 16 }
+    }
+
+    if tfa_rate_limited @key.key
+      return {
+        status: 429
+        json: { errors: {"Too many failed attempts, try again later"} }
+      }
+
+    unless @current_user\has_totp!
+      return {
+        status: 400
+        json: { errors: {"Two-factor authentication is not enabled on this account"} }
+      }
+
+    unless @current_user\verify_totp @params.code
+      record_tfa_failure @key.key
+      return {
+        status: 401
+        json: { errors: {"Invalid verification code"} }
+      }
+
+    clear_tfa_failures @key.key
+
+    expires = os.time! + TFA_TOKEN_TTL
+    tfa_token = encode_with_secret {
+      api_key: @key.key
+      user_id: @current_user.id
+      :expires
+    }
+
+    json: { success: true, :tfa_token, :expires }
+
+  "/api/1/:key/upload": api_request tfa_gated =>
     module, version, is_new = handle_rockspec_upload @
 
     import UserActivityLogs from require "models"
@@ -163,6 +253,7 @@ class MoonRocksApi extends lapis.Application
       data: {
         version_id: version.id
         version_name: version.version_name
+        tfa_verified: @tfa_verified or false
       }
     }
 
@@ -175,7 +266,7 @@ class MoonRocksApi extends lapis.Application
     module_url = @build_url @url_for "module", user: @current_user, :module
     json: { :module, :version, :module_url, :manifests, :is_new }
 
-  "/api/1/:key/upload_rock/:version_id": api_request =>
+  "/api/1/:key/upload_rock/:version_id": api_request tfa_gated =>
     assert_valid @params, {
       {"version_id", is_integer: true}
     }
@@ -203,6 +294,7 @@ class MoonRocksApi extends lapis.Application
         rock_id: rock.id
         rock_revision: rock.revision
         rock_arch: rock.arch
+        tfa_verified: @tfa_verified or false
       }
     }
 

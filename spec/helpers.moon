@@ -107,7 +107,11 @@ do_upload_as = (user, url, param_name, filename, file_content, opts) ->
 
   if opts
     for k, v in pairs opts
-      req_opts[k] = v
+      if k == "headers"
+        for hk, hv in pairs v
+          headers[hk] = hv
+      else
+        req_opts[k] = v
 
   request_as user, url, req_opts
 

@@ -491,6 +491,9 @@ import
         REFERENCES totp_secrets(user_id)
         ON DELETE CASCADE
     ]]
+
+  [1777241869]: =>
+    add_column "totp_secrets", "require_for_uploads", boolean default: false
 }
 
 

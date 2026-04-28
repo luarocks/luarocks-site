@@ -175,6 +175,10 @@ class Users extends Model
     import TotpScratchcodes from require "models"
     TotpScratchcodes\verify_and_consume @, code
 
+  requires_tfa_for_uploads: =>
+    secret = @get_totp_secret!
+    secret and secret.require_for_uploads or false
+
   url_key: (name) => @slug
 
   url_params: =>

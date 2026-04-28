@@ -216,3 +216,149 @@ describe "application.api", ->
       rock = assert unpack Rocks\select!
       assert.same "windows2000", rock.arch
 
+    describe "two-factor enforced uploads", ->
+      totp = require "helpers.totp"
+      import TotpSecrets from require "spec.models"
+      import escape from require "lapis.util"
+      import encode_with_secret from require "lapis.util.encoding"
+
+      etlua_rockspec = -> require("spec.rockspecs.etlua")
+
+      enable_tfa_with_uploads = (require_for_uploads=true) ->
+        secret = totp.generate_secret!
+        user\enable_totp secret
+        if require_for_uploads
+          (TotpSecrets\find user.id)\update require_for_uploads: true
+        secret
+
+      it "verify_tfa returns a token for a valid code", ->
+        secret = enable_tfa_with_uploads!
+        res = api_request "/verify_tfa", {
+          post: { code: totp.generate_code secret }
+        }
+        assert.truthy res.success
+        assert.is_string res.tfa_token
+        assert.is_number res.expires
+        assert.truthy res.expires > os.time!
+
+      it "verify_tfa rejects an invalid code", ->
+        enable_tfa_with_uploads!
+        res = api_request "/verify_tfa", {
+          post: { code: "000000" }
+          status: 401
+        }
+        assert.same { errors: {"Invalid verification code"} }, res
+
+      it "verify_tfa rejects when 2FA is not enabled on the account", ->
+        res = api_request "/verify_tfa", {
+          post: { code: "123456" }
+          status: 400
+        }
+        assert.same {
+          errors: {"Two-factor authentication is not enabled on this account"}
+        }, res
+
+      it "blocks rockspec upload without a token", ->
+        enable_tfa_with_uploads!
+        status, res = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+          }
+        assert.same 403, status
+        assert.same "Two-factor authentication required", res.errors[1]
+        assert.truthy res.two_factor_required
+        assert.same 0, #Modules\select!
+
+      it "does not gate check_rockspec (read-only)", ->
+        enable_tfa_with_uploads!
+        res = api_request "/check_rockspec", {
+          get: { package: "etlua", version: "1.2.0-1" }
+        }
+        assert.same {}, res
+
+      it "blocks rock upload without a token", ->
+        enable_tfa_with_uploads!
+        mod = factory.Modules user_id: user.id
+        version = factory.Versions module_id: mod.id
+        fname = "#{mod.name}-#{version.version_name}.windows2000.rock"
+        status, res = do_upload_as nil, "#{prefix}/upload_rock/#{version.id}",
+          "rock_file", fname, "hello world", {
+            expect: "json"
+          }
+        assert.same 403, status
+        assert.truthy res.two_factor_required
+        assert.same 0, Rocks\count!
+
+      it "allows upload with a valid token", ->
+        secret = enable_tfa_with_uploads!
+        verify_res = api_request "/verify_tfa", {
+          post: { code: totp.generate_code secret }
+        }
+        url = "#{prefix}/upload?tfa_token=#{escape verify_res.tfa_token}"
+        status, res = do_upload_as nil, url, "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+          }
+        assert.same 200, status
+        assert.truthy res.is_new
+
+      it "rejects an expired token", ->
+        enable_tfa_with_uploads!
+        token = encode_with_secret {
+          api_key: key.key
+          user_id: user.id
+          expires: os.time! - 60
+        }
+        url = "#{prefix}/upload?tfa_token=#{escape token}"
+        status, res = do_upload_as nil, url, "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+          }
+        assert.same 403, status
+        assert.truthy res.two_factor_required
+
+      it "rejects a token bound to a different api_key", ->
+        enable_tfa_with_uploads!
+        token = encode_with_secret {
+          api_key: "some-other-key"
+          user_id: user.id
+          expires: os.time! + 600
+        }
+        url = "#{prefix}/upload?tfa_token=#{escape token}"
+        status, res = do_upload_as nil, url, "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+          }
+        assert.same 403, status
+        assert.truthy res.two_factor_required
+
+      it "uploads succeed without a token when the setting is off", ->
+        enable_tfa_with_uploads false
+        status, res = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+          }
+        assert.same 200, status
+        assert.truthy res.is_new
+
+      it "accepts the token via the X-TFA-Token header", ->
+        secret = enable_tfa_with_uploads!
+        verify_res = api_request "/verify_tfa", {
+          post: { code: totp.generate_code secret }
+        }
+
+        status, res = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+          "etlua-1.2.0-1.rockspec", etlua_rockspec!, {
+            expect: "json"
+            headers: { "X-TFA-Token": verify_res.tfa_token }
+          }
+        assert.same 200, status
+        assert.truthy res.is_new
+
+      it "verify_tfa rejects an oversized code", ->
+        enable_tfa_with_uploads!
+        api_request "/verify_tfa", {
+          post: { code: string.rep "1", 200 }
+          status: 400
+        }
+

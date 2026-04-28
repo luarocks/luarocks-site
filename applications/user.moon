@@ -327,9 +327,61 @@ class MoonRocksUser extends lapis.Application
       @user = @current_user
       @title = "Two-Factor Authentication - User Settings"
       @has_totp = @user\has_totp!
+      @requires_uploads = @user\requires_tfa_for_uploads!
 
     GET: =>
       render: true
+
+    POST: capture_errors with_params {
+      { "current_password", password_shape }
+      { "code", types.valid_text * types.string\length 1, 16 }
+      { "action", types.one_of {"disable", "regenerate", "settings"} }
+    }, (params) =>
+      assert_csrf @
+      assert_error @user\has_totp!, "Two-factor authentication is not enabled"
+      assert_error @user\check_password(params.current_password), "Incorrect password"
+      assert_error @user\verify_totp(params.code), "Invalid verification code"
+
+      import UserActivityLogs from require "models"
+      secret_row = assert_error @user\get_totp_secret!,
+        "Two-factor authentication is not enabled"
+
+      switch params.action
+        when "disable"
+          @user\disable_totp!
+          UserActivityLogs\create_from_request @, {
+            user_id: @user.id
+            source: "web"
+            action: "account.disable_two_factor"
+          }
+          redirect_to: @url_for "user_settings.two_factor_auth", nil, disabled: "true"
+
+        when "regenerate"
+          plaintext_codes = assert_error @user\enable_totp(secret_row.secret),
+            "Could not regenerate codes"
+          @session.user_new_scratchcodes = plaintext_codes
+          @session.user_new_scratchcodes_reason = "regenerated"
+          redirect_to: @url_for "user_settings.tfa_scratchcodes"
+
+        when "settings"
+          settings_update = assert_valid @params, types.params_shape {
+            {"require_for_uploads", types.empty / false + types.any / true}
+          }
+
+          was_required = secret_row.require_for_uploads
+          secret_row\update settings_update
+
+          if was_required != settings_update.require_for_uploads
+            UserActivityLogs\create_from_request @, {
+              user_id: @user.id
+              source: "web"
+              action: if settings_update.require_for_uploads
+                "account.enable_tfa_for_uploads"
+              else
+                "account.disable_tfa_for_uploads"
+            }
+
+          redirect_to: @url_for "user_settings.two_factor_auth"
   }
 
   ["user_settings.tfa_setup": "/settings/two-factor-auth/setup"]: ensure_https require_login respond_to {
@@ -387,52 +439,6 @@ class MoonRocksUser extends lapis.Application
       @session.user_new_scratchcodes = nil
       @session.user_new_scratchcodes_reason = nil
       render: true
-  }
-
-  ["user_settings.tfa_regenerate": "/settings/two-factor-auth/regenerate-codes"]: ensure_https require_login respond_to {
-    POST: capture_errors with_params {
-      { "current_password", password_shape }
-      { "code", types.valid_text * types.string\length 1, 16 }
-    }, (params) =>
-      assert_csrf @
-      @user = @current_user
-
-      assert_error @user\has_totp!, "Two-factor authentication is not enabled"
-      assert_error @user\check_password(params.current_password), "Incorrect password"
-      assert_error @user\verify_totp(params.code), "Invalid verification code"
-
-      import TotpSecrets from require "models"
-      secret_row = assert_error TotpSecrets\find(@user.id), "Two-factor authentication is not enabled"
-      plaintext_codes = assert_error @user\enable_totp(secret_row.secret),
-        "Could not regenerate codes"
-
-      @session.user_new_scratchcodes = plaintext_codes
-      @session.user_new_scratchcodes_reason = "regenerated"
-      redirect_to: @url_for "user_settings.tfa_scratchcodes"
-  }
-
-  ["user_settings.tfa_disable": "/settings/two-factor-auth/disable"]: ensure_https require_login respond_to {
-    POST: capture_errors with_params {
-      { "current_password", password_shape }
-      { "code", types.valid_text * types.string\length 1, 16 }
-    }, (params) =>
-      assert_csrf @
-      @user = @current_user
-
-      assert_error @user\has_totp!, "Two-factor authentication is not enabled"
-      assert_error @user\check_password(params.current_password), "Incorrect password"
-      assert_error @user\verify_totp(params.code), "Invalid verification code"
-
-      @user\disable_totp!
-
-      import UserActivityLogs from require "models"
-      UserActivityLogs\create_from_request @, {
-        user_id: @user.id
-        source: "web"
-        action: "account.disable_two_factor"
-      }
-
-      redirect_to: @url_for "user_settings.two_factor_auth", nil, disabled: "true"
   }
 
   ["user_settings.api_keys": "/settings/api-keys"]: ensure_https require_login respond_to {

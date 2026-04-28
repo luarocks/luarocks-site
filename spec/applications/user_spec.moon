@@ -297,20 +297,20 @@ describe "application.user", ->
         user\enable_totp secret
 
         -- wrong password
-        request_as user, "/settings/two-factor-auth/disable", {
-          post: { current_password: "wrong", code: totp.generate_code secret }
+        request_as user, "/settings/two-factor-auth", {
+          post: { action: "disable", current_password: "wrong", code: totp.generate_code secret }
         }
         assert.truthy user\refresh!\has_totp!
 
         -- wrong code
-        request_as user, "/settings/two-factor-auth/disable", {
-          post: { current_password: "pword", code: "000000" }
+        request_as user, "/settings/two-factor-auth", {
+          post: { action: "disable", current_password: "pword", code: "000000" }
         }
         assert.truthy user\refresh!\has_totp!
 
         -- correct
-        status = request_as user, "/settings/two-factor-auth/disable", {
-          post: { current_password: "pword", code: totp.generate_code secret }
+        status = request_as user, "/settings/two-factor-auth", {
+          post: { action: "disable", current_password: "pword", code: totp.generate_code secret }
         }
         assert.same 302, status
         assert.falsy user\refresh!\has_totp!
@@ -319,8 +319,8 @@ describe "application.user", ->
         secret = totp.generate_secret!
         first_codes = user\enable_totp secret
 
-        status = request_as user, "/settings/two-factor-auth/regenerate-codes", {
-          post: { current_password: "pword", code: totp.generate_code secret }
+        status = request_as user, "/settings/two-factor-auth", {
+          post: { action: "regenerate", current_password: "pword", code: totp.generate_code secret }
         }
         assert.same 302, status
         assert.same 5, #TotpScratchcodes\for_user user
@@ -450,8 +450,8 @@ describe "application.user", ->
         secret = totp.generate_secret!
         user\enable_totp secret
 
-        request_as user, "/settings/two-factor-auth/disable", {
-          post: { current_password: "pword", code: totp.generate_code secret }
+        request_as user, "/settings/two-factor-auth", {
+          post: { action: "disable", current_password: "pword", code: totp.generate_code secret }
         }
 
         TotpSecrets = require("models").TotpSecrets
@@ -482,6 +482,74 @@ describe "application.user", ->
           status, body = request_as user, "/settings/two-factor-auth/scratchcodes"
           assert.same 200, status
           assert.truthy body\match("no new backup codes") or body\match("not be shown again") or body\match("Backup")
+
+      describe "upload requirement toggle", ->
+        local secret
+
+        before_each ->
+          secret = totp.generate_secret!
+          user\enable_totp secret
+
+        it "enables the upload requirement with valid password and code", ->
+          status = request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "pword"
+              code: totp.generate_code secret
+              require_for_uploads: "on"
+            }
+          }
+          assert.same 302, status
+          assert.truthy user\refresh!\requires_tfa_for_uploads!
+
+        it "disables the upload requirement", ->
+          (TotpSecrets\find user.id)\update require_for_uploads: true
+          assert.truthy user\refresh!\requires_tfa_for_uploads!
+
+          status = request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "pword"
+              code: totp.generate_code secret
+              require_for_uploads: ""
+            }
+          }
+          assert.same 302, status
+          assert.falsy user\refresh!\requires_tfa_for_uploads!
+
+        it "rejects with wrong password", ->
+          request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "wrong"
+              code: totp.generate_code secret
+              require_for_uploads: "true"
+            }
+          }
+          assert.falsy user\refresh!\requires_tfa_for_uploads!
+
+        it "rejects with wrong code", ->
+          request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "pword"
+              code: "000000"
+              require_for_uploads: "true"
+            }
+          }
+          assert.falsy user\refresh!\requires_tfa_for_uploads!
+
+        it "rejects when 2FA is not enabled", ->
+          user\disable_totp!
+          request_as user, "/settings/two-factor-auth", {
+            post: {
+              action: "settings"
+              current_password: "pword"
+              code: "000000"
+              require_for_uploads: "true"
+            }
+          }
+          assert.falsy user\refresh!\requires_tfa_for_uploads!
 
       it "API key authentication bypasses 2fa", ->
         import ApiKeys from require "spec.models"
