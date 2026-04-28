@@ -13,8 +13,19 @@
             color: var(--sub-color);
         }
 
+        .main {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0 8px;
+        }
+
         .title {
             font-size: 16px;
+        }
+
+        .modules_count .value {
+            margin-left: 4px;
         }
 
         .open_flag {
@@ -33,6 +44,29 @@
             border-radius: 2px;
             padding: 0 4px;
         }
+
+        @media (max-width: 600px) {
+            display: flex;
+            flex-direction: column;
+
+            .manifest_admins {
+                float: none;
+                order: 2;
+                margin-top: 4px;
+            }
+
+            .main {
+                order: 1;
+                display: block;
+            }
+
+            .modules_count {
+                display: block;
+            }
+
+            .open_flag {
+                margin-left: 0;
+            }
+        }
     }
 }
-

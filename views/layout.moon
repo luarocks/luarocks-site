@@ -10,6 +10,7 @@ class Layout extends Widget
     html_5 ->
       head ->
         meta charset: "utf-8"
+        meta name: "viewport", content: "width=device-width, initial-scale=1"
         title ->
           if @title
             text "#{@title} - LuaRocks"

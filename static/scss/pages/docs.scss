@@ -299,3 +299,30 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 600px) {
+    .docs_hero h1 {
+        font-size: 26px;
+    }
+
+    .api_endpoint_toc ul {
+        grid-template-columns: 1fr;
+    }
+
+    .docs_body {
+        h2 {
+            font-size: 20px;
+            margin: 28px 0 14px 0;
+        }
+
+        h3 {
+            font-size: 17px;
+        }
+
+        table {
+            display: block;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+    }
+}

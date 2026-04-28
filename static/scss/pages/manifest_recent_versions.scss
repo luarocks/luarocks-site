@@ -36,5 +36,13 @@
         .development_flag {
             margin: 0 5px;
         }
+
+        @media (max-width: 600px) {
+            .created_at {
+                float: none;
+                display: block;
+                margin-top: 4px;
+            }
+        }
     }
 }

@@ -1,12 +1,13 @@
 
 .installer {
-    width: var(--site-width);
+    @include site_width;
     margin: 15px auto;
 
     pre {
         margin: 0;
         position: relative;
         padding-left: 95px;
+        overflow-x: auto;
 
         &:before {
             content: "Install:";
@@ -25,6 +26,19 @@
             display: inline-block;
             background: rgba(white, 0.2);
             color: rgba(white, 0.6);
+        }
+    }
+
+    @media (max-width: 600px) {
+        pre {
+            padding-left: 16px;
+            padding-top: 28px;
+
+            &:before {
+                bottom: auto;
+                line-height: 22px;
+                padding: 0 8px;
+            }
         }
     }
 }

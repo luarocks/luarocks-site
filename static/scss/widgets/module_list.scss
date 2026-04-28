@@ -33,11 +33,14 @@
     .main {
         display: flex;
         gap: 5px;
+        flex-wrap: wrap;
+        align-items: baseline;
     }
 
     .module_manifests {
         display: flex;
         gap: 5px;
+        flex-wrap: wrap;
 
         > a {
             text-decoration: none;
@@ -58,13 +61,19 @@
         }
     }
 
-    .main, .summary {
+    .summary {
         @include single_line;
     }
 
     .summary {
         color: gray;
         font-size: var(--small-font-size);
+    }
+
+    @media (max-width: 600px) {
+        .dates {
+            margin-left: 0;
+        }
     }
 
     .downloads {

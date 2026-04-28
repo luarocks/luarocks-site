@@ -39,8 +39,11 @@ $button_color: $link_color;
 }
 
 @mixin site_width {
+    box-sizing: border-box;
     max-width: var(--site-width);
-    min-width: 800px;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 @mixin single_line {
