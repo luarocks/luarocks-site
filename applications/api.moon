@@ -99,7 +99,20 @@ api_request = (fn) ->
       }
 
     =>
-      @key = ApiKeys\find(key: @params.key)
+      key_str = if @params.key == "bearer"
+        auth = @req.headers["authorization"] or ""
+        scheme, bearer = auth\match "^(%S+)%s+(.+)$"
+        bearer = nil unless scheme and scheme\lower! == "bearer"
+        unless bearer
+          return {
+            status: 401
+            json: { errors: {"Missing or malformed Authorization header"} }
+          }
+        bearer
+      else
+        @params.key
+
+      @key = ApiKeys\find(key: key_str)
 
       unless @key
         return INVALID_KEY
@@ -380,4 +393,3 @@ class MoonRocksApi extends lapis.Application
 
       json: { success: true }
   }
-

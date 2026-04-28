@@ -3,7 +3,21 @@
 Most API endpoints require authentication via an API key. You can generate an
 API key from your [account settings](/settings/api-keys).
 
-API keys are passed as part of the URL path: `/api/1/:key/endpoint`
+There are two ways to provide your key:
+
+**Authorization header (recommended):** use the literal string `bearer` in the
+URL `:key` slot and send the key in an `Authorization` header.
+
+```
+POST /api/1/bearer/upload
+Authorization: Bearer YOUR_API_KEY
+```
+
+**URL path (legacy):** include the key directly in the URL.
+
+```
+POST /api/1/YOUR_API_KEY/upload
+```
 
 **Keep your API key secret.** Anyone with your key can upload modules to your
 account. If you believe your key has been compromised, revoke it immediately

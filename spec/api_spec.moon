@@ -362,3 +362,78 @@ describe "application.api", ->
           status: 400
         }
 
+  describe "with bearer header", ->
+    local key, prefix
+
+    bearer_request = (path, opts={}) ->
+      opts.expect = "json" unless opts.expect != nil
+      opts.headers or= {}
+      opts.headers.Authorization or= "Bearer #{key.key}"
+      status, res = request "#{prefix}#{path}", opts
+      assert.same opts.status or 200, status
+      res
+
+    before_each ->
+      key = factory.ApiKeys user_id: user.id
+      prefix = "/api/1/bearer"
+
+    it "gets key status via Authorization header", ->
+      res = bearer_request "/status"
+      assert.same user.id, res.user_id
+
+      key\refresh!
+      types.assert(types.shape {
+        last_used_at: types.string
+      }, open: true) ApiKeys\select![1]
+
+    it "rejects missing Authorization header", ->
+      status, res = request "#{prefix}/status", { expect: "json" }
+      assert.same 401, status
+      assert.same {
+        errors: {"Missing or malformed Authorization header"}
+      }, res
+
+    it "rejects malformed Authorization header", ->
+      status, res = request "#{prefix}/status", {
+        expect: "json"
+        headers: { Authorization: "Token #{key.key}" }
+      }
+      assert.same 401, status
+      assert.same {
+        errors: {"Missing or malformed Authorization header"}
+      }, res
+
+    it "accepts case-insensitive bearer scheme", ->
+      status, res = request "#{prefix}/status", {
+        expect: "json"
+        headers: { Authorization: "BEARER #{key.key}" }
+      }
+      assert.same 200, status
+      assert.same user.id, res.user_id
+
+    it "rejects revoked key sent via header", ->
+      key\revoke!
+      res = bearer_request "/status", { status: 403 }
+      assert.same {
+        errors: {"The API key you provided has been revoked"}
+      }, res
+
+    it "rejects unknown key sent via header", ->
+      status, res = request "#{prefix}/status", {
+        expect: "json"
+        headers: { Authorization: "Bearer not-a-real-key" }
+      }
+      assert.same 401, status
+      assert.same { errors: {"Invalid key"} }, res
+
+    it "uploads rockspec via header auth", ->
+      status, res = do_upload_as nil, "#{prefix}/upload", "rockspec_file",
+        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua"), {
+          expect: "json"
+          headers: { Authorization: "Bearer #{key.key}" }
+        }
+
+      assert.same 200, status
+      assert.truthy res.is_new
+      assert.same 1, #Modules\select!
+      assert.same 1, #Versions\select!

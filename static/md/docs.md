@@ -58,7 +58,7 @@ Manifest files are Lua tables with the following structure:
 
 The `repository` table maps module names to versions to available architectures. Each version entry lists the available architectures, which always includes `"rockspec"` for the source specification. Binary rocks are listed with their platform architecture (e.g., `"linux-x86_64"`, `"macosx-arm64"`).
 
-The `commands` and `modules` tables provide reverse mappings from executable names and Lua module names back to their packages. These are used internally by LuaRocks for dependency resolution.
+The `commands` and `modules` tables are always empty for the remote module repository.
 
 ### Accessing Module Files
 
@@ -115,7 +115,7 @@ Alternative servers are available for accessing LuaRocks packages:
 
 **HTTP Mirror**
 
-* `https://mirror.luarocks.org/` - An alternative server for accessing LuaRocks packages
+* <https://mirror.luarocks.org/> - An alternative server for accessing LuaRocks packages
 
 **GitHub Repository Mirrors**
 

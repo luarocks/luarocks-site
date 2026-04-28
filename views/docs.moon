@@ -20,7 +20,7 @@ class Docs extends require "widgets.page"
 
       section class: "doc_cards", ->
         a class: "doc_card", href: "/docs/api", ->
-          h2 "LuaRocks.org API"
+          h2 "LuaRocks.org HTTP API"
           p ->
             text "HTTP API used by the "
             code "luarocks upload"

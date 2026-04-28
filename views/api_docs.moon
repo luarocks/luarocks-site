@@ -12,7 +12,7 @@ class ApiDocs extends require "widgets.page"
     div class: "docs_page", ->
       section class: "docs_hero", ->
         a class: "docs_back", href: @url_for("docs"), "← All documentation"
-        h1 "LuaRocks.org API"
+        h1 "LuaRocks.org HTTP API"
         p class: "docs_hero_sub",
           "HTTP API for programmatically uploading rockspecs and rocks. This is the same API used by the luarocks upload command."
 
