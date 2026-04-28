@@ -5,6 +5,11 @@ class AdminAudits extends require "widgets.admin.page"
   @needs: {"audits", "pager"}
 
   inner_content: =>
+    p ->
+      text "Audits are run on GitHub runners under the "
+      a href: "https://github.com/luarocks/rocks-audit/actions", "luarocks/rocks-audit"
+      text " repository."
+
     @filter_form (field) ->
       field "status", enum {
         "pending"
