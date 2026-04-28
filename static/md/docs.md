@@ -1,24 +1,8 @@
-## LuaRocks Documentation
-
-### LuaRocks.org API
-
-Documentation for the LuaRocks.org upload API, used by the `luarocks upload`
-command.
-
-[View API Documentation](/docs/api)
-
-### LuaRocks CLI Documentation
-
-Complete documentation for the LuaRocks command-line package manager, including
-installation, configuration, and usage guides.
-
-[View LuaRocks Documentation](https://github.com/luarocks/luarocks/blob/main/docs/index.md)
-
-### Manifests
+## Manifests
 
 Manifests are index files that list all available modules, their versions, and download locations. The LuaRocks CLI uses manifests to discover and install packages.
 
-#### Using Manifests with LuaRocks
+### Using Manifests with LuaRocks
 
 Use the `--server` option to specify which manifest root path to install from:
 
@@ -26,7 +10,7 @@ Use the `--server` option to specify which manifest root path to install from:
 luarocks install --server=<root-path> <module-name>
 ```
 
-#### Manifest Root Paths
+### Manifest Root Paths
 
 LuaRocks.org provides several manifest root paths, each serving a different subset of modules:
 
@@ -38,7 +22,7 @@ LuaRocks.org provides several manifest root paths, each serving a different subs
 | `https://luarocks.org/m/:name` | Custom manifest (stable versions) |
 | `https://luarocks.org/m/:name/dev` | Custom manifest (dev versions) |
 
-#### Available Paths Under Each Root
+### Available Paths Under Each Root
 
 Each manifest root path serves the following manifest files:
 
@@ -52,7 +36,7 @@ Each manifest root path serves the following manifest files:
 
 For example, `https://luarocks.org/dev/manifest-5.4` returns development versions compatible with Lua 5.4.
 
-#### Manifest File Structure
+### Manifest File Structure
 
 Manifest files are Lua tables with the following structure:
 
@@ -76,7 +60,7 @@ The `repository` table maps module names to versions to available architectures.
 
 The `commands` and `modules` tables provide reverse mappings from executable names and Lua module names back to their packages. These are used internally by LuaRocks for dependency resolution.
 
-#### Accessing Module Files
+### Accessing Module Files
 
 The manifest root path also serves the actual module files (rockspecs and rocks). Files are accessed relative to the manifest root using these patterns:
 
@@ -88,18 +72,18 @@ The manifest root path also serves the actual module files (rockspecs and rocks)
 
 For example, using `--server=https://luarocks.org/manifests/luarocks`, the rockspec for lpeg would be available at `https://luarocks.org/manifests/luarocks/lpeg-1.0.2-1.rockspec`.
 
-#### Output Formats
+### Output Formats
 
 All manifest URLs return a Lua table by default. Append `.json` for JSON format or `.zip` for compressed format. For example: `/manifest.json` or `/manifest-5.4.zip`.
 
-#### Custom Manifests
+### Custom Manifests
 
 Users can create curated manifests at `/m/:name`. Custom manifests can be:
 
 * **Open**: Anyone can add their modules
 * **Closed**: Only manifest admins can add modules
 
-#### Usage Examples
+### Usage Examples
 
 Install from the root manifest (default):
 
@@ -125,7 +109,7 @@ Install from a custom manifest:
 luarocks install --server=https://luarocks.org/m/mymanifest mymodule
 ```
 
-#### Mirrors
+### Mirrors
 
 Alternative servers are available for accessing LuaRocks packages:
 

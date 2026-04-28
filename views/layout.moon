@@ -121,7 +121,7 @@ class Layout extends Widget
 
       a href: "https://github.com/luarocks/luarocks/blob/main/docs/download.md", "Install"
       text " "
-      a href: "https://github.com/luarocks/luarocks/blob/main/docs/index.md", "Docs"
+      a href: @url_for("docs"), "Docs"
       text " "
 
       if @current_user

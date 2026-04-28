@@ -246,6 +246,14 @@ class MoonRocks extends lapis.Application
     @title = "Changes"
     render: true
 
+  [docs: "/docs"]: =>
+    @title = "Documentation"
+    render: true
+
+  [api_docs: "/docs/api"]: =>
+    @title = "API Documentation"
+    render: true
+
   [search: "/search"]: capture_errors with_params {
     {"q", types.empty + types.limited_text(128), label: "query" }
     {"non_root", types.empty + types.any / true}

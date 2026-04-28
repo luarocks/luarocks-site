@@ -1,8 +1,3 @@
-## LuaRocks.org API Documentation
-
-The LuaRocks.org API allows you to programmatically upload rockspecs and rocks
-to your account. This is the same API used by the `luarocks upload` command.
-
 ### Authentication
 
 Most API endpoints require authentication via an API key. You can generate an
@@ -13,6 +8,24 @@ API keys are passed as part of the URL path: `/api/1/:key/endpoint`
 **Keep your API key secret.** Anyone with your key can upload modules to your
 account. If you believe your key has been compromised, revoke it immediately
 from your account settings and generate a new one.
+
+### Two-Factor Authentication
+
+If your account has two-factor authentication (TFA) enabled and the *Require
+for uploads* option is turned on, the upload endpoints will reject requests
+that do not include a valid TFA token. A rejected request returns:
+
+```json
+{
+  "errors": ["Two-factor authentication required"],
+  "two_factor_required": true
+}
+```
+
+To obtain a TFA token, call the [Verify TFA](#verify-tfa) endpoint with a TOTP
+code from your authenticator app. The returned token is valid for 15 minutes
+and is tied to the API key it was issued for. Include it on subsequent upload
+requests either as the `tfa_token` form field or via the `X-TFA-Token` header.
 
 ### Error Responses
 
@@ -31,9 +44,10 @@ Common HTTP status codes:
 |--------|-------------|
 | 200 | Success |
 | 400 | Bad request (validation error) |
-| 401 | Invalid API key |
-| 403 | API key revoked or account suspended |
+| 401 | Invalid API key or invalid two-factor code |
+| 403 | API key revoked, account suspended, or two-factor authentication required |
 | 404 | Resource not found |
+| 429 | Too many failed two-factor attempts |
 
 ---
 
@@ -111,6 +125,45 @@ but not the specific version, only `version` will be `null`.
 
 ---
 
+### Verify TFA
+
+Exchange a TOTP code for a short-lived token that authorizes upload requests
+when two-factor authentication is required.
+
+```
+POST /api/1/:key/verify_tfa
+```
+
+**Authentication:** Required
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| code | string | Yes | A TOTP code from the account's authenticator app |
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "tfa_token": "...",
+  "expires": 1700000000
+}
+```
+
+The `tfa_token` is valid for 15 minutes and only for the API key that
+requested it. Pass it on subsequent upload calls as either the `tfa_token`
+form field or the `X-TFA-Token` header.
+
+**Errors:**
+
+- `400` - Two-factor authentication is not enabled on this account
+- `401` - Invalid verification code
+- `429` - Too many failed attempts (try again after a few minutes)
+
+---
+
 ### Upload Rockspec
 
 Upload a new rockspec file. This will create a new module if it doesn't exist,
@@ -129,6 +182,7 @@ POST /api/1/:key/upload
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | rockspec_file | file | Yes | The `.rockspec` file to upload |
+| tfa_token | string | If TFA required | A token from [Verify TFA](#verify-tfa). May also be sent as the `X-TFA-Token` header. |
 
 **Response:**
 
@@ -178,6 +232,7 @@ POST /api/1/:key/upload_rock/:version_id
 |------|------|----------|-------------|
 | version_id | integer | Yes | The version ID (from URL path) |
 | rock_file | file | Yes | The `.rock` file to upload |
+| tfa_token | string | If TFA required | A token from [Verify TFA](#verify-tfa). May also be sent as the `X-TFA-Token` header. |
 
 **Response:**
 
@@ -203,11 +258,11 @@ POST /api/1/:key/upload_rock/:version_id
 The easiest way to use the API is through the LuaRocks command-line tool:
 
 ```bash
-# Upload a rockspec
+# Upload a rockspec (also builds and uploads a rock by default)
 luarocks upload mymodule-1.0-1.rockspec --api-key=YOUR_API_KEY
 
-# Upload a rockspec and build/upload a rock
-luarocks upload mymodule-1.0-1.rockspec --api-key=YOUR_API_KEY
+# Upload only the rockspec, without building a rock
+luarocks upload mymodule-1.0-1.rockspec --api-key=YOUR_API_KEY --skip-pack
 ```
 
 You can also store your API key in a config file to avoid passing it on each

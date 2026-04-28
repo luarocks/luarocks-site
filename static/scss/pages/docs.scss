@@ -1,0 +1,302 @@
+.docs_hero {
+    margin: 30px 0 30px 0;
+
+    .docs_back {
+        display: inline-block;
+        font-size: 13px;
+        color: var(--sub-color);
+        text-decoration: none;
+        margin-bottom: 8px;
+
+        &:hover {
+            color: var(--link-color);
+        }
+    }
+
+    h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        margin: 0 0 10px 0;
+        color: var(--body-color);
+    }
+
+    .docs_hero_sub {
+        font-size: 16px;
+        color: var(--sub-color);
+        margin: 0;
+        max-width: 640px;
+        line-height: 1.5;
+    }
+}
+
+.doc_cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 0 0 40px 0;
+
+    .doc_card {
+        display: block;
+        text-decoration: none;
+        color: var(--body-color);
+        background: var(--white-back-color);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 18px 22px;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+        &:hover {
+            border-color: var(--link-color);
+            box-shadow: 0 2px 8px rgba(0, 37, 122, 0.08);
+
+            .doc_card_cta {
+                color: var(--link-color-hover);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            background: var(--back-color);
+
+            &:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            }
+        }
+    }
+
+    .doc_card h2 {
+        font-size: 20px;
+        margin: 0 0 8px 0;
+        color: var(--body-color);
+    }
+
+    .doc_card p {
+        margin: 0 0 12px 0;
+        line-height: 1.5;
+        color: var(--sub-color);
+        font-size: 14px;
+
+        > code {
+            background: rgba(#446, 0.1);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 13px;
+
+            @media (prefers-color-scheme: dark) {
+                background: rgba(110, 118, 129, 0.3);
+            }
+        }
+    }
+
+    .doc_card_cta {
+        font-size: 14px;
+        font-weight: bold;
+        color: var(--link-color);
+    }
+}
+
+.docs_toc {
+    background: var(--white-back-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 14px 22px 16px 22px;
+    margin: 0 0 40px 0;
+
+    .docs_toc_title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: bold;
+        color: var(--sub-color);
+        margin-bottom: 8px;
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 20px;
+    }
+
+    li {
+        margin: 0;
+    }
+
+    a {
+        font-size: 14px;
+        text-decoration: none;
+        color: var(--link-color);
+
+        &:hover {
+            color: var(--link-color-hover);
+            text-decoration: underline;
+        }
+    }
+}
+
+.api_endpoint_toc {
+    ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 24px;
+    }
+
+    a {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        padding: 4px 0;
+    }
+
+    .endpoint_method {
+        display: inline-block;
+        min-width: 42px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.04em;
+        padding: 1px 6px;
+        border-radius: 3px;
+        color: white;
+        text-transform: uppercase;
+
+        &.endpoint_method_get {
+            background: #3b82f6;
+        }
+
+        &.endpoint_method_post {
+            background: #10b981;
+        }
+    }
+
+    .endpoint_path {
+        font-size: 13px;
+        color: var(--body-color);
+    }
+
+    a:hover .endpoint_path {
+        color: var(--link-color);
+    }
+}
+
+.docs_body {
+    h2 {
+        font-size: 22px;
+        margin: 40px 0 18px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--light-border-color);
+        color: var(--body-color);
+        scroll-margin-top: 16px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    h3 {
+        font-size: 19px;
+        margin: 28px 0 14px 0;
+        color: var(--body-color);
+        scroll-margin-top: 16px;
+    }
+
+    h4 {
+        font-size: 17px;
+        margin: 32px 0 12px 0;
+        color: var(--body-color);
+        scroll-margin-top: 16px;
+    }
+
+    hr {
+        margin: 32px 0;
+        background: var(--light-border-color);
+    }
+
+    p {
+        line-height: 1.6;
+    }
+
+    ul {
+        line-height: 1.6;
+        padding-left: 22px;
+
+        li {
+            margin: 4px 0;
+        }
+    }
+
+    pre {
+        background: #323744;
+        color: white;
+        font-size: 14px;
+        padding: 12px 18px;
+        border-radius: 2px;
+        overflow-x: auto;
+        line-height: 1.5;
+        margin: 16px 0;
+
+        code {
+            background: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+    }
+
+    p > code,
+    li > code,
+    td > code {
+        background: rgba(#446, 0.1);
+        padding: 2px 4px;
+        border-radius: 6px;
+        font-size: 14px;
+        word-break: break-word;
+
+        @media (prefers-color-scheme: dark) {
+            background: rgba(110, 118, 129, 0.3);
+        }
+    }
+
+    table {
+        background: var(--white-back-color);
+        border: 1px solid desaturate(darken($back_color, 30%), 50%);
+        box-shadow: 1px 1px 0 desaturate(darken($back_color, 40%), 50%);
+        font-size: 14px;
+        margin: 20px 0;
+        border-collapse: collapse;
+        width: 100%;
+
+        thead {
+            background: darken($back_color, 10%);
+            font-weight: bold;
+            color: desaturate(darken($back_color, 60%), 70%);
+
+            th {
+                text-align: left;
+                padding: 6px 8px;
+            }
+        }
+
+        tbody td {
+            padding: 6px 8px;
+            vertical-align: top;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            border-color: #30363d;
+            box-shadow: none;
+
+            thead {
+                background: #21262d;
+                color: #8b949e;
+            }
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    .doc_cards {
+        grid-template-columns: 1fr;
+    }
+}

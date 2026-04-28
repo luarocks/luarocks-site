@@ -1,2 +1,2 @@
 .gitignore
-: foreach *.md |> markdown < %f > %o |> %B.html
+: foreach *.md |> markdown -f "+fencedcode,+tables,+toc" < %f > %o |> %B.html
