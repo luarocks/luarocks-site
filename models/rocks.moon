@@ -16,7 +16,9 @@ import increment_counter, safe_insert from require "helpers.models"
 --   rock_fname character varying(255) NOT NULL,
 --   created_at timestamp without time zone NOT NULL,
 --   updated_at timestamp without time zone NOT NULL,
---   revision integer DEFAULT 1 NOT NULL
+--   revision integer DEFAULT 1 NOT NULL,
+--   sha256 character varying(255),
+--   md5 character varying(255)
 -- );
 -- ALTER TABLE ONLY rocks
 --   ADD CONSTRAINT rocks_pkey PRIMARY KEY (id);
@@ -32,10 +34,12 @@ class Rocks extends Model
     {"audit", has_one: "FileAudits", key: "object_id", where: {object_type: 2}}
   }
 
-  @create: (version, arch, rock_key) =>
+  @create: (version, arch, rock_key, hashes) =>
     safe_insert @, {
       version_id: version.id
       rock_fname: rock_key\match "/([^/]*)$"
+      sha256: hashes and hashes.sha256
+      md5: hashes and hashes.md5
       :arch, :rock_key
     }, {version_id: version.id, :arch }
 

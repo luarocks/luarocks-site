@@ -3,8 +3,13 @@ import use_test_server from require "lapis.spec"
 
 import request, request_as, do_upload_as, should_load from require "spec.helpers"
 import from_json from require "lapis.util"
+import compute_hashes from require "helpers.uploaders"
 
 factory = require "spec.factory"
+
+-- Known hex digests for "hello world", used to verify hashing end-to-end
+HELLO_WORLD_SHA256 = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+HELLO_WORLD_MD5 = "5eb63bbbe01eeed093cb22bb8f5acdc3"
 
 describe "moonrocks", ->
   use_test_server!
@@ -225,8 +230,11 @@ describe "moonrocks", ->
       assert.same 200, status
 
     it "should upload rockspec", ->
+      rockspec_text = require("spec.rockspecs.etlua")
+      expected_hashes = compute_hashes rockspec_text
+
       status, body, headers = do_upload "/upload", "rockspec_file",
-        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
+        "etlua-1.2.0-1.rockspec", rockspec_text
 
       assert.same 302, status
       assert.truthy headers.location\match "/modules/"
@@ -238,6 +246,8 @@ describe "moonrocks", ->
       assert.same "1.2.0-1", version.version_name
       assert.same "git://github.com/leafo/etlua.git", version.source_url
       assert.same "lua >= 5.1", version.lua_version
+      assert.same expected_hashes.sha256, version.sha256
+      assert.same expected_hashes.md5, version.md5
 
       mod = version\get_module!
       assert.same false, mod.has_dev_version
@@ -285,14 +295,19 @@ describe "moonrocks", ->
         rockspec_fname: "etlua-1.2.0-1.rockspec"
       }
 
+      rockspec_text = require("spec.rockspecs.etlua")
+      expected_hashes = compute_hashes rockspec_text
+
       status, body, headers = do_upload "/upload?json=true", "rockspec_file",
-        "etlua-1.2.0-1.rockspec", require("spec.rockspecs.etlua")
+        "etlua-1.2.0-1.rockspec", rockspec_text
 
       assert.same 1, #Modules\select!
       assert.same 1, #Versions\select!
 
       version\refresh!
       assert.same 2, version.revision
+      assert.same expected_hashes.sha256, version.sha256
+      assert.same expected_hashes.md5, version.md5
 
     it "should upload development rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
@@ -369,6 +384,8 @@ describe "moonrocks", ->
         assert.same 302, status
         rock = assert unpack Rocks\select!
         assert.same "windows2000", rock.arch
+        assert.same HELLO_WORLD_SHA256, rock.sha256
+        assert.same HELLO_WORLD_MD5, rock.md5
 
       it "should upload new version of rock", ->
         rock = factory.Rocks version_id: version.id, arch: "windows2000"
@@ -379,6 +396,8 @@ describe "moonrocks", ->
 
         rock\refresh!
         assert.same 2, rock.revision
+        assert.same HELLO_WORLD_SHA256, rock.sha256
+        assert.same HELLO_WORLD_MD5, rock.md5
 
       it "should not allow suspended user to upload rock", ->
         user\update flags: Users.flags.suspended

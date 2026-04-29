@@ -494,6 +494,12 @@ import
 
   [1777241869]: =>
     add_column "totp_secrets", "require_for_uploads", boolean default: false
+
+  [1777488175]: =>
+    add_column "versions", "sha256", varchar null: true
+    add_column "versions", "md5", varchar null: true
+    add_column "rocks", "sha256", varchar null: true
+    add_column "rocks", "md5", varchar null: true
 }
 
 

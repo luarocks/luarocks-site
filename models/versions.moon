@@ -31,7 +31,9 @@ get_lua_version = (spec) ->
 --   source_url text,
 --   revision integer DEFAULT 1 NOT NULL,
 --   external_rockspec_url text,
---   archived boolean DEFAULT false NOT NULL
+--   archived boolean DEFAULT false NOT NULL,
+--   sha256 character varying(255),
+--   md5 character varying(255)
 -- );
 -- ALTER TABLE ONLY versions
 --   ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
@@ -76,7 +78,7 @@ class Versions extends Model
         return true if version_name\match p
       false
 
-  @create: (mod, spec, rockspec_key) =>
+  @create: (mod, spec, rockspec_key, hashes) =>
     version_name = spec.version\lower!
 
     if @check_unique_constraint module_id: mod.id, version_name: version_name
@@ -89,6 +91,8 @@ class Versions extends Model
       lua_version: get_lua_version spec
       development: @version_name_is_development version_name
       source_url: spec.source and spec.source.url
+      sha256: hashes and hashes.sha256
+      md5: hashes and hashes.md5
 
       :rockspec_key, :version_name
     }
