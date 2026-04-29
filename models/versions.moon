@@ -78,7 +78,8 @@ class Versions extends Model
         return true if version_name\match p
       false
 
-  @create: (mod, spec, rockspec_key, hashes) =>
+  @create: (opts) =>
+    { :mod, :spec, :rockspec_key, :hashes } = opts
     version_name = spec.version\lower!
 
     if @check_unique_constraint module_id: mod.id, version_name: version_name

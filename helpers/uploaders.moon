@@ -172,7 +172,10 @@ do_rockspec_upload = (user, rockspec_text) ->
     version\update sha256: hashes.sha256, md5: hashes.md5
     version\increment_revision!
   else
-    version, err = Versions\create mod, spec, key, hashes
+    version, err = Versions\create {
+      :mod, :spec, :hashes
+      rockspec_key: key
+    }
     return nil, err unless version
     new_version = true
     mod\update current_version_id: version.id
@@ -219,7 +222,11 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
   unless out == 200
     return nil, "Failed to upload rock"
 
-  rock = Rocks\create version, rock_info.arch, key, hashes
+  rock = Rocks\create {
+    :version, :hashes
+    arch: rock_info.arch
+    rock_key: key
+  }
 
   if rock
     mod\purge_manifests!

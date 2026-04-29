@@ -34,7 +34,8 @@ class Rocks extends Model
     {"audit", has_one: "FileAudits", key: "object_id", where: {object_type: 2}}
   }
 
-  @create: (version, arch, rock_key, hashes) =>
+  @create: (opts) =>
+    { :version, :arch, :rock_key, :hashes } = opts
     safe_insert @, {
       version_id: version.id
       rock_fname: rock_key\match "/([^/]*)$"
