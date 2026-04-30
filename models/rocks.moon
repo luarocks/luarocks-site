@@ -18,7 +18,8 @@ import increment_counter, safe_insert from require "helpers.models"
 --   updated_at timestamp without time zone NOT NULL,
 --   revision integer DEFAULT 1 NOT NULL,
 --   sha256 character varying(255),
---   md5 character varying(255)
+--   md5 character varying(255),
+--   size integer
 -- );
 -- ALTER TABLE ONLY rocks
 --   ADD CONSTRAINT rocks_pkey PRIMARY KEY (id);
@@ -41,6 +42,7 @@ class Rocks extends Model
       rock_fname: rock_key\match "/([^/]*)$"
       sha256: hashes and hashes.sha256
       md5: hashes and hashes.md5
+      size: hashes and hashes.size
       :arch, :rock_key
     }, {version_id: version.id, :arch }
 

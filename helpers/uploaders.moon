@@ -14,6 +14,7 @@ compute_hashes = (data) ->
   {
     sha256: to_hex digest.new("sha256")\final data
     md5: to_hex digest.new("md5")\final data
+    size: #data
   }
 
 import
@@ -169,7 +170,7 @@ do_rockspec_upload = (user, rockspec_text) ->
     unless version.rockspec_key == key
       version\update rockspec_key: key
     version\update_from_spec spec
-    version\update sha256: hashes.sha256, md5: hashes.md5
+    version\update sha256: hashes.sha256, md5: hashes.md5, size: hashes.size
     version\increment_revision!
   else
     version, err = Versions\create {
@@ -236,7 +237,7 @@ do_rock_upload = (user, mod, version, filename, rock_content) ->
       arch: rock_info.arch
     }
 
-    rock\update sha256: hashes.sha256, md5: hashes.md5
+    rock\update sha256: hashes.sha256, md5: hashes.md5, size: hashes.size
     rock\increment_revision!
 
   rock

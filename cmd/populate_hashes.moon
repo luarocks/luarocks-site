@@ -1,7 +1,7 @@
 
 argparse = require "argparse"
 
-parser = argparse "populate_hashes.moon", "Backfill sha256/md5 hashes for rockspecs and rocks"
+parser = argparse "populate_hashes.moon", "Backfill sha256/md5 hashes and size for rockspecs and rocks"
 
 parser\flag "--confirm", "Apply updates (otherwise dry-run)"
 parser\flag "--versions-only", "Only process rockspec versions"
@@ -26,10 +26,10 @@ backfill = (label, rows, get_key) ->
       continue
     hashes = compute_hashes bytes
     if args.confirm
-      row\update sha256: hashes.sha256, md5: hashes.md5
-      print "  #{label} ##{row.id} - sha256=#{hashes.sha256}"
+      row\update sha256: hashes.sha256, md5: hashes.md5, size: hashes.size
+      print "  #{label} ##{row.id} - sha256=#{hashes.sha256} size=#{hashes.size}"
     else
-      print "  #{label} ##{row.id} (#{key}) - would set sha256=#{hashes.sha256}"
+      print "  #{label} ##{row.id} (#{key}) - would set sha256=#{hashes.sha256} size=#{hashes.size}"
     if n % 100 == 0
       print "  ...#{n} #{label}s processed"
 
@@ -37,12 +37,12 @@ limit_clause = args.limit and " limit #{args.limit}" or ""
 
 unless args.rocks_only
   print "backfilling versions..."
-  versions = Versions\select "where sha256 is null#{limit_clause}", fields: "id, rockspec_key"
+  versions = Versions\select "where sha256 is null or size is null#{limit_clause}", fields: "id, rockspec_key"
   backfill "version", versions, (r) -> r.rockspec_key
 
 unless args.versions_only
   print "backfilling rocks..."
-  rocks = Rocks\select "where sha256 is null#{limit_clause}", fields: "id, rock_key"
+  rocks = Rocks\select "where sha256 is null or size is null#{limit_clause}", fields: "id, rock_key"
   backfill "rock", rocks, (r) -> r.rock_key
 
 io.stderr\write args.confirm and "Done.\n" or "Dry run; pass --confirm to apply.\n"

@@ -500,6 +500,10 @@ import
     add_column "versions", "md5", varchar null: true
     add_column "rocks", "sha256", varchar null: true
     add_column "rocks", "md5", varchar null: true
+
+  [1777571824]: =>
+    add_column "versions", "size", integer null: true
+    add_column "rocks", "size", integer null: true
 }
 
 

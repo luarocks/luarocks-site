@@ -248,6 +248,7 @@ describe "moonrocks", ->
       assert.same "lua >= 5.1", version.lua_version
       assert.same expected_hashes.sha256, version.sha256
       assert.same expected_hashes.md5, version.md5
+      assert.same expected_hashes.size, version.size
 
       mod = version\get_module!
       assert.same false, mod.has_dev_version
@@ -308,6 +309,7 @@ describe "moonrocks", ->
       assert.same 2, version.revision
       assert.same expected_hashes.sha256, version.sha256
       assert.same expected_hashes.md5, version.md5
+      assert.same expected_hashes.size, version.size
 
     it "should upload development rockspec", ->
       status, body, headers = do_upload "/upload", "rockspec_file",
@@ -386,6 +388,7 @@ describe "moonrocks", ->
         assert.same "windows2000", rock.arch
         assert.same HELLO_WORLD_SHA256, rock.sha256
         assert.same HELLO_WORLD_MD5, rock.md5
+        assert.same #"hello world", rock.size
 
       it "should upload new version of rock", ->
         rock = factory.Rocks version_id: version.id, arch: "windows2000"
@@ -398,6 +401,7 @@ describe "moonrocks", ->
         assert.same 2, rock.revision
         assert.same HELLO_WORLD_SHA256, rock.sha256
         assert.same HELLO_WORLD_MD5, rock.md5
+        assert.same #"hello world", rock.size
 
       it "should not allow suspended user to upload rock", ->
         user\update flags: Users.flags.suspended

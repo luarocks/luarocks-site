@@ -33,7 +33,8 @@ get_lua_version = (spec) ->
 --   external_rockspec_url text,
 --   archived boolean DEFAULT false NOT NULL,
 --   sha256 character varying(255),
---   md5 character varying(255)
+--   md5 character varying(255),
+--   size integer
 -- );
 -- ALTER TABLE ONLY versions
 --   ADD CONSTRAINT versions_pkey PRIMARY KEY (id);
@@ -94,6 +95,7 @@ class Versions extends Model
       source_url: spec.source and spec.source.url
       sha256: hashes and hashes.sha256
       md5: hashes and hashes.md5
+      size: hashes and hashes.size
 
       :rockspec_key, :version_name
     }
