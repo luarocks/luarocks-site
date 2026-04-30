@@ -30,6 +30,8 @@ class AdminPage extends require "widgets.page"
         div class: "page_tabs", ->
           @render_nav_tab "admin.users", "Users"
           @render_nav_tab "admin.modules", "Modules"
+          @render_nav_tab "admin.versions", "Versions"
+          @render_nav_tab "admin.rocks", "Rocks"
           @render_nav_tab "admin.labels", "Labels"
           @render_nav_tab "admin.audits", "Audits"
           @render_nav_tab "admin.cache", "Cache"

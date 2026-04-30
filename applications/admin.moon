@@ -104,6 +104,83 @@ class MoonRocksAdmin extends lapis.Application
     @modules = @pager\get_page @page
     render: true
 
+  [versions: "/versions"]: capture_errors_json with_params {
+    {"module_id", types.empty + types.db_id}
+    {"lua_version", types.empty + types.valid_text}
+    {"development", types.empty + types.any / true}
+    {"archived", types.empty + types.any / true}
+    {"sort", shapes.default("id") * types.one_of {
+      "id"
+      "downloads"
+      "rockspec_downloads"
+      "created_at"
+    }}
+  }, (params) =>
+    @title = "Versions"
+
+    import Versions from require "models"
+    assert_page @
+
+    sort_clause = "order by #{db.escape_identifier params.sort} desc"
+
+    clause = db.clause {
+      if params.module_id
+        {"module_id = ?", params.module_id}
+
+      if params.lua_version
+        {"lua_version = ?", params.lua_version}
+
+      if params.development
+        {"development"}
+
+      if params.archived
+        {"archived"}
+    }, prefix: "WHERE", allow_empty: true
+
+    @pager = Versions\paginated "? #{sort_clause}", clause, {
+      per_page: 50
+      prepare_results: (versions) ->
+        preload versions, module: "user"
+        versions
+    }
+
+    @versions = @pager\get_page @page
+    render: true
+
+  [rocks: "/rocks"]: capture_errors_json with_params {
+    {"version_id", types.empty + types.db_id}
+    {"arch", types.empty + types.valid_text}
+    {"sort", shapes.default("id") * types.one_of {
+      "id"
+      "downloads"
+      "revision"
+    }}
+  }, (params) =>
+    @title = "Rocks"
+
+    import Rocks from require "models"
+    assert_page @
+
+    sort_clause = "order by #{db.escape_identifier params.sort} desc"
+
+    clause = db.clause {
+      if params.version_id
+        {"version_id = ?", params.version_id}
+
+      if params.arch
+        {"arch = ?", params.arch}
+    }, prefix: "WHERE", allow_empty: true
+
+    @pager = Rocks\paginated "? #{sort_clause}", clause, {
+      per_page: 50
+      prepare_results: (rocks) ->
+        preload rocks, version: { module: "user" }
+        rocks
+    }
+
+    @rocks = @pager\get_page @page
+    render: true
+
   [module: "/module/:id"]: capture_errors_json with_params {
     {"id", types.db_id}
   }, (params) =>
