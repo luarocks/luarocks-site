@@ -33,25 +33,3 @@
     }
 }
 
-.rock_list {
-    margin: 0;
-    padding: 0;
-
-    .action_buttons {
-        float: right;
-    }
-
-    .timestamp, .downloads {
-        margin-left: 10px;
-        color: var(--sub-color);
-    }
-
-    .arch {
-        line-height: var(--button-height);
-        border: 1px solid var(--border-color);
-        background: var(--white-back-color);
-        padding: 10px 20px;
-        list-style: none;
-        margin: 0 0 10px 0;
-    }
-}

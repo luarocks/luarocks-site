@@ -643,6 +643,22 @@ pre {
     }
 }
 
+.table.column_table {
+    .hash {
+        font-family: monospace;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    .external_link {
+        color: var(--sub-color-light);
+
+        a {
+            color: var(--sub-color);
+        }
+    }
+}
+
 img.avatar {
     display: inline-block;
     margin-right: 4px;

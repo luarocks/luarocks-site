@@ -31,24 +31,45 @@ class ModuleVersion extends require "widgets.page"
         directly."
 
     h3 "Available Downloads"
-    ul class: "rock_list", ->
-      li class: "arch", ->
-        a href: @rock_url(@version), "rockspec"
-        if @version.external_rockspec_url
+
+    rows = {@version}
+    for rock in *@rocks
+      table.insert rows, rock
+
+    @column_table rows, {
+      {"fname", label: "File", (row) ->
+        fname = row.rockspec_fname or row.rock_fname
+        a href: @rock_url(row), fname
+        if row.external_rockspec_url
           text " "
-          span class: "sub", ->
+          span class: "external_link", ->
             text "("
             a {
               rel: "nofollow"
-              href: @version.external_rockspec_url
+              href: row.external_rockspec_url
               "External"
             }
             text ")"
-
-
-      for rock in *@rocks
-        li class: "arch", ->
-          a href: @rock_url(rock), rock.arch
+      }
+      {"size", label: "Size", (row) ->
+        if row.size
+          text @format_bytes row.size
+        else
+          span class: "nil_value", "—"
+      }
+      {"sha256", label: "SHA-256", (row) ->
+        if row.sha256
+          span class: "hash", title: row.sha256, row.sha256\sub(1, 10) .. "…"
+        else
+          span class: "nil_value", "—"
+      }
+      {"md5", label: "MD5", (row) ->
+        if row.md5
+          span class: "hash", row.md5
+        else
+          span class: "nil_value", "—"
+      }
+    }
 
 
   admin_panel: =>

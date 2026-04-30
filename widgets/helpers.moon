@@ -74,6 +74,8 @@ class Helpers
 
       @format_number(bytes) .. suffix
 
+  filesize_format: (bytes) => @format_bytes bytes
+
   render_date: (d, abs_first=false) =>
     span class: "date", title: date(d)\fmt("${iso}Z"), @format_relative_timestamp(d)
 

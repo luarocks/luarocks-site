@@ -1,5 +1,3 @@
-import time_ago_in_words from require "lapis.util"
-
 class EditModuleVersion extends require "widgets.page"
   inner_content: =>
     h2 ->
@@ -48,30 +46,44 @@ class EditModuleVersion extends require "widgets.page"
   manage_rocks: =>
     return unless next @rocks
     h2 "Manage rocks"
-    ul class: "rock_list", ->
-      for rock in *@rocks
-        version = rock\get_version!
-        mod = version\get_module!
-        user = mod\get_user!
 
-        li class: "arch", ->
-          div class: "action_buttons", ->
-            a {
-              class: "button delete_btn"
-              href: @url_for "delete_rock", {
-                arch: rock
-                :version
-                module: mod
-                :user
-              }
-              "Delete"
-            }
+    mod = @version\get_module!
+    user = mod\get_user!
 
-          a href: @url_for(rock), rock.arch
-          text " "
-          span class: "timestamp", time_ago_in_words(rock.created_at)
-          text " "
-          span class: "downloads", @plural rock.downloads, "download", "downloads"
-          text " "
+    @column_table @rocks, {
+      {"rock_fname", label: "File", (rock) -> a href: @url_for(rock), rock.rock_fname}
+      {"size", label: "Size", (rock) ->
+        if rock.size
+          text @format_bytes rock.size
+        else
+          span class: "nil_value", "—"
+      }
+      {"sha256", label: "SHA-256", (rock) ->
+        if rock.sha256
+          span class: "hash", title: rock.sha256, rock.sha256\sub(1, 10) .. "…"
+        else
+          span class: "nil_value", "—"
+      }
+      {"md5", label: "MD5", (rock) ->
+        if rock.md5
+          span class: "hash", rock.md5
+        else
+          span class: "nil_value", "—"
+      }
+      {"downloads", label: "Downloads"}
+      {"created_at", label: "Uploaded"}
+      {"actions", label: "", (rock) ->
+        a {
+          class: "button delete_btn"
+          href: @url_for "delete_rock", {
+            arch: rock
+            version: @version
+            module: mod
+            :user
+          }
+          "Delete"
+        }
+      }
+    }
 
 
