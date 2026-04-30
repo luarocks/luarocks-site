@@ -3,6 +3,7 @@ argparse = require "argparse"
 
 parser = argparse "populate_hashes.moon", "Backfill sha256/md5 hashes and size for rockspecs and rocks"
 
+parser\argument("module_id", "Module IDs to refresh; if provided, always refresh regardless of existing hashes")\args("*")\convert tonumber
 parser\flag "--confirm", "Apply updates (otherwise dry-run)"
 parser\flag "--versions-only", "Only process rockspec versions"
 parser\flag "--rocks-only", "Only process rocks"
@@ -13,6 +14,7 @@ args = parser\parse [v for _, v in ipairs _G.arg]
 import Rocks, Versions from require "models"
 import compute_hashes from require "helpers.uploaders"
 
+db = require "lapis.db"
 bucket = require "storage_bucket"
 
 backfill = (label, rows, get_key) ->
@@ -33,16 +35,36 @@ backfill = (label, rows, get_key) ->
     if n % 100 == 0
       print "  ...#{n} #{label}s processed"
 
+has_module_ids = next args.module_id
+
 limit_clause = args.limit and " limit #{args.limit}" or ""
+
+versions_clause = if has_module_ids
+  db.clause {
+    module_id: db.list args.module_id
+  }
+else
+  db.clause {
+    "sha256 is null or size is null"
+  }
+
+rocks_clause = if has_module_ids
+  db.clause {
+    { "version_id in (select id from versions where module_id in ?)", db.list args.module_id }
+  }
+else
+  db.clause {
+    "sha256 is null or size is null"
+  }
 
 unless args.rocks_only
   print "backfilling versions..."
-  versions = Versions\select "where sha256 is null or size is null#{limit_clause}", fields: "id, rockspec_key"
+  versions = Versions\select "WHERE ?#{limit_clause}", versions_clause, fields: "id, rockspec_key"
   backfill "version", versions, (r) -> r.rockspec_key
 
 unless args.versions_only
   print "backfilling rocks..."
-  rocks = Rocks\select "where sha256 is null or size is null#{limit_clause}", fields: "id, rock_key"
+  rocks = Rocks\select "WHERE ?#{limit_clause}", rocks_clause, fields: "id, rock_key"
   backfill "rock", rocks, (r) -> r.rock_key
 
 io.stderr\write args.confirm and "Done.\n" or "Dry run; pass --confirm to apply.\n"
