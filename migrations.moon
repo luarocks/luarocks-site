@@ -502,8 +502,8 @@ import
     add_column "rocks", "md5", varchar null: true
 
   [1777571824]: =>
-    add_column "versions", "size", integer null: true
-    add_column "rocks", "size", integer null: true
+    add_column "versions", "size", integer null: true, default: db.NULL
+    add_column "rocks", "size", integer null: true, default: db.NULL
 }
 
 
