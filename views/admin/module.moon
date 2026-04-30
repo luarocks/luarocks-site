@@ -53,6 +53,8 @@ class AdminModule extends require "widgets.admin.page"
         "downloads"
         "development_version"
         "created_at"
+        {"sha256", type: "collapse_pre", truncate: 12}
+        {"md5", type: "collapse_pre", truncate: 12}
         {"rocks", (version) ->
           rocks = version\get_rocks!
           unless next rocks
@@ -65,6 +67,8 @@ class AdminModule extends require "widgets.admin.page"
             }
             "arch"
             "downloads"
+            {"sha256", type: "collapse_pre", truncate: 12}
+            {"md5", type: "collapse_pre", truncate: 12}
             {"audit", (rock) ->
               form action: @url_for("admin.audit_create"), method: "POST", ->
                 input type: "hidden", name: "object_type", value: "rock"
