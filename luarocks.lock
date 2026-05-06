@@ -28,7 +28,7 @@ return {
       moonrocks = "1.1.0-1",
       moonscript = "0.6.0-1",
       penlight = "1.15.0-1",
-      pgmoon = "1.16.0-1",
+      pgmoon = "1.17.0-1",
       struct = "1.4-1",
       tableshape = "2.7.0-1",
       zipwriter = "0.1.5-1"
