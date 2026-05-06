@@ -34,7 +34,7 @@ class ModuleVersion extends require "widgets.page"
         and can only be installed by referencing the rockspec or rock
         directly."
 
-    h3 "Available Downloads"
+    h3 "Files"
 
     rows = {@version}
     for rock in *@rocks
