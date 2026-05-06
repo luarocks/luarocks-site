@@ -76,6 +76,29 @@ class Helpers
 
   filesize_format: (bytes) => @format_bytes bytes
 
+  copy_button: (value, label="Copy to clipboard") =>
+    button {
+      type: "button"
+      class: "copy_button"
+      "data-copy": value
+      "aria-label": label
+      title: label
+    }, ->
+      raw [[<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>]]
+
+  render_hash_cell: (hash, opts={}) =>
+    unless hash
+      span class: "nil_value", "—"
+      return
+
+    span class: "hash_cell", ->
+      display = if opts.truncate
+        hash\sub(1, opts.truncate) .. "…"
+      else
+        hash
+      span class: "hash", title: hash, display
+      @copy_button hash, "Copy hash to clipboard"
+
   render_date: (d, abs_first=false) =>
     span class: "date", title: date(d)\fmt("${iso}Z"), @format_relative_timestamp(d)
 

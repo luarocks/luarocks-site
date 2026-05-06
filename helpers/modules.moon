@@ -1,8 +1,9 @@
 
 import assert_valid from require "lapis.validate"
 import assert_page from require "helpers.app"
+import preload from require "lapis.db.model"
 
-import Users, Modules from require "models"
+import Users, Modules, Versions from require "models"
 
 paginated_modules = (object_or_pager, opts={}) =>
   assert_page @
@@ -13,6 +14,7 @@ paginated_modules = (object_or_pager, opts={}) =>
   opts.prepare_results or= (mods) ->
     Modules\preload_relation mods, "user", fields: "id, slug, username"
     Users\include_in mods, "user_id", fields: "id, slug, username"
+    preload mods, "current_version"
     mods
 
   @pager = if object_or_pager.get_page
@@ -23,7 +25,7 @@ paginated_modules = (object_or_pager, opts={}) =>
     object_or_pager
   else
     opts.per_page or= 50
-    opts.fields or= "id, name, display_name, user_id, downloads, summary"
+    opts.fields or= "id, name, display_name, user_id, downloads, summary, created_at, current_version_id"
     object_or_pager\find_modules opts
 
   @modules = @pager\get_page @page

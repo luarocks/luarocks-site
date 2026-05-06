@@ -43,7 +43,7 @@ class Module extends require "widgets.page"
         if v.archived
           span title: "Not available in manifest", class: "archive_flag", "Archived"
 
-        span class: "sub", title: "Updated #{v.updated_at} UTC, Created #{v.created_at} UTC", time_ago_in_words(v.updated_at)
+        span class: "sub", title: "Created #{v.created_at} UTC, Updated #{v.updated_at} UTC", time_ago_in_words(v.created_at)
         if v.revision > 1
           span class: "sub", ->
             text "(revision: "
@@ -92,6 +92,8 @@ class Module extends require "widgets.page"
       a href: @url_for("delete_module", @), "Delete"
 
       if @current_user\is_admin!
+        raw " &middot; "
+        a href: @url_for("admin.module", id: @module.id), "Admin"
         raw " &middot; "
         a href: @url_for("copy_module", @), "Copy module to other user"
 

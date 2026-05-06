@@ -8,7 +8,9 @@ export LUA_CPATH
 !bundle_js_minified = |> ^ esbuild minified bundle %o^ (for file in %f; do echo 'import "./'$file'";'; done) | NODE_PATH=static/js $(ESBUILD) --target=es6 --log-level=warning --bundle --outfile=%o --minify |>
 
 : views/edit_module.lua | $(TOP)/<moon> |> !compile_js |> views/edit_module.js {package_main}
+: views/edit_module_version.lua | $(TOP)/<moon> |> !compile_js |> views/edit_module_version.js {package_main}
 : views/index.lua | $(TOP)/<moon> |> !compile_js |> views/index.js {package_main}
+: views/module_version.lua | $(TOP)/<moon> |> !compile_js |> views/module_version.js {package_main}
 : views/stats.lua | $(TOP)/<moon> |> !compile_js |> views/stats.js {package_main}
 : views/user_settings/tfa_setup.lua | $(TOP)/<moon> |> !compile_js |> views/user_settings/tfa_setup.js {package_main}
 

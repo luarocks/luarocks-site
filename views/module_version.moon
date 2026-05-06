@@ -3,6 +3,11 @@ Header = require "widgets.module_header"
 import time_ago_in_words from require "lapis.util"
 
 class ModuleVersion extends require "widgets.page"
+  @es_module: [[
+    import {CopyButton} from "copy_button";
+    new CopyButton(widget_selector);
+  ]]
+
   rock_url: (item) =>
     "/manifests/#{@user\url_key!}/#{item.rockspec_fname or item.rock_fname}"
 
@@ -14,10 +19,9 @@ class ModuleVersion extends require "widgets.page"
   inner_content: =>
     p ->
       text "Version #{@version.version_name} of #{@module\name_for_display!}"
-      if @version.revision == 1
-        text " was uploaded #{time_ago_in_words @version.created_at}."
-      else
-        text " was updated #{time_ago_in_words @version.updated_at}, and originally uploaded #{time_ago_in_words @version.created_at}."
+      text " was uploaded #{time_ago_in_words @version.created_at}."
+      if @version.revision > 1
+        text " (revision #{@version.revision})"
 
       if @version.lua_version
         text " For #{@version.lua_version}"
@@ -57,18 +61,8 @@ class ModuleVersion extends require "widgets.page"
         else
           span class: "nil_value", "—"
       }
-      {"sha256", label: "SHA-256", (row) ->
-        if row.sha256
-          span class: "hash", title: row.sha256, row.sha256\sub(1, 10) .. "…"
-        else
-          span class: "nil_value", "—"
-      }
-      {"md5", label: "MD5", (row) ->
-        if row.md5
-          span class: "hash", row.md5
-        else
-          span class: "nil_value", "—"
-      }
+      {"sha256", label: "SHA-256", (row) -> @render_hash_cell row.sha256, truncate: 10}
+      {"md5", label: "MD5", (row) -> @render_hash_cell row.md5}
     }
 
 

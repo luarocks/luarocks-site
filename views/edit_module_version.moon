@@ -1,4 +1,9 @@
 class EditModuleVersion extends require "widgets.page"
+  @es_module: [[
+    import {CopyButton} from "copy_button";
+    new CopyButton(widget_selector);
+  ]]
+
   inner_content: =>
     h2 ->
       text "Edit "
@@ -58,18 +63,8 @@ class EditModuleVersion extends require "widgets.page"
         else
           span class: "nil_value", "—"
       }
-      {"sha256", label: "SHA-256", (rock) ->
-        if rock.sha256
-          span class: "hash", title: rock.sha256, rock.sha256\sub(1, 10) .. "…"
-        else
-          span class: "nil_value", "—"
-      }
-      {"md5", label: "MD5", (rock) ->
-        if rock.md5
-          span class: "hash", rock.md5
-        else
-          span class: "nil_value", "—"
-      }
+      {"sha256", label: "SHA-256", (rock) -> @render_hash_cell rock.sha256, truncate: 10}
+      {"md5", label: "MD5", (rock) -> @render_hash_cell rock.md5}
       {"downloads", label: "Downloads"}
       {"created_at", label: "Uploaded"}
       {"actions", label: "", (rock) ->
