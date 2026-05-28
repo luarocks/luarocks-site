@@ -9,7 +9,12 @@ config = require("lapis.config").get!
 
 exec = (cmd) ->
   print colors("%{blue}>>%{reset} #{cmd}")
-  os.execute cmd
+  status, _, code = os.execute cmd
+  -- Lua 5.1 returns the numeric exit code; 5.2+ returns a boolean plus the code
+  if type(status) == "number"
+    status
+  else
+    code or (status and 0 or 1)
 
 git_runner = (path) ->
   (cmd) ->
