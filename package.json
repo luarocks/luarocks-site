@@ -19,7 +19,7 @@
   "dependencies": {
     "@selectize/selectize": "^0.15.2",
     "d3": "^4.2.6",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.1",
     "jquery": "^3.7.1"
   }
 }
