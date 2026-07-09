@@ -180,13 +180,15 @@ class Versions extends Model
     }
 
     import trim from require "lapis.util"
+    import parse_dep from require "ext.luarocks.deps"
 
     return unless type(spec.dependencies) == "table"
 
     seen = {}
     tuples = for d in *spec.dependencies
       d = trim d
-      name = d\match("[^%s]+") or d
+      parsed = parse_dep d
+      name = parsed and parsed.name or d
       continue if seen[name]
       seen[name] = true
       db.interpolate_query "(?, ?, ?)", @id, name, d
