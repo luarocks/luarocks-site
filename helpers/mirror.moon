@@ -19,7 +19,7 @@ assert_request = (...) ->
   body, status, headers
 
 parse_manifest = (text) ->
-  fn = loadstring text
+  fn = loadstring text, "manifest", "t"
   return nil, "Failed to parse manifest" unless fn
 
   manif = {}

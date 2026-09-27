@@ -68,6 +68,23 @@ describe "input validation", ->
       assert.same "my-module", spec.package
       assert.same "1.0-1", spec.version
 
+    it "rejects precompiled bytecode", ->
+      fn = loadstring [[
+        package = "my-module"
+        version = "1.0-1"
+      ]]
+      spec, err = parse_rockspec string.dump fn
+      assert.falsy spec
+      assert.same "Failed to parse rockspec", err
+
+    it "rejects precompiled bytecode after shebang", ->
+      fn = loadstring [[
+        package = "my-module"
+        version = "1.0-1"
+      ]]
+      spec, err = parse_rockspec "#!/usr/bin/lua\n" .. string.dump fn
+      assert.falsy spec
+
     it "rejects package name with space", ->
       rockspec = [[
         package = "test module"

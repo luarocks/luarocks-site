@@ -79,7 +79,11 @@ parse_rockspec = (text) ->
   -- remove #! if it's there
   text = text\gsub "^%#[^\n]*", ""
 
-  fn = loadstring text
+  -- only allow text chunks, precompiled bytecode is unchecked by luajit and
+  -- can be used to escape the sandbox. The explicit check is for interpreters
+  -- that ignore the mode argument (eg. PUC Lua 5.1)
+  return nil, "Failed to parse rockspec" if text\find "^%s*\27"
+  fn = loadstring text, "rockspec", "t"
   return nil, "Failed to parse rockspec" unless fn
   spec = {}
   setfenv fn, spec
