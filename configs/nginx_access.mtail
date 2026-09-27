@@ -23,9 +23,15 @@ counter luarocks_client_requests_total by version
     http_request_duration_seconds["api"] = $request_time
     http_response_bytes_total["api"] += $bytes_sent
 
-    # Key-authenticated routes: /api/1/{key}/{action}
-    $uri =~ /^\/api\/1\/[^\/]+\/(?P<action>[^\/\?]+)/ {
+    # Key-authenticated routes: /api/1/{key}/{action}. Only known actions get
+    # their own label value, anything else (mostly scanners) is "other" so
+    # the endpoint label stays bounded
+    $uri =~ /^\/api\/1\/[^\/]+\/(?P<action>status|modules|check_rockspec|verify_tfa|upload_rock|upload)([\/?]|$)/ {
       api_requests_total[$action]++
+    } else {
+      $uri =~ /^\/api\/1\// {
+        api_requests_total["other"]++
+      }
     }
 
     # Exception: /api/tool_version (no key)
