@@ -49,6 +49,11 @@ class Layout extends Widget
 
 
       body ->
+        if @maintenance_mode
+          div class: "maintenance_banner", ->
+            text "LuaRocks.org is undergoing maintenance and is in read-only
+              mode. Logins and uploads are temporarily disabled."
+
         main class: "content", ->
           @render_header!
           @content_for "inner"
@@ -133,7 +138,7 @@ class Layout extends Widget
         a href: @url_for"user_settings.profile", "Settings"
         text " "
         a href: @url_for"user_logout", "Log Out"
-      else
+      elseif not @maintenance_mode
         login_params = { return_to: @params.return_to, intent: @params.intent }
         a href: @url_for("user_login", nil, login_params), "Log In"
         text " "

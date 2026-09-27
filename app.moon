@@ -51,6 +51,25 @@ import concat, insert from table
 import load_module, load_manifest from require "helpers.loaders"
 import paginated_modules from require "helpers.modules"
 
+config = require("lapis.config").get!
+
+-- GET routes that authenticate a user or act on behalf of one
+MAINTENANCE_BLOCKED_PATHS = {
+  "^/api/1/"
+  "^/github/"
+  "^/login"
+  "^/register"
+  "^/user/forgot_password"
+}
+
+MAINTENANCE_MESSAGE = "luarocks.org is in read-only maintenance mode, uploads and logins are temporarily disabled"
+
+maintenance_response = =>
+  if @req.parsed_url.path\match("^/api/") or @params.json
+    { status: 503, json: { errors: { MAINTENANCE_MESSAGE } } }
+  else
+    { status: 503, render: "maintenance" }
+
 logger = require "lapis.logging"
 old_query = logger.query
 logger.query = (q, time, ...) ->
@@ -76,6 +95,21 @@ class MoonRocks extends lapis.Application
   @before_filter =>
     if ngx and ngx.ctx
       ngx.ctx.query_log = {}
+
+    if config.maintenance_mode
+      -- sessions are never read, so every request is logged out
+      @maintenance_mode = true
+      @csrf_token = generate_csrf @
+
+      unless @req.method == "GET" or @req.method == "HEAD"
+        return @write maintenance_response @
+
+      path = @req.parsed_url.path
+      for pattern in *MAINTENANCE_BLOCKED_PATHS
+        if path\match pattern
+          return @write maintenance_response @
+
+      return
 
     @current_user, @current_user_session = Users\read_session @
 

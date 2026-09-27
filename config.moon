@@ -13,6 +13,11 @@ config { "development", "test", "production", "staging" }, ->
 
   tool_version "1.0.0"
   enable_turnstile false
+
+  -- read only mode: disables logins, sessions, uploads, and all non-GET
+  -- requests. Enable on a server by setting it in secret/init.moon
+  maintenance_mode false
+
   pcall -> include require "secret.init"
 
   postgres {

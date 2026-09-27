@@ -349,6 +349,14 @@ hr {
     color: var(--error-color);
 }
 
+.maintenance_banner {
+    background: #FFE082;
+    color: #3E2723;
+    text-align: center;
+    padding: 10px 15px;
+    font-weight: bold;
+}
+
 .content {
     background: var(--back-color);
     border-bottom: 1px solid var(--light-border-color);
