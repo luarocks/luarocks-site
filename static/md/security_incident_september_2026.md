@@ -101,8 +101,18 @@ was read by the attacker:
 
 ## What we checked
 
-LuaRocks.org keeps a daily mirror of all packages in git, which gave us a copy
-from before the first attack to compare against.
+Every day, LuaRocks.org copies the public manifest and every published rockspec
+and rock into a public git repository,
+[rocks-moonscript-org/moonrocks-mirror](https://github.com/rocks-moonscript-org/moonrocks-mirror)
+(development versions go to
+[moonrocks-dev-mirror](https://github.com/rocks-moonscript-org/moonrocks-dev-mirror)).
+Each daily commit records exactly which published files were added, changed or
+removed, so the repository is a history of every change to the files
+LuaRocks.org serves, kept outside the server. That history gave us a copy from
+before the first attack to compare against.
+
+**After this analysis, we have found no evidence that any existing module was
+tampered with or replaced.**
 
 * Every package file in storage was compared against the mirror from July 8th
   and against our database. Every difference was explained by a normal upload,
