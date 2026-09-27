@@ -26,8 +26,10 @@ Details on what we checked are below.
 * **If you had two-factor authentication enabled, set it up again.** The
   stored 2FA secrets were exposed, so they have been removed.
 * **Upgrade LuaRocks to 3.12 or newer**, especially if you use LuaJIT or Lua
-  5.1. LuaRocks 3.11.1 and older on LuaJIT or Lua 5.1 will run precompiled
-  bytecode if a server sends it in place of a rockspec or manifest.
+  5.1. LuaRocks 3.11.1 and older load rockspecs and manifests with
+  `loadstring` in the same way (see below), so on LuaJIT or Lua 5.1 they will
+  run precompiled bytecode if a server sends it in place of a rockspec or
+  manifest.
 * **If you installed any of the packages `bcrcewon`, `7e0b94029db0` or
   `7e0b9402f9c8`**, treat that machine as compromised. These were uploaded
   by the attacker on August 7th and have been removed.
@@ -36,18 +38,36 @@ Details on what we checked are below.
 
 ## Description of the issue
 
-Rockspecs are Lua files. When a rockspec is uploaded, LuaRocks.org runs it in a
-restricted environment to read the package's name and version. The function
-used to load it accepted precompiled LuaJIT bytecode as well as Lua source.
-LuaJIT does not verify bytecode, so a crafted bytecode file can read and write
-memory outside of the restricted environment and run arbitrary code inside the
-web server.
+A rockspec is a Lua file. When one is uploaded, LuaRocks.org runs it to read
+fields like the package's name and version. To do this safely, the site loads
+the file with `loadstring`, runs the resulting function with an empty
+environment (`setfenv`) so it can't reach any globals, and limits how many
+instructions it can execute. LuaRocks.org runs on OpenResty, so this happens in
+LuaJIT.
+
+The mistake was in how the file was loaded. In Lua 5.1 and LuaJIT,
+`loadstring` accepts two kinds of input by default: Lua source code, and
+precompiled bytecode (the output of `luac` or `luajit -b`, which starts with
+the byte `\27`). The rockspec parser only ever expected source code, but it
+never told `loadstring` to reject bytecode, so an uploaded "rockspec" could be
+bytecode instead.
+
+Bytecode is not safe to load from an untrusted source. LuaJIT does not verify
+it at all, so a hand-crafted file can contain instructions that read and write
+outside the function's own data, giving it access to arbitrary memory in the
+server process. The empty environment only controls which globals the code can
+look up, and bytecode like this doesn't need any: it can find the real Lua
+state in memory and call the functions the sandbox was meant to hide, running
+arbitrary code inside the web server.
 
 Any registered user could trigger this by uploading a rockspec, either through
 the website or the API. The code responsible had been part of LuaRocks.org for
 a long time.
 
-The fix loads rockspecs as text only and rejects bytecode.
+The fix passes the `"t"` (text only) mode to `loadstring`, which LuaJIT
+supports, and also rejects any file starting with `\27` outright, since PUC
+Lua 5.1 ignores the mode argument. The code that reads manifests from other
+servers had the same mistake and now also loads them as text only.
 
 ## What happened
 
