@@ -13,7 +13,10 @@ counter manifest_requests_total
 
 counter luarocks_client_requests_total by version
 
-/^\[(?P<request_time>\d+\.\d+)\] \S+ - \S+ \[[^\]]+\] "(?P<method>\S+) (?P<uri>\S+) [^"]*" (?P<status>\d+) (?P<bytes_sent>\d+) "[^"]*" "(?P<user_agent>[^"]*)" cache:(?P<cache_status>\S+)/ {
+# Scanners send made up methods (XBLI, SSTP_DUPLEX_POST, ...), so only
+# standard methods get their own label value. Anything else is counted once
+# as method "other" by the pattern at the end of the file
+/^\[(?P<request_time>\d+\.\d+)\] \S+ - \S+ \[[^\]]+\] "(?P<method>GET|HEAD|POST|PUT|DELETE|OPTIONS|PATCH) (?P<uri>\S+) [^"]*" (?P<status>\d+) (?P<bytes_sent>\d+) "[^"]*" "(?P<user_agent>[^"]*)" cache:(?P<cache_status>\S+)/ {
   # Always record cache status
   http_cache_status_total[$cache_status]++
 
@@ -86,5 +89,13 @@ counter luarocks_client_requests_total by version
   # LuaRocks client version extraction (runs for all requests)
   $user_agent =~ /LuaRocks\/(?P<version>\d+\.\d+\.\d+)/ {
     luarocks_client_requests_total[$version]++
+  }
+}
+
+/^\[(?P<request_time>\d+\.\d+)\] \S+ - \S+ \[[^\]]+\] "(?P<method>\S+) \S+ [^"]*" (?P<status>\d+) (?P<bytes_sent>\d+) / {
+  $method !~ /^(GET|HEAD|POST|PUT|DELETE|OPTIONS|PATCH)$/ {
+    http_requests_total[$status]["other"]["web"]++
+    http_request_duration_seconds["web"] = $request_time
+    http_response_bytes_total["web"] += $bytes_sent
   }
 }
