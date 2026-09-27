@@ -446,3 +446,7 @@ class MoonRocks extends lapis.Application
 
   ["/security-incident-march-2019"]: =>
     render: "security_incident_march_2019"
+
+  [security_incident_september_2026: "/security-incident-september-2026"]: =>
+    @title = "Security Incident September 2026"
+    render: "security_incident_september_2026"

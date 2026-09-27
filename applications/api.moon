@@ -38,6 +38,13 @@ INVALID_KEY = {
   json: { errors: {"Invalid key"} }
 }
 
+-- every API key was revoked after the 2026 security incident, using this
+-- exact revoked_at so they can be told apart from user revocations
+INCIDENT_REVOKED_AT = "2026-09-27 00:00:00"
+
+-- only store a prefix of the key in activity logs
+masked_key = (key) -> "#{key\sub 1, 4}…"
+
 TFA_TOKEN_TTL = 15 * 60
 TFA_RATE_LIMIT_MAX = 5
 TFA_RATE_LIMIT_WINDOW = 5 * 60
@@ -118,12 +125,15 @@ api_request = (fn) ->
         return INVALID_KEY
 
       if @key.revoked
+        message = if @key.revoked_at == INCIDENT_REVOKED_AT
+          "This API key was revoked along with all other luarocks.org API keys in response to the September 2026 security incident, see https://luarocks.org/security-incident-september-2026. Create a new key at https://luarocks.org/settings/api-keys"
+        else
+          "The API key you provided has been revoked"
+
         return {
           status: 403
           json: {
-            errors: {
-              "The API key you provided has been revoked"
-            }
+            errors: { message }
           }
         }
 
@@ -155,7 +165,7 @@ class MoonRocksApi extends lapis.Application
           action: "account.create_api_key"
           source: "web"
           data: {
-            key: key.key
+            key: masked_key key.key
           }
         }
 
@@ -185,7 +195,7 @@ class MoonRocksApi extends lapis.Application
           action: "account.revoke_api_key"
           source: "web"
           data: {
-            key: @key.key
+            key: masked_key @key.key
           }
         }
 

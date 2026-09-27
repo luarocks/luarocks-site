@@ -32,6 +32,7 @@ describe "moonrocks", ->
   should_load "/"
 
   should_load "/about"
+  should_load "/security-incident-september-2026"
   should_load "/m/root"
   should_load "/m/root/development-only"
   should_load "/modules"
