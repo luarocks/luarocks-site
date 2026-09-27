@@ -62,6 +62,11 @@ config { "production", "staging" }, ->
 
   bucket_name "moonrocks"
 
+  -- dedicated non-superuser role (trust auth on localhost)
+  postgres {
+    user: "luarocks"
+  }
+
   host "luarocks.org"
 
 config "staging", ->
