@@ -32,7 +32,8 @@ class GithubAccounts extends Model
     import Versions, Modules, Users from require "models"
 
     logins = { @github_login }
-    for org in *@orgs!
+    -- a revoked token fails the orgs request, so fall back to just the user
+    for org in *(@orgs! or {})
       table.insert logins, org.login
 
     patterns = for login in *logins
