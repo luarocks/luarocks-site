@@ -351,6 +351,13 @@ class MoonRocksApi extends lapis.Application
       ngx.req.read_body!
       body = ngx.req.get_body_data!
 
+      -- bodies larger than client_body_buffer_size are buffered to a file
+      unless body
+        if body_file = ngx.req.get_body_file!
+          if f = io.open body_file, "rb"
+            body = f\read "*a"
+            f\close!
+
       unless body
         return status: 400, json: { error: "missing request body" }
 
