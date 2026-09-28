@@ -132,6 +132,16 @@ $margin: 40px;
         }
     }
 
+    .audit_duration {
+        white-space: nowrap;
+        cursor: help;
+
+        &.running {
+            color: var(--sub-color);
+            font-style: italic;
+        }
+    }
+
     .audit_error {
         margin-top: 4px;
         max-width: 320px;

@@ -2,6 +2,17 @@ import enum from require "lapis.db.model"
 import to_json from require "lapis.util"
 import FileAudits from require "models"
 
+date = require "date"
+
+format_seconds = (seconds) ->
+  seconds = math.floor seconds + 0.5
+  if seconds < 60
+    "#{seconds}s"
+  elseif seconds < 3600
+    "#{math.floor seconds / 60}m #{seconds % 60}s"
+  else
+    "#{math.floor seconds / 3600}h #{math.floor(seconds % 3600 / 60)}m"
+
 class AdminAudits extends require "widgets.admin.page"
   @needs: {"audits", "pager"}
 
@@ -63,6 +74,20 @@ class AdminAudits extends require "widgets.admin.page"
         {"run", (audit) ->
           if audit.external_id
             a href: "https://github.com/luarocks/rocks-audit/actions/runs/#{audit.external_id}", audit.external_id
+        }
+        {"duration", (audit) ->
+          -- started_at is set by the runner's started callback, so this
+          -- excludes time spent queued on GitHub
+          times = {}
+          table.insert times, "started #{audit.started_at} UTC" if audit.started_at
+          table.insert times, "finished #{audit.finished_at} UTC" if audit.finished_at
+          title = table.concat times, "\n"
+
+          if seconds = audit\duration!
+            span class: "audit_duration", :title, format_seconds seconds
+          elseif audit.started_at and not audit.finished_at
+            elapsed = date.diff(date(true), date(audit.started_at))\spanseconds!
+            span class: "audit_duration running", :title, "#{format_seconds elapsed} so far"
         }
         "created_at"
         {"actions", (audit) ->
