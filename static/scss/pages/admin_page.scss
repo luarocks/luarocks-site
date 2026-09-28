@@ -76,3 +76,87 @@ $margin: 40px;
     }
 }
 
+
+// compact buttons inside admin tables
+.column_table {
+    button, input[type='submit'], .button {
+        height: 26px;
+        line-height: 26px;
+        padding: 0 10px;
+        font-size: 13px;
+    }
+
+    form {
+        display: inline-block;
+        margin: 0;
+    }
+}
+
+.audits_table {
+    .column_table td {
+        vertical-align: top;
+    }
+
+    .audit_type {
+        display: inline-block;
+        margin-right: 6px;
+        color: var(--sub-color);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .audit_status {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+        color: var(--sub-color);
+        background: rgba(128, 128, 128, 0.15);
+
+        &.status_dispatched, &.status_running {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        &.status_completed {
+            color: #22a05b;
+            background: rgba(34, 160, 91, 0.15);
+        }
+
+        &.status_failed {
+            color: #e5534b;
+            background: rgba(229, 83, 75, 0.15);
+        }
+    }
+
+    .audit_error {
+        margin-top: 4px;
+        max-width: 320px;
+        color: #e5534b;
+        font-size: 13px;
+    }
+
+    .audit_results {
+        margin-top: 4px;
+        font-size: 13px;
+
+        summary {
+            cursor: pointer;
+            color: var(--link-color);
+        }
+
+        pre {
+            margin: 4px 0 0;
+            padding: 6px 8px;
+            max-width: 400px;
+            max-height: 300px;
+            overflow: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    }
+}
