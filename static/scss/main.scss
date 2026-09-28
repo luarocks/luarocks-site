@@ -357,6 +357,19 @@ hr {
     font-weight: bold;
 }
 
+.incident_banner {
+    background: #FFCDD2;
+    color: #3E2723;
+    text-align: center;
+    padding: 10px 15px;
+    font-weight: bold;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
 .content {
     background: var(--back-color);
     border-bottom: 1px solid var(--light-border-color);

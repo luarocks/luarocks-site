@@ -54,6 +54,11 @@ class Layout extends Widget
             text "LuaRocks.org is undergoing maintenance and is in read-only
               mode. Logins and uploads are temporarily disabled."
 
+        div class: "incident_banner", ->
+          text "LuaRocks.org had a security incident in September 2026. "
+          a href: @url_for("security_incident_september_2026"), "Read the incident report"
+          text "."
+
         main class: "content", ->
           @render_header!
           @content_for "inner"
