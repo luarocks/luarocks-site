@@ -504,6 +504,11 @@ import
   [1777571824]: =>
     add_column "versions", "size", integer null: true, default: db.NULL
     add_column "rocks", "size", integer null: true, default: db.NULL
+
+  -- allow repeated audits of the same object, each audit is one run
+  [1790621860]: =>
+    drop_index "file_audits", "object_type", "object_id"
+    create_index "file_audits", "object_type", "object_id"
 }
 
 

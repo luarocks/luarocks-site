@@ -32,7 +32,7 @@ class Rocks extends Model
 
   @relations: {
     {"version", belongs_to: "Versions"}
-    {"audit", has_one: "FileAudits", key: "object_id", where: {object_type: 2}}
+    {"audits", has_many: "FileAudits", key: "object_id", where: {object_type: 2}, order: "id desc"}
   }
 
   @create: (opts) =>

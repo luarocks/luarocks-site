@@ -1,6 +1,6 @@
 
+
 import Model, enum from require "lapis.db.model"
-import insert_on_conflict_ignore from require "helpers.models"
 
 db = require "lapis.db"
 date = require "date"
@@ -23,7 +23,7 @@ date = require "date"
 -- );
 -- ALTER TABLE ONLY file_audits
 --   ADD CONSTRAINT file_audits_pkey PRIMARY KEY (id);
--- CREATE UNIQUE INDEX file_audits_object_type_object_id_idx ON file_audits USING btree (object_type, object_id);
+-- CREATE INDEX file_audits_object_type_object_id_idx ON file_audits USING btree (object_type, object_id);
 -- CREATE INDEX file_audits_status_idx ON file_audits USING btree (status);
 --
 class FileAudits extends Model
@@ -48,9 +48,13 @@ class FileAudits extends Model
     }}
   }
 
+  -- An object can have any number of audits. Each audit is a single run and
+  -- is never re-run, so earlier results are kept; create a new audit to run
+  -- again.
+
   -- Create audit for a rockspec (version)
   @audit_version: (version, runner=@runners.github_actions) =>
-    insert_on_conflict_ignore @, {
+    @create {
       object_type: @object_types.version
       object_id: version.id
       status: @statuses.pending
@@ -59,7 +63,7 @@ class FileAudits extends Model
 
   -- Create audit for a rock
   @audit_rock: (rock, runner=@runners.github_actions) =>
-    insert_on_conflict_ignore @, {
+    @create {
       object_type: @object_types.rock
       object_id: rock.id
       status: @statuses.pending
@@ -86,18 +90,14 @@ class FileAudits extends Model
     }
 
   -- this gets a lock on the file audit so that we are safe to trigger the
-  -- dispatch http request
+  -- dispatch http request. Only pending audits can be dispatched, so a
+  -- finished audit's results are never overwritten
   mark_dispatched: =>
     @update {
       status: @@statuses.dispatched
-      external_id: db.NULL
     }, {
       where: db.clause {
-        status: db.list {
-          @@statuses.pending
-          @@statuses.failed
-          @@statuses.completed
-        }
+        status: @@statuses.pending
       }
     }
 

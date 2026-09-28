@@ -65,13 +65,14 @@ class Modules extends Model
     {"audits", fetch: =>
       audits = {}
       for version in *@get_versions!
-        if a = version\get_audit!
+        for a in *version\get_audits!
           table.insert audits, a
 
         for rock in *version\get_rocks!
-          if a = rock\get_audit!
+          for a in *rock\get_audits!
             table.insert audits, a
 
+      table.sort audits, (a, b) -> a.id > b.id
       audits
     }
   }

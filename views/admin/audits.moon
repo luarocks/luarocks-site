@@ -13,6 +13,7 @@ class AdminAudits extends require "widgets.admin.page"
     @filter_form (field) ->
       field "status", enum {
         "pending"
+        "dispatched"
         "running"
         "completed"
         "failed"
@@ -53,6 +54,15 @@ class AdminAudits extends require "widgets.admin.page"
             }, ->
               @csrf_input!
               button type: "submit", class: "button", "Dispatch"
+          when FileAudits.statuses.failed, FileAudits.statuses.completed
+            -- finished audits are kept as they are, running again queues a new audit
+            form action: @url_for("admin.audit_create"), method: "POST", ->
+              input type: "hidden", name: "object_type", value: FileAudits.object_types\to_name audit.object_type
+              input type: "hidden", name: "object_id", value: audit.object_id
+              @csrf_input!
+              button type: "submit", class: "button", "Run again"
+
+        switch audit.status
           when FileAudits.statuses.completed
             if audit.result_data
               button {
@@ -60,6 +70,9 @@ class AdminAudits extends require "widgets.admin.page"
                 onclick: "this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'"
               }, "Results"
               pre style: "display: none; max-width: 400px; overflow: auto;", audit.result_data
+          when FileAudits.statuses.failed
+            if audit.error_message
+              pre style: "max-width: 400px; overflow: auto;", audit.error_message
       }
     }
 

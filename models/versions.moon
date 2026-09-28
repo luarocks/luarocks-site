@@ -50,7 +50,7 @@ class Versions extends Model
     {"module", belongs_to: "Modules"}
     {"dependencies", has_many: "Dependencies"}
     {"rocks", has_many: "Rocks"}
-    {"audit", has_one: "FileAudits", key: "object_id", where: {object_type: 1}}
+    {"audits", has_many: "FileAudits", key: "object_id", where: {object_type: 1}, order: "id desc"}
   }
 
   @sort_versions: (versions) =>

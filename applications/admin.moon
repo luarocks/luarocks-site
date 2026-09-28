@@ -190,7 +190,7 @@ class MoonRocksAdmin extends lapis.Application
     @title = "Module '#{@module\name_for_display!}'"
 
     preload { @module }, "user", "current_version", manifest_modules: "manifest", versions: {
-      "audit", rocks: "audit"
+      "audits", rocks: "audits"
     }
 
     render: true
@@ -396,7 +396,7 @@ class MoonRocksAdmin extends lapis.Application
     render: true
 
   [audits: "/audits"]: capture_errors_json with_params {
-    {"status", types.empty + types.one_of {"pending", "running", "completed", "failed"}}
+    {"status", types.empty + types.one_of {"pending", "dispatched", "running", "completed", "failed"}}
     {"object_type", types.empty + types.one_of {"version", "rock"}}
   }, (params) =>
     @title = "Audits"
@@ -433,6 +433,10 @@ class MoonRocksAdmin extends lapis.Application
 
       import dispatch_audit from require "helpers.audit_dispatch"
       status, response = dispatch_audit audit
+
+      -- don't leave the audit stuck in dispatched when GitHub rejects it
+      unless status == 204
+        audit\mark_failed "dispatch failed: #{status or response}"
 
       -- on success will return a 204, ""
       json: { :status, :response }
