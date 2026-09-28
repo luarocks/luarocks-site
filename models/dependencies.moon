@@ -1,5 +1,6 @@
 db = require "lapis.db"
 import Model from require "lapis.db.model"
+import parse_dep from require "ext.luarocks.deps"
 
 -- Generated schema dump: (do not edit)
 --
@@ -33,5 +34,9 @@ class Dependencies extends Model
     dependencies
 
   parse_version: =>
-    @dependency\match("[^%s]+%s*(.*)$")
+    parsed = parse_dep @dependency
+    return unless parsed and next parsed.constraints
+    constraint = parsed.constraints
+    return unless constraint.op and constraint.version
+    constraint.op .. constraint.version
 
