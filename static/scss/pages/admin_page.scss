@@ -78,7 +78,7 @@ $margin: 40px;
 
 
 // compact buttons inside admin tables
-.column_table {
+.column_table, .field_table {
     button, input[type='submit'], .button {
         height: 26px;
         line-height: 26px;
@@ -234,12 +234,18 @@ $margin: 40px;
 
         // nested rocks table, indented under its version
         .rocks_row > td {
-            padding: 0 0 12px 30px;
+            padding: 0 8px 8px 30px;
         }
 
         .rocks_row .column_table {
             width: 100%;
+            margin: 0;
+            box-shadow: none;
             font-size: 13px;
+
+            td {
+                padding: 3px 8px;
+            }
         }
 
         .empty_rocks {

@@ -195,6 +195,26 @@ class MoonRocksAdmin extends lapis.Application
 
     render: true
 
+  [version: "/version/:id"]: capture_errors_json with_params {
+    {"id", types.db_id}
+  }, (params) =>
+    import Versions from require "models"
+    @version = assert_error Versions\find(params.id), "invalid version"
+    preload { @version }, "audits", module: "user", rocks: "audits"
+
+    @title = "Version '#{@version\get_module!\name_for_display!} #{@version.version_name}'"
+    render: true
+
+  [rock: "/rock/:id"]: capture_errors_json with_params {
+    {"id", types.db_id}
+  }, (params) =>
+    import Rocks from require "models"
+    @rock = assert_error Rocks\find(params.id), "invalid rock"
+    preload { @rock }, "audits", version: { module: "user" }
+
+    @title = "Rock '#{@rock.rock_fname}'"
+    render: true
+
   [users: "/users"]: capture_errors_json with_params {
     {"email", types.empty + types.trimmed_text}
     {"username", types.empty + types.trimmed_text}

@@ -17,7 +17,7 @@ class AdminVersions extends require "widgets.admin.page"
 
     @render_pager @pager
     @column_table @versions, {
-      "id"
+      {"id", (version) -> a href: @url_for("admin.version", id: version.id), version.id}
       {"version_name", value: (v) -> v}
       {":get_module", label: "module"}
       "lua_version"

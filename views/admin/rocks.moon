@@ -14,7 +14,7 @@ class AdminRocks extends require "widgets.admin.page"
 
     @render_pager @pager
     @column_table @rocks, {
-      "id"
+      {"id", (rock) -> a href: @url_for("admin.rock", id: rock.id), rock.id}
       {"rock_fname", value: (r) -> r}
       "arch"
       {":get_version", label: "version"}

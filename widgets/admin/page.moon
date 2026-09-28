@@ -56,11 +56,102 @@ class AdminPage extends require "widgets.page"
       when "Versions"
         a href: @url_for(instance), ->
           code instance\name_for_display!
+        text " ("
+        a href: @url_for("admin.version", id: instance.id), "admin"
+        text ")"
       when "Rocks"
         a href: @url_for(instance), ->
           code instance.rock_fname
+        text " ("
+        a href: @url_for("admin.rock", id: instance.id), "admin"
+        text ")"
       else
         em "<don't know how to render model (#{instance.__class.__name})>"
+
+  -- verdict (or status, if there's no result yet) of a file audit, linked to
+  -- its page
+  render_audit_label: (audit) =>
+    import FileAudits from require "models"
+
+    a href: @url_for("admin.audit", id: audit.id), ->
+      result = audit\get_result!
+      if result and type(result.verdict) == "string"
+        span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
+      else
+        status = FileAudits.statuses\to_name audit.status
+        span class: "audit_status status_#{status}", status
+
+    if audit\is_likely_spam!
+      text " "
+      span class: "audit_verdict verdict_spam", "spam"
+
+  -- latest audit of a version's rockspec or a rock, with a count of older ones
+  render_latest_audit: (object) =>
+    audits = object\get_audits!
+    if audit = audits[1]
+      @render_audit_label audit
+      if #audits > 1
+        span class: "audit_count", " +#{#audits - 1} older"
+
+  render_short_hash: (value) =>
+    if value
+      span class: "hash", title: value, value\sub(1, 10) .. "…"
+
+  render_rocks_table: (rocks) =>
+    @column_table rocks, {
+      {"rock id", (rock) -> a href: @url_for("admin.rock", id: rock.id), rock.id}
+      {"arch", (rock) -> text rock.arch}
+      {"file", (rock) -> a href: @url_for(rock), rock.rock_fname}
+      {"downloads", (rock) -> text @format_number rock.downloads}
+      {"created", (rock) -> @render_date rock.created_at}
+      {"sha256", (rock) -> @render_short_hash rock.sha256}
+      {"md5", (rock) -> @render_short_hash rock.md5}
+      {"latest audit", (rock) -> @render_latest_audit rock}
+      {"", (rock) -> @render_audit_button "rock", rock}
+    }
+
+  -- queues a new audit of a version's rockspec or a rock
+  render_audit_button: (object_type, object) =>
+    form action: @url_for("admin.audit_create"), method: "POST", ->
+      input type: "hidden", name: "object_type", value: object_type
+      input type: "hidden", name: "object_id", value: object.id
+      @csrf_input!
+      button type: "submit", "Audit"
+
+  render_audits_table: (audits) =>
+    import FileAudits from require "models"
+
+    unless next audits
+      p class: "empty_table", "No audits"
+      return
+
+    @column_table audits, {
+      {"id", (audit) -> a href: @url_for("admin.audit", id: audit.id), audit.id}
+      {"file", (audit) ->
+        span class: "audit_type", FileAudits.object_types\to_name audit.object_type
+        if object = audit\get_object!
+          @render_model object
+      }
+      {"status", (audit) ->
+        status = FileAudits.statuses\to_name audit.status
+        span class: "audit_status status_#{status}", status
+        if audit.error_message
+          div class: "audit_error", audit.error_message
+      }
+      {"result", (audit) ->
+        if audit.status == FileAudits.statuses.completed
+          @render_audit_label audit
+      }
+      {"run", (audit) ->
+        if audit.external_id
+          a href: "https://github.com/luarocks/rocks-audit/actions/runs/#{audit.external_id}", audit.external_id
+      }
+      {"duration", (audit) ->
+        duration, running = audit\duration_text!
+        text running and "#{duration} so far" or duration
+      }
+      "created_at"
+    }
 
   format_table_value_by_type: (value_type, field, value, field_name) =>
     switch value_type
