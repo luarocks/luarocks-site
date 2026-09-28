@@ -220,3 +220,26 @@ $margin: 40px;
         font-size: 12px;
     }
 }
+
+&.admin_module_page {
+    .rock_file {
+        display: inline-block;
+        padding-left: 20px;
+    }
+
+    .version_tag {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 0 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--sub-color);
+        font-size: 12px;
+    }
+
+    .audit_count {
+        color: var(--sub-color);
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
