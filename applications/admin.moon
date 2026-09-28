@@ -429,17 +429,18 @@ class MoonRocksAdmin extends lapis.Application
       import FileAudits from require "models"
 
       audit = assert_error FileAudits\find(params.id), "audit not found"
-      assert_error audit\mark_dispatched!, "file audit is not in correct state to dispatch (must be pending, failed or completed)"
+      assert_error audit\mark_dispatched!, "file audit is not in correct state to dispatch (must be pending)"
 
       import dispatch_audit from require "helpers.audit_dispatch"
       status, response = dispatch_audit audit
 
-      -- don't leave the audit stuck in dispatched when GitHub rejects it
+      -- on success will return a 204, ""
+      -- don't leave the audit stuck in dispatched when GitHub rejects it,
+      -- the error is shown on the audits page
       unless status == 204
         audit\mark_failed "dispatch failed: #{status or response}"
 
-      -- on success will return a 204, ""
-      json: { :status, :response }
+      redirect_to: @url_for "admin.audits"
   }
 
   [audit_create: "/audits/create"]: respond_to {
@@ -458,10 +459,9 @@ class MoonRocksAdmin extends lapis.Application
           rock = assert_error Rocks\find(params.object_id), "rock not found"
           FileAudits\audit_rock rock
 
-      unless audit
-        return json: { success: false, error: err or "failed to create audit" }
+      assert_error audit, err or "failed to create audit"
 
-      json: { success: true, audit_id: audit.id }
+      redirect_to: @url_for "admin.audits"
   }
 
 
