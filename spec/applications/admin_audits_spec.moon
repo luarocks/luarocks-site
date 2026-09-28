@@ -30,7 +30,6 @@ describe "admin audits", ->
     assert.truthy body\find "status_completed", 1, true
     assert.truthy body\find "status_failed", 1, true
     assert.truthy body\find "Analysis result is not a JSON object", 1, true
-    assert.truthy body\find "{&quot;findings&quot;:{}}", 1, true
     assert.truthy body\find "Run again", 1, true
     assert.truthy body\find "Dispatch", 1, true
 

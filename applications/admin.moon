@@ -421,6 +421,15 @@ class MoonRocksAdmin extends lapis.Application
     @audits = @pager\get_page @page
     render: true
 
+  [audit: "/audits/:id"]: capture_errors_json with_params {
+    {"id", types.db_id}
+  }, (params) =>
+    import FileAudits from require "models"
+    @audit = assert_error FileAudits\find(params.id), "audit not found"
+    preload { @audit }, "object"
+    @title = "Audit #{@audit.id}"
+    render: true
+
   [audit_dispatch: "/audits/:id/dispatch"]: respond_to {
     POST: capture_errors_json with_params {
       {"id", types.db_id}

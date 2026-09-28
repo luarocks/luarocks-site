@@ -131,6 +131,36 @@ class FileAudits extends Model
     delta = date.diff date(@finished_at), date(@started_at)
     delta\spanseconds!
 
+  -- the result as a table, or nil. Older rows may hold a JSON string
+  get_result: =>
+    result = @result_data
+    if type(result) == "string"
+      import from_json from require "lapis.util"
+      ok, decoded = pcall from_json, result
+      result = ok and decoded or nil
+
+    type(result) == "table" and result or nil
+
+  -- human readable duration, or time elapsed so far for a running audit
+  duration_text: =>
+    seconds = @duration!
+    running = @status == @@statuses.running and @started_at and not seconds
+    if running
+      -- clamp: the db clock and ours can disagree by a moment
+      seconds = math.max 0, date.diff(date(true), date(@started_at))\spanseconds!
+
+    return nil unless seconds
+
+    seconds = math.floor seconds + 0.5
+    text = if seconds < 60
+      "#{seconds}s"
+    elseif seconds < 3600
+      "#{math.floor seconds / 60}m #{seconds % 60}s"
+    else
+      "#{math.floor seconds / 3600}h #{math.floor(seconds % 3600 / 60)}m"
+
+    text, running
+
   -- Get the download URL for the file being audited
   get_file_url: =>
     @get_object!\url!

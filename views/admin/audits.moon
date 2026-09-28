@@ -1,17 +1,5 @@
 import enum from require "lapis.db.model"
-import to_json from require "lapis.util"
 import FileAudits from require "models"
-
-date = require "date"
-
-format_seconds = (seconds) ->
-  seconds = math.floor seconds + 0.5
-  if seconds < 60
-    "#{seconds}s"
-  elseif seconds < 3600
-    "#{math.floor seconds / 60}m #{seconds % 60}s"
-  else
-    "#{math.floor seconds / 3600}h #{math.floor(seconds % 3600 / 60)}m"
 
 class AdminAudits extends require "widgets.admin.page"
   @needs: {"audits", "pager"}
@@ -39,7 +27,9 @@ class AdminAudits extends require "widgets.admin.page"
 
     div class: "audits_table", ->
       @column_table @audits, {
-        "id"
+        {"id", (audit) ->
+          a href: @url_for("admin.audit", id: audit.id), audit.id
+        }
         {"module", value: (audit) ->
           if object = audit\get_object!
             switch audit.object_type
@@ -63,13 +53,17 @@ class AdminAudits extends require "widgets.admin.page"
               if audit.error_message
                 div class: "audit_error", audit.error_message
             when FileAudits.statuses.completed
-              if audit.result_data
-                details class: "audit_results", ->
-                  summary "Results"
-                  pre if type(audit.result_data) == "table"
-                    to_json audit.result_data
-                  else
-                    audit.result_data
+              result = audit\get_result!
+              div class: "audit_summary", ->
+                if result and type(result.verdict) == "string"
+                  span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
+                  text " "
+
+                if result and type(result.summary) == "table"
+                  total = tonumber(result.summary.total_findings) or 0
+                  text "#{total} finding#{total == 1 and "" or "s"} · "
+
+                a href: @url_for("admin.audit", id: audit.id), "details"
         }
         {"run", (audit) ->
           if audit.external_id
@@ -83,11 +77,11 @@ class AdminAudits extends require "widgets.admin.page"
           table.insert times, "finished #{audit.finished_at} UTC" if audit.finished_at
           title = table.concat times, "\n"
 
-          if seconds = audit\duration!
-            span class: "audit_duration", :title, format_seconds seconds
-          elseif audit.started_at and not audit.finished_at
-            elapsed = date.diff(date(true), date(audit.started_at))\spanseconds!
-            span class: "audit_duration running", :title, "#{format_seconds elapsed} so far"
+          text, running = audit\duration_text!
+          if running
+            span class: "audit_duration running", :title, "#{text} so far"
+          elseif text
+            span class: "audit_duration", :title, text
         }
         "created_at"
         {"actions", (audit) ->
