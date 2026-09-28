@@ -48,6 +48,10 @@ class AdminAudit extends require "widgets.admin.page"
       {"verdict", (r) ->
         if verdict = str r.verdict
           span class: "audit_verdict verdict_#{verdict\gsub "[^%w_]", ""}", verdict
+
+        if @audit\is_likely_spam!
+          text " "
+          span class: "audit_verdict verdict_spam", "spam"
       }
       {"findings", (r) ->
         s = list r.summary

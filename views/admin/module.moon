@@ -49,61 +49,81 @@ class AdminModule extends require "widgets.admin.page"
     h3 "Versions"
     versions = @module\get_versions!
     if next versions
-      -- newest version first, each followed by its rocks
       versions = [v for v in *versions]
       table.sort versions, (a, b) -> a.id > b.id
-
-      rows = {}
-      for version in *versions
-        table.insert rows, version
-        for rock in *version\get_rocks!
-          table.insert rows, rock
 
       hash = (value) ->
         if value
           span class: "hash", title: value, value\sub(1, 10) .. "…"
 
-      @column_table rows, {
-        "id"
-        {"file", (obj) ->
-          if obj.rock_fname
-            span class: "rock_file", ->
-              span class: "audit_type", obj.arch
-              a href: @url_for(obj), obj.rock_fname
-          else
-            a href: @url_for(obj), ->
-              strong obj.version_name
-            if obj.id == @module.current_version_id
-              span class: "version_tag", "current"
-            if obj.development_version
-              span class: "version_tag", "dev"
-        }
-        {"downloads", (obj) -> text @format_number obj.downloads}
-        {"created", (obj) -> @render_date obj.created_at}
-        {"sha256", (obj) -> hash obj.sha256}
-        {"md5", (obj) -> hash obj.md5}
-        {"latest audit", (obj) ->
-          audits = obj\get_audits!
-          if audit = audits[1]
-            a href: @url_for("admin.audit", id: audit.id), ->
-              result = audit\get_result!
-              if result and type(result.verdict) == "string"
-                span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
-              else
-                status = FileAudits.statuses\to_name audit.status
-                span class: "audit_status status_#{status}", status
+      -- works for both versions (audits the rockspec) and rocks
+      latest_audit = (object) ->
+        audits = object\get_audits!
+        if audit = audits[1]
+          a href: @url_for("admin.audit", id: audit.id), ->
+            result = audit\get_result!
+            if result and type(result.verdict) == "string"
+              span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
+            else
+              status = FileAudits.statuses\to_name audit.status
+              span class: "audit_status status_#{status}", status
 
-            if #audits > 1
-              span class: "audit_count", " +#{#audits - 1} older"
-        }
-        {"", (obj) ->
-          form action: @url_for("admin.audit_create"), method: "POST", ->
-            input type: "hidden", name: "object_type", value: obj.rock_fname and "rock" or "version"
-            input type: "hidden", name: "object_id", value: obj.id
-            @csrf_input!
-            button type: "submit", "Audit"
-        }
-      }
+            if audit\is_likely_spam!
+              text " "
+              span class: "audit_verdict verdict_spam", "spam"
+
+          if #audits > 1
+            span class: "audit_count", " +#{#audits - 1} older"
+
+      audit_button = (object_type, object) ->
+        form action: @url_for("admin.audit_create"), method: "POST", ->
+          input type: "hidden", name: "object_type", value: object_type
+          input type: "hidden", name: "object_id", value: object.id
+          @csrf_input!
+          button type: "submit", "Audit"
+
+      headers = {"id", "version", "downloads", "created", "rockspec sha256", "rockspec md5", "latest audit", ""}
+
+      element "table", class: "table column_table versions_table", ->
+        thead ->
+          tr ->
+            for h in *headers
+              td h
+
+        for version in *versions
+          tr class: "version_row", ->
+            td version.id
+            td ->
+              a href: @url_for(version), ->
+                strong version.version_name
+              if version.id == @module.current_version_id
+                span class: "version_tag", "current"
+              if version.development_version
+                span class: "version_tag", "dev"
+            td @format_number version.downloads
+            td -> @render_date version.created_at
+            td -> hash version.sha256
+            td -> hash version.md5
+            td -> latest_audit version
+            td -> audit_button "version", version
+
+          tr class: "rocks_row", ->
+            td colspan: #headers, ->
+              rocks = version\get_rocks!
+              if next rocks
+                @column_table rocks, {
+                  {"rock id", (rock) -> text rock.id}
+                  {"arch", (rock) -> text rock.arch}
+                  {"file", (rock) -> a href: @url_for(rock), rock.rock_fname}
+                  {"downloads", (rock) -> text @format_number rock.downloads}
+                  {"created", (rock) -> @render_date rock.created_at}
+                  {"sha256", (rock) -> hash rock.sha256}
+                  {"md5", (rock) -> hash rock.md5}
+                  {"latest audit", (rock) -> latest_audit rock}
+                  {"", (rock) -> audit_button "rock", rock}
+                }
+              else
+                em class: "empty_rocks", "No rocks"
     else
       p class: "empty_table", "No versions"
 
@@ -134,6 +154,10 @@ class AdminModule extends require "widgets.admin.page"
           result = audit\get_result!
           if result and type(result.verdict) == "string"
             span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
+
+          if audit\is_likely_spam!
+            text " "
+            span class: "audit_verdict verdict_spam", "spam"
         }
         "created_at"
       }

@@ -141,6 +141,11 @@ class FileAudits extends Model
 
     type(result) == "table" and result or nil
 
+  -- the scanner reports spam separately from the malware verdict
+  is_likely_spam: =>
+    result = @get_result!
+    result and type(result.spam) == "table" and result.spam.likely == true or false
+
   -- human readable duration, or time elapsed so far for a running audit
   duration_text: =>
     seconds = @duration!

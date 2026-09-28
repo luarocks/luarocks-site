@@ -59,6 +59,10 @@ class AdminAudits extends require "widgets.admin.page"
                   span class: "audit_verdict verdict_#{result.verdict\gsub "[^%w_]", ""}", result.verdict
                   text " "
 
+                if audit\is_likely_spam!
+                  span class: "audit_verdict verdict_spam", "spam"
+                  text " "
+
                 if result and type(result.summary) == "table"
                   total = tonumber(result.summary.total_findings) or 0
                   text "#{total} finding#{total == 1 and "" or "s"} · "

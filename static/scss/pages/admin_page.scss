@@ -154,6 +154,11 @@ $margin: 40px;
         background: rgba(212, 167, 44, 0.15);
     }
 
+    &.verdict_spam {
+        color: #a371f7;
+        background: rgba(163, 113, 247, 0.15);
+    }
+
     &.status_failed, &.verdict_malicious, &.severity_HIGH {
         color: #e5534b;
         background: rgba(229, 83, 75, 0.15);
@@ -222,9 +227,25 @@ $margin: 40px;
 }
 
 &.admin_module_page {
-    .rock_file {
-        display: inline-block;
-        padding-left: 20px;
+    .versions_table {
+        .version_row td {
+            border-top: 1px solid var(--border-color);
+        }
+
+        // nested rocks table, indented under its version
+        .rocks_row > td {
+            padding: 0 0 12px 30px;
+        }
+
+        .rocks_row .column_table {
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .empty_rocks {
+            color: var(--sub-color);
+            font-size: 13px;
+        }
     }
 
     .version_tag {
