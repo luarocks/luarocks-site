@@ -84,7 +84,7 @@ build_manifest = (modules, filter_version=nil, development=nil) ->
 serve_lua_table = (tab) =>
   @res.headers["Content-type"] = "text/x-lua"
 
-  layout: false, persist.save_from_table_to_string tab
+  layout: false, persist.save_from_table_to_string tab, nil, @version
 
 
 { :build_manifest, :preload_modules, :serve_lua_table }
