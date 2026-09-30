@@ -62,6 +62,15 @@ serve_manifest = capture_errors_404 =>
   @format = params.format
   @version = params.version
 
+  -- always serve root manifest through the top level path
+  if params.manifest == "root"
+    route = @development and "root_manifest_dev" or "root_manifest"
+    return status: 301, redirect_to: @url_for route, {
+      a: @params.a
+      b: @params.b
+      format: @format
+    }
+
   -- find what we are fetching modules from
   thing = if params.user
     assert_error Users\find(slug: params.user), "invalid user"
