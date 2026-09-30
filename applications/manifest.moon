@@ -96,7 +96,7 @@ serve_manifest = capture_errors_404 =>
   -- get the modules
   pager = thing\find_modules {
     fields: "id, name"
-    per_page: 50
+    per_page: 1000
     prepare_results: preload_modules
   }
 

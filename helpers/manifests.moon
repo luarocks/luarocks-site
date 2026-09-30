@@ -1,6 +1,6 @@
 
 import insert from table
-import find_all_in_batches from require "helpers.models"
+db = require "lapis.db"
 
 persist = require "ext.luarocks.persist"
 
@@ -17,19 +17,20 @@ import
 
 -- fills modules with versions and rocks
 preload_modules = (mods) ->
-  mod_ids = [mod.id for mod in *mods]
-  versions = find_all_in_batches Versions, mod_ids, {
-    key: "module_id"
+  return mods unless next mods
+
+  mod_ids = db.list [mod.id for mod in *mods]
+
+  versions = Versions\select "where module_id in ? and not archived", mod_ids, {
     fields: "id, module_id, version_name, lua_version, development"
-    where: { archived: false }
   }
 
-  version_ids = [v.id for v in *versions]
-  if next version_ids
-    rocks = find_all_in_batches Rocks, version_ids, {
-      key: "version_id"
-      fields: "version_id, arch"
-    }
+  if next versions
+    rocks = Rocks\select "
+      where version_id in (
+        select id from versions where module_id in ? and not archived
+      )
+    ", mod_ids, fields: "version_id, arch"
 
     versions_by_id = {v.id, v for v in *versions}
     for rock in *rocks
