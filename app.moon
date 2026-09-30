@@ -49,7 +49,7 @@ import
 import concat, insert from table
 
 import load_module, load_manifest from require "helpers.loaders"
-import paginated_modules from require "helpers.modules"
+import paginated_modules, preload_latest_versions from require "helpers.modules"
 
 config = require("lapis.config").get!
 
@@ -137,7 +137,6 @@ class MoonRocks extends lapis.Application
 
     Users\include_in @recent_modules, "user_id"
 
-
     @popular_modules = Modules\select "order by downloads desc limit 5"
     Users\include_in @popular_modules, "user_id"
 
@@ -151,7 +150,7 @@ class MoonRocks extends lapis.Application
 
     paginated_modules @, Modules\paginated "order by name asc", {
       per_page: 50
-      fields: "id, name, display_name, user_id, downloads, summary"
+      fields: "id, name, display_name, user_id, downloads, summary, created_at"
     }
 
     render: true
@@ -306,6 +305,8 @@ class MoonRocks extends lapis.Application
           fields: "id, slug, username"
         }
       }, manifest_modules: "manifest"
+
+      preload_latest_versions @results
 
       @user_results = Users\search(query)\get_page!
     else

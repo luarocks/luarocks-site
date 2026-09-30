@@ -37,6 +37,7 @@ class Search extends require "widgets.page"
     h2 "Modules"
     @render_modules @results, "No results", {
       show_manifests: true
+      show_dates: true
     }
 
   render_user_results: =>

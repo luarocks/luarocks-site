@@ -42,7 +42,7 @@ import
   from require "helpers.toolbox"
 
 import load_module, load_manifest from require "helpers.loaders"
-import paginated_modules from require "helpers.modules"
+import paginated_modules, preload_latest_versions from require "helpers.modules"
 
 import preload from require "lapis.db.model"
 
@@ -79,7 +79,7 @@ class MoonRocksUser extends lapis.Application
     paginated_modules @, @user, (mods) ->
       for mod in *mods
         mod.user = @user
-      mods
+      preload_latest_versions mods
 
     render: true
 

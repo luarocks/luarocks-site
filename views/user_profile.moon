@@ -10,7 +10,7 @@ class UserProfile extends require "widgets.page"
 
     h3 "Modules"
     @render_pager @pager
-    @render_modules @modules
+    @render_modules @modules, "No modules", show_dates: true
     @render_pager @pager
 
 

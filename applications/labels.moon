@@ -51,7 +51,7 @@ class MoonRocksLabels extends lapis.Application
 
     pager = Modules\paginated "where #{table.concat clause, " and "}", {
       per_page: 50
-      fields: "id, name, display_name, user_id, downloads, summary"
+      fields: "id, name, display_name, user_id, downloads, summary, created_at"
     }
 
     paginated_modules @, pager

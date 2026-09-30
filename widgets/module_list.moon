@@ -28,7 +28,7 @@ class ModuleList extends require "widgets.base"
             text ""
 
           span class: "downloads", ->
-            raw " &mdash; "
+            span class: "separator", -> raw " &mdash; "
             text " downloads: "
             span title: @format_number(mod.downloads), class: "value", @format_big_number mod.downloads
 
@@ -42,14 +42,17 @@ class ModuleList extends require "widgets.base"
           if @props.show_dates
             span class: "dates", ->
               date = require "date"
-              span class: "created", title: date(mod.created_at)\fmt("${iso}Z"), ->
-                text @format_short_age mod.created_at
+              created_age = @format_short_age mod.created_at
+              span class: "created", title: date(mod.created_at)\fmt("${iso}Z"),
+                "created #{created_age} ago"
 
-              current_version = mod\get_current_version!
-              if current_version
-                span class: "updated", title: date(current_version.created_at)\fmt("${iso}Z"), ->
-                  text " → "
-                  text @format_short_age current_version.created_at
+              latest_version = mod.latest_version
+              if latest_version
+                updated_age = @format_short_age latest_version.created_at
+                if updated_age != created_age
+                  text " · "
+                  span class: "updated", title: date(latest_version.created_at)\fmt("${iso}Z"),
+                    "updated #{updated_age} ago"
 
         div class: "summary", ->
           text mod.summary

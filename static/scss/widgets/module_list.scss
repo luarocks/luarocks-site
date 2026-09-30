@@ -73,6 +73,15 @@
     @media (max-width: 600px) {
         .dates {
             margin-left: 0;
+            flex-basis: 100%;
+        }
+
+        .downloads {
+            flex-basis: 100%;
+
+            .separator {
+                display: none;
+            }
         }
     }
 

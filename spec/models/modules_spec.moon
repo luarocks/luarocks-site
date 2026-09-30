@@ -76,6 +76,25 @@ describe "models.modules", ->
       other_user\refresh!
       assert.same 1, other_user.modules_count
 
+    it "preserves dates and current version", ->
+      mod = factory.Modules created_at: "2014-03-02 10:00:00"
+      factory.Versions version_name: "1", module_id: mod.id, created_at: "2014-03-02 11:00:00"
+      v2 = factory.Versions version_name: "2", module_id: mod.id, created_at: "2015-06-01 12:00:00"
+      mod\update current_version_id: v2.id
+
+      other_user = factory.Users!
+      mod\copy_to_user other_user
+
+      new_mod = unpack other_user\get_modules!
+      assert.same "2014-03-02 10:00:00", new_mod.created_at
+
+      new_versions = new_mod\get_versions!
+      table.sort new_versions, (a, b) -> a.version_name < b.version_name
+      assert.same {"2014-03-02 11:00:00", "2015-06-01 12:00:00"},
+        [v.created_at for v in *new_versions]
+
+      assert.same new_versions[2].id, new_mod.current_version_id
+
   describe "labels", ->
     it "sets labels to something", ->
       mod = factory.Modules!

@@ -24,7 +24,7 @@ class Label extends require "widgets.page"
 
     if @pager
       @render_pager @pager
-      @render_modules @modules
+      @render_modules @modules, "No modules", show_dates: true
       @render_pager @pager
     else
       text "No modules"

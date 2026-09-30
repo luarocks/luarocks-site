@@ -6,7 +6,7 @@ class Modules extends require "widgets.page"
       span class: "header_count", "(#{@pager\total_items!})"
 
     @render_pager @pager
-    @render_modules @modules
+    @render_modules @modules, "No modules", show_dates: true
     @render_pager @pager
 
 

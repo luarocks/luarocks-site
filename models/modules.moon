@@ -278,16 +278,17 @@ class Modules extends Model
 
     module_keys = {
       "name", "display_name", "downloads", "summary", "description", "license",
-      "homepage"
+      "homepage", "created_at"
     }
 
     version_keys = {
       "version_name", "display_version_name", "rockspec_fname", "downloads",
-      "rockspec_downloads", "lua_version", "source_url", "development"
+      "rockspec_downloads", "lua_version", "source_url", "development",
+      "created_at"
     }
 
     rock_keys = {
-      "arch", "downloads", "rock_fname"
+      "arch", "downloads", "rock_fname", "created_at"
     }
 
     new_module = Modules\find user_id: user.id, name: @name
@@ -319,6 +320,9 @@ class Modules extends Model
         }
 
         new_version = Model.create Versions, params
+
+      if version.id == @current_version_id and new_module.current_version_id == -1
+        new_module\update current_version_id: new_version.id
 
       rocks = version\get_rocks!
       for rock in *rocks

@@ -24,7 +24,7 @@ class Manifest extends require "widgets.page"
       p @manifest.description
 
     @render_pager @pager
-    @render_modules @modules, "No modules have been added yet"
+    @render_modules @modules, "No modules have been added yet", show_dates: true
     @render_pager @pager
 
   admin_panel: =>
