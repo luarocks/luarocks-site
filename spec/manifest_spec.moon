@@ -13,8 +13,17 @@ parse_manifest = (text) ->
 shell_escape = (str) ->
   str\gsub "'", "''"
 
+-- /m/root/... redirects to the top level root manifest paths
+follow_request = (url, opts) ->
+  status, body, headers = request url, opts
+  if status == 301
+    path = headers.location\gsub "^%a+://[^/]+", ""
+    return request path, opts
+
+  status, body, headers
+
 request_manifest = (url) ->
-  status, body = request url
+  status, body = follow_request url
   assert.same 200, status
   parse_manifest body
 
@@ -25,15 +34,14 @@ should_load_manifest = (url, fn) ->
 
 should_load_json_manifest = (url, fn) ->
   it "should load json manifest #{url}", ->
-    status, res = request url, {
-      expect: "json"
-    }
+    status, body = follow_request url
     assert.same 200, status
+    res = require("cjson").decode body
     fn res if fn
 
 should_load_zip_manifest = (url, fn) ->
   it "should zip load manifest #{url}", ->
-    status, body = request url
+    status, body = follow_request url
     assert.same 200, status
     assert body\match("^PK"), "not valid zip"
 
@@ -89,6 +97,20 @@ describe "moonrocks", ->
         should_load_json_manifest "#{prefix}/manifest#{v}.json"
         should_load_json_manifest "#{prefix}/dev/manifest#{v}.json"
 
+  describe "root custom manifest", ->
+    for {url, target} in *{
+      {"/m/root/manifest", "/manifest"}
+      {"/m/root/manifest-5.1", "/manifest-5.1"}
+      {"/m/root/manifest-5.4.json", "/manifest-5.4.json"}
+      {"/m/root/manifest.zip", "/manifest.zip"}
+      {"/m/root/dev/manifest", "/dev/manifest"}
+      {"/m/root/dev/manifest-5.3.zip", "/dev/manifest-5.3.zip"}
+    }
+      it "should redirect #{url} to #{target}", ->
+        status, _, headers = request url
+        assert.same 301, status
+        assert.truthy headers.location\match "^%a+://[^/]+#{target\gsub "%p", "%%%0"}$"
+
   has_module = (manifest, mod) ->
     assert manifest.repository[mod.name],
       "manifest should have module"
@@ -143,7 +165,7 @@ describe "moonrocks", ->
             }, res
 
           it "should do HEAD", ->
-            status, body, headers = request "#{prefix}/manifest", {
+            status, body, headers = follow_request "#{prefix}/manifest", {
               method: "HEAD"
             }
 
@@ -346,6 +368,72 @@ describe "moonrocks", ->
       should_load_manifest "/manifests/tester/manifest-5.1", (m) -> has_module m, mod
       should_load_manifest "/manifests/tester/manifest-5.2", (m) -> has_module m, mod
       should_load_json_manifest "/manifests/tester/manifest-5.2.json"
+
+  describe "custom manifest", ->
+    local manifest
+
+    before_each ->
+      manifest = Manifests\create "custom", true
+
+    should_load "/m/custom/manifests", 404
+    should_load "/m/custom/manifest-4.0", 404
+    should_load "/m/custom/manifest.wow", 404
+    should_load "/m/custom/dev/manifest-4.0", 404
+    should_load "/m/nonexistent/manifest", 404
+
+    should_load_manifest "/m/custom/manifest", is_empty_manifest
+    should_load_manifest "/m/custom/dev/manifest", is_empty_manifest
+    should_load_zip_manifest "/m/custom/manifest-5.1.zip", is_empty_manifest
+    should_load_json_manifest "/m/custom/manifest-5.1.json", is_empty_manifest
+
+    describe "with regular version", ->
+      local mod, version
+
+      before_each ->
+        mod = factory.Modules!
+        version = factory.Versions module_id: mod.id
+        ManifestModules\create manifest, mod
+
+      should_load_manifest "/m/custom/manifest", (m) -> has_module m, mod
+      should_load_manifest "/m/custom/manifest-5.1", (m) -> has_module m, mod
+      should_load_manifest "/m/custom/dev/manifest", is_empty_manifest
+      should_load_zip_manifest "/m/custom/manifest-5.1.zip", (m) -> has_module m, mod
+
+      should_load_json_manifest "/m/custom/manifest-5.1.json", (res) ->
+        assert.same {
+          modules: {}
+          commands: {}
+          repository: {
+            [mod.name]: {
+              [version.version_name]: {
+                {arch: "rockspec"}
+              }
+            }
+          }
+        }, res
+
+      it "should not include modules outside the manifest", ->
+        other = factory.Modules!
+        factory.Versions module_id: other.id
+
+        m = request_manifest "/m/custom/manifest"
+        has_module m, mod
+        assert.nil m.repository[other.name]
+
+    describe "with development version", ->
+      local mod
+
+      before_each ->
+        mod = factory.Modules!
+        factory.Versions module_id: mod.id, development: true
+        ManifestModules\create manifest, mod
+
+      should_load_manifest "/m/custom/manifest", is_empty_manifest
+      should_load_manifest "/m/custom/dev/manifest", (m) -> has_module m, mod
+      should_load_manifest "/m/custom/dev/manifest-5.1", (m) -> has_module m, mod
+      should_load_zip_manifest "/m/custom/dev/manifest-5.1.zip", (m) -> has_module m, mod
+      should_load_json_manifest "/m/custom/dev/manifest-5.1.json", (res) ->
+        assert.truthy res.repository[mod.name]
 
   describe "adding and removing modules", ->
     local user, mod, add_url, remove_url
