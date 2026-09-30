@@ -149,6 +149,7 @@ class Manifests extends Model
     if @is_root!
       import purge_pattern from require "helpers.pagecache"
       purge_pattern "^pc:/manifest"
+      purge_pattern "^pc:/dev/manifest"
 
     true
 
