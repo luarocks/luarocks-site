@@ -46,9 +46,9 @@ describe "helpers.totp", ->
   it "produces an otpauth URL", ->
     secret = "JBSWY3DPEHPK3PXP"
     url = totp.get_url secret, "alice"
-    assert.same "otpauth://totp/alice%40luarocks%2eorg?secret=JBSWY3DPEHPK3PXP&issuer=luarocks%2eorg", url
+    assert.same "otpauth://totp/alice%40luarocks.org?secret=JBSWY3DPEHPK3PXP&issuer=luarocks.org", url
 
   it "escapes otpauth URL components", ->
     secret = "JBSWY3DPEHPK3PXP"
     url = totp.get_url secret, "alice@example.com", "LuaRocks & Co"
-    assert.same "otpauth://totp/alice%40example%2ecom%40LuaRocks%20%26%20Co?secret=JBSWY3DPEHPK3PXP&issuer=LuaRocks%20%26%20Co", url
+    assert.same "otpauth://totp/alice%40example.com%40LuaRocks%20%26%20Co?secret=JBSWY3DPEHPK3PXP&issuer=LuaRocks%20%26%20Co", url
