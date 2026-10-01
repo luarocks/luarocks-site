@@ -7,6 +7,7 @@ import assert_valid from require "lapis.validate"
 import escape_pattern from require "lapis.util"
 import assert_editable from require "helpers.app"
 import strip_non_ascii from require "helpers.strings"
+import eval_rockspec from require "helpers.rockspec_eval"
 
 to_hex = (s) -> (s\gsub ".", (c) -> string.format "%02x", c\byte!)
 
@@ -76,41 +77,8 @@ parse_rock_fname = (module_name, fname) ->
 -- NOTE: this takes untrusted input, so be very strict about parsing
 -- prefer failing instead of fixing inputs
 parse_rockspec = (text) ->
-  -- remove #! if it's there
-  text = text\gsub "^%#[^\n]*", ""
-
-  -- only allow text chunks, precompiled bytecode is unchecked by luajit and
-  -- can be used to escape the sandbox. The explicit check is for interpreters
-  -- that ignore the mode argument (eg. PUC Lua 5.1)
-  return nil, "Failed to parse rockspec" if text\find "^%s*\27"
-  fn = loadstring text, "rockspec", "t"
-  return nil, "Failed to parse rockspec" unless fn
-  spec = {}
-  setfenv fn, spec
-
-  -- disable jit otherwise the offending code might be compiled and stop
-  -- sending debug events
-  jit and jit.off fn
-
-  co = coroutine.create fn
-  lines = 0
-
-  check = ->
-    lines += 1
-    if lines > 2000
-      debug.sethook! if jit -- remove the global hook set by luajit
-      error "too many lines evaluated"
-
-  -- luajit does not appear to let you set debug hook on coroutine, it just
-  -- applies globally. We do it anyway incase this is ever fixed. Additionally
-  -- it's impossible to capture the error raised in a hook, so it just forces
-  -- 500 from openresty
-  debug.sethook co, check, "l"
-  status = pcall -> assert coroutine.resume co
-  debug.sethook co
-
-  unless status
-    return nil, "Failed to eval rockspec"
+  spec, err = eval_rockspec text
+  return nil, err unless spec
 
   unless spec.package
     return nil, "Invalid rockspec (missing package)"

@@ -41,6 +41,10 @@ config { "development", "test" }, ->
 
   bucket_name "moonrocks_dev"
 
+  -- evaluate rockspecs in a resource limited child process, see
+  -- helpers/rockspec_eval.moon
+  rockspec_sandbox {}
+
 config "test", ->
   code_cache "on"
   disable_manifest_cache "1"
@@ -61,6 +65,12 @@ config { "production", "staging" }, ->
   logging false
 
   bucket_name "moonrocks"
+
+  -- evaluate rockspecs in a resource limited child process under bubblewrap,
+  -- see helpers/rockspec_eval.moon
+  rockspec_sandbox {
+    bwrap: true
+  }
 
   -- dedicated non-superuser role (trust auth on localhost)
   postgres {
