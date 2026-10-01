@@ -1,6 +1,9 @@
 FROM ghcr.io/leafo/lapis-archlinux-itchio:2026-04-23
 MAINTAINER leaf corcoran <leafot@gmail.com>
 
+# TODO: this will break once the base image is too out of date from the archlinux repo
+RUN pacman -Sy --noconfirm bubblewrap
+
 WORKDIR /site/luarocks.org
 ADD . .
 ENTRYPOINT ./ci.sh

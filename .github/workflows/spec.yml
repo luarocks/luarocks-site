@@ -15,4 +15,6 @@ jobs:
 
     - name: test
       run: |
-        docker run luarocks-test
+        # bubblewrap needs to create namespaces, REQUIRE_SANDBOX fails the
+        # sandbox specs instead of skipping them when it can't
+        docker run --cap-add SYS_ADMIN --security-opt seccomp=unconfined --security-opt apparmor=unconfined -e REQUIRE_SANDBOX=1 luarocks-test
