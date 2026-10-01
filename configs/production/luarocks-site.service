@@ -1,0 +1,57 @@
+# luarocks.org app server (OpenResty + Lapis)
+#
+# Master runs as root only to drop workers to the unprivileged `luarocks-www`
+# user. Code is owned by `luarocks` (deploy user) and is read-only to workers.
+# nginx.conf.compiled is built by the deploy user with `lapis build production`.
+[Unit]
+Description=luarocks.org (OpenResty/Lapis)
+After=network.target postgresql.service valkey.service
+Wants=postgresql.service valkey.service
+
+[Service]
+Type=forking
+WorkingDirectory=/home/luarocks/sites/luarocks-site
+RuntimeDirectory=luarocks-site
+PIDFile=/run/luarocks-site/nginx.pid
+Environment='LUA_PATH=/home/luarocks/.luarocks/share/lua/5.1/?.lua;/home/luarocks/.luarocks/share/lua/5.1/?/init.lua;;'
+Environment='LUA_CPATH=/home/luarocks/.luarocks/lib/lua/5.1/?.so;;'
+Environment='NGINX_ARGS=-p /home/luarocks/sites/luarocks-site/ -c nginx.conf.compiled -g "user luarocks-www luarocks-www; pid /run/luarocks-site/nginx.pid;"'
+ExecStartPre=/usr/local/openresty/bin/openresty -t -q $NGINX_ARGS
+ExecStart=/usr/local/openresty/bin/openresty $NGINX_ARGS
+ExecReload=/usr/local/openresty/bin/openresty -t -q $NGINX_ARGS
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGQUIT
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=2
+LimitNOFILE=65536
+LimitCORE=infinity
+
+# sandbox: whole filesystem read-only except what nginx must write
+ProtectSystem=strict
+ReadWritePaths=/var/log/luarocks-site /run/luarocks-site
+ReadWritePaths=/home/luarocks/sites/luarocks-site/client_body_temp /home/luarocks/sites/luarocks-site/proxy_temp /home/luarocks/sites/luarocks-site/fastcgi_temp /home/luarocks/sites/luarocks-site/uwsgi_temp /home/luarocks/sites/luarocks-site/scgi_temp
+ReadWritePaths=/home/luarocks/sites/luarocks-pagecache /home/luarocks/sites/luarocks-rockcache
+PrivateTmp=yes
+PrivateDevices=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictRealtime=yes
+LockPersonality=yes
+# rockspecs are evaluated under bwrap (helpers/rockspec_eval.moon). It creates
+# these namespaces, opens a netlink socket to bring up loopback in its network
+# namespace, and calls openat2, which RestrictSUIDSGID blocks, so that option
+# is not set
+RestrictNamespaces=user mnt pid net ipc uts cgroup
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_CHOWN CAP_DAC_OVERRIDE CAP_KILL
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

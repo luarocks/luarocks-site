@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Deploy luarocks-site: fast-forward to origin/master, build, migrate, reload.
+# Usage: deploy [ref]   (default: origin/master)
+set -euo pipefail
+
+cd ~/sites/luarocks-site
+umask 022
+export PATH="$HOME/.luarocks/bin:/usr/local/openresty/bin:$PATH"
+export LAPIS_ENVIRONMENT=production
+eval "$(luarocks --lua-version=5.1 path)"
+
+ref="${1:-origin/master}"
+
+set -x
+git fetch origin
+git merge --ff-only "$ref"
+git log -1 --format='%h %s (%an, %ad)'
+npm ci --no-audit --no-fund
+make install_deps
+tup
+lapis migrate production
+lapis build production
+sudo -n /usr/bin/systemctl reload luarocks-site
