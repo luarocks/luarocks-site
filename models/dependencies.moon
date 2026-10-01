@@ -15,6 +15,17 @@ import Model from require "lapis.db.model"
 class Dependencies extends Model
   @primary_key: {"version_id", "dependency_name"}
 
+  -- Splits a rockspec dependency string into its name and constraint, eg.
+  -- "Foo>=1.0" -> "foo", ">=1.0". The name pattern and lowercasing match
+  -- LuaRocks 3's queries.from_dep_string, so a space before the operator is
+  -- optional and a namespace prefix (ns/foo) is kept as part of the name.
+  @parse_dependency: (str) =>
+    name, constraint = str\match "^%s*([a-zA-Z0-9%.%-%_]*/?[a-zA-Z0-9][a-zA-Z0-9%.%-%_]*)%s*([^/]*)"
+    return nil unless name
+    import trim from require "lapis.util"
+    constraint = trim constraint
+    name\lower!, constraint != "" and constraint or nil
+
   @preload_modules: (dependencies, manifest) =>
     import Manifests, ManifestModules, Modules, Users from require "models"
     manifest or= Manifests\root!
@@ -33,5 +44,6 @@ class Dependencies extends Model
     dependencies
 
   parse_version: =>
-    @dependency\match("[^%s]+%s*(.*)$")
+    _, constraint = @@parse_dependency @dependency
+    constraint
 

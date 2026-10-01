@@ -6,9 +6,10 @@ import Model from require "lapis.db.model"
 import increment_counter from require "helpers.models"
 
 get_lua_version = (spec) ->
-  return unless spec.dependencies
+  return unless type(spec.dependencies) == "table"
+  import Dependencies from require "models"
   for dep in *spec.dependencies
-    if dep\match "^lua%s"
+    if Dependencies\parse_dependency(dep) == "lua"
       return dep
 
   nil
@@ -186,7 +187,7 @@ class Versions extends Model
     seen = {}
     tuples = for d in *spec.dependencies
       d = trim d
-      name = d\match("[^%s]+") or d
+      name = Dependencies\parse_dependency(d) or d
       continue if seen[name]
       seen[name] = true
       db.interpolate_query "(?, ?, ?)", @id, name, d
