@@ -15,6 +15,7 @@ set -x
 git fetch origin
 git merge --ff-only "$ref"
 git log -1 --format='%h %s (%an, %ad)'
+git rev-parse --short HEAD > REVISION
 npm ci --no-audit --no-fund
 make install_deps
 tup
