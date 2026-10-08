@@ -31,7 +31,6 @@ LimitCORE=infinity
 # sandbox: whole filesystem read-only except what nginx must write
 ProtectSystem=strict
 ReadWritePaths=/var/log/luarocks-site /run/luarocks-site
-ReadWritePaths=/home/luarocks/sites/luarocks-site/client_body_temp /home/luarocks/sites/luarocks-site/proxy_temp /home/luarocks/sites/luarocks-site/fastcgi_temp /home/luarocks/sites/luarocks-site/uwsgi_temp /home/luarocks/sites/luarocks-site/scgi_temp
 ReadWritePaths=/home/luarocks/sites/luarocks-pagecache /home/luarocks/sites/luarocks-rockcache
 PrivateTmp=yes
 PrivateDevices=yes
