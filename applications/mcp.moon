@@ -65,6 +65,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "me"
     description: "Get the luarocks.org account this connection is logged in as"
+    annotations: { readOnlyHint: true }
     inputSchema: { type: "object", properties: {} }
   }, (params) =>
     return nil, SUSPENDED unless @user
@@ -81,6 +82,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "search_modules"
     description: "Search modules in the root manifest by name and description"
+    annotations: { readOnlyHint: true }
     inputShape: types.shape {
       query: text\describe "Search terms"
     }
@@ -94,6 +96,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "get_module"
     description: "Get a module's details and its versions, newest first"
+    annotations: { readOnlyHint: true }
     inputShape: types.shape {
       module: module_name
       user: module_user
@@ -125,6 +128,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "get_module_version"
     description: "Get one version of a module: its dependencies, rockspec URL and rock files"
+    annotations: { readOnlyHint: true }
     inputShape: types.shape {
       module: module_name
       user: module_user
@@ -163,6 +167,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "my_modules"
     description: "List the modules owned by the account this connection is logged in as"
+    annotations: { readOnlyHint: true }
     inputSchema: { type: "object", properties: {} }
   }, (params) =>
     return nil, SUSPENDED unless @user
@@ -179,6 +184,7 @@ class LuarocksMcp extends McpServer
   @add_tool {
     name: "get_module_downloads"
     description: "Get download counts for a module: daily totals for the last days, and totals per version. Days start at midnight UTC-7"
+    annotations: { readOnlyHint: true }
     inputShape: types.shape {
       module: module_name
       user: module_user
@@ -239,6 +245,7 @@ router\mount "/mcp", LuarocksMcp, {
     login_url: (route, return_to) -> route\url_for "user_login", nil, :return_to
     render_consent: (route, consent) ->
       route.consent = consent
+      route.mcp_tools = LuarocksMcp!\get_enabled_tools!
       route.title = "Connect to LuaRocks"
       render: "mcp_consent"
 

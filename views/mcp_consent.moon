@@ -16,7 +16,16 @@ class McpConsent extends require "widgets.page"
       strong @current_user\name_for_display!
       text "."
 
-    p "It will be able to see your luarocks.org account details through the LuaRocks MCP server."
+    p "It will be able to use these tools from the LuaRocks MCP server:"
+
+    ul class: "tool_list", ->
+      for tool in *@mcp_tools
+        li ->
+          code tool.name
+          if tool.annotations and tool.annotations.readOnlyHint
+            span class: "tool_tag", "read only"
+
+          div class: "tool_description", tool.description
 
     p ->
       text "Only allow this if you trust "

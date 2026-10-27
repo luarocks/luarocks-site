@@ -138,6 +138,7 @@ describe "applications.mcp", ->
       assert.truthy body\find "claude.ai", 1, true
       assert.truthy body\find "Claude Code", 1, true
       assert.truthy body\find "app running on your own computer", 1, true
+      assert.truthy body\find "get_module_downloads", 1, true
       assert.truthy consent_token body
 
     it "accepts a client from another host", ->

@@ -1,0 +1,25 @@
+.tool_list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+        background: var(--white-back-color);
+        border: 1px solid var(--border-color);
+        border-radius: 2px;
+        padding: 6px 10px;
+    }
+
+    .tool_tag {
+        margin-left: 8px;
+        font-size: 12px;
+        opacity: 0.7;
+    }
+
+    .tool_description {
+        margin-top: 2px;
+        font-size: 14px;
+    }
+}
