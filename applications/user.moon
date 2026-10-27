@@ -46,6 +46,15 @@ import paginated_modules, preload_latest_versions from require "helpers.modules"
 
 import preload from require "lapis.db.model"
 
+-- the GitHub button leaves the site, so return_to is carried in the state
+-- GitHub sends back along with the csrf token
+github_state = =>
+  import encode_with_secret from require "lapis.util.encoding"
+  encode_with_secret {
+    csrf_token: @csrf_token
+    return_to: verify_return_to(@params.return_to) or nil
+  }
+
 assert_table = (val) ->
   assert_error type(val) == "table", "malformed input, expecting table"
   val
@@ -87,6 +96,7 @@ class MoonRocksUser extends lapis.Application
     before: =>
       @canonical_url = @build_url @url_for "user_login"
       @title = "Login"
+      @github_state = github_state @
 
     GET: =>
       render: true
@@ -159,6 +169,7 @@ class MoonRocksUser extends lapis.Application
     before: =>
       @canonical_url = @build_url @url_for "user_register"
       @title = "Register Account"
+      @github_state = github_state @
 
     GET: =>
       render: true

@@ -29,6 +29,6 @@ class UserLogin extends require "widgets.page"
 
     hr!
 
-    a href: github\login_url(@csrf_token), ->
+    a href: github\login_url(@github_state), ->
       button ->
         text "Login With GitHub"

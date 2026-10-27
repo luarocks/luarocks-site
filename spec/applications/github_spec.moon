@@ -153,3 +153,46 @@ describe "applications.github", ->
 
 
 
+
+    describe "return_to", ->
+      login_with_state = (return_to) ->
+        import generate_token from require "lapis.csrf"
+        import escape from require "lapis.util"
+
+        GithubAccounts\create {
+          github_user_id: 777
+          github_login: "hello-world"
+          access_token: "12345"
+          user_id: current_user.id
+        }
+
+        import encode_with_secret from require "lapis.util.encoding"
+
+        r = { cookies: {} }
+        state = encode_with_secret { csrf_token: generate_token(r), :return_to }
+        name, value = next r.cookies
+
+        request "/github/auth", {
+          post: { :state, code: "xxxx" }
+          headers: { Cookie: "#{escape name}=#{escape value}" }
+        }
+
+      it "sends the user to return_to after logging in", ->
+        status, _, headers = login_with_state "http://localhost/mcp/oauth/authorize?client_id=x"
+        assert.same 302, status
+        assert.same "http://localhost/mcp/oauth/authorize?client_id=x", headers.location
+
+      it "ignores a return_to on another site", ->
+        status, _, headers = login_with_state "https://evil.example/"
+        assert.same 302, status
+        assert.falsy headers.location\find "evil.example", 1, true
+
+      it "puts return_to in the state of the login page's GitHub link", ->
+        import parse_query_string, unescape from require "lapis.util"
+        import decode_with_secret from require "lapis.util.encoding"
+
+        status, body = request "/login?return_to=%2Fmcp%2Foauth%2Fauthorize"
+        assert.same 200, status
+        href = body\match 'href="(https://github.com/login/oauth/authorize[^"]*)"'
+        state = parse_query_string(href\gsub("&amp;", "&")\match "%?(.*)$").state
+        assert.same "/mcp/oauth/authorize", decode_with_secret(state).return_to

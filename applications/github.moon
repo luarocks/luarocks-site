@@ -5,6 +5,7 @@ db = require "lapis.db"
 import
   assert_csrf
   require_login
+  verify_return_to
   from require "helpers.app"
 
 import
@@ -25,7 +26,17 @@ class MoonrocksGithub extends lapis.Application
       render: "errors"
 
     =>
-      @params.csrf_token = @params.state
+      import decode_with_secret from require "lapis.util.encoding"
+
+      -- the settings page sends a bare csrf token as the state
+      return_to = nil
+      state = decode_with_secret @params.state
+      if state and state.csrf_token
+        @params.csrf_token = state.csrf_token
+        return_to = verify_return_to state.return_to
+      else
+        @params.csrf_token = @params.state
+
       assert_csrf @
 
       github = require "helpers.github"
@@ -69,7 +80,7 @@ class MoonrocksGithub extends lapis.Application
         if existing_account
           user = existing_account\get_user!
           user\write_session @, type: "login_github"
-          return redirect_to: @url_for "index"
+          return redirect_to: return_to or @url_for "index"
 
         email = github\primary_email access.access_token
         assert_error email, "Unable to access your email address, can't continue"
@@ -89,7 +100,7 @@ class MoonrocksGithub extends lapis.Application
         assert_error GithubAccounts\create account_data
 
         user\write_session @, type: "register_github"
-        redirect_to: @url_for "index"
+        redirect_to: return_to or @url_for "index"
   }
 
   [github_remove: "/github/remove/:github_user_id"]: require_login capture_errors_json respond_to {
