@@ -210,6 +210,45 @@ describe "applications.mcp", ->
       user\delete!
       assert.same 0, McpGrants\count!
 
+    describe "module tools", ->
+      import Modules, Versions, Rocks, Manifests, ManifestModules, DownloadsDaily from require "spec.models"
+
+      call_tool_text = (token, name, arguments={}) ->
+        status, body = call_mcp token, "tools/call", { :name, :arguments }
+        assert.same 200, status
+        result = json.decode(body).result
+        assert.falsy result.isError, "#{name}: #{result.content[1].text}"
+        result.content[1].text
+
+      call_tool = (...) -> json.decode call_tool_text ...
+
+      it "gets a module, a version and its downloads", ->
+        mod = factory.Modules user_id: user.id, name: "lpeg"
+        version = factory.Versions module_id: mod.id, version_name: "1.0.0-1"
+        factory.Rocks version_id: version.id, arch: "src"
+        ManifestModules\create Manifests\root!, mod
+        version\increment_download!
+
+        token = connect!
+
+        info = call_tool token, "get_module", module: "lpeg"
+        assert.same "lpeg", info.name
+        assert.same {"1.0.0-1"}, [v.version for v in *info.versions]
+
+        user\update username: "Some_User", slug: "some-user"
+        info = call_tool token, "get_module_version", module: "lpeg", user: "Some_User", version: "1.0.0-1"
+        assert.same {"src"}, [r.arch for r in *info.rocks]
+
+        info = call_tool token, "get_module_downloads", module: "lpeg", days: 7
+        assert.same 1, info.downloads
+        assert.same 7, #info.daily
+        assert.same 1, info.daily[7].downloads
+        assert.same 1, info.versions[1].downloads_in_period
+
+        assert.same "[]", call_tool_text token, "search_modules", query: "nothing-matches-this"
+
+        assert.same {"lpeg"}, [m.name for m in *call_tool token, "my_modules"]
+
     describe "MCP clients settings", ->
       revoke = (as_user, grant) ->
         request_as as_user, "/settings/mcp-grants/#{grant.id}/revoke", {
