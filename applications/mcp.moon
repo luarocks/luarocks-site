@@ -47,6 +47,18 @@ router\mount "/mcp", LuarocksMcp, {
       route.consent = consent
       route.title = "Connect to LuaRocks"
       render: "mcp_consent"
+
+    grant_created: (route, grant) ->
+      import UserActivityLogs from require "models"
+      UserActivityLogs\create_from_request route, {
+        user_id: grant.user_id
+        action: "account.create_mcp_grant"
+        source: "web"
+        data: {
+          client_id: grant.client_id
+          client_name: grant.client_name
+        }
+      }
   }
 
   load_session: (req, server) ->

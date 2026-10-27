@@ -162,6 +162,15 @@ describe "applications.mcp", ->
       assert.same user.username, me.username
       assert.same "/modules/#{user.slug}", me.profile_url\match "/modules/.*$"
 
+    it "logs the approval to the user's activity", ->
+      import UserActivityLogs from require "spec.models"
+      connect!
+
+      logs = UserActivityLogs\select "where user_id = ?", user.id
+      assert.same 1, #logs
+      assert.same "account.create_mcp_grant", logs[1].action
+      assert.same CLAUDE_CODE_ID, logs[1]\summarize!
+
     it "redirects with access_denied when cancelled", ->
       body, cookies = show_consent!
       status, _, headers = submit_consent body, cookies, false
@@ -213,8 +222,8 @@ describe "applications.mcp", ->
         status = call_mcp token, "tools/call", { name: "me", arguments: {} }
         assert.same 401, status
 
-        log = unpack UserActivityLogs\select "where user_id = ?", user.id
-        assert.same "account.revoke_mcp_grant", log.action
+        log = unpack UserActivityLogs\select "where user_id = ? and action = ?", user.id, "account.revoke_mcp_grant"
+        assert.truthy log
         assert.same CLAUDE_CODE_ID, log\summarize!
 
       it "doesn't revoke another user's client", ->
