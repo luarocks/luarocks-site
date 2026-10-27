@@ -509,6 +509,36 @@ import
   [1790621860]: =>
     drop_index "file_audits", "object_type", "object_id"
     create_index "file_audits", "object_type", "object_id"
+
+  [1793089504]: =>
+    create_table "mcp_grants", {
+      {"id", serial}
+      {"user_id", foreign_key}
+      {"client_id", text}
+      {"client_name", text}
+      {"redirect_uri", text}
+      {"code_challenge", text}
+      {"resource", text}
+      {"code_hash", text null: true}
+      {"code_expires_at", time null: true}
+      {"access_hash", text null: true}
+      {"access_expires_at", time null: true}
+      {"last_used_at", time null: true}
+      {"created_at", time}
+      {"updated_at", time}
+      "PRIMARY KEY (id)"
+    }
+
+    create_index "mcp_grants", "user_id"
+    create_index "mcp_grants", "code_hash", unique: true, where: "code_hash is not null"
+    create_index "mcp_grants", "access_hash", unique: true, where: "access_hash is not null"
+
+    db.query [[
+      ALTER TABLE mcp_grants
+        ADD FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+    ]]
 }
 
 

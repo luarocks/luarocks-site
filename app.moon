@@ -91,6 +91,7 @@ class MoonRocks extends lapis.Application
   @include "applications.github"
   @include "applications.admin"
   @include "applications.labels"
+  @include "applications.mcp"
 
   @before_filter =>
     if ngx and ngx.ctx

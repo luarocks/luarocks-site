@@ -50,6 +50,8 @@ config "test", ->
   disable_manifest_cache "1"
   logging false
 
+  mcp_client_metadata_http "helpers.mcp_client_metadata_stub"
+
 config { "production", "staging" }, ->
   num_workers 2
   code_cache "on"
