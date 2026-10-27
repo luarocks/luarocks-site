@@ -1,6 +1,6 @@
 
 class AdminUser extends require "widgets.admin.page"
-  @needs: {"user", "followings", "user_manifest_admins", "user_data", "user_sessions", "api_keys", "activity_logs"}
+  @needs: {"user", "followings", "user_manifest_admins", "user_data", "user_sessions", "api_keys", "mcp_grants", "activity_logs"}
 
   inner_content: =>
     h2 ->
@@ -106,6 +106,22 @@ class AdminUser extends require "widgets.admin.page"
       }
     else
       p class: "empty_table", "No API keys"
+
+    h3 ->
+      text "MCP Grants "
+      a href: @url_for("admin.mcp_grants", nil, user_id: @user.id), "(manage)"
+
+    if @mcp_grants and #@mcp_grants > 0
+      @column_table @mcp_grants, {
+        "client_name"
+        {"client_id", (g) -> code g.client_id}
+        {"status", (g) -> text g\get_status!}
+        "last_used_at"
+        "access_expires_at"
+        "created_at"
+      }
+    else
+      p class: "empty_table", "No MCP grants"
 
     h3 "Recent Activity"
     import UserActivityLogs from require "models"

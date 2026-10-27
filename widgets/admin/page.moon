@@ -34,6 +34,7 @@ class AdminPage extends require "widgets.page"
           @render_nav_tab "admin.rocks", "Rocks"
           @render_nav_tab "admin.labels", "Labels"
           @render_nav_tab "admin.audits", "Audits"
+          @render_nav_tab "admin.mcp_grants", "MCP Grants"
           @render_nav_tab "admin.cache", "Cache"
           @render_nav_tab "admin.db_tables", "DB Tables"
     }

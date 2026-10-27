@@ -1,4 +1,7 @@
+db = require "lapis.db"
 import OauthGrantModel from require "lapis.mcp.oauth.grant_model"
+
+NOW = "(now() at time zone 'utc')"
 
 -- Generated schema dump: (do not edit)
 --
@@ -32,3 +35,20 @@ class McpGrants extends OauthGrantModel
   }
 
   @owner_values: (user) => { user_id: user.id }
+
+  -- a grant is pending until the client exchanges its code for an access
+  -- token
+  @status_clauses: {
+    active: "access_hash IS NOT NULL AND access_expires_at > #{NOW}"
+    pending: "access_hash IS NULL AND code_expires_at > #{NOW}"
+    expired: "(access_hash IS NULL AND code_expires_at <= #{NOW}) OR access_expires_at <= #{NOW}"
+  }
+
+  get_status: =>
+    now = db.format_date!
+    if @access_hash
+      @access_expires_at > now and "active" or "expired"
+    elseif @code_expires_at and @code_expires_at > now
+      "pending"
+    else
+      "expired"

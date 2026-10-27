@@ -293,6 +293,9 @@ class MoonRocksAdmin extends lapis.Application
       @user_data = @user\get_data!
       @user_sessions = UserSessions\select "where user_id = ? order by created_at desc limit 20", @user.id
       @api_keys = ApiKeys\select "where user_id = ? order by created_at desc", @user.id
+
+      import McpGrants from require "models"
+      @mcp_grants = McpGrants\select "where user_id = ? order by id desc", @user.id
       @activity_logs = UserActivityLogs\select "where user_id = ? order by created_at desc limit 20", @user.id
       preload @activity_logs, "object"
 
@@ -491,6 +494,54 @@ class MoonRocksAdmin extends lapis.Application
       assert_error audit, err or "failed to create audit"
 
       redirect_to: @url_for "admin.audits"
+  }
+
+  [mcp_grants: "/mcp-grants"]: capture_errors_json respond_to {
+    GET: with_params {
+      {"user_id", types.empty + types.db_id}
+      {"client_id", types.empty + types.trimmed_text}
+      {"status", types.empty + types.one_of {"active", "pending", "expired"}}
+    }, (params) =>
+      @title = "MCP Grants"
+      import McpGrants from require "models"
+      assert_page @
+
+      clause = db.clause {
+        if params.user_id
+          {"user_id = ?", params.user_id}
+
+        if params.client_id
+          {"client_id = ?", params.client_id}
+
+        if params.status
+          {McpGrants.status_clauses[params.status]}
+      }, prefix: "WHERE", allow_empty: true
+
+      @pager = McpGrants\paginated "? order by id desc", clause, {
+        per_page: 50
+        prepare_results: (grants) ->
+          preload grants, "user"
+          grants
+      }
+
+      @grants = @pager\get_page @page
+      render: true
+
+    POST: with_params {
+      {"action", types.one_of {"revoke", "delete_expired"}}
+      {"id", types.empty + types.db_id}
+    }, (params) =>
+      assert_csrf @
+      import McpGrants from require "models"
+
+      switch params.action
+        when "revoke"
+          grant = assert_error params.id and McpGrants\find(params.id), "grant not found"
+          grant\delete!
+        when "delete_expired"
+          McpGrants\delete_expired!
+
+      redirect_to: @url_for "admin.mcp_grants"
   }
 
 
