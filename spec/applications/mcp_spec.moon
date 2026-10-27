@@ -171,6 +171,22 @@ describe "applications.mcp", ->
       assert.same "account.create_mcp_grant", logs[1].action
       assert.same CLAUDE_CODE_ID, logs[1]\summarize!
 
+    it "revokes clients when the password is changed", ->
+      user\update_password "hello"
+      token = connect!
+
+      status = request_as user, "/settings/reset-password", {
+        post: {
+          "password[current_password]": "hello"
+          "password[new_password]": "world"
+          "password[new_password_repeat]": "world"
+        }
+      }
+
+      assert.same 302, status
+      assert.same 0, McpGrants\count!
+      assert.same 401, (call_mcp token, "tools/call", { name: "me", arguments: {} })
+
     it "redirects with access_denied when cancelled", ->
       body, cookies = show_consent!
       status, _, headers = submit_consent body, cookies, false

@@ -137,6 +137,9 @@ class Users extends Model
         r.current_user_session\revoke!
       @write_session r, type: "update_password"
 
+      import McpGrants from require "models"
+      db.delete McpGrants\table_name!, user_id: @id
+
   check_password: (pass) =>
     return false unless @encrypted_password
     encrypted = @encrypted_password\gsub "^%$2y%$", "$2b$"
