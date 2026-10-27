@@ -184,3 +184,42 @@ describe "applications.mcp", ->
       assert.same 1, McpGrants\count!
       user\delete!
       assert.same 0, McpGrants\count!
+
+    describe "MCP clients settings", ->
+      revoke = (as_user, grant) ->
+        request_as as_user, "/settings/mcp-grants/#{grant.id}/revoke", {
+          post: {}
+        }
+
+      it "lists the connection on the API keys page", ->
+        connect!
+        status, body = request_as user, "/settings/api-keys"
+        assert.same 200, status
+        assert.truthy body\find "MCP clients", 1, true
+        assert.truthy body\find "Claude Code", 1, true
+        assert.truthy body\find "/settings/mcp-grants/", 1, true
+
+      it "revokes a client", ->
+        import UserActivityLogs from require "spec.models"
+
+        token = connect!
+        grant = unpack McpGrants\select!
+
+        status, _, headers = revoke user, grant
+        assert.same 302, status
+        assert.truthy headers.location\match "/settings/api%-keys$"
+        assert.same 0, McpGrants\count!
+
+        status = call_mcp token, "tools/call", { name: "me", arguments: {} }
+        assert.same 401, status
+
+        log = unpack UserActivityLogs\select "where user_id = ?", user.id
+        assert.same "account.revoke_mcp_grant", log.action
+        assert.same CLAUDE_CODE_ID, log\summarize!
+
+      it "doesn't revoke another user's client", ->
+        connect!
+        grant = unpack McpGrants\select!
+
+        revoke factory.Users!, grant
+        assert.same 1, McpGrants\count!

@@ -71,4 +71,34 @@ class UserSettingsApiKeys extends require "widgets.user_settings_page"
       div class: "button_row", ->
         button "Generate New Key"
 
+    return if @show_revoked
+
+    h3 "MCP clients"
+    p ->
+      text "MCP clients like Claude Code can use your account through the "
+      code "https://luarocks.org/mcp"
+      text " MCP server after you approve them. Connections expire and require
+      reauthentication automatically after 90 days, but you can revoke them
+      sooner from here."
+
+    if #@mcp_grants == 0
+      p "You don't have any MCP clients connected."
+    else
+      @column_table @mcp_grants, {
+        {"Client", (grant) ->
+          -- client_name is chosen by the client, the client_id host is what
+          -- identifies it
+          strong grant.client_name
+          text " (#{grant.client_id\match("^https?://([^/]+)") or grant.client_id})"
+        }
+        {"created_at", label: "Connected"}
+        {"last_used_at", label: "Last used"}
+        {"access_expires_at", label: "Expires"}
+        {"", (grant) ->
+          form method: "post", action: @url_for("user_settings.revoke_mcp_grant", id: grant.id), ->
+            @csrf_input!
+            button class: "button", "Revoke"
+        }
+      }
+
 

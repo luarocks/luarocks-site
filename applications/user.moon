@@ -472,6 +472,9 @@ class MoonRocksUser extends lapis.Application
       else
         @user\get_api_keys!
 
+      import McpGrants from require "models"
+      @mcp_grants = McpGrants\select "where user_id = ? and #{McpGrants.status_clauses.active} order by id desc", @user.id
+
     GET: =>
       render: true
 
@@ -488,6 +491,29 @@ class MoonRocksUser extends lapis.Application
       key\update {
         comment: params.comment
       }
+
+      redirect_to: @url_for "user_settings.api_keys"
+  }
+
+  ["user_settings.revoke_mcp_grant": "/settings/mcp-grants/:id/revoke"]: ensure_https require_login respond_to {
+    POST: capture_errors_json with_params {
+      {"id", types.db_id}
+    }, (params) =>
+      assert_csrf @
+      import McpGrants, UserActivityLogs from require "models"
+
+      if grant = McpGrants\find user_id: @current_user.id, id: params.id
+        grant\delete!
+
+        UserActivityLogs\create_from_request @, {
+          user_id: @current_user.id
+          action: "account.revoke_mcp_grant"
+          source: "web"
+          data: {
+            client_id: grant.client_id
+            client_name: grant.client_name
+          }
+        }
 
       redirect_to: @url_for "user_settings.api_keys"
   }

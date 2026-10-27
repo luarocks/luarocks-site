@@ -89,6 +89,8 @@ class UserActivityLogs extends Model
       when "account.create_api_key", "account.revoke_api_key"
         if @data.key
           @data.key\sub(1, 10) .. "…"
+      when "account.revoke_mcp_grant"
+        @data.client_id
 
 
 
